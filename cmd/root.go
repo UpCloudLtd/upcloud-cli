@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/client"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"os"
 	"path"
 	"path/filepath"
@@ -13,9 +14,9 @@ import (
 const version = "0.1"
 const envPrefix = "UPCLOUD"
 
-var apiclient *client.Client
+var apiService *service.Service
 var cfgFile string
-var verbose bool
+var verbose, jsonOutput bool
 
 var rootCmd = &cobra.Command{
 	Use:   "up",
@@ -51,6 +52,7 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cobra-viper-sample.yaml)")
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
+	rootCmd.PersistentFlags().BoolVar(&jsonOutput, "json", false, "Return output in JSON")
 }
 
 func initConfig() {
@@ -92,5 +94,5 @@ func initConfig() {
 		os.Exit(1)
 	}
 
-	apiclient = client.New(username, password)
+	apiService = service.New(client.New(username, password))
 }
