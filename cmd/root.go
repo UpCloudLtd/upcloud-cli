@@ -2,10 +2,12 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/hashicorp/go-cleanhttp"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/client"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
+	"net/http"
 	"os"
 	"path"
 	"path/filepath"
@@ -13,6 +15,12 @@ import (
 
 const version = "0.1"
 const envPrefix = "UPCLOUD"
+
+type userAgentTransport struct{}
+func (t *userAgentTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	req.Header.Add("User-Agent", fmt.Sprintf("upctl/%s", version))
+	return cleanhttp.DefaultTransport().RoundTrip(req)
+}
 
 var apiService *service.Service
 var cfgFile string
@@ -50,8 +58,8 @@ func init() {
 
 	rootCmd.AddCommand(versionCmd)
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cobra-viper-sample.yaml)")
-	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "Config file (default is $HOME/.upcloud-api.yml)")
+	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
 	rootCmd.PersistentFlags().BoolVar(&jsonOutput, "json", false, "Return output in JSON")
 }
 
@@ -94,5 +102,5 @@ func initConfig() {
 		os.Exit(1)
 	}
 
-	apiService = service.New(client.New(username, password))
+	apiService = service.New(client.NewWithHTTPClient(username, password, &http.Client{Transport: &userAgentTransport{}}))
 }
