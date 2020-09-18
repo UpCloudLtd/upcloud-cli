@@ -490,6 +490,17 @@ func printServerJson(details *upcloud.ServerDetails) error {
 	return nil
 }
 
+func getDefaultOSTemplates() map[string]string {
+	templates := make(map[string]string)
+
+	templates["debian"] = "01000000-0000-4000-8000-000020050100" // Buster
+	templates["ubuntu"] = "01000000-0000-4000-8000-000030200200" // Focal Forssa
+	templates["centos"] = "01000000-0000-4000-8000-000050010400" // 8.0
+	templates["windows"] = "01000000-0000-4000-8000-000010070300" // 2019 Standard
+
+	return templates
+}
+
 func init() {
 	defaultOSTemplates = getDefaultOSTemplates()
 
@@ -536,13 +547,3 @@ func init() {
 	deleteServerCmd.Flags().Bool("confirm", false, "Confirm deletion")
 }
 
-func getDefaultOSTemplates() map[string]string {
-	templates := make(map[string]string)
-
-	templates["debian"] = "01000000-0000-4000-8000-000020050100" // Buster
-	templates["ubuntu"] = "01000000-0000-4000-8000-000030200200" // Focal Forssa
-	templates["centos"] = "01000000-0000-4000-8000-000050010400" // 8.0
-	templates["windows"] = "01000000-0000-4000-8000-000010070300" // 2019 Standard
-
-	return templates
-}
