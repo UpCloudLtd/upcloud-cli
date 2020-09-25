@@ -40,7 +40,7 @@ func readFileLines(filename string) ([]string, error) {
 	return lines, nil
 }
 
-func maxInt(numbers... int) int {
+func maxInt(numbers ...int) int {
 	max := numbers[0]
 	for _, number := range numbers {
 		if number > max {

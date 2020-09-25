@@ -2,11 +2,11 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/client"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/hashicorp/go-cleanhttp"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/client"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"net/http"
 	"os"
 	"path"
@@ -17,6 +17,7 @@ const version = "0.1"
 const envPrefix = "UPCLOUD"
 
 type userAgentTransport struct{}
+
 func (t *userAgentTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	req.Header.Add("User-Agent", fmt.Sprintf("upctl/%s", version))
 	return cleanhttp.DefaultTransport().RoundTrip(req)
@@ -46,6 +47,7 @@ var versionCmd = &cobra.Command{
 	},
 }
 
+// Execute is the main command init for CLI
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
@@ -84,7 +86,6 @@ func initConfig() {
 	viper.AddConfigPath("$HOME")
 	viper.SetEnvPrefix(envPrefix)
 	viper.AutomaticEnv()
-
 
 	viper.ReadInConfig()
 

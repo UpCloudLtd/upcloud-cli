@@ -16,12 +16,12 @@ import (
 var defaultOSTemplates map[string]string
 
 var serverCmd = &cobra.Command{
-	Use: "server",
+	Use:   "server",
 	Short: "List, show & control servers",
 }
 
 var listServersCmd = &cobra.Command{
-	Use: "list",
+	Use:   "list",
 	Short: "List current servers",
 	RunE: func(cmd *cobra.Command, args []string) error {
 
@@ -31,12 +31,12 @@ var listServersCmd = &cobra.Command{
 		}
 
 		if jsonOutput {
-			serversJson, err := json.MarshalIndent(servers.Servers, "", "  ")
+			serversJSON, err := json.MarshalIndent(servers.Servers, "", "  ")
 			if err != nil {
 				return errors.Wrap(err, "JSON serialization failed")
 			}
 
-			fmt.Printf("%s\n", serversJson)
+			fmt.Printf("%s\n", serversJSON)
 			return nil
 		}
 
@@ -74,12 +74,12 @@ var showServerCmd = &cobra.Command{
 		}
 
 		if jsonOutput {
-			serverJson, err := json.MarshalIndent(server, "", "  ")
+			serverJSON, err := json.MarshalIndent(server, "", "  ")
 			if err != nil {
 				return errors.Wrap(err, "JSON serialization failed")
 			}
 
-			fmt.Printf("%s\n", serverJson)
+			fmt.Printf("%s\n", serverJSON)
 			return nil
 		}
 
@@ -212,14 +212,14 @@ var createServerCmd = &cobra.Command{
 			}
 		}
 
-		storageId, _ := cmd.Flags().GetString("storage")
-		if val, ok := defaultOSTemplates[storageId]; ok {
-			storageId = val
+		storageID, _ := cmd.Flags().GetString("storage")
+		if val, ok := defaultOSTemplates[storageID]; ok {
+			storageID = val
 		}
 
 		storage := request.CreateServerStorageDevice{
 			Action:  storageAction,
-			Storage: storageId,
+			Storage: storageID,
 			Title:   fmt.Sprintf("%s disk 1", req.Hostname),
 			Size:    storageSize,
 			Tier:    storageTier,
@@ -289,7 +289,7 @@ var createServerCmd = &cobra.Command{
 		}
 
 		if jsonOutput {
-			return printServerJson(details)
+			return printServerJSON(details)
 		}
 
 		if verbose {
@@ -324,7 +324,7 @@ var startServerCmd = &cobra.Command{
 		}
 
 		if jsonOutput {
-			return printServerJson(details)
+			return printServerJSON(details)
 		}
 
 		if verbose {
@@ -368,7 +368,7 @@ var stopServerCmd = &cobra.Command{
 		}
 
 		if jsonOutput {
-			return printServerJson(details)
+			return printServerJSON(details)
 		}
 
 		if verbose {
@@ -412,7 +412,7 @@ var restartServerCmd = &cobra.Command{
 		}
 
 		if jsonOutput {
-			return printServerJson(details)
+			return printServerJSON(details)
 		}
 
 		if verbose {
@@ -466,8 +466,8 @@ var deleteServerCmd = &cobra.Command{
 
 func createServerInterface(ifaceType, family, network string) request.CreateServerInterface {
 	iface := request.CreateServerInterface{
-		IPAddresses:       request.CreateServerIPAddressSlice{},
-		Type:              ifaceType,
+		IPAddresses: request.CreateServerIPAddressSlice{},
+		Type:        ifaceType,
 	}
 	ipAddr := request.CreateServerIPAddress{Family: family}
 
@@ -480,22 +480,22 @@ func createServerInterface(ifaceType, family, network string) request.CreateServ
 	return iface
 }
 
-func printServerJson(details *upcloud.ServerDetails) error {
-	serverJson, err := json.MarshalIndent(details, "", "  ")
+func printServerJSON(details *upcloud.ServerDetails) error {
+	serverJSON, err := json.MarshalIndent(details, "", "  ")
 	if err != nil {
 		return errors.Wrap(err, "JSON serialization failed")
 	}
 
-	fmt.Printf("%s\n", serverJson)
+	fmt.Printf("%s\n", serverJSON)
 	return nil
 }
 
 func getDefaultOSTemplates() map[string]string {
 	templates := make(map[string]string)
 
-	templates["debian"] = "01000000-0000-4000-8000-000020050100" // Buster
-	templates["ubuntu"] = "01000000-0000-4000-8000-000030200200" // Focal Forssa
-	templates["centos"] = "01000000-0000-4000-8000-000050010400" // 8.0
+	templates["debian"] = "01000000-0000-4000-8000-000020050100"  // Buster
+	templates["ubuntu"] = "01000000-0000-4000-8000-000030200200"  // Focal Forssa
+	templates["centos"] = "01000000-0000-4000-8000-000050010400"  // 8.0
 	templates["windows"] = "01000000-0000-4000-8000-000010070300" // 2019 Standard
 
 	return templates
@@ -546,4 +546,3 @@ func init() {
 	deleteServerCmd.Flags().Bool("delete-attached-storages", false, "Delete storages that are attached to the server")
 	deleteServerCmd.Flags().Bool("confirm", false, "Confirm deletion")
 }
-

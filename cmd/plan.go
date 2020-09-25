@@ -10,7 +10,7 @@ import (
 )
 
 var planCmd = &cobra.Command{
-	Use: "plan",
+	Use:   "plan",
 	Short: "Server plans",
 }
 
@@ -25,12 +25,12 @@ var listPlansCmd = &cobra.Command{
 		}
 
 		if jsonOutput {
-			plansJson, err := json.MarshalIndent(plans.Plans, "", "  ")
+			plansJSON, err := json.MarshalIndent(plans.Plans, "", "  ")
 			if err != nil {
 				return errors.Wrap(err, "JSON serialization failed")
 			}
 
-			fmt.Printf("%s\n", plansJson)
+			fmt.Printf("%s\n", plansJSON)
 			return nil
 		}
 
