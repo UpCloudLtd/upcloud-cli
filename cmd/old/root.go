@@ -1,16 +1,17 @@
-package cmd
+package old
 
 import (
 	"fmt"
+	"net/http"
+	"os"
+	"path"
+	"path/filepath"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/client"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/hashicorp/go-cleanhttp"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"net/http"
-	"os"
-	"path"
-	"path/filepath"
 )
 
 const version = "0.1"

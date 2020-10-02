@@ -1,16 +1,17 @@
-package cmd
+package old
 
 import (
 	"encoding/json"
 	"fmt"
+	"os"
+	"strings"
+	"time"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/olekukonko/tablewriter"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"os"
-	"strings"
-	"time"
 )
 
 var defaultOSTemplates map[string]string

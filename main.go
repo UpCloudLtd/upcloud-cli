@@ -1,7 +1,9 @@
 package main
 
-import "github.com/UpCloudLtd/cli/cmd"
+import (
+	"github.com/UpCloudLtd/cli/cmd/old"
+)
 
 func main() {
-	cmd.Execute()
+	old.Execute()
 }
