@@ -7,8 +7,8 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/client"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/hashicorp/go-cleanhttp"
-	"github.com/spf13/viper"
 
+	"github.com/UpCloudLtd/cli/internal/config"
 	"github.com/UpCloudLtd/cli/internal/globals"
 )
 
@@ -19,10 +19,13 @@ func (t *transport) RoundTrip(req *http.Request) (*http.Response, error) {
 	return cleanhttp.DefaultTransport().RoundTrip(req)
 }
 
-func Service(config *viper.Viper) *service.Service {
-	return service.New(client.NewWithHTTPClient(
-		config.GetString("username"),
-		config.GetString("password"),
-		&http.Client{Transport: &transport{}},
-	))
+func Service(config *config.Config) *service.Service {
+	hc := &http.Client{Transport: &transport{}}
+
+	svc := service.New(client.NewWithHTTPClient(
+		config.Top().GetString("username"),
+		config.Top().GetString("password"),
+		hc))
+	hc.Timeout = config.ClientTimeout()
+	return svc
 }

@@ -112,6 +112,7 @@ func New(output io.Writer, header ...string) (*Table, error) {
 	tw.SetBorder(false)
 	tw.SetCenterSeparator(" ")
 	tw.SetColumnSeparator(" ")
+	tw.SetRowSeparator("─")
 	tw.SetAutoFormatHeaders(false)
 	for i, hdr := range header {
 		t.header = append(t.header, hdr)
@@ -121,6 +122,13 @@ func New(output io.Writer, header ...string) (*Table, error) {
 		t.headerPos[hdr] = i
 	}
 	return t, nil
+}
+
+func NewDetails(output io.Writer) *Table {
+	t, _ := New(output)
+	t.SetColumnSeparator("│")
+	t.SetColumnAlignment([]int{tablewriter.ALIGN_RIGHT, tablewriter.ALIGN_LEFT})
+	return t
 }
 
 func MapColours(header []string, row []string, mapper func(hdr string, row string) tablewriter.Colors) []tablewriter.Colors {

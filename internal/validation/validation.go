@@ -3,6 +3,7 @@ package validation
 import (
 	"fmt"
 	"reflect"
+	"strconv"
 	"strings"
 )
 
@@ -42,4 +43,16 @@ func Uuid4(val string) error {
 		}
 	}
 	return nil
+}
+
+func Numeric(v interface{}) error {
+	switch v.(type) {
+	case int, uint, int32, uint32, int64, uint64, float32, float64:
+		return nil
+	default:
+		if _, err := strconv.ParseFloat(fmt.Sprintf("%s", v), 64); err == nil {
+			return nil
+		}
+	}
+	return fmt.Errorf("value %q is not numeric", v)
 }

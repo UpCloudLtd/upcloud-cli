@@ -2,35 +2,34 @@ package server
 
 import (
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
-	"github.com/olekukonko/tablewriter"
+	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/pflag"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/table"
+	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/cli/internal/upapi"
 )
 
 func ListCommand() commands.Command {
 	return &listCommand{
-		Command: commands.New("list", "List current servers"),
+		BaseCommand: commands.New("list", "List current servers"),
 	}
 }
 
 type listCommand struct {
-	commands.Command
+	*commands.BaseCommand
 	service        *service.Service
-	headerNames    []string
+	header         table.Row
 	columnKeys     []string
 	visibleColumns []string
 }
 
 func (s *listCommand) InitCommand() {
-	s.headerNames = []string{"UUID", "Hostname", "Plan", "Zone", "State", "Tags", "Title", "License"}
+	s.header = table.Row{"UUID", "Hostname", "Plan", "Zone", "State", "Tags", "Title", "License"}
 	s.columnKeys = []string{"uuid", "hostname", "plan", "zone", "state", "tags", "title", "license"}
 	s.visibleColumns = []string{"uuid", "hostname", "plan", "zone", "state"}
 	flags := &pflag.FlagSet{}
@@ -50,43 +49,36 @@ func (s *listCommand) MakeExecuteCommand() func(args []string) error {
 }
 
 func (s *listCommand) HandleOutput(out interface{}) error {
-	if s.FQConfigValueString("output") != "human" {
-		return s.Command.HandleOutput(out)
+	if !s.Config().OutputHuman() {
+		return s.BaseCommand.HandleOutput(out)
 	}
 	servers := out.(*upcloud.Servers)
 	fmt.Println()
-	t, err := table.New(os.Stdout, s.headerNames...)
-	if err != nil {
-		return err
-	}
-	t.SetVisibleColumns(s.visibleColumns...)
-	t.SetColumnKeys(s.columnKeys...)
+	t := ui.NewDataTable(s.columnKeys...)
+	t.OverrideColumnKeys(s.visibleColumns...)
+	t.SetHeader(s.header)
+
+	t.SetColumnConfig("state", table.ColumnConfig{Transformer: func(val interface{}) string {
+		return StateColour(val.(string)).Sprint(val)
+	}})
 
 	for _, server := range servers.Servers {
-		t.NextRow()
 		plan := server.Plan
 		if plan == "custom" {
 			memory := server.MemoryAmount / 1024
 			plan = fmt.Sprintf("Custom (%dxCPU, %dGB)", server.CoreNumber, memory)
 		}
-		for _, val := range []string{server.UUID, server.Hostname, plan, server.Zone} {
-			t.AddColumn(val, nil)
-		}
-		switch server.State {
-		case upcloud.ServerStateStarted:
-			t.AddColumn(server.State, tablewriter.Colors{tablewriter.FgGreenColor})
-		case upcloud.ServerStateError:
-			t.AddColumn(server.State, tablewriter.Colors{tablewriter.FgHiRedColor, tablewriter.Bold})
-		case upcloud.ServerStateMaintenance:
-			t.AddColumn(server.State, tablewriter.Colors{tablewriter.FgYellowColor})
-		default:
-			t.AddColumn(server.State, tablewriter.Colors{tablewriter.FgHiBlackColor})
-		}
-		for _, val := range []string{strings.Join(server.Tags, ","), server.Title, fmt.Sprintf("%f", server.License)} {
-			t.AddColumn(val, nil)
-		}
+		t.AppendRow(table.Row{
+			server.UUID,
+			server.Hostname,
+			plan,
+			server.Zone,
+			server.State,
+			strings.Join(server.Tags, ","),
+			server.Title,
+			server.License})
 	}
-	t.Render()
+	fmt.Println(t.Render())
 	fmt.Println()
 	return nil
 }

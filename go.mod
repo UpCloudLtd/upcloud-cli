@@ -5,6 +5,7 @@ go 1.13
 require (
 	github.com/UpCloudLtd/upcloud-go-api v0.0.0-20200914091830-8ba81055f176
 	github.com/hashicorp/go-cleanhttp v0.5.1
+	github.com/jedib0t/go-pretty/v6 v6.0.5
 	github.com/mattn/go-isatty v0.0.12
 	github.com/olekukonko/tablewriter v0.0.4
 	github.com/pkg/errors v0.8.1

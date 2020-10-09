@@ -1,13 +1,110 @@
 package server
 
-import "github.com/UpCloudLtd/cli/internal/commands"
+import (
+	"errors"
+	"fmt"
+	"time"
+
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
+	"github.com/jedib0t/go-pretty/v6/text"
+	"github.com/olekukonko/tablewriter"
+
+	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/validation"
+)
+
+const maxServerActions = 10
 
 func ServerCommand() commands.Command {
-	return &planCommand{
+	return &serverCommand{
 		Command: commands.New("server", "List, show & control servers"),
 	}
 }
 
-type planCommand struct {
+type serverCommand struct {
 	commands.Command
+}
+
+type ActionResult struct {
+	Error error
+	Uuid  string
+}
+
+func matchServer(servers []upcloud.Server, searchVal string) *upcloud.Server {
+	for _, server := range servers {
+		if server.Title == searchVal || server.Hostname == searchVal || server.UUID == searchVal {
+			return &server
+		}
+	}
+	return nil
+}
+
+func searchServer(serversPtr *[]upcloud.Server, service *service.Service, uuidOrHostnameOrTitle string) (*upcloud.Server, error) {
+	if serversPtr == nil || service == nil {
+		return nil, fmt.Errorf("no servers or service passed")
+	}
+	servers := *serversPtr
+	if err := validation.Uuid4(uuidOrHostnameOrTitle); err != nil || servers == nil {
+		res, err := service.GetServers()
+		if err != nil {
+			return nil, err
+		}
+		servers = res.Servers
+		*serversPtr = servers
+	}
+	server := matchServer(servers, uuidOrHostnameOrTitle)
+	if server == nil {
+		return nil, fmt.Errorf("no server with uuid, name or title %q was found", uuidOrHostnameOrTitle)
+	}
+	return server, nil
+}
+
+func ServerStateColour(state string) tablewriter.Colors {
+	switch state {
+	case upcloud.ServerStateStarted:
+		return tablewriter.Colors{tablewriter.FgGreenColor}
+	case upcloud.ServerStateError:
+		return tablewriter.Colors{tablewriter.FgHiRedColor, tablewriter.Bold}
+	case upcloud.ServerStateMaintenance:
+		return tablewriter.Colors{tablewriter.FgYellowColor}
+	default:
+		return tablewriter.Colors{tablewriter.FgHiBlackColor}
+	}
+}
+
+func StateColour(state string) text.Colors {
+	switch state {
+	case upcloud.ServerStateStarted:
+		return text.Colors{text.FgGreen}
+	case upcloud.ServerStateError:
+		return text.Colors{text.FgHiRed, text.Bold}
+	case upcloud.ServerStateMaintenance:
+		return text.Colors{text.FgYellow}
+	default:
+		return text.Colors{text.FgHiBlack}
+	}
+}
+
+func WaitForServerState(service *service.Service, uuid, desiredState string, timeout time.Duration) (*upcloud.ServerDetails, error) {
+	timer := time.After(timeout)
+	for {
+		time.Sleep(5 * time.Second)
+		details, err := service.GetServerDetails(&request.GetServerDetailsRequest{UUID: uuid})
+		if err != nil {
+			return nil, err
+		}
+		switch details.State {
+		case upcloud.ServerStateError:
+			return nil, errors.New("server in error state")
+		case desiredState:
+			return details, nil
+		}
+		select {
+		case <-timer:
+			return nil, fmt.Errorf("timed out while waiting server to transition into %q", desiredState)
+		default:
+		}
+	}
 }
