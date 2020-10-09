@@ -45,7 +45,7 @@ func (s *startCommand) InitCommand() {
 		for _, v := range servers.Servers {
 			vals = append(vals, v.UUID, v.Hostname)
 		}
-		return commands.MatchStringPrefix(vals, toComplete), cobra.ShellCompDirectiveNoSpace | cobra.ShellCompDirectiveNoFileComp
+		return commands.MatchStringPrefix(vals, toComplete), cobra.ShellCompDirectiveNoFileComp
 	})
 	flags := &pflag.FlagSet{}
 	flags.IntVar(&s.avoidHost, "avoid-host", 0, "Avoid specific host when starting a server")
