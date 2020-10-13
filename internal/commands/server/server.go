@@ -9,7 +9,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/jedib0t/go-pretty/v6/text"
-	"github.com/olekukonko/tablewriter"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/validation"
@@ -67,19 +66,6 @@ func searchServer(serversPtr *[]upcloud.Server, service *service.Service, uuidOr
 		return nil, fmt.Errorf("multiple servers matched to query %q, use UUID to specify", uuidOrHostnameOrTitle)
 	}
 	return matched[0], nil
-}
-
-func ServerStateColour(state string) tablewriter.Colors {
-	switch state {
-	case upcloud.ServerStateStarted:
-		return tablewriter.Colors{tablewriter.FgGreenColor}
-	case upcloud.ServerStateError:
-		return tablewriter.Colors{tablewriter.FgHiRedColor, tablewriter.Bold}
-	case upcloud.ServerStateMaintenance:
-		return tablewriter.Colors{tablewriter.FgYellowColor}
-	default:
-		return tablewriter.Colors{tablewriter.FgHiBlackColor}
-	}
 }
 
 func StateColour(state string) text.Colors {
