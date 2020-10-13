@@ -16,5 +16,3 @@ require (
 	gopkg.in/yaml.v2 v2.3.0
 	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 )
-
-replace github.com/UpCloudLtd/upcloud-go-api => ../upcloud-go-api
