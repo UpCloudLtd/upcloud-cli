@@ -15,7 +15,10 @@ import (
 	"github.com/UpCloudLtd/cli/internal/validation"
 )
 
-const maxServerActions = 10
+const (
+	minStorageSize   = 10
+	maxServerActions = 10
+)
 
 func ServerCommand() commands.Command {
 	return &serverCommand{

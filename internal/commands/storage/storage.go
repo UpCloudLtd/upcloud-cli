@@ -21,6 +21,8 @@ var (
 	cachedServers     []upcloud.Server
 )
 
+const minStorageSize = 10
+
 func StorageCommand() commands.Command {
 	return &storageCommand{commands.New("storage", "Manage storages")}
 }

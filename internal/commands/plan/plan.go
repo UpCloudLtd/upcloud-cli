@@ -4,10 +4,10 @@ import "github.com/UpCloudLtd/cli/internal/commands"
 
 func PlanCommand() commands.Command {
 	return &planCommand{
-		Command: commands.New("plan", "Server plans"),
+		BaseCommand: commands.New("plan", "Server plans"),
 	}
 }
 
 type planCommand struct {
-	commands.Command
+	*commands.BaseCommand
 }

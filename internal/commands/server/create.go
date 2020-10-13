@@ -77,6 +77,10 @@ func (s *createParams) processParams(srv *service.Service) error {
 				break
 			}
 		}
+		size := minStorageSize
+		if s.osStorageSize > size {
+			size = s.osStorageSize
+		}
 		if osStorage == nil {
 			return fmt.Errorf("no OS storage found with title or uuid %q", s.os)
 		}
@@ -84,12 +88,12 @@ func (s *createParams) processParams(srv *service.Service) error {
 			Action:  "clone",
 			Storage: osStorage.UUID,
 			Title:   fmt.Sprintf("%s-osDisk", ui.TruncateText(s.Hostname, 64-7)),
-			Size:    osStorage.Size,
+			Size:    size,
 			Tier:    upcloud.StorageTierMaxIOPS,
 			Type:    upcloud.StorageTypeDisk,
 		})
 	}
-	if s.osStorageSize != 0 && s.os != "" {
+	if s.osStorageSize != 0 {
 		s.StorageDevices[0].Size = s.osStorageSize
 	}
 
