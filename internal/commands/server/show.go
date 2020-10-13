@@ -47,7 +47,8 @@ func (s *showCommand) InitCommand() {
 		for _, v := range servers.Servers {
 			vals = append(vals, v.UUID, v.Hostname)
 		}
-		return commands.MatchStringPrefix(vals, toComplete), cobra.ShellCompDirectiveNoSpace | cobra.ShellCompDirectiveNoFileComp
+		return commands.MatchStringPrefix(vals, toComplete, false),
+			cobra.ShellCompDirectiveNoSpace | cobra.ShellCompDirectiveNoFileComp
 	})
 }
 
@@ -59,7 +60,7 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) error {
 			return fmt.Errorf("server hostname, title or uuid is required")
 		}
 		var servers []upcloud.Server
-		server, err := searchServer(&servers, s.service, args[0])
+		server, err := searchServer(&servers, s.service, args[0], true)
 		if err != nil {
 			return err
 		}
@@ -79,7 +80,7 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) error {
 		}
 		wg.Wait()
 		if fwRuleErr != nil {
-			return err
+			return fwRuleErr
 		}
 		return s.HandleOutput(serverDetails)
 	}

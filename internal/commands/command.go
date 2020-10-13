@@ -4,29 +4,31 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"sort"
 	"strings"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/mattn/go-isatty"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"gopkg.in/yaml.v2"
 
 	"github.com/UpCloudLtd/cli/internal/config"
-	"github.com/UpCloudLtd/cli/internal/ui"
 )
 
 func New(name, usage string) *BaseCommand {
 	return &BaseCommand{
-		name:    name,
-		Command: &cobra.Command{Use: name, Short: usage},
+		name:  name,
+		cobra: &cobra.Command{Use: name, Short: usage},
 	}
 }
 
 type Command interface {
 	SetConfig(config *config.Config)
 	SetParent(Command)
+	SetChild(command Command)
+	DeleteChild(command Command)
+	Children() []Command
 	Parent() Command
 	Name() string
 	InitCommand()
@@ -57,6 +59,7 @@ const (
 func BuildCommand(child, parent Command, config *config.Config) Command {
 	child.SetParent(parent)
 	child.SetConfig(config)
+	child.Cobra().Flags().SortFlags = false
 	if parent != nil {
 		child.SetConfigLoader(parent.ConfigLoader())
 	}
@@ -64,6 +67,24 @@ func BuildCommand(child, parent Command, config *config.Config) Command {
 		config.SetNamespace(nsCmd.Namespace())
 	}
 	child.InitCommand()
+	// Apply values set from viper
+	child.Cobra().PreRunE = func(cmd *cobra.Command, args []string) error {
+		for cmd := child; cmd != nil; cmd = cmd.Parent() {
+			for _, v := range cmd.Config().BoundFlags() {
+				if !cmd.Config().IsSet(v.Name) {
+					continue
+				}
+				if v.Changed {
+					continue
+				}
+				if err := v.Value.Set(cmd.Config().GetString(v.Name)); err != nil {
+					return err
+				}
+			}
+		}
+		return nil
+	}
+
 	if cCmd := child.MakeExecuteCommand(); cCmd != nil && child.Cobra().RunE == nil {
 		child.Cobra().RunE = func(_ *cobra.Command, args []string) error {
 			if loader := child.ConfigLoader(); loader != nil {
@@ -81,7 +102,7 @@ func BuildCommand(child, parent Command, config *config.Config) Command {
 		}
 	}
 	if cCmd := child.MakePersistentPreExecuteCommand(); cCmd != nil && child.Cobra().PersistentPreRunE == nil {
-		child.Cobra().PersistentPreRunE = func(_ *cobra.Command, args []string) error {
+		child.Cobra().PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
 			if loader := child.ConfigLoader(); loader != nil {
 				loader(config, ConfigLoadContextRun)
 			}
@@ -95,11 +116,11 @@ func BuildCommand(child, parent Command, config *config.Config) Command {
 			loader(config, ConfigLoadContextHelp)
 		}
 		for cmd := child; cmd != nil; cmd = cmd.Parent() {
-			for k, v := range cmd.Config().BoundFlags() {
-				if !cmd.Config().Viper().IsSet(k) {
+			for _, v := range cmd.Config().BoundFlags() {
+				if !cmd.Config().IsSet(v.Name) {
 					continue
 				}
-				v.DefValue = cmd.Config().GetString(k)
+				v.DefValue = cmd.Config().GetString(v.Name)
 			}
 		}
 		curHelp(cCmd, args)
@@ -113,11 +134,13 @@ func BuildCommand(child, parent Command, config *config.Config) Command {
 }
 
 type BaseCommand struct {
-	*cobra.Command
-	name         string
-	parent       Command
-	config       *config.Config
-	configLoader func(config *config.Config, loadContext int)
+	cobra            *cobra.Command
+	name             string
+	parent           Command
+	childrenPos      map[Command]int
+	nextChildSortPos int
+	config           *config.Config
+	configLoader     func(config *config.Config, loadContext int)
 }
 
 func (s *BaseCommand) Name() string {
@@ -128,8 +151,56 @@ func (s *BaseCommand) SetConfig(config *config.Config) {
 	s.config = config
 }
 
+func (s *BaseCommand) SetChild(command Command) {
+	if command == nil {
+		return
+	}
+	if _, alreadyChild := s.childrenPos[command]; alreadyChild {
+		return
+	}
+	if s.childrenPos == nil {
+		s.childrenPos = make(map[Command]int)
+	}
+	s.childrenPos[command] = s.nextChildSortPos
+	s.nextChildSortPos++
+	if command.Parent() != s {
+		command.SetParent(s)
+	}
+}
+
+func (s *BaseCommand) DeleteChild(command Command) {
+	if command.Parent() == s {
+		command.SetParent(nil)
+	}
+	delete(s.childrenPos, command)
+}
+
+func (s *BaseCommand) Children() []Command {
+	var (
+		r      []Command
+		sorted []Command
+	)
+	for child := range s.childrenPos {
+		sorted = append(sorted, child)
+	}
+	sort.Slice(sorted, func(i, j int) bool {
+		return s.childrenPos[sorted[i]] < s.childrenPos[sorted[j]]
+	})
+	for _, child := range sorted {
+		r = append(r, child)
+		r = append(r, child.Children()...)
+	}
+	return r
+}
+
 func (s *BaseCommand) SetParent(command Command) {
+	if s.parent != nil {
+		s.DeleteChild(command)
+	}
 	s.parent = command
+	if s.parent != nil {
+		s.parent.SetChild(s)
+	}
 }
 
 func (s *BaseCommand) Parent() Command {
@@ -162,6 +233,10 @@ func (s *BaseCommand) Namespace() string {
 		names []string
 	)
 	for c := s.parent; c != nil; c = c.Parent() {
+		// Skip root command name in namespace
+		if c.Parent() == nil {
+			continue
+		}
 		names = append(names, c.Name())
 	}
 	for i := len(names) - 1; i >= 0; i-- {
@@ -175,7 +250,7 @@ func (s *BaseCommand) Namespace() string {
 }
 
 func (s *BaseCommand) Cobra() *cobra.Command {
-	return s.Command
+	return s.cobra
 }
 
 // Config //
@@ -200,10 +275,9 @@ func (s *BaseCommand) AddFlags(flags *pflag.FlagSet) {
 		panic("Nil flagset")
 	}
 	flags.VisitAll(func(flag *pflag.Flag) {
-		flag.Usage = text.WrapSoft(flag.Usage, ui.CommandUsageLineLength)
 		s.Cobra().Flags().AddFlag(flag)
-		s.config.ConfigBindFlag(flag.Name, flag)
 	})
+	s.config.ConfigBindFlagSet(flags)
 }
 
 // Adds a persistent flagset to the command and binds config value into it with namespace
@@ -212,37 +286,23 @@ func (s *BaseCommand) AddPersistentFlags(flags *pflag.FlagSet) {
 		panic("Nil flagset")
 	}
 	flags.VisitAll(func(flag *pflag.Flag) {
-		flag.Usage = text.WrapSoft(flag.Usage, ui.CommandUsageLineLength)
 		s.Cobra().PersistentFlags().AddFlag(flag)
-		s.config.ConfigBindFlag(flag.Name, flag)
 	})
+	s.config.ConfigBindFlagSet(flags)
 }
 
 func (s *BaseCommand) AddVisibleColumnsFlag(flags *pflag.FlagSet, dstPtr *[]string, available, defaults []string) {
-	flags.StringSliceVarP(dstPtr, "columns", "c", nil,
-		text.WrapSoft(fmt.Sprintf("Reorder or show additional columns in human readable output\navailable: %s",
-			strings.Join(available, ",")), ui.CommandUsageLineLength))
-	curPreRun := s.Cobra().PreRunE
-	s.Cobra().PreRunE = func(cmd *cobra.Command, args []string) error {
-		if curPreRun != nil {
-			if err := curPreRun(cmd, args); err != nil {
-				return err
-			}
-		}
-		if !cmd.Flags().Changed("columns") {
-			*dstPtr = defaults
-		}
-
-		return nil
-	}
+	flags.StringSliceVarP(dstPtr, "columns", "c", defaults,
+		fmt.Sprintf("Reorder or show additional columns in human readable output.\nAvailable: %s",
+			strings.Join(available, ",")))
 }
 
 func (s *BaseCommand) SetPositionalArgHelp(help string) {
 	if help == "" {
-		s.Use = s.name
+		s.cobra.Use = s.name
 		return
 	}
-	s.Use = fmt.Sprintf("%s %s", s.name, help)
+	s.cobra.Use = fmt.Sprintf("%s %s", s.name, help)
 }
 
 // Error handling //
@@ -302,15 +362,25 @@ func (s *BaseCommand) ArgCompletion(fn func(toComplete string) ([]string, cobra.
 	}
 }
 
-func MatchStringPrefix(vals []string, toComplete string) []string {
+func MatchStringPrefix(vals []string, key string, caseSensitive bool) []string {
 	var r []string
-	if toComplete == "" {
-		return vals
-	}
+	key = strings.TrimPrefix(key, `"`)
+	key = strings.TrimPrefix(key, "'")
+	key = strings.TrimSuffix(key, `"`)
+	key = strings.TrimSuffix(key, "'")
 	for _, v := range vals {
-		if strings.HasPrefix(v, toComplete) {
-			r = append(r, v)
+		if (caseSensitive && strings.HasPrefix(v, key)) ||
+			(!caseSensitive && strings.HasPrefix(strings.ToLower(v), strings.ToLower(key))) ||
+			key == "" {
+			r = append(r, CompletionEscape(v))
 		}
 	}
 	return r
+}
+
+func CompletionEscape(s string) string {
+	if strings.ContainsAny(s, ` ()`) {
+		return fmt.Sprintf(`"%s"`, s)
+	}
+	return s
 }

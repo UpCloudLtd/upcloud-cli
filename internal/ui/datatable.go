@@ -2,6 +2,8 @@ package ui
 
 import (
 	"fmt"
+	"math"
+	"time"
 
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
@@ -9,8 +11,8 @@ import (
 	"github.com/UpCloudLtd/cli/internal/validation"
 )
 
-func StyleDataTable(t *table.Table) {
-	t.SetStyle(table.Style{
+func StyleDataTable() table.Style {
+	return table.Style{
 		Name: "DataTable",
 		Box: table.BoxStyle{
 			BottomLeft:       " ",
@@ -48,13 +50,56 @@ func StyleDataTable(t *table.Table) {
 			SeparateHeader:  true,
 			SeparateRows:    false,
 		},
-	})
+	}
+}
+
+func StyleFlagsTable() table.Style {
+	return table.Style{
+		Name: "FlagsTable",
+		Box: table.BoxStyle{
+			BottomLeft:       " ",
+			BottomRight:      " ",
+			BottomSeparator:  " ",
+			Left:             " ",
+			LeftSeparator:    " ",
+			MiddleHorizontal: " ",
+			MiddleSeparator:  " ",
+			MiddleVertical:   " ",
+			PaddingLeft:      "  ",
+			PaddingRight:     "  ",
+			Right:            " ",
+			RightSeparator:   " ",
+			TopLeft:          " ",
+			TopRight:         " ",
+			TopSeparator:     " ",
+			UnfinishedRow:    " ",
+		},
+		Color: table.ColorOptions{
+			Footer:       DefaultHeaderColours,
+			Header:       DefaultHeaderColours,
+			Row:          nil,
+			RowAlternate: nil,
+		},
+		Format: table.FormatOptions{
+			Footer: text.FormatDefault,
+			Header: text.FormatDefault,
+			Row:    text.FormatDefault,
+		},
+		Options: table.Options{
+			DrawBorder:      false,
+			SeparateColumns: true,
+			SeparateFooter:  false,
+			SeparateHeader:  true,
+			SeparateRows:    true,
+		},
+	}
 }
 
 func NewDataTable(columnKeys ...string) *DataTable {
 	t := &DataTable{columnKeys: columnKeys}
 	t.init()
-	StyleDataTable(t.t)
+	t.SetStyle(StyleDataTable())
+	t.header = table.Row{}
 	return t
 }
 
@@ -77,8 +122,12 @@ func (s *DataTable) init() {
 	}
 }
 
+func (s *DataTable) SetStyle(style table.Style) {
+	s.t.SetStyle(style)
+}
+
 func (s *DataTable) SetHeader(hdr table.Row) {
-	if len(hdr) != len(s.columnKeys) {
+	if hdr != nil && len(hdr) != len(s.columnKeys) {
 		panic("uneven number of columns and headers")
 	}
 	s.header = hdr
@@ -116,9 +165,9 @@ func (s *DataTable) Render() string {
 		if !ok {
 			continue
 		}
-		if len(s.header) == 0 {
+		if len(s.header) == 0 && s.header != nil {
 			header = append(header, key)
-		} else {
+		} else if s.header != nil {
 			header = append(header, s.header[pos])
 		}
 		cfg, ok := s.columnConfig[key]
@@ -132,9 +181,32 @@ func (s *DataTable) Render() string {
 			if err := validation.Numeric(s.rows[0][pos]); err == nil && cfg.Align == text.AlignDefault {
 				cfg.Align = text.AlignRight
 			}
+			if _, ok := s.rows[0][pos].(time.Time); ok && cfg.Transformer == nil {
+				cfg.Transformer = func(val interface{}) string {
+					tv, ok := val.(time.Time)
+					if !ok {
+						return fmt.Sprintf("%s", val)
+					}
+					return FormatTime(tv)
+				}
+			}
+			if _, ok := s.rows[0][pos].(float64); ok && cfg.Transformer == nil {
+				cfg.Transformer = func(val interface{}) string {
+					fv, ok := val.(float64)
+					if !ok {
+						return fmt.Sprintf("%s", val)
+					}
+					if _, frac := math.Modf(fv); frac != 0 {
+						return fmt.Sprintf("%s", val)
+					}
+					return fmt.Sprintf("%.2f", fv)
+				}
+			}
 		}
 	}
-	s.t.AppendHeader(header)
+	if len(header) > 0 {
+		s.t.AppendHeader(header)
+	}
 	var columnConfigs []table.ColumnConfig
 	for _, cfg := range s.columnConfig {
 		columnConfigs = append(columnConfigs, *cfg)

@@ -13,6 +13,8 @@ import (
 const (
 	ConfigKeyOutput        = "output"
 	ConfigValueOutputHuman = "human"
+	ConfigValueOuputYaml   = "yaml"
+	ConfigValueOuputJson   = "json"
 	ConfigKeyClientTimeout = "client-timeout"
 )
 
@@ -21,9 +23,9 @@ func New(viper *viper.Viper) *Config {
 }
 
 type Config struct {
-	viper      *viper.Viper
-	ns         string
-	boundFlags map[string]*pflag.Flag
+	viper   *viper.Viper
+	ns      string
+	flagSet *pflag.FlagSet
 }
 
 func (s *Config) Viper() *viper.Viper {
@@ -32,6 +34,10 @@ func (s *Config) Viper() *viper.Viper {
 
 func (s *Config) SetNamespace(ns string) {
 	s.ns = ns
+}
+
+func (s *Config) IsSet(key string) bool {
+	return s.viper.IsSet(s.prependNs(key))
 }
 
 func (s *Config) Get(key string) interface{} {
@@ -48,19 +54,38 @@ func (s *Config) Top() *Config {
 	return &clone
 }
 
-func (s *Config) BoundFlags() map[string]*pflag.Flag {
-	return s.boundFlags
+func (s *Config) FlagByKey(key string) *pflag.Flag {
+	if s.flagSet == nil {
+		s.flagSet = &pflag.FlagSet{}
+	}
+	return s.flagSet.Lookup(key)
 }
 
-func (s *Config) ConfigBindFlag(key string, flag *pflag.Flag) {
-	if flag == nil {
-		panic("Nil flag bound")
+func (s *Config) BoundFlags() []*pflag.Flag {
+	if s.flagSet == nil {
+		s.flagSet = &pflag.FlagSet{}
 	}
-	if s.boundFlags == nil {
-		s.boundFlags = make(map[string]*pflag.Flag)
+	var r []*pflag.Flag
+	s.flagSet.VisitAll(func(flag *pflag.Flag) {
+		r = append(r, flag)
+	})
+	return r
+}
+
+func (s *Config) ConfigBindFlagSet(flags *pflag.FlagSet) {
+	if flags == nil {
+		panic("Nil flagset")
 	}
-	s.boundFlags[key] = flag
-	_ = s.viper.BindPFlag(s.prependNs(key), flag)
+	if s.flagSet == nil {
+		s.flagSet = &pflag.FlagSet{}
+	}
+	flags.VisitAll(func(flag *pflag.Flag) {
+		if s.flagSet.Lookup(flag.Name) != nil {
+			panic(fmt.Sprintf("key %s already bound", flag.Name))
+		}
+		_ = s.viper.BindPFlag(s.prependNs(flag.Name), flag)
+		s.flagSet.AddFlag(flag)
+	})
 }
 
 func (s *Config) prependNs(key string) string {

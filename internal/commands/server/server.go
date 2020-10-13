@@ -32,16 +32,18 @@ type ActionResult struct {
 	Uuid  string
 }
 
-func matchServer(servers []upcloud.Server, searchVal string) *upcloud.Server {
+func matchServers(servers []upcloud.Server, searchVal string) []*upcloud.Server {
+	var r []*upcloud.Server
 	for _, server := range servers {
+		server := server
 		if server.Title == searchVal || server.Hostname == searchVal || server.UUID == searchVal {
-			return &server
+			r = append(r, &server)
 		}
 	}
-	return nil
+	return r
 }
 
-func searchServer(serversPtr *[]upcloud.Server, service *service.Service, uuidOrHostnameOrTitle string) (*upcloud.Server, error) {
+func searchServer(serversPtr *[]upcloud.Server, service *service.Service, uuidOrHostnameOrTitle string, unique bool) (*upcloud.Server, error) {
 	if serversPtr == nil || service == nil {
 		return nil, fmt.Errorf("no servers or service passed")
 	}
@@ -54,11 +56,14 @@ func searchServer(serversPtr *[]upcloud.Server, service *service.Service, uuidOr
 		servers = res.Servers
 		*serversPtr = servers
 	}
-	server := matchServer(servers, uuidOrHostnameOrTitle)
-	if server == nil {
+	matched := matchServers(servers, uuidOrHostnameOrTitle)
+	if len(matched) == 0 {
 		return nil, fmt.Errorf("no server with uuid, name or title %q was found", uuidOrHostnameOrTitle)
 	}
-	return server, nil
+	if len(matched) > 1 && unique {
+		return nil, fmt.Errorf("multiple servers matched to query %q, use UUID to specify", uuidOrHostnameOrTitle)
+	}
+	return matched[0], nil
 }
 
 func ServerStateColour(state string) tablewriter.Colors {

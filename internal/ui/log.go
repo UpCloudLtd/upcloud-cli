@@ -137,20 +137,21 @@ func (s *LiveLog) Render() {
 		return
 	}
 
+	s.height = 0
 	// Render in-progress entries
-	s.height = len(s.entriesInProgress)
 	for _, entry := range s.entriesInProgress {
 		if entry.done {
 			continue
 		}
+		s.height++
 		s.renderEntry(entry)
 	}
 
 	// Render queued
 	if s.config.RenderPending {
-		s.height += len(s.entriesPending)
 		for _, entry := range s.entriesPending {
 			if entry.started.IsZero() {
+				s.height++
 				s.renderEntry(entry)
 			}
 		}
@@ -171,7 +172,9 @@ func (s *LiveLog) renderEntry(entry *LogEntry) {
 	}
 	if !entry.started.IsZero() {
 		dur := time.Now().Sub(entry.started)
-		durStr = fmt.Sprintf("%dm%ds", int(dur.Minutes()), int(dur.Seconds()))
+		durStr = fmt.Sprintf("%dm%ds",
+			dur/time.Minute,
+			dur%time.Minute/time.Second)
 	}
 	msg := entry.msg
 	if text.RuneCount(msg) > s.config.EntryMaxWidth {

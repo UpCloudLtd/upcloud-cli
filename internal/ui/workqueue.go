@@ -25,6 +25,7 @@ func StartWorkQueue(cfg WorkQueueConfig, handler func(idx int, logEntry *LogEntr
 		e := NewLogEntry("")
 		log.AddEntries(e)
 		handler(idx, e)
+		e.MarkDone()
 		chDone <- struct{}{}
 	}
 	startedTasks := 0
@@ -37,6 +38,7 @@ func StartWorkQueue(cfg WorkQueueConfig, handler func(idx int, logEntry *LogEntr
 			log.Render()
 			switch {
 			case completedTasks == cfg.NumTasks:
+				log.Render()
 				return
 			case startedTasks-completedTasks < cfg.MaxConcurrentTasks && startedTasks < cfg.NumTasks:
 				go doWork(startedTasks)

@@ -15,25 +15,25 @@ import (
 	"github.com/UpCloudLtd/cli/internal/upapi"
 )
 
-func StopCommand() commands.Command {
-	return &stopCommand{
-		BaseCommand: commands.New("stop", "Stop a server"),
+func DeleteCommand() commands.Command {
+	return &deleteCommand{
+		BaseCommand: commands.New("delete", "Delete a server"),
 	}
 }
 
-type stopCommand struct {
+type deleteCommand struct {
 	*commands.BaseCommand
-	service  *service.Service
-	stopType string
+	service        *service.Service
+	deleteStorages bool
 }
 
-func (s *stopCommand) initService() {
+func (s *deleteCommand) initService() {
 	if s.service == nil {
 		s.service = upapi.Service(s.Config())
 	}
 }
 
-func (s *stopCommand) InitCommand() {
+func (s *deleteCommand) InitCommand() {
 	s.ArgCompletion(func(toComplete string) ([]string, cobra.ShellCompDirective) {
 		s.initService()
 		servers, err := s.service.GetServers()
@@ -44,47 +44,47 @@ func (s *stopCommand) InitCommand() {
 		for _, v := range servers.Servers {
 			vals = append(vals, v.UUID, v.Hostname)
 		}
-		return commands.MatchStringPrefix(vals, toComplete, false), cobra.ShellCompDirectiveNoFileComp
+		return commands.MatchStringPrefix(vals, toComplete, true), cobra.ShellCompDirectiveNoFileComp
 	})
 	flags := &pflag.FlagSet{}
-	flags.StringVar(&s.stopType, "type", upcloud.StopTypeSoft,
-		"The type of stop operation. Soft waits for the OS to shut down cleanly "+
-			"while hard forcibly shuts down a server")
+	flags.BoolVar(&s.deleteStorages, "delete-storages", true, "Delete storages that are "+
+		"attached to the server.")
 	s.AddFlags(flags)
 	s.SetPositionalArgHelp("<uuidHostnameOrTitle ...>")
 }
 
-func (s *stopCommand) MakeExecuteCommand() func(args []string) error {
+func (s *deleteCommand) MakeExecuteCommand() func(args []string) error {
 	return func(args []string) error {
 		s.initService()
 		if len(args) < 1 {
 			return fmt.Errorf("server hostname, title or uuid is required")
 		}
 		var (
-			allServers  []upcloud.Server
-			stopServers []*upcloud.Server
+			allServers    []upcloud.Server
+			deleteServers []*upcloud.Server
 		)
 		for _, v := range args {
-			server, err := searchServer(&allServers, s.service, v, true)
+			server, err := searchServer(&allServers, s.service, v, false)
 			if err != nil {
 				return err
 			}
-			stopServers = append(stopServers, server)
+			deleteServers = append(deleteServers, server)
 		}
 		var numOk int64
 		handler := func(idx int, e *ui.LogEntry) {
-			server := stopServers[idx]
-			msg := fmt.Sprintf("Stopping %q", server.Title)
+			server := deleteServers[idx]
+			msg := fmt.Sprintf("Deleting %q", server.Title)
 			e.SetMessage(msg)
 			e.Start()
-			_, err := s.service.StopServer(&request.StopServerRequest{
-				UUID:     server.UUID,
-				Timeout:  s.Config().ClientTimeout(),
-				StopType: s.stopType,
-			})
-			if err == nil {
-				e.SetMessage(fmt.Sprintf("%s: shutdown request sent", msg))
-				_, err = WaitForServerState(s.service, server.UUID, upcloud.ServerStateStopped, s.Config().ClientTimeout())
+			var err error
+			if s.deleteStorages {
+				err = s.service.DeleteServerAndStorages(&request.DeleteServerAndStoragesRequest{
+					UUID: server.UUID,
+				})
+			} else {
+				err = s.service.DeleteServer(&request.DeleteServerRequest{
+					UUID: server.UUID,
+				})
 			}
 			if err != nil {
 				e.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed", msg))
@@ -95,19 +95,19 @@ func (s *stopCommand) MakeExecuteCommand() func(args []string) error {
 			}
 		}
 		ui.StartWorkQueue(ui.WorkQueueConfig{
-			NumTasks:           len(stopServers),
+			NumTasks:           len(deleteServers),
 			MaxConcurrentTasks: maxServerActions,
 			EnableUI:           s.Config().InteractiveUI(),
 		}, handler)
 
-		if int(numOk) < len(stopServers) {
-			return fmt.Errorf("number of servers failed to shut down: %d", len(stopServers)-int(numOk))
+		if int(numOk) < len(deleteServers) {
+			return fmt.Errorf("number of servers failed to delete: %d", len(deleteServers)-int(numOk))
 		}
-		return s.HandleOutput(stopServers)
+		return s.HandleOutput(deleteServers)
 	}
 }
 
-func (s *stopCommand) HandleOutput(out interface{}) error {
+func (s *deleteCommand) HandleOutput(out interface{}) error {
 	results := out.([]*upcloud.Server)
 	var uuids []string
 	for _, res := range results {

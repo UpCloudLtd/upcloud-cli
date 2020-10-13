@@ -1,16 +1,14 @@
 package ui
 
 import (
+	"fmt"
 	"strings"
+	"time"
 
 	"github.com/jedib0t/go-pretty/v6/text"
 )
 
 const truncatedSuffix = "..."
-
-var (
-	CommandUsageLineLength = 70
-)
 
 func TruncateText(s string, maxLen int) string {
 	if text.RuneCount(s) > maxLen {
@@ -41,4 +39,19 @@ func IndentText(s, prefix string, repeatedPrefixAsSpaces bool) string {
 		r = append(r, c)
 	}
 	return string(r)
+}
+
+func FormatTime(tv time.Time) string {
+	if tv.IsZero() {
+		return ""
+	}
+	dur := time.Now().Sub(tv)
+	if dur.Hours() < 8 {
+		return fmt.Sprintf("%s (%dh%dm%ds ago)",
+			tv.Format(time.RFC3339),
+			dur/time.Hour,
+			dur%time.Hour/time.Minute,
+			dur%time.Minute/time.Second)
+	}
+	return tv.Format(time.RFC3339)
 }

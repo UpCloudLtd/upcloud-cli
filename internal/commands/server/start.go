@@ -45,7 +45,7 @@ func (s *startCommand) InitCommand() {
 		for _, v := range servers.Servers {
 			vals = append(vals, v.UUID, v.Hostname)
 		}
-		return commands.MatchStringPrefix(vals, toComplete), cobra.ShellCompDirectiveNoFileComp
+		return commands.MatchStringPrefix(vals, toComplete, false), cobra.ShellCompDirectiveNoFileComp
 	})
 	flags := &pflag.FlagSet{}
 	flags.IntVar(&s.avoidHost, "avoid-host", 0, "Avoid specific host when starting a server")
@@ -66,7 +66,7 @@ func (s *startCommand) MakeExecuteCommand() func(args []string) error {
 			startServers []*upcloud.Server
 		)
 		for _, v := range args {
-			server, err := searchServer(&allServers, s.service, v)
+			server, err := searchServer(&allServers, s.service, v, true)
 			if err != nil {
 				return err
 			}
@@ -91,7 +91,6 @@ func (s *startCommand) MakeExecuteCommand() func(args []string) error {
 				atomic.AddInt64(&numOk, 1)
 				e.SetMessage(fmt.Sprintf("%s: done", msg))
 			}
-			e.MarkDone()
 		}
 		ui.StartWorkQueue(ui.WorkQueueConfig{
 			NumTasks:           len(startServers),
