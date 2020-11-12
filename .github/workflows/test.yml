@@ -14,9 +14,6 @@ jobs:
         id: go
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
-      - name: Check formatting
-        run: |
-          files_to_fmt=$(gofmt -l -s .)
-          if [[ -n ${files_to_fmt} ]]; then echo "${files_to_fmt}" && exit 1; fi
-        shell: bash
-      - run:  go test ./...
+      - run: make fmtcheck
+      - run: make vet
+      - run: make test
