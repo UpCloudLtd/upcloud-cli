@@ -2,11 +2,11 @@ package storage
 
 import (
 	"fmt"
+	"github.com/UpCloudLtd/cli/internal/interfaces"
 	"sync/atomic"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/cobra"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
@@ -22,7 +22,7 @@ func DeleteCommand() commands.Command {
 
 type deleteCommand struct {
 	*commands.BaseCommand
-	service *service.Service
+	service interfaces.Storage
 }
 
 func (s *deleteCommand) initService() {

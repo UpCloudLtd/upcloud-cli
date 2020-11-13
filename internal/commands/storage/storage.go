@@ -3,6 +3,7 @@ package storage
 import (
 	"errors"
 	"fmt"
+	"github.com/UpCloudLtd/cli/internal/interfaces"
 	"time"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
@@ -72,7 +73,7 @@ func matchStorages(storages []upcloud.Storage, searchVal string) []*upcloud.Stor
 	return r
 }
 
-func searchStorage(storagesPtr *[]upcloud.Storage, service *service.Service, uuidOrTitle string, unique bool) (*upcloud.Storage, error) {
+func searchStorage(storagesPtr *[]upcloud.Storage, service interfaces.Storage, uuidOrTitle string, unique bool) (*upcloud.Storage, error) {
 	if storagesPtr == nil || service == nil {
 		return nil, fmt.Errorf("no storages or service passed")
 	}
