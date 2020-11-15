@@ -13,8 +13,8 @@ import (
 const (
 	ConfigKeyOutput        = "output"
 	ConfigValueOutputHuman = "human"
-	ConfigValueOuputYaml   = "yaml"
-	ConfigValueOuputJson   = "json"
+	ConfigValueOutputYaml  = "yaml"
+	ConfigValueOutputJson  = "json"
 	ConfigKeyClientTimeout = "client-timeout"
 )
 

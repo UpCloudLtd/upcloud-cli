@@ -35,22 +35,18 @@ func (s *listCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
-func (s *listCommand) MakeExecuteCommand() func(args []string) error {
-	return func(args []string) error {
+func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
+	return func(args []string) (interface{}, error) {
 		service := upapi.Service(s.Config())
 		plans, err := service.GetPlans()
 		if err != nil {
-			return err
+			return nil, err
 		}
-		s.HandleOutput(plans)
-		return nil
+		return plans, nil
 	}
 }
 
 func (s *listCommand) HandleOutput(out interface{}) error {
-	if !s.Config().OutputHuman() {
-		return s.BaseCommand.HandleOutput(out)
-	}
 	plans := out.(*upcloud.Plans)
 	fmt.Println()
 	t := ui.NewDataTable(s.columnKeys...)

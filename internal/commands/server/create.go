@@ -192,12 +192,12 @@ func (s *createCommand) InitCommand() {
 	s.AddFlags(s.flagSet)
 }
 
-func (s *createCommand) MakeExecuteCommand() func(args []string) error {
-	return func(args []string) error {
+func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
+	return func(args []string) (interface{}, error) {
 		s.initService()
 		var createServers []request.CreateServerRequest
 		if err := s.firstCreateServer.processParams(s.service); err != nil {
-			return err
+			return nil, err
 		}
 		createServers = append(createServers, s.firstCreateServer.CreateServerRequest)
 
@@ -213,10 +213,10 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) error {
 					dst := createParams{}
 					s.createFlags(fs, &dst, &s.firstCreateServer)
 					if err := fs.Parse(additionalCreateArgs); err != nil {
-						return err
+						return nil, err
 					}
 					if err := dst.processParams(s.service); err != nil {
-						return err
+						return nil, err
 					}
 					createServers = append(createServers, dst.CreateServerRequest)
 				}
@@ -259,21 +259,8 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) error {
 			EnableUI:           s.Config().InteractiveUI(),
 		}, handler)
 		if numOk != len(createServers) {
-			return fmt.Errorf("number of servers that failed: %d", len(createServers)-numOk)
+			return nil, fmt.Errorf("number of servers that failed: %d", len(createServers)-numOk)
 		}
-		return s.HandleOutput(createdServers)
+		return createdServers, nil
 	}
-}
-
-func (s *createCommand) HandleOutput(out interface{}) error {
-	results := out.([]*upcloud.ServerDetails)
-	var uuids []string
-	for _, res := range results {
-		uuids = append(uuids, res.UUID)
-	}
-
-	if !s.Config().OutputHuman() {
-		return s.BaseCommand.HandleOutput(uuids)
-	}
-	return nil
 }

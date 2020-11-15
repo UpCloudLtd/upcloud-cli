@@ -33,13 +33,13 @@ type completionCommand struct {
 	*commands.BaseCommand
 }
 
-func (s *completionCommand) MakeExecuteCommand() func(args []string) error {
-	return func(args []string) error {
+func (s *completionCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
+	return func(args []string) (interface{}, error) {
 		switch args[0] {
 		case "bash":
 			_ = s.Cobra().Root().GenBashCompletion(os.Stdout)
 		}
-		return nil
+		return nil, nil
 	}
 }
 
@@ -47,18 +47,18 @@ type defaultsCommand struct {
 	*commands.BaseCommand
 }
 
-func (s *defaultsCommand) MakeExecuteCommand() func(args []string) error {
-	return func(args []string) error {
-		return s.HandleOutput(nil)
+func (s *defaultsCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
+	return func(args []string) (interface{}, error) {
+		return nil, s.HandleOutput(nil)
 	}
 }
 
 func (s *defaultsCommand) HandleOutput(_ interface{}) error {
-	output := config.ConfigValueOuputYaml
+	output := config.ConfigValueOutputYaml
 	if s.Config().Top().IsSet(config.ConfigKeyOutput) && !s.Config().OutputHuman() {
 		output = s.Config().Output()
 	}
-	if output == config.ConfigValueOuputJson {
+	if output == config.ConfigValueOutputJson {
 		return fmt.Errorf("only yaml output is supported for this command")
 	}
 
@@ -217,6 +217,7 @@ func (s *mainCommand) InitCommand() {
 	commands.BuildCommand(
 		&defaultsCommand{commands.New("defaults", "Generate defaults")},
 		s, config.New(mainConfig.Viper()))
+
 	all.BuildCommands(s, s.Config())
 
 	s.Cobra().SetUsageTemplate(ui.CommandUsage())

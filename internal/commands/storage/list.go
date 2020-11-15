@@ -2,6 +2,7 @@ package storage
 
 import (
 	"fmt"
+	"github.com/UpCloudLtd/cli/internal/interfaces"
 	"sort"
 	"strings"
 
@@ -23,6 +24,7 @@ func ListCommand() commands.Command {
 
 type listCommand struct {
 	*commands.BaseCommand
+	service        interfaces.Storage
 	header         table.Row
 	columnKeys     []string
 	visibleColumns []string
@@ -41,13 +43,19 @@ func (s *listCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
-func (s *listCommand) MakeExecuteCommand() func(args []string) error {
-	return func(args []string) error {
-		service := upapi.Service(s.Config())
-		storages, err := service.GetStorages(&request.GetStoragesRequest{})
+func (s *listCommand) initService() {
+	if s.service == nil {
+		s.service = upapi.Service(s.Config())
+	}
+}
+
+func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
+	return func(args []string) (interface{}, error) {
+		s.initService()
+		storages, err := s.service.GetStorages(&request.GetStoragesRequest{})
 		cachedStorages = storages.Storages
 		if err != nil {
-			return err
+			return nil, err
 		}
 		var filtered []upcloud.Storage
 		for _, v := range storages.Storages {
@@ -60,14 +68,11 @@ func (s *listCommand) MakeExecuteCommand() func(args []string) error {
 			filtered = append(filtered, v)
 		}
 		storages.Storages = filtered
-		return s.HandleOutput(storages)
+		return storages, nil
 	}
 }
 
 func (s *listCommand) HandleOutput(out interface{}) error {
-	if !s.Config().OutputHuman() {
-		return s.BaseCommand.HandleOutput(out)
-	}
 	storages := out.(*upcloud.Storages)
 	fmt.Println()
 	t := ui.NewDataTable(s.columnKeys...)

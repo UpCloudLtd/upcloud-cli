@@ -51,15 +51,15 @@ func (s *showCommand) InitCommand() {
 	})
 }
 
-func (s *showCommand) MakeExecuteCommand() func(args []string) error {
-	return func(args []string) error {
+func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
+	return func(args []string) (interface{}, error) {
 		s.initService()
 		if len(args) < 1 {
-			return fmt.Errorf("storage title or uuid is required")
+			return nil, fmt.Errorf("storage title or uuid is required")
 		}
 		storage, err := searchStorage(&cachedStorages, s.service, args[0], true)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		var (
 			wg                      sync.WaitGroup
@@ -85,20 +85,17 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) error {
 		}()
 		storageDetails, err := s.service.GetStorageDetails(&request.GetStorageDetailsRequest{UUID: storage.UUID})
 		if err != nil {
-			return err
+			return nil, err
 		}
 		wg.Wait()
 		if storageImportDetailsErr != nil {
-			return storageImportDetailsErr
+			return nil, storageImportDetailsErr
 		}
-		return s.HandleOutput(storageDetails)
+		return storageDetails, nil
 	}
 }
 
 func (s *showCommand) HandleOutput(out interface{}) error {
-	if !s.Config().OutputHuman() {
-		return s.BaseCommand.HandleOutput(out)
-	}
 	storage := out.(*upcloud.StorageDetails)
 
 	dMain := ui.NewDetailsView()

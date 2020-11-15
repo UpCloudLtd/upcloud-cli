@@ -32,7 +32,7 @@ type Command interface {
 	Parent() Command
 	Name() string
 	InitCommand()
-	MakeExecuteCommand() func(args []string) error
+	MakeExecuteCommand() func(args []string) (interface{}, error)
 	MakePreExecuteCommand() func(args []string) error
 	MakePersistentPreExecuteCommand() func(args []string) error
 	SetConfigLoader(func(config *config.Config, loadContext int))
@@ -90,7 +90,15 @@ func BuildCommand(child, parent Command, config *config.Config) Command {
 			if loader := child.ConfigLoader(); loader != nil {
 				loader(config, ConfigLoadContextRun)
 			}
-			return cCmd(args)
+			response, err := cCmd(args)
+			if err != nil {
+				return err
+			}
+			if !config.OutputHuman() {
+				return HandleOutput(response, config.Output())
+			} else {
+				return child.HandleOutput(response)
+			}
 		}
 	}
 	if cCmd := child.MakePreExecuteCommand(); cCmd != nil && child.Cobra().PreRunE == nil {
@@ -212,7 +220,7 @@ func (s *BaseCommand) Parent() Command {
 func (s *BaseCommand) InitCommand() {
 }
 
-func (s *BaseCommand) MakeExecuteCommand() func(args []string) error {
+func (s *BaseCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return nil
 }
 
@@ -337,8 +345,12 @@ func (s *BaseCommand) HandleError(err error) {
 
 // Output handling //
 func (s *BaseCommand) HandleOutput(out interface{}) error {
+	return nil
+}
+
+func HandleOutput(out interface{}, output string) error {
 	isTerminal := isatty.IsTerminal(os.Stdout.Fd())
-	switch s.Config().Output() {
+	switch output {
 	case "json":
 		enc := json.NewEncoder(os.Stdout)
 		if isTerminal {

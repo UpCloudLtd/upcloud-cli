@@ -172,8 +172,8 @@ func (s *importCommand) InitCommand() {
 	s.AddFlags(s.flagSet)
 }
 
-func (s *importCommand) MakeExecuteCommand() func(args []string) error {
-	return func(args []string) error {
+func (s *importCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
+	return func(args []string) (interface{}, error) {
 		errorOrGenericError := func(err error) error {
 			if s.Config().InteractiveUI() {
 				return errors.New("import failed")
@@ -182,11 +182,11 @@ func (s *importCommand) MakeExecuteCommand() func(args []string) error {
 		}
 		s.initService()
 		if err := s.importParams.processParams(s.service); err != nil {
-			return err
+			return nil, err
 		}
 		if s.importParams.existingStorage == nil {
-			if err := s.importParams.createStorage.processParams(s.service); err != nil {
-				return err
+			if err := s.importParams.createStorage.processParams(); err != nil {
+				return nil, err
 			}
 		}
 
@@ -219,7 +219,7 @@ func (s *importCommand) MakeExecuteCommand() func(args []string) error {
 				EnableUI:           s.Config().InteractiveUI(),
 			}, handlerCreateStorage)
 			if workFlowErr != nil {
-				return errorOrGenericError(workFlowErr)
+				return nil, errorOrGenericError(workFlowErr)
 			}
 			s.importParams.CreateStorageImportRequest.StorageUUID = createdStorage.UUID
 		}
@@ -337,20 +337,13 @@ func (s *importCommand) MakeExecuteCommand() func(args []string) error {
 				EnableUI:           s.Config().InteractiveUI(),
 			}, handlerImport)
 			if workFlowErr != nil {
-				return errorOrGenericError(workFlowErr)
+				return nil, errorOrGenericError(workFlowErr)
 			}
 		}
 
-		return s.HandleOutput(map[string]interface{}{
+		return map[string]interface{}{
 			"created_storage": createdStorage,
 			"import_task":     createdStorageImport,
-		})
+		}, nil
 	}
-}
-
-func (s *importCommand) HandleOutput(out interface{}) error {
-	if !s.Config().OutputHuman() {
-		return s.BaseCommand.HandleOutput(out)
-	}
-	return nil
 }

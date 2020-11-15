@@ -47,11 +47,11 @@ func (s *deleteCommand) InitCommand() {
 	s.SetPositionalArgHelp("<uuidOrTitle ...>")
 }
 
-func (s *deleteCommand) MakeExecuteCommand() func(args []string) error {
-	return func(args []string) error {
+func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
+	return func(args []string) (interface{}, error) {
 		s.initService()
 		if len(args) < 1 {
-			return fmt.Errorf("server hostname, title or uuid is required")
+			return nil, fmt.Errorf("server hostname, title or uuid is required")
 		}
 		var (
 			deleteStorages []*upcloud.Storage
@@ -59,7 +59,7 @@ func (s *deleteCommand) MakeExecuteCommand() func(args []string) error {
 		for _, v := range args {
 			storage, err := searchStorage(&cachedStorages, s.service, v, false)
 			if err != nil {
-				return err
+				return nil, err
 			}
 			deleteStorages = append(deleteStorages, storage)
 		}
@@ -86,21 +86,8 @@ func (s *deleteCommand) MakeExecuteCommand() func(args []string) error {
 		}, handler)
 
 		if int(numOk) < len(deleteStorages) {
-			return fmt.Errorf("number of storages failed to delete: %d", len(deleteStorages)-int(numOk))
+			return nil, fmt.Errorf("number of storages failed to delete: %d", len(deleteStorages)-int(numOk))
 		}
-		return s.HandleOutput(deleteStorages)
+		return deleteStorages, nil
 	}
-}
-
-func (s *deleteCommand) HandleOutput(out interface{}) error {
-	results := out.([]*upcloud.Storage)
-	var uuids []string
-	for _, res := range results {
-		uuids = append(uuids, res.UUID)
-	}
-
-	if !s.Config().OutputHuman() {
-		return s.BaseCommand.HandleOutput(uuids)
-	}
-	return nil
 }
