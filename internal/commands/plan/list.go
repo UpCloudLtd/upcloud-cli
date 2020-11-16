@@ -46,9 +46,8 @@ func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 	}
 }
 
-func (s *listCommand) HandleOutput(out interface{}) error {
+func (s *listCommand) HandleOutput(out interface{}) (string, error) {
 	plans := out.(*upcloud.Plans)
-	fmt.Println()
 	t := ui.NewDataTable(s.columnKeys...)
 	t.SetHeader(s.header)
 	t.OverrideColumnKeys(s.visibleColumns...)
@@ -70,7 +69,5 @@ func (s *listCommand) HandleOutput(out interface{}) error {
 			fmt.Sprintf("%d", plan.PublicTrafficOut),
 		})
 	}
-	fmt.Println(t.Render())
-	fmt.Println()
-	return nil
+	return t.Render(), nil
 }

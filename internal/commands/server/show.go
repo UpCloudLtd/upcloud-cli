@@ -86,7 +86,7 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 	}
 }
 
-func (s *showCommand) HandleOutput(out interface{}) error {
+func (s *showCommand) HandleOutput(out interface{}) (string, error) {
 	srv := out.(*upcloud.ServerDetails)
 
 	dMain := ui.NewDetailsView()
@@ -289,8 +289,5 @@ func (s *showCommand) HandleOutput(out interface{}) error {
 		dMain.AppendRow(table.Row{"Remote Access", dRemote.Render()})
 	}
 
-	fmt.Println()
-	fmt.Println(dMain.Render())
-	fmt.Println()
-	return nil
+	return dMain.Render(), nil
 }

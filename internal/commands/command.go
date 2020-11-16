@@ -38,7 +38,7 @@ type Command interface {
 	SetConfigLoader(func(config *config.Config, loadContext int))
 	ConfigLoader() func(config *config.Config, loadContext int)
 	Config() *config.Config
-	HandleOutput(out interface{}) error
+	HandleOutput(out interface{}) (string, error)
 	HandleError(err error)
 	CobraCommand
 }
@@ -97,7 +97,11 @@ func BuildCommand(child, parent Command, config *config.Config) Command {
 			if !config.OutputHuman() {
 				return HandleOutput(response, config.Output())
 			} else {
-				return child.HandleOutput(response)
+				output, err := child.HandleOutput(response)
+				fmt.Println()
+				fmt.Println(output)
+				fmt.Println()
+				return err
 			}
 		}
 	}
@@ -344,8 +348,8 @@ func (s *BaseCommand) HandleError(err error) {
 }
 
 // Output handling //
-func (s *BaseCommand) HandleOutput(out interface{}) error {
-	return nil
+func (s *BaseCommand) HandleOutput(out interface{}) (string, error) {
+	return "", nil
 }
 
 func HandleOutput(out interface{}, output string) error {

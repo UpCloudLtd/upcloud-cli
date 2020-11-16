@@ -95,7 +95,7 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 	}
 }
 
-func (s *showCommand) HandleOutput(out interface{}) error {
+func (s *showCommand) HandleOutput(out interface{}) (string, error) {
 	storage := out.(*upcloud.StorageDetails)
 
 	dMain := ui.NewDetailsView()
@@ -244,8 +244,5 @@ func (s *showCommand) HandleOutput(out interface{}) error {
 		dMain.AppendRow(table.Row{"Import", dStorageImport.Render()})
 	}
 
-	fmt.Println()
-	fmt.Println(dMain.Render())
-	fmt.Println()
-	return nil
+	return dMain.Render(), nil
 }

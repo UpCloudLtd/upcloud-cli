@@ -48,9 +48,8 @@ func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 	}
 }
 
-func (s *listCommand) HandleOutput(out interface{}) error {
+func (s *listCommand) HandleOutput(out interface{}) (string, error) {
 	servers := out.(*upcloud.Servers)
-	fmt.Println()
 	t := ui.NewDataTable(s.columnKeys...)
 	t.OverrideColumnKeys(s.visibleColumns...)
 	t.SetHeader(s.header)
@@ -75,7 +74,5 @@ func (s *listCommand) HandleOutput(out interface{}) error {
 			server.Title,
 			server.License})
 	}
-	fmt.Println(t.Render())
-	fmt.Println()
-	return nil
+	return t.Render(), nil
 }
