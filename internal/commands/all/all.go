@@ -10,28 +10,28 @@ import (
 )
 
 func BuildCommands(mainCommand commands.Command, mainConfig *config.Config) {
-	c := func() *config.Config { return config.New(mainConfig.Viper()) }
-	s := upapi.Service(c())
+	cfgFn := func() *config.Config { return config.New(mainConfig.Viper()) }
+	svc := upapi.Service(cfgFn())
 
 	// Plans
-	planCommand := commands.BuildCommand(plan.PlanCommand(), mainCommand, c())
-	commands.BuildCommand(plan.ListCommand(), planCommand, c())
+	planCommand := commands.BuildCommand(plan.PlanCommand(), mainCommand, cfgFn())
+	commands.BuildCommand(plan.ListCommand(), planCommand, cfgFn())
 
 	// Servers
-	serverCommand := commands.BuildCommand(server.ServerCommand(), mainCommand, c())
-	commands.BuildCommand(server.ListCommand(), serverCommand, c())
-	commands.BuildCommand(server.ShowCommand(), serverCommand, c())
-	commands.BuildCommand(server.StartCommand(), serverCommand, c())
-	commands.BuildCommand(server.StopCommand(), serverCommand, c())
-	commands.BuildCommand(server.CreateCommand(), serverCommand, c())
-	commands.BuildCommand(server.DeleteCommand(), serverCommand, c())
+	serverCommand := commands.BuildCommand(server.ServerCommand(), mainCommand, cfgFn())
+	commands.BuildCommand(server.ListCommand(), serverCommand, cfgFn())
+	commands.BuildCommand(server.ShowCommand(), serverCommand, cfgFn())
+	commands.BuildCommand(server.StartCommand(), serverCommand, cfgFn())
+	commands.BuildCommand(server.StopCommand(), serverCommand, cfgFn())
+	commands.BuildCommand(server.CreateCommand(), serverCommand, cfgFn())
+	commands.BuildCommand(server.DeleteCommand(), serverCommand, cfgFn())
 
 	// Storages
-	storageCommand := commands.BuildCommand(storage.StorageCommand(), mainCommand, c())
+	storageCommand := commands.BuildCommand(storage.StorageCommand(), mainCommand, cfgFn())
 
-	commands.BuildCommand(storage.ListCommand(s), storageCommand, c())
-	commands.BuildCommand(storage.ShowCommand(s), storageCommand, c())
-	commands.BuildCommand(storage.CreateCommand(s), storageCommand, c())
-	commands.BuildCommand(storage.DeleteCommand(s), storageCommand, c())
-	commands.BuildCommand(storage.ImportCommand(s), storageCommand, c())
+	commands.BuildCommand(storage.ListCommand(svc), storageCommand, cfgFn())
+	commands.BuildCommand(storage.ShowCommand(svc), storageCommand, cfgFn())
+	commands.BuildCommand(storage.CreateCommand(svc), storageCommand, cfgFn())
+	commands.BuildCommand(storage.DeleteCommand(svc), storageCommand, cfgFn())
+	commands.BuildCommand(storage.ImportCommand(svc), storageCommand, cfgFn())
 }

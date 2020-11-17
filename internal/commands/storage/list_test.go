@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"bytes"
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
 	"github.com/UpCloudLtd/cli/internal/mocks"
@@ -117,13 +118,18 @@ func TestListStoragesOutput(t *testing.T) {
 
 	lc := commands.BuildCommand(ListCommand(ListTestMock{}), nil, config.New(viper.New()))
 
-	expected :=
-		`  UUID            Title                   Zone        State           Type       Size     Tier        Created  
+	expected := `
+  UUID            Title                   Zone        State           Type       Size     Tier        Created  
 ─────────────── ─────────────────────── ─────────── ─────────────── ────────── ──────── ─────────── ───────────
   mock-uuid-1     mock-storage-title1     fi-hel1     maintenance     backup       40     maxiops              
   mock-uuid-2     mock-storage-title2     fi-hel1     online          normal       40     maxiops              
-  mock-uuid-3     mock-storage-title3     fi-hel1     online          normal       10     maxiops              `
+  mock-uuid-3     mock-storage-title3     fi-hel1     online          normal       10     maxiops              
 
-	output, _ := lc.HandleOutput(storages)
-	assert.Equal(t, expected, output)
+`
+
+	buf := new(bytes.Buffer)
+	err := lc.HandleOutput(buf, storages)
+
+	assert.Nil(t, err)
+	assert.Equal(t, expected, buf.String())
 }

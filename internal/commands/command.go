@@ -3,6 +3,7 @@ package commands
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"sort"
 	"strings"
@@ -38,7 +39,7 @@ type Command interface {
 	SetConfigLoader(func(config *config.Config, loadContext int))
 	ConfigLoader() func(config *config.Config, loadContext int)
 	Config() *config.Config
-	HandleOutput(out interface{}) (string, error)
+	HandleOutput(writer io.Writer, out interface{}) error
 	HandleError(err error)
 	CobraCommand
 }
@@ -95,15 +96,9 @@ func BuildCommand(child, parent Command, config *config.Config) Command {
 				return err
 			}
 			if !config.OutputHuman() {
-				return HandleOutput(response, config.Output())
+				return handleOutput(response, config.Output())
 			} else {
-				output, err := child.HandleOutput(response)
-				if len(output) > 0 {
-					fmt.Println()
-					fmt.Println(output)
-					fmt.Println()
-				}
-				return err
+				return child.HandleOutput(os.Stdout, response)
 			}
 		}
 	}
@@ -350,13 +345,13 @@ func (s *BaseCommand) HandleError(err error) {
 }
 
 // Output handling //
-func (s *BaseCommand) HandleOutput(out interface{}) (string, error) {
-	return "", nil
+func (s *BaseCommand) HandleOutput(writer io.Writer, out interface{}) error {
+	return nil
 }
 
-func HandleOutput(out interface{}, output string) error {
+func handleOutput(out interface{}, format string) error {
 	isTerminal := isatty.IsTerminal(os.Stdout.Fd())
-	switch output {
+	switch format {
 	case "json":
 		enc := json.NewEncoder(os.Stdout)
 		if isTerminal {

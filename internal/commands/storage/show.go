@@ -3,6 +3,7 @@ package storage
 import (
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/interfaces"
+	"io"
 	"math"
 	"sync"
 	"time"
@@ -87,7 +88,7 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 	}
 }
 
-func (s *showCommand) HandleOutput(out interface{}) (string, error) {
+func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	storage := out.(*upcloud.StorageDetails)
 
 	dMain := ui.NewDetailsView()
@@ -236,5 +237,8 @@ func (s *showCommand) HandleOutput(out interface{}) (string, error) {
 		dMain.AppendRow(table.Row{"Import", dStorageImport.Render()})
 	}
 
-	return dMain.Render(), nil
+	fmt.Fprintln(writer)
+	fmt.Fprintln(writer, dMain.Render())
+	fmt.Fprintln(writer)
+	return nil
 }

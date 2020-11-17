@@ -1,8 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
+	"io"
 	"os"
 	"path"
 	"path/filepath"
@@ -50,22 +50,17 @@ type defaultsCommand struct {
 
 func (s *defaultsCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		output, err := s.HandleOutput(nil)
-		if err != nil {
-			return nil, err
-		}
-		fmt.Println(output)
-		return nil, nil
+		return nil, s.HandleOutput(os.Stdout, nil)
 	}
 }
 
-func (s *defaultsCommand) HandleOutput(_ interface{}) (string, error) {
+func (s *defaultsCommand) HandleOutput(writer io.Writer, _ interface{}) error {
 	output := config.ConfigValueOutputYaml
 	if s.Config().Top().IsSet(config.ConfigKeyOutput) && !s.Config().OutputHuman() {
 		output = s.Config().Output()
 	}
 	if output == config.ConfigValueOutputJson {
-		return "", fmt.Errorf("only yaml output is supported for this command")
+		return fmt.Errorf("only yaml output is supported for this command")
 	}
 
 	var commandsWithFlags []commands.Command
@@ -146,12 +141,7 @@ nextChild:
 		}
 		prev = cmd
 	}
-	buf := new(bytes.Buffer)
-	err := yaml.NewEncoder(buf).Encode(topNode)
-	if err != nil {
-		return "", nil
-	}
-	return buf.String(), nil
+	return yaml.NewEncoder(os.Stdout).Encode(topNode)
 }
 
 func (s *defaultsCommand) applyYamlScalarValue(node *yaml.Node, typ string, value string) {

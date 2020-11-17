@@ -1,7 +1,9 @@
 package storage
 
 import (
+	"fmt"
 	"github.com/UpCloudLtd/cli/internal/interfaces"
+	"io"
 	"sort"
 	"strings"
 
@@ -64,7 +66,7 @@ func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 	}
 }
 
-func (s *listCommand) HandleOutput(out interface{}) (string, error) {
+func (s *listCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	storages := out.(*upcloud.Storages)
 
 	t := ui.NewDataTable(s.columnKeys...)
@@ -94,5 +96,9 @@ func (s *listCommand) HandleOutput(out interface{}) (string, error) {
 			storage.Created,
 			storage.Access})
 	}
-	return t.Render(), nil
+
+	fmt.Fprintln(writer)
+	fmt.Fprintln(writer, t.Render())
+	fmt.Fprintln(writer)
+	return nil
 }

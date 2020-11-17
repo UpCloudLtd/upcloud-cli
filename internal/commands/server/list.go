@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"io"
 	"strings"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
@@ -48,7 +49,7 @@ func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 	}
 }
 
-func (s *listCommand) HandleOutput(out interface{}) (string, error) {
+func (s *listCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	servers := out.(*upcloud.Servers)
 	t := ui.NewDataTable(s.columnKeys...)
 	t.OverrideColumnKeys(s.visibleColumns...)
@@ -74,5 +75,9 @@ func (s *listCommand) HandleOutput(out interface{}) (string, error) {
 			server.Title,
 			server.License})
 	}
-	return t.Render(), nil
+
+	fmt.Fprintln(writer)
+	fmt.Fprintln(writer, t.Render())
+	fmt.Fprintln(writer)
+	return nil
 }

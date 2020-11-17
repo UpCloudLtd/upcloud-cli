@@ -2,6 +2,7 @@ package plan
 
 import (
 	"fmt"
+	"io"
 	"sort"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
@@ -46,7 +47,7 @@ func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 	}
 }
 
-func (s *listCommand) HandleOutput(out interface{}) (string, error) {
+func (s *listCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	plans := out.(*upcloud.Plans)
 	t := ui.NewDataTable(s.columnKeys...)
 	t.SetHeader(s.header)
@@ -69,5 +70,9 @@ func (s *listCommand) HandleOutput(out interface{}) (string, error) {
 			fmt.Sprintf("%d", plan.PublicTrafficOut),
 		})
 	}
-	return t.Render(), nil
+
+	fmt.Fprintln(writer)
+	fmt.Fprintln(writer, t.Render())
+	fmt.Fprintln(writer)
+	return nil
 }

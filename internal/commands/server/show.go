@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"io"
 	"net"
 	"strings"
 	"sync"
@@ -86,7 +87,7 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 	}
 }
 
-func (s *showCommand) HandleOutput(out interface{}) (string, error) {
+func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	srv := out.(*upcloud.ServerDetails)
 
 	dMain := ui.NewDetailsView()
@@ -289,5 +290,8 @@ func (s *showCommand) HandleOutput(out interface{}) (string, error) {
 		dMain.AppendRow(table.Row{"Remote Access", dRemote.Render()})
 	}
 
-	return dMain.Render(), nil
+	fmt.Fprintln(writer)
+	fmt.Fprintln(writer, dMain.Render())
+	fmt.Fprintln(writer)
+	return nil
 }
