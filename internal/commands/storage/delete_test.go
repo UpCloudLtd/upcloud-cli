@@ -68,10 +68,7 @@ func TestDeleteStorage(t *testing.T) {
 		},
 	} {
 		t.Run(testcase.name, func(t *testing.T) {
-			dc := deleteCommand{
-				BaseCommand: mocks.GetBaseCommand(),
-				service:     DeleteTestMock{},
-			}
+			dc := DeleteCommand(DeleteTestMock{})
 
 			_, err := dc.MakeExecuteCommand()(testcase.args)
 

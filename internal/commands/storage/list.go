@@ -12,12 +12,12 @@ import (
 
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/ui"
-	"github.com/UpCloudLtd/cli/internal/upapi"
 )
 
-func ListCommand() commands.Command {
+func ListCommand(service interfaces.Storage) commands.Command {
 	return &listCommand{
 		BaseCommand: commands.New("list", "List current storages"),
+		service:     service,
 	}
 }
 
@@ -42,15 +42,8 @@ func (s *listCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
-func (s *listCommand) initService() {
-	if s.service == nil {
-		s.service = upapi.Service(s.Config())
-	}
-}
-
 func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		s.initService()
 		storages, err := s.service.GetStorages(&request.GetStoragesRequest{})
 		cachedStorages = storages.Storages
 		if err != nil {

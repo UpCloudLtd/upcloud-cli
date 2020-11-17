@@ -3,6 +3,7 @@ package storage
 import (
 	"errors"
 	"fmt"
+	"github.com/UpCloudLtd/cli/internal/interfaces"
 	"io"
 	"math"
 	"net/url"
@@ -13,17 +14,16 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/ui"
-	"github.com/UpCloudLtd/cli/internal/upapi"
 )
 
-func ImportCommand() commands.Command {
+func ImportCommand(service interfaces.Storage) commands.Command {
 	return &importCommand{
 		BaseCommand: commands.New("import", "Import a storage from external or local source"),
+		service:     service,
 	}
 }
 
@@ -52,7 +52,7 @@ type importParams struct {
 	existingStorage *upcloud.Storage
 }
 
-func (s *importParams) processParams(srv *service.Service) error {
+func (s *importParams) processParams(srv interfaces.Storage) error {
 	if s.existingStorageUuidOrName != "" {
 		storage, err := searchStorage(&cachedStorages, srv, s.existingStorageUuidOrName, true)
 		if err != nil {
@@ -138,15 +138,9 @@ func (s *readerCounter) Counter() int {
 
 type importCommand struct {
 	*commands.BaseCommand
-	service      *service.Service
+	service      interfaces.Storage
 	importParams importParams
 	flagSet      *pflag.FlagSet
-}
-
-func (s *importCommand) initService() {
-	if s.service == nil {
-		s.service = upapi.Service(s.Config())
-	}
 }
 
 func importFlags(fs *pflag.FlagSet, dst, def *importParams) {
@@ -180,7 +174,6 @@ func (s *importCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 			}
 			return err
 		}
-		s.initService()
 		if err := s.importParams.processParams(s.service); err != nil {
 			return nil, err
 		}

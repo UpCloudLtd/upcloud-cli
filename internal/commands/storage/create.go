@@ -12,12 +12,12 @@ import (
 
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/ui"
-	"github.com/UpCloudLtd/cli/internal/upapi"
 )
 
-func CreateCommand() commands.Command {
+func CreateCommand(service interfaces.Storage) commands.Command {
 	return &createCommand{
 		BaseCommand: commands.New("create", "Create a storage"),
+		service:     service,
 	}
 }
 
@@ -62,12 +62,6 @@ type createCommand struct {
 	flagSet            *pflag.FlagSet
 }
 
-func (s *createCommand) initService() {
-	if s.service == nil {
-		s.service = upapi.Service(s.Config())
-	}
-}
-
 func createFlags(fs *pflag.FlagSet, dst, def *createParams) {
 	fs.StringVar(&dst.Title, "title", def.Title, "Storage title")
 	fs.IntVar(&dst.Size, "size", def.Size, "Size of the storage in GiB")
@@ -90,7 +84,6 @@ func (s *createCommand) InitCommand() {
 
 func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		s.initService()
 		var createStorages []request.CreateStorageRequest
 		if err := s.firstCreateStorage.processParams(); err != nil {
 			return nil, err

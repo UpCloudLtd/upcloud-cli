@@ -98,9 +98,11 @@ func BuildCommand(child, parent Command, config *config.Config) Command {
 				return HandleOutput(response, config.Output())
 			} else {
 				output, err := child.HandleOutput(response)
-				fmt.Println()
-				fmt.Println(output)
-				fmt.Println()
+				if len(output) > 0 {
+					fmt.Println()
+					fmt.Println(output)
+					fmt.Println()
+				}
 				return err
 			}
 		}

@@ -1,9 +1,12 @@
 package storage
 
 import (
+	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/config"
 	"github.com/UpCloudLtd/cli/internal/mocks"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -54,12 +57,7 @@ func TestCreateStorage(t *testing.T) {
 		},
 	} {
 		t.Run(testcase.name, func(t *testing.T) {
-			cc := createCommand{
-				BaseCommand:        mocks.GetBaseCommand(),
-				service:            CreateTestMock{},
-				firstCreateStorage: *DefaultCreateParams,
-				flagSet:            nil,
-			}
+			cc := commands.BuildCommand(CreateCommand(CreateTestMock{}), nil, config.New(viper.New()))
 
 			res, err := cc.MakeExecuteCommand()(testcase.args)
 			var result []*upcloud.StorageDetails

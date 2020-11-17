@@ -1,9 +1,12 @@
 package storage
 
 import (
+	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/config"
 	"github.com/UpCloudLtd/cli/internal/mocks"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -16,18 +19,33 @@ var storage1 = upcloud.Storage{
 	UUID:   mocks.Uuid1,
 	Title:  mocks.Title1,
 	Access: "private",
+	State:  "maintenance",
+	Type:   "backup",
+	Zone:   "fi-hel1",
+	Size:   40,
+	Tier:   "maxiops",
 }
 
 var storage2 = upcloud.Storage{
 	UUID:   mocks.Uuid2,
 	Title:  mocks.Title2,
 	Access: "private",
+	State:  "online",
+	Type:   "normal",
+	Zone:   "fi-hel1",
+	Size:   40,
+	Tier:   "maxiops",
 }
 
 var storage3 = upcloud.Storage{
 	UUID:   mocks.Uuid3,
 	Title:  mocks.Title3,
 	Access: "public",
+	State:  "online",
+	Type:   "normal",
+	Zone:   "fi-hel1",
+	Size:   10,
+	Tier:   "maxiops",
 }
 
 func (m ListTestMock) GetStorages(r *request.GetStoragesRequest) (*upcloud.Storages, error) {
@@ -86,4 +104,26 @@ func TestListStorages(t *testing.T) {
 			testcase.testFn(*result, err)
 		})
 	}
+}
+
+func TestListStoragesOutput(t *testing.T) {
+	storages := &upcloud.Storages{
+		Storages: []upcloud.Storage{
+			storage1,
+			storage2,
+			storage3,
+		},
+	}
+
+	lc := commands.BuildCommand(ListCommand(ListTestMock{}), nil, config.New(viper.New()))
+
+	expected :=
+		`  UUID            Title                   Zone        State           Type       Size     Tier        Created  
+─────────────── ─────────────────────── ─────────── ─────────────── ────────── ──────── ─────────── ───────────
+  mock-uuid-1     mock-storage-title1     fi-hel1     maintenance     backup       40     maxiops              
+  mock-uuid-2     mock-storage-title2     fi-hel1     online          normal       40     maxiops              
+  mock-uuid-3     mock-storage-title3     fi-hel1     online          normal       10     maxiops              `
+
+	output, _ := lc.HandleOutput(storages)
+	assert.Equal(t, expected, output)
 }

@@ -11,12 +11,12 @@ import (
 
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/ui"
-	"github.com/UpCloudLtd/cli/internal/upapi"
 )
 
-func DeleteCommand() commands.Command {
+func DeleteCommand(service interfaces.Storage) commands.Command {
 	return &deleteCommand{
 		BaseCommand: commands.New("delete", "Delete a storage"),
+		service:     service,
 	}
 }
 
@@ -25,15 +25,8 @@ type deleteCommand struct {
 	service interfaces.Storage
 }
 
-func (s *deleteCommand) initService() {
-	if s.service == nil {
-		s.service = upapi.Service(s.Config())
-	}
-}
-
 func (s *deleteCommand) InitCommand() {
 	s.ArgCompletion(func(toComplete string) ([]string, cobra.ShellCompDirective) {
-		s.initService()
 		storages, err := s.service.GetStorages(&request.GetStoragesRequest{Access: upcloud.StorageAccessPrivate})
 		if err != nil {
 			return nil, cobra.ShellCompDirectiveDefault
@@ -49,7 +42,6 @@ func (s *deleteCommand) InitCommand() {
 
 func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		s.initService()
 		if len(args) < 1 {
 			return nil, fmt.Errorf("server hostname, title or uuid is required")
 		}
