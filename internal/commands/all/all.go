@@ -28,10 +28,24 @@ func BuildCommands(mainCommand commands.Command, mainConfig *config.Config) {
 
 	// Storages
 	storageCommand := commands.BuildCommand(storage.StorageCommand(), mainCommand, cfgFn())
-
-	commands.BuildCommand(storage.ListCommand(svc), storageCommand, cfgFn())
-	commands.BuildCommand(storage.ShowCommand(svc), storageCommand, cfgFn())
-	commands.BuildCommand(storage.CreateCommand(svc), storageCommand, cfgFn())
-	commands.BuildCommand(storage.DeleteCommand(svc), storageCommand, cfgFn())
-	commands.BuildCommand(storage.ImportCommand(svc), storageCommand, cfgFn())
+	stgCmds := []commands.Command{
+		storage.ListCommand(svc),
+		storage.CreateCommand(svc),
+		storage.ModifyCommand(svc),
+		storage.AttachCommand(svc),
+		storage.DetachCommand(svc),
+		storage.LoadCommand(svc),
+		storage.EjectCommand(svc),
+		storage.CloneCommand(svc),
+		storage.TemplatizeCommand(svc),
+		storage.CreateBackupCommand(svc),
+		storage.RestoreBackupCommand(svc),
+		storage.DeleteCommand(svc),
+		storage.ImportCommand(svc),
+		storage.ShowImportCommand(svc),
+		storage.ShowCommand(svc),
+	}
+	for _, stgCmd := range stgCmds {
+		commands.BuildCommand(stgCmd, storageCommand, cfgFn())
+	}
 }
