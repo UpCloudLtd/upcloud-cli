@@ -2,6 +2,8 @@ package storage
 
 import (
 	"fmt"
+	"github.com/UpCloudLtd/cli/internal/interfaces"
+	"io"
 	"sort"
 	"strings"
 
@@ -12,17 +14,18 @@ import (
 
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/ui"
-	"github.com/UpCloudLtd/cli/internal/upapi"
 )
 
-func ListCommand() commands.Command {
+func ListCommand(service interfaces.Storage) commands.Command {
 	return &listCommand{
 		BaseCommand: commands.New("list", "List current storages"),
+		service:     service,
 	}
 }
 
 type listCommand struct {
 	*commands.BaseCommand
+	service        interfaces.Storage
 	header         table.Row
 	columnKeys     []string
 	visibleColumns []string
@@ -41,13 +44,12 @@ func (s *listCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
-func (s *listCommand) MakeExecuteCommand() func(args []string) error {
-	return func(args []string) error {
-		service := upapi.Service(s.Config())
-		storages, err := service.GetStorages(&request.GetStoragesRequest{})
+func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
+	return func(args []string) (interface{}, error) {
+		storages, err := s.service.GetStorages(&request.GetStoragesRequest{})
 		cachedStorages = storages.Storages
 		if err != nil {
-			return err
+			return nil, err
 		}
 		var filtered []upcloud.Storage
 		for _, v := range storages.Storages {
@@ -60,16 +62,13 @@ func (s *listCommand) MakeExecuteCommand() func(args []string) error {
 			filtered = append(filtered, v)
 		}
 		storages.Storages = filtered
-		return s.HandleOutput(storages)
+		return storages, nil
 	}
 }
 
-func (s *listCommand) HandleOutput(out interface{}) error {
-	if !s.Config().OutputHuman() {
-		return s.BaseCommand.HandleOutput(out)
-	}
+func (s *listCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	storages := out.(*upcloud.Storages)
-	fmt.Println()
+
 	t := ui.NewDataTable(s.columnKeys...)
 	t.OverrideColumnKeys(s.visibleColumns...)
 	t.SetHeader(s.header)
@@ -97,7 +96,9 @@ func (s *listCommand) HandleOutput(out interface{}) error {
 			storage.Created,
 			storage.Access})
 	}
-	fmt.Println(t.Render())
-	fmt.Println()
+
+	fmt.Fprintln(writer)
+	fmt.Fprintln(writer, t.Render())
+	fmt.Fprintln(writer)
 	return nil
 }

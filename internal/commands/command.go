@@ -3,6 +3,7 @@ package commands
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"sort"
 	"strings"
@@ -32,13 +33,13 @@ type Command interface {
 	Parent() Command
 	Name() string
 	InitCommand()
-	MakeExecuteCommand() func(args []string) error
+	MakeExecuteCommand() func(args []string) (interface{}, error)
 	MakePreExecuteCommand() func(args []string) error
 	MakePersistentPreExecuteCommand() func(args []string) error
 	SetConfigLoader(func(config *config.Config, loadContext int))
 	ConfigLoader() func(config *config.Config, loadContext int)
 	Config() *config.Config
-	HandleOutput(out interface{}) error
+	HandleOutput(writer io.Writer, out interface{}) error
 	HandleError(err error)
 	CobraCommand
 }
@@ -90,7 +91,15 @@ func BuildCommand(child, parent Command, config *config.Config) Command {
 			if loader := child.ConfigLoader(); loader != nil {
 				loader(config, ConfigLoadContextRun)
 			}
-			return cCmd(args)
+			response, err := cCmd(args)
+			if err != nil {
+				return err
+			}
+			if !config.OutputHuman() {
+				return handleOutput(response, config.Output())
+			} else {
+				return child.HandleOutput(os.Stdout, response)
+			}
 		}
 	}
 	if cCmd := child.MakePreExecuteCommand(); cCmd != nil && child.Cobra().PreRunE == nil {
@@ -212,7 +221,7 @@ func (s *BaseCommand) Parent() Command {
 func (s *BaseCommand) InitCommand() {
 }
 
-func (s *BaseCommand) MakeExecuteCommand() func(args []string) error {
+func (s *BaseCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return nil
 }
 
@@ -336,9 +345,13 @@ func (s *BaseCommand) HandleError(err error) {
 }
 
 // Output handling //
-func (s *BaseCommand) HandleOutput(out interface{}) error {
+func (s *BaseCommand) HandleOutput(writer io.Writer, out interface{}) error {
+	return nil
+}
+
+func handleOutput(out interface{}, format string) error {
 	isTerminal := isatty.IsTerminal(os.Stdout.Fd())
-	switch s.Config().Output() {
+	switch format {
 	case "json":
 		enc := json.NewEncoder(os.Stdout)
 		if isTerminal {

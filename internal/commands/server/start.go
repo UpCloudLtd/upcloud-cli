@@ -55,11 +55,11 @@ func (s *startCommand) InitCommand() {
 	s.SetPositionalArgHelp("<uuidHostnameOrTitle ...>")
 }
 
-func (s *startCommand) MakeExecuteCommand() func(args []string) error {
-	return func(args []string) error {
+func (s *startCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
+	return func(args []string) (interface{}, error) {
 		s.initService()
 		if len(args) < 1 {
-			return fmt.Errorf("server hostname, title or uuid is required")
+			return nil, fmt.Errorf("server hostname, title or uuid is required")
 		}
 		var (
 			allServers   []upcloud.Server
@@ -68,7 +68,7 @@ func (s *startCommand) MakeExecuteCommand() func(args []string) error {
 		for _, v := range args {
 			server, err := searchServer(&allServers, s.service, v, true)
 			if err != nil {
-				return err
+				return nil, err
 			}
 			startServers = append(startServers, server)
 		}
@@ -99,21 +99,8 @@ func (s *startCommand) MakeExecuteCommand() func(args []string) error {
 		}, handler)
 
 		if int(numOk) < len(startServers) {
-			return fmt.Errorf("number of servers failed to start: %d", len(startServers)-int(numOk))
+			return nil, fmt.Errorf("number of servers failed to start: %d", len(startServers)-int(numOk))
 		}
-		return s.HandleOutput(startServers)
+		return startServers, nil
 	}
-}
-
-func (s *startCommand) HandleOutput(out interface{}) error {
-	results := out.([]*upcloud.Server)
-	var uuids []string
-	for _, res := range results {
-		uuids = append(uuids, res.UUID)
-	}
-
-	if !s.Config().OutputHuman() {
-		return s.BaseCommand.HandleOutput(uuids)
-	}
-	return nil
 }

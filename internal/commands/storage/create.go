@@ -2,26 +2,27 @@ package storage
 
 import (
 	"fmt"
+	"github.com/UpCloudLtd/cli/internal/interfaces"
 	"sync"
 	"time"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/ui"
-	"github.com/UpCloudLtd/cli/internal/upapi"
 )
 
-func CreateCommand() commands.Command {
+func CreateCommand(service interfaces.Storage) commands.Command {
 	return &createCommand{
 		BaseCommand: commands.New("create", "Create a storage"),
+		service:     service,
 	}
 }
 
 var DefaultCreateParams = &createParams{
+	backupTime: "04:00",
 	CreateStorageRequest: request.CreateStorageRequest{
 		Size: 10,
 		Tier: "maxiops",
@@ -41,7 +42,7 @@ type createParams struct {
 	backupTime string
 }
 
-func (s *createParams) processParams(srv *service.Service) error {
+func (s *createParams) processParams() error {
 	if s.backupTime != "" {
 		tv, err := time.Parse("15:04", s.backupTime)
 		if err != nil {
@@ -56,15 +57,9 @@ func (s *createParams) processParams(srv *service.Service) error {
 
 type createCommand struct {
 	*commands.BaseCommand
-	service            *service.Service
+	service            interfaces.Storage
 	firstCreateStorage createParams
 	flagSet            *pflag.FlagSet
-}
-
-func (s *createCommand) initService() {
-	if s.service == nil {
-		s.service = upapi.Service(s.Config())
-	}
 }
 
 func createFlags(fs *pflag.FlagSet, dst, def *createParams) {
@@ -87,12 +82,11 @@ func (s *createCommand) InitCommand() {
 	s.AddFlags(s.flagSet)
 }
 
-func (s *createCommand) MakeExecuteCommand() func(args []string) error {
-	return func(args []string) error {
-		s.initService()
+func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
+	return func(args []string) (interface{}, error) {
 		var createStorages []request.CreateStorageRequest
-		if err := s.firstCreateStorage.processParams(s.service); err != nil {
-			return err
+		if err := s.firstCreateStorage.processParams(); err != nil {
+			return nil, err
 		}
 		createStorages = append(createStorages, s.firstCreateStorage.CreateStorageRequest)
 
@@ -108,10 +102,10 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) error {
 					dst := newCreateParams()
 					createFlags(fs, &dst, &s.firstCreateStorage)
 					if err := fs.Parse(additionalCreateArgs); err != nil {
-						return err
+						return nil, err
 					}
-					if err := dst.processParams(s.service); err != nil {
-						return err
+					if err := dst.processParams(); err != nil {
+						return nil, err
 					}
 					createStorages = append(createStorages, dst.CreateStorageRequest)
 				}
@@ -150,21 +144,8 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) error {
 			EnableUI:           s.Config().InteractiveUI(),
 		}, handler)
 		if numOk != len(createStorages) {
-			return fmt.Errorf("number of storages that failed: %d", len(createStorages)-numOk)
+			return nil, fmt.Errorf("number of storages that failed: %d", len(createStorages)-numOk)
 		}
-		return s.HandleOutput(createdStorages)
+		return createdStorages, nil
 	}
-}
-
-func (s *createCommand) HandleOutput(out interface{}) error {
-	results := out.([]*upcloud.StorageDetails)
-	var uuids []string
-	for _, res := range results {
-		uuids = append(uuids, res.UUID)
-	}
-
-	if !s.Config().OutputHuman() {
-		return s.BaseCommand.HandleOutput(uuids)
-	}
-	return nil
 }

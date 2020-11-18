@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"io"
 	"net"
 	"strings"
 	"sync"
@@ -52,17 +53,17 @@ func (s *showCommand) InitCommand() {
 	})
 }
 
-func (s *showCommand) MakeExecuteCommand() func(args []string) error {
-	return func(args []string) error {
+func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
+	return func(args []string) (interface{}, error) {
 		s.initService()
 		// TODO(aakso): implement prompting with readline support
 		if len(args) < 1 {
-			return fmt.Errorf("server hostname, title or uuid is required")
+			return nil, fmt.Errorf("server hostname, title or uuid is required")
 		}
 		var servers []upcloud.Server
 		server, err := searchServer(&servers, s.service, args[0], true)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		serverUuid := server.UUID
 		var (
@@ -76,20 +77,17 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) error {
 		}()
 		serverDetails, err := s.service.GetServerDetails(&request.GetServerDetailsRequest{UUID: serverUuid})
 		if err != nil {
-			return err
+			return nil, err
 		}
 		wg.Wait()
 		if fwRuleErr != nil {
-			return fwRuleErr
+			return nil, fwRuleErr
 		}
-		return s.HandleOutput(serverDetails)
+		return serverDetails, nil
 	}
 }
 
-func (s *showCommand) HandleOutput(out interface{}) error {
-	if !s.Config().OutputHuman() {
-		return s.BaseCommand.HandleOutput(out)
-	}
+func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	srv := out.(*upcloud.ServerDetails)
 
 	dMain := ui.NewDetailsView()
@@ -292,8 +290,8 @@ func (s *showCommand) HandleOutput(out interface{}) error {
 		dMain.AppendRow(table.Row{"Remote Access", dRemote.Render()})
 	}
 
-	fmt.Println()
-	fmt.Println(dMain.Render())
-	fmt.Println()
+	fmt.Fprintln(writer)
+	fmt.Fprintln(writer, dMain.Render())
+	fmt.Fprintln(writer)
 	return nil
 }

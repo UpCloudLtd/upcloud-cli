@@ -6,27 +6,32 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands/server"
 	"github.com/UpCloudLtd/cli/internal/commands/storage"
 	"github.com/UpCloudLtd/cli/internal/config"
+	"github.com/UpCloudLtd/cli/internal/upapi"
 )
 
 func BuildCommands(mainCommand commands.Command, mainConfig *config.Config) {
+	cfgFn := func() *config.Config { return config.New(mainConfig.Viper()) }
+	svc := upapi.Service(cfgFn())
+
 	// Plans
-	planCommand := commands.BuildCommand(plan.PlanCommand(), mainCommand, config.New(mainConfig.Viper()))
-	commands.BuildCommand(plan.ListCommand(), planCommand, config.New(mainConfig.Viper()))
+	planCommand := commands.BuildCommand(plan.PlanCommand(), mainCommand, cfgFn())
+	commands.BuildCommand(plan.ListCommand(), planCommand, cfgFn())
 
 	// Servers
-	serverCommand := commands.BuildCommand(server.ServerCommand(), mainCommand, config.New(mainConfig.Viper()))
-	commands.BuildCommand(server.ListCommand(), serverCommand, config.New(mainConfig.Viper()))
-	commands.BuildCommand(server.ShowCommand(), serverCommand, config.New(mainConfig.Viper()))
-	commands.BuildCommand(server.StartCommand(), serverCommand, config.New(mainConfig.Viper()))
-	commands.BuildCommand(server.StopCommand(), serverCommand, config.New(mainConfig.Viper()))
-	commands.BuildCommand(server.CreateCommand(), serverCommand, config.New(mainConfig.Viper()))
-	commands.BuildCommand(server.DeleteCommand(), serverCommand, config.New(mainConfig.Viper()))
+	serverCommand := commands.BuildCommand(server.ServerCommand(), mainCommand, cfgFn())
+	commands.BuildCommand(server.ListCommand(), serverCommand, cfgFn())
+	commands.BuildCommand(server.ShowCommand(), serverCommand, cfgFn())
+	commands.BuildCommand(server.StartCommand(), serverCommand, cfgFn())
+	commands.BuildCommand(server.StopCommand(), serverCommand, cfgFn())
+	commands.BuildCommand(server.CreateCommand(), serverCommand, cfgFn())
+	commands.BuildCommand(server.DeleteCommand(), serverCommand, cfgFn())
 
 	// Storages
-	storageCommand := commands.BuildCommand(storage.StorageCommand(), mainCommand, config.New(mainConfig.Viper()))
-	commands.BuildCommand(storage.ListCommand(), storageCommand, config.New(mainConfig.Viper()))
-	commands.BuildCommand(storage.ShowCommand(), storageCommand, config.New(mainConfig.Viper()))
-	commands.BuildCommand(storage.CreateCommand(), storageCommand, config.New(mainConfig.Viper()))
-	commands.BuildCommand(storage.DeleteCommand(), storageCommand, config.New(mainConfig.Viper()))
-	commands.BuildCommand(storage.ImportCommand(), storageCommand, config.New(mainConfig.Viper()))
+	storageCommand := commands.BuildCommand(storage.StorageCommand(), mainCommand, cfgFn())
+
+	commands.BuildCommand(storage.ListCommand(svc), storageCommand, cfgFn())
+	commands.BuildCommand(storage.ShowCommand(svc), storageCommand, cfgFn())
+	commands.BuildCommand(storage.CreateCommand(svc), storageCommand, cfgFn())
+	commands.BuildCommand(storage.DeleteCommand(svc), storageCommand, cfgFn())
+	commands.BuildCommand(storage.ImportCommand(svc), storageCommand, cfgFn())
 }
