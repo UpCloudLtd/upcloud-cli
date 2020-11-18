@@ -3,13 +3,13 @@ package server
 import (
 	"bufio"
 	"fmt"
+	"github.com/UpCloudLtd/cli/internal/interfaces"
 	"os"
 	"strings"
 	"sync"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
 	"golang.org/x/crypto/ssh"
 
@@ -22,9 +22,10 @@ var (
 	cachedTemplates []upcloud.Storage
 )
 
-func CreateCommand() commands.Command {
+func CreateCommand(server interfaces.ServerAndStorage) commands.Command {
 	return &createCommand{
 		BaseCommand: commands.New("create", "Create a server"),
+		service:     server,
 	}
 }
 
@@ -55,7 +56,7 @@ type createParams struct {
 	createPassword bool
 }
 
-func (s *createParams) processParams(srv *service.Service) error {
+func (s *createParams) processParams(srv interfaces.ServerAndStorage) error {
 	if s.os != "" {
 		var osStorage *upcloud.Storage
 		if len(cachedTemplates) == 0 {
@@ -142,7 +143,7 @@ func (s *createParams) processParams(srv *service.Service) error {
 
 type createCommand struct {
 	*commands.BaseCommand
-	service           *service.Service
+	service           interfaces.ServerAndStorage
 	avoidHost         int
 	host              int
 	firstCreateServer createParams

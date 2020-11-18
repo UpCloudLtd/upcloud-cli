@@ -12,31 +12,24 @@ import (
 
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/ui"
-	"github.com/UpCloudLtd/cli/internal/upapi"
 )
 
-func StartCommand() commands.Command {
+func StartCommand(service service.Server) commands.Command {
 	return &startCommand{
 		BaseCommand: commands.New("start", "Start a server"),
+		service:     service,
 	}
 }
 
 type startCommand struct {
 	*commands.BaseCommand
-	service   *service.Service
+	service   service.Server
 	avoidHost int
 	host      int
 }
 
-func (s *startCommand) initService() {
-	if s.service == nil {
-		s.service = upapi.Service(s.Config())
-	}
-}
-
 func (s *startCommand) InitCommand() {
 	s.ArgCompletion(func(toComplete string) ([]string, cobra.ShellCompDirective) {
-		s.initService()
 		servers, err := s.service.GetServers()
 		if err != nil {
 			return nil, cobra.ShellCompDirectiveDefault
@@ -57,7 +50,6 @@ func (s *startCommand) InitCommand() {
 
 func (s *startCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		s.initService()
 		if len(args) < 1 {
 			return nil, fmt.Errorf("server hostname, title or uuid is required")
 		}

@@ -45,7 +45,7 @@ func matchServers(servers []upcloud.Server, searchVal string) []*upcloud.Server 
 	return r
 }
 
-func searchServer(serversPtr *[]upcloud.Server, service *service.Service, uuidOrHostnameOrTitle string, unique bool) (*upcloud.Server, error) {
+func searchServer(serversPtr *[]upcloud.Server, service service.Server, uuidOrHostnameOrTitle string, unique bool) (*upcloud.Server, error) {
 	if serversPtr == nil || service == nil {
 		return nil, fmt.Errorf("no servers or service passed")
 	}
@@ -81,7 +81,7 @@ func StateColour(state string) text.Colors {
 	}
 }
 
-func WaitForServerState(service *service.Service, uuid, desiredState string, timeout time.Duration) (*upcloud.ServerDetails, error) {
+func WaitForServerState(service service.Server, uuid, desiredState string, timeout time.Duration) (*upcloud.ServerDetails, error) {
 	timer := time.After(timeout)
 	for {
 		time.Sleep(5 * time.Second)
@@ -101,4 +101,9 @@ func WaitForServerState(service *service.Service, uuid, desiredState string, tim
 		default:
 		}
 	}
+}
+
+type ServerFirewall interface {
+	service.Server
+	service.Firewall
 }

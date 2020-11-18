@@ -9,37 +9,29 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/ui"
-	"github.com/UpCloudLtd/cli/internal/upapi"
 )
 
-func ShowCommand() commands.Command {
+func ShowCommand(service ServerFirewall) commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New("show", "Show server details"),
+		service:     service,
 	}
 }
 
 type showCommand struct {
 	*commands.BaseCommand
-	service       *service.Service
+	service       ServerFirewall
 	firewallRules *upcloud.FirewallRules
-}
-
-func (s *showCommand) initService() {
-	if s.service == nil {
-		s.service = upapi.Service(s.Config())
-	}
 }
 
 func (s *showCommand) InitCommand() {
 	s.ArgCompletion(func(toComplete string) ([]string, cobra.ShellCompDirective) {
-		s.initService()
 		servers, err := s.service.GetServers()
 		if err != nil {
 			return nil, cobra.ShellCompDirectiveDefault
@@ -55,7 +47,6 @@ func (s *showCommand) InitCommand() {
 
 func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		s.initService()
 		// TODO(aakso): implement prompting with readline support
 		if len(args) < 1 {
 			return nil, fmt.Errorf("server hostname, title or uuid is required")

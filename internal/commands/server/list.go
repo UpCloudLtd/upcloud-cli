@@ -15,15 +15,16 @@ import (
 	"github.com/UpCloudLtd/cli/internal/upapi"
 )
 
-func ListCommand() commands.Command {
+func ListCommand(service service.Server) commands.Command {
 	return &listCommand{
 		BaseCommand: commands.New("list", "List current servers"),
+		service:     service,
 	}
 }
 
 type listCommand struct {
 	*commands.BaseCommand
-	service        *service.Service
+	service        service.Server
 	header         table.Row
 	columnKeys     []string
 	visibleColumns []string

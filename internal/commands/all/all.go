@@ -19,12 +19,17 @@ func BuildCommands(mainCommand commands.Command, mainConfig *config.Config) {
 
 	// Servers
 	serverCommand := commands.BuildCommand(server.ServerCommand(), mainCommand, cfgFn())
-	commands.BuildCommand(server.ListCommand(), serverCommand, cfgFn())
-	commands.BuildCommand(server.ShowCommand(), serverCommand, cfgFn())
-	commands.BuildCommand(server.StartCommand(), serverCommand, cfgFn())
-	commands.BuildCommand(server.StopCommand(), serverCommand, cfgFn())
-	commands.BuildCommand(server.CreateCommand(), serverCommand, cfgFn())
-	commands.BuildCommand(server.DeleteCommand(), serverCommand, cfgFn())
+	svrCmds := []commands.Command{
+		server.ListCommand(svc),
+		server.ShowCommand(svc),
+		server.StartCommand(svc),
+		server.StopCommand(svc),
+		server.CreateCommand(svc),
+		server.DeleteCommand(svc),
+	}
+	for _, svrCmds := range svrCmds {
+		commands.BuildCommand(svrCmds, serverCommand, cfgFn())
+	}
 
 	// Storages
 	storageCommand := commands.BuildCommand(storage.StorageCommand(), mainCommand, cfgFn())

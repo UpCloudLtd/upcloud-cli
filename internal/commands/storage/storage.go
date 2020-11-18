@@ -118,8 +118,3 @@ func WaitForImportState(service *service.Service, uuid, desiredState string, tim
 		}
 	}
 }
-
-type StorageServer interface {
-	service.Storage
-	service.Server
-}
