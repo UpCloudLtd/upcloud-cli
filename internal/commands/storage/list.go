@@ -2,7 +2,7 @@ package storage
 
 import (
 	"fmt"
-	"github.com/UpCloudLtd/cli/internal/interfaces"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"io"
 	"sort"
 	"strings"
@@ -16,7 +16,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/ui"
 )
 
-func ListCommand(service interfaces.Storage) commands.Command {
+func ListCommand(service service.Storage) commands.Command {
 	return &listCommand{
 		BaseCommand: commands.New("list", "List current storages"),
 		service:     service,
@@ -25,7 +25,7 @@ func ListCommand(service interfaces.Storage) commands.Command {
 
 type listCommand struct {
 	*commands.BaseCommand
-	service        interfaces.Storage
+	service        service.Storage
 	header         table.Row
 	columnKeys     []string
 	visibleColumns []string

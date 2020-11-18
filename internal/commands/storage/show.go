@@ -2,7 +2,6 @@ package storage
 
 import (
 	"fmt"
-	"github.com/UpCloudLtd/cli/internal/interfaces"
 	"io"
 	"math"
 	"sync"
@@ -18,7 +17,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/ui"
 )
 
-func ShowCommand(service interfaces.StorageServer) commands.Command {
+func ShowCommand(service StorageServer) commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New("show", "Show storage details"),
 		service:     service,
@@ -27,7 +26,7 @@ func ShowCommand(service interfaces.StorageServer) commands.Command {
 
 type showCommand struct {
 	*commands.BaseCommand
-	service       interfaces.StorageServer
+	service       StorageServer
 	storageImport *upcloud.StorageImportDetails
 }
 

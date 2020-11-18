@@ -2,7 +2,7 @@ package storage
 
 import (
 	"fmt"
-	"github.com/UpCloudLtd/cli/internal/interfaces"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"sync"
 	"time"
 
@@ -14,7 +14,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/ui"
 )
 
-func CreateCommand(service interfaces.Storage) commands.Command {
+func CreateCommand(service service.Storage) commands.Command {
 	return &createCommand{
 		BaseCommand: commands.New("create", "Create a storage"),
 		service:     service,
@@ -57,7 +57,7 @@ func (s *createParams) processParams() error {
 
 type createCommand struct {
 	*commands.BaseCommand
-	service            interfaces.Storage
+	service            service.Storage
 	firstCreateStorage createParams
 	flagSet            *pflag.FlagSet
 }
