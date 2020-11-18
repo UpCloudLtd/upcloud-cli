@@ -21,10 +21,13 @@ func BuildCommands(mainCommand commands.Command, mainConfig *config.Config) {
 	serverCommand := commands.BuildCommand(server.ServerCommand(), mainCommand, cfgFn())
 	svrCmds := []commands.Command{
 		server.ListCommand(svc),
+		server.ConfigurationsCommand(svc),
 		server.ShowCommand(svc),
 		server.StartCommand(svc),
+		server.RestartCommand(svc),
 		server.StopCommand(svc),
 		server.CreateCommand(svc),
+		server.ModifyCommand(svc),
 		server.DeleteCommand(svc),
 	}
 	for _, svrCmds := range svrCmds {
