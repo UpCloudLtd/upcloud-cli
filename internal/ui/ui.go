@@ -9,4 +9,5 @@ var (
 	DefaultAddressColours      = text.Colors{text.FgHiMagenta}
 	DefaultBooleanColoursTrue  = text.Colors{text.FgHiGreen}
 	DefaultBooleanColoursFalse = text.Colors{text.FgHiBlack}
+	DefaultNoteColours         = text.Colors{text.FgHiBlack}
 )

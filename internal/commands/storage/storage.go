@@ -18,8 +18,6 @@ import (
 var (
 	maxStorageActions = 10
 	cachedStorages    []upcloud.Storage
-	cachedTemplates   []upcloud.Storage
-	cachedServers     []upcloud.Server
 )
 
 const minStorageSize = 10
