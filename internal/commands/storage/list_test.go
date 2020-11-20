@@ -9,6 +9,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"testing"
 )
 
@@ -16,42 +17,9 @@ type ListTestMock struct {
 	mocks.MockStorageService
 }
 
-var storage1 = upcloud.Storage{
-	UUID:   mocks.Uuid1,
-	Title:  mocks.Title1,
-	Access: "private",
-	State:  "maintenance",
-	Type:   "backup",
-	Zone:   "fi-hel1",
-	Size:   40,
-	Tier:   "maxiops",
-}
-
-var storage2 = upcloud.Storage{
-	UUID:   mocks.Uuid2,
-	Title:  mocks.Title2,
-	Access: "private",
-	State:  "online",
-	Type:   "normal",
-	Zone:   "fi-hel1",
-	Size:   40,
-	Tier:   "maxiops",
-}
-
-var storage3 = upcloud.Storage{
-	UUID:   mocks.Uuid3,
-	Title:  mocks.Title3,
-	Access: "public",
-	State:  "online",
-	Type:   "normal",
-	Zone:   "fi-hel1",
-	Size:   10,
-	Tier:   "maxiops",
-}
-
 func (m ListTestMock) GetStorages(r *request.GetStoragesRequest) (*upcloud.Storages, error) {
 	var storages []upcloud.Storage
-	storages = append(storages, storage1, storage2, storage3)
+	storages = append(storages, mocks.Storage1, mocks.Storage2, mocks.Storage3)
 	return &upcloud.Storages{Storages: storages}, nil
 }
 
@@ -61,45 +29,41 @@ func TestListStorages(t *testing.T) {
 		name    string
 		private bool
 		public  bool
+		args    []string
 		testFn  func(res upcloud.Storages, e error)
 	}{
 		{
-			name:    "List storages",
-			private: true,
-			public:  true,
+			name: "List storages",
+			args: []string{"--private", "--public"},
 			testFn: func(res upcloud.Storages, e error) {
 				assert.Equal(t, 3, len(res.Storages))
 				assert.Nil(t, e)
 			},
 		},
 		{
-			name:    "List private storages",
-			private: true,
-			public:  false,
+			name: "List private storages",
+			args: []string{"--private"},
 			testFn: func(res upcloud.Storages, e error) {
 				assert.Equal(t, 2, len(res.Storages))
 				assert.Nil(t, e)
 			},
 		},
 		{
-			name:    "List public storages",
-			private: false,
-			public:  true,
+			name: "List public storages",
+			args: []string{"--public"},
 			testFn: func(res upcloud.Storages, e error) {
-				assert.Equal(t, 1, len(res.Storages))
+				assert.Equal(t, 3, len(res.Storages))
 				assert.Nil(t, e)
 			},
 		},
 	} {
 		t.Run(testcase.name, func(t *testing.T) {
+			stgs := upcloud.Storages{Storages: []upcloud.Storage{mocks.Storage1, mocks.Storage2, mocks.Storage3}}
+			mss := new(mocks.MockStorageService)
+			mss.On("GetStorages", mock.Anything).Return(&stgs, nil)
 
-			lc := listCommand{
-				BaseCommand: mocks.GetBaseCommand(),
-				service:     ListTestMock{},
-				private:     testcase.private,
-				public:      testcase.public,
-			}
-
+			lc := commands.BuildCommand(ListCommand(mss), nil, config.New(viper.New()))
+			_ = mocks.SetFlags(lc, testcase.args...)
 			res, err := lc.MakeExecuteCommand()([]string{})
 			result := res.(*upcloud.Storages)
 			testcase.testFn(*result, err)
@@ -110,13 +74,13 @@ func TestListStorages(t *testing.T) {
 func TestListStoragesOutput(t *testing.T) {
 	storages := &upcloud.Storages{
 		Storages: []upcloud.Storage{
-			storage1,
-			storage2,
-			storage3,
+			mocks.Storage1,
+			mocks.Storage2,
+			mocks.Storage3,
 		},
 	}
 
-	lc := commands.BuildCommand(ListCommand(ListTestMock{}), nil, config.New(viper.New()))
+	lc := commands.BuildCommand(ListCommand(new(mocks.MockStorageService)), nil, config.New(viper.New()))
 
 	expected := `
   UUID            Title                   Zone        State           Type       Size     Tier        Created  

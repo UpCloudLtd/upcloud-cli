@@ -5,26 +5,20 @@ import (
 	"github.com/UpCloudLtd/cli/internal/config"
 	"github.com/UpCloudLtd/cli/internal/mocks"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"testing"
 )
 
-type CreateTestMock struct {
-	mocks.MockStorageService
-}
+func TestCreateStorage(t *testing.T) {
 
-func (s CreateTestMock) CreateStorage(r *request.CreateStorageRequest) (*upcloud.StorageDetails, error) {
-	return &upcloud.StorageDetails{
+	details := &upcloud.StorageDetails{
 		Storage:     upcloud.Storage{UUID: mocks.Uuid1},
 		BackupRule:  nil,
 		BackupUUIDs: upcloud.BackupUUIDSlice{mocks.Uuid2},
 		ServerUUIDs: upcloud.ServerUUIDSlice{mocks.Uuid3},
-	}, nil
-}
-
-func TestCreateStorage(t *testing.T) {
+	}
 
 	for _, testcase := range []struct {
 		name   string
@@ -57,7 +51,10 @@ func TestCreateStorage(t *testing.T) {
 		},
 	} {
 		t.Run(testcase.name, func(t *testing.T) {
-			cc := commands.BuildCommand(CreateCommand(CreateTestMock{}), nil, config.New(viper.New()))
+
+			mss := new(mocks.MockStorageService)
+			mss.On("CreateStorage", mock.Anything).Return(details, nil)
+			cc := commands.BuildCommand(CreateCommand(mss), nil, config.New(viper.New()))
 
 			res, err := cc.MakeExecuteCommand()(testcase.args)
 			var result []*upcloud.StorageDetails

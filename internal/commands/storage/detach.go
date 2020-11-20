@@ -28,7 +28,7 @@ func newDetachParams() detachParams {
 
 func DetachCommand(service service.Storage) commands.Command {
 	return &detachCommand{
-		BaseCommand: commands.New("detach", "Detach a storage"),
+		BaseCommand: commands.New("detach", "Detaches a storage resource from a server"),
 		service:     service,
 	}
 }

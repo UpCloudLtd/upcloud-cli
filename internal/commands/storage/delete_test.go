@@ -3,36 +3,28 @@ package storage
 import (
 	"github.com/UpCloudLtd/cli/internal/mocks"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"testing"
 )
 
-type DeleteTestMock struct {
-	mocks.MockStorageService
-}
-
-func (m DeleteTestMock) GetStorages(r *request.GetStoragesRequest) (*upcloud.Storages, error) {
-	var storages []upcloud.Storage
-	storages = append(storages,
-		upcloud.Storage{
-			UUID:   mocks.Uuid1,
-			Title:  mocks.Title1,
-			Access: "private",
-		},
-		upcloud.Storage{
-			UUID:   mocks.Uuid2,
-			Title:  mocks.Title2,
-			Access: "private",
-		},
-		upcloud.Storage{
-			UUID:   mocks.Uuid3,
-			Title:  mocks.Title3,
-			Access: "public",
-		},
-	)
-
-	return &upcloud.Storages{Storages: storages}, nil
+var storages = &upcloud.Storages{Storages: []upcloud.Storage{
+	{
+		UUID:   mocks.Uuid1,
+		Title:  mocks.Title1,
+		Access: "private",
+	},
+	{
+		UUID:   mocks.Uuid2,
+		Title:  mocks.Title2,
+		Access: "private",
+	},
+	{
+		UUID:   mocks.Uuid3,
+		Title:  mocks.Title3,
+		Access: "public",
+	},
+},
 }
 
 func TestDeleteStorage(t *testing.T) {
@@ -68,7 +60,10 @@ func TestDeleteStorage(t *testing.T) {
 		},
 	} {
 		t.Run(testcase.name, func(t *testing.T) {
-			dc := DeleteCommand(DeleteTestMock{})
+			mss := new(mocks.MockStorageService)
+			mss.On("GetStorages", mock.Anything).Return(storages, nil)
+			mss.On("DeleteStorage", mock.Anything).Return(nil)
+			dc := DeleteCommand(mss)
 
 			_, err := dc.MakeExecuteCommand()(testcase.args)
 

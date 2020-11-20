@@ -28,7 +28,7 @@ func newAttachParams() attachParams {
 
 func AttachCommand(service service.Storage) commands.Command {
 	return &attachCommand{
-		BaseCommand: commands.New("attach", "Attach a storage"),
+		BaseCommand: commands.New("attach", "Attaches a storage as a device to a server"),
 		service:     service,
 	}
 }
