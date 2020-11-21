@@ -21,7 +21,7 @@ func DeleteCommand(service service.Server) commands.Command {
 type deleteCommand struct {
 	*commands.BaseCommand
 	service        service.Server
-	deleteStorages bool
+	deleteStorages string
 }
 
 func (s *deleteCommand) InitCommand() {
@@ -36,9 +36,9 @@ func (s *deleteCommand) InitCommand() {
 		}
 		return commands.MatchStringPrefix(vals, toComplete, true), cobra.ShellCompDirectiveNoFileComp
 	})
+
 	flags := &pflag.FlagSet{}
-	flags.BoolVar(&s.deleteStorages, "delete-storages", true, "Delete storages that are "+
-		"attached to the server.")
+	flags.StringVar(&s.deleteStorages, "delete-storages", "true", "Delete storages that are attached to the server.")
 	s.AddFlags(flags)
 	s.SetPositionalArgHelp("<uuidHostnameOrTitle ...>")
 }
@@ -49,7 +49,7 @@ func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 		var action = func(req interface{}) (interface{}, error) {
 			server := req.(*upcloud.Server)
 			var err error
-			if s.deleteStorages {
+			if s.deleteStorages == "true" {
 				err = s.service.DeleteServerAndStorages(&request.DeleteServerAndStoragesRequest{
 					UUID: server.UUID,
 				})
@@ -62,7 +62,7 @@ func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 		}
 
 		return Request{
-			BuildRequest: func(server *upcloud.Server) interface{} {return &server},
+			BuildRequest: func(server *upcloud.Server) interface{} {return server},
 			Service:    s.service,
 			HandleContext: ui.HandleContext{
 				RequestId:     func(in interface{}) string { return in.(*upcloud.Server).UUID },

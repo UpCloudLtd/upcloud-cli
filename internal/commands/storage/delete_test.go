@@ -1,53 +1,44 @@
 package storage
 
 import (
+	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/config"
 	"github.com/UpCloudLtd/cli/internal/mocks"
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
 )
 
-func TestDeleteStorage(t *testing.T) {
+func TestDeleteStorageCommand(t *testing.T) {
+	methodName := "DeleteStorage"
 
-	for _, testcase := range []struct {
-		name   string
-		args   []string
-		testFn func(e error)
+	for _, test := range []struct {
+		name string
+		args []string
+		methodCalls int
 	}{
 		{
-			name:   "Storage with given title found and deleted successfully",
-			args:   []string{Title1},
-			testFn: func(e error) { assert.Nil(t, e) },
-		},
-		{
-			name:   "Storage with given uuid found and deleted successfully",
-			args:   []string{Uuid1},
-			testFn: func(e error) { assert.Nil(t, e) },
-		},
-		{
-			name: "Storage with given title does not exist",
-			args: []string{"asdf"},
-			testFn: func(e error) {
-				assert.Equal(t, "no storage with uuid, name or title \"asdf\" was found", e.Error())
-			},
-		},
-		{
-			name: "No title or uuid given",
+			name: "Backend called",
 			args: []string{},
-			testFn: func(e error) {
-				assert.Equal(t, "server hostname, title or uuid is required", e.Error())
-			},
+			methodCalls: 1,
 		},
-	} {
-		t.Run(testcase.name, func(t *testing.T) {
-			mss := new(mocks.MockStorageService)
-			mss.On("GetStorages", mock.Anything).Return(storages, nil)
-			mss.On("DeleteStorage", mock.Anything).Return(nil)
-			dc := DeleteCommand(mss)
+	}{
+		t.Run(test.name, func(t *testing.T) {
+			mss := MockStorageService()
+			mss.On(methodName, mock.Anything).Return(nil, nil)
 
-			_, err := dc.MakeExecuteCommand()(testcase.args)
+			tc := commands.BuildCommand(DeleteCommand(mss), nil, config.New(viper.New()))
+			mocks.SetFlags(tc, test.args)
 
-			testcase.testFn(err)
+			results, err := tc.MakeExecuteCommand()([]string{Storage2.UUID})
+			for _, result := range results.([]interface{}) {
+				assert.Nil(t, result)
+			}
+			assert.Nil(t, err)
+
+			mss.AssertNumberOfCalls(t, methodName, test.methodCalls)
 		})
 	}
 }
+

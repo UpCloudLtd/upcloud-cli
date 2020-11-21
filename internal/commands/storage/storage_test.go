@@ -70,6 +70,12 @@ var storages = &upcloud.Storages{
   },
 }
 
+func MockStorageService() *mocks.MockStorageService {
+  mss := new(mocks.MockStorageService)
+  mss.On("GetStorages", mock.Anything).Return(storages, nil)
+  return mss
+}
+
 func TestSearchStorage(t *testing.T) {
   var storages = &upcloud.Storages{
     Storages: []upcloud.Storage{
