@@ -3,6 +3,7 @@ package storage
 import (
 	"errors"
 	"fmt"
+	"github.com/UpCloudLtd/cli/internal/ui"
 	"time"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
@@ -11,7 +12,6 @@ import (
 	"github.com/jedib0t/go-pretty/v6/text"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/validation"
 )
 
 var (
@@ -72,12 +72,12 @@ func matchStorages(storages []upcloud.Storage, searchVal string) []*upcloud.Stor
 	return r
 }
 
-func searchStorage(storagesPtr *[]upcloud.Storage, service service.Storage, uuidOrTitle string, unique bool) (*upcloud.Storage, error) {
+func searchStorage(storagesPtr *[]upcloud.Storage, service service.Storage, uuidOrTitle string, unique bool) ([]*upcloud.Storage, error) {
 	if storagesPtr == nil || service == nil {
 		return nil, fmt.Errorf("no storages or service passed")
 	}
 	storages := *storagesPtr
-	if err := validation.Uuid4(uuidOrTitle); err != nil || storages == nil {
+	if len(cachedStorages) == 0 {
 		res, err := service.GetStorages(&request.GetStoragesRequest{})
 		if err != nil {
 			return nil, err
@@ -92,7 +92,17 @@ func searchStorage(storagesPtr *[]upcloud.Storage, service service.Storage, uuid
 	if len(matched) > 1 && unique {
 		return nil, fmt.Errorf("multiple storages matched to query %q, use UUID to specify", uuidOrTitle)
 	}
-	return matched[0], nil
+	return matched, nil
+}
+
+func searchAllArgs(uuidOrTitle []string, service service.Storage, unique bool) ([]*upcloud.Storage, error) {
+	var result []*upcloud.Storage
+	for _, id := range uuidOrTitle {
+		matchedResults, err := searchStorage(&cachedStorages, service, id, unique)
+		if err != nil { return nil, err }
+		result = append(result, matchedResults...)
+	}
+	return result, nil
 }
 
 func WaitForImportState(service *service.Service, uuid, desiredState string, timeout time.Duration) (*upcloud.StorageImportDetails, error) {
@@ -117,4 +127,32 @@ func WaitForImportState(service *service.Service, uuid, desiredState string, tim
 		default:
 		}
 	}
+}
+
+var getStorageDetailsUuid = func(in interface{}) string { return in.(*upcloud.StorageDetails).UUID }
+
+type Request struct {
+	ExactlyOne   bool
+	BuildRequest func(storage *upcloud.Storage)interface{}
+	Service      service.Storage
+	ui.HandleContext
+}
+
+func (s Request) Send(args []string) (interface{}, error ){
+	if s.ExactlyOne && len(args) != 1 {
+		return nil, fmt.Errorf("single storage uuid is required")
+	}
+	if len(args) < 1 {
+		return nil, fmt.Errorf("at least one storage uuid is required")
+	}
+
+	storages, err := searchAllArgs(args, s.Service, true)
+	if err != nil { return nil, err }
+
+	var requests []interface{}
+	for _, storage := range storages {
+		requests = append(requests, s.BuildRequest(storage))
+	}
+
+	return s.Handle(requests)
 }

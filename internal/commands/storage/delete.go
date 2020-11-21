@@ -1,12 +1,9 @@
 package storage
 
 import (
-	"fmt"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
-	"sync/atomic"
-
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/cobra"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
@@ -42,44 +39,20 @@ func (s *deleteCommand) InitCommand() {
 
 func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		if len(args) < 1 {
-			return nil, fmt.Errorf("server hostname, title or uuid is required")
-		}
-		var (
-			deleteStorages []*upcloud.Storage
-		)
-		for _, v := range args {
-			storage, err := searchStorage(&cachedStorages, s.service, v, false)
-			if err != nil {
-				return nil, err
-			}
-			deleteStorages = append(deleteStorages, storage)
-		}
-		var numOk int64
-		handler := func(idx int, e *ui.LogEntry) {
-			storage := deleteStorages[idx]
-			msg := fmt.Sprintf("Deleting %q (%s)", storage.Title, storage.UUID)
-			e.SetMessage(msg)
-			e.Start()
-			var err error
-			err = s.service.DeleteStorage(&request.DeleteStorageRequest{UUID: storage.UUID})
-			if err != nil {
-				e.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed", msg))
-				e.SetDetails(err.Error(), "error: ")
-			} else {
-				atomic.AddInt64(&numOk, 1)
-				e.SetMessage(fmt.Sprintf("%s: done", msg))
-			}
-		}
-		ui.StartWorkQueue(ui.WorkQueueConfig{
-			NumTasks:           len(deleteStorages),
-			MaxConcurrentTasks: maxStorageActions,
-			EnableUI:           s.Config().InteractiveUI(),
-		}, handler)
-
-		if int(numOk) < len(deleteStorages) {
-			return nil, fmt.Errorf("number of storages failed to delete: %d", len(deleteStorages)-int(numOk))
-		}
-		return deleteStorages, nil
+		return Request{
+			BuildRequest: func(storage *upcloud.Storage) interface{} {
+				return &request.DeleteStorageRequest{UUID: storage.UUID}
+			},
+			Service: s.service,
+			HandleContext: ui.HandleContext{
+				RequestId:     func(in interface{}) string { return in.(*request.DeleteStorageRequest).UUID },
+				InteractiveUi: s.Config().InteractiveUI(),
+				MaxActions:    maxStorageActions,
+				ActionMsg:     "Deleting",
+				Action: func(req interface{}) (interface{}, error) {
+					return nil, s.service.DeleteStorage(req.(*request.DeleteStorageRequest))
+				},
+			},
+		}.Send(args)
 	}
 }

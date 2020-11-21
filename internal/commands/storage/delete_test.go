@@ -2,30 +2,10 @@ package storage
 
 import (
 	"github.com/UpCloudLtd/cli/internal/mocks"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
 )
-
-var storages = &upcloud.Storages{Storages: []upcloud.Storage{
-	{
-		UUID:   mocks.Uuid1,
-		Title:  mocks.Title1,
-		Access: "private",
-	},
-	{
-		UUID:   mocks.Uuid2,
-		Title:  mocks.Title2,
-		Access: "private",
-	},
-	{
-		UUID:   mocks.Uuid3,
-		Title:  mocks.Title3,
-		Access: "public",
-	},
-},
-}
 
 func TestDeleteStorage(t *testing.T) {
 
@@ -36,12 +16,12 @@ func TestDeleteStorage(t *testing.T) {
 	}{
 		{
 			name:   "Storage with given title found and deleted successfully",
-			args:   []string{mocks.Title1},
+			args:   []string{Title1},
 			testFn: func(e error) { assert.Nil(t, e) },
 		},
 		{
 			name:   "Storage with given uuid found and deleted successfully",
-			args:   []string{mocks.Uuid1},
+			args:   []string{Uuid1},
 			testFn: func(e error) { assert.Nil(t, e) },
 		},
 		{

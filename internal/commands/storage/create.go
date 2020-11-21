@@ -3,7 +3,6 @@ package storage
 import (
 	"fmt"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
-	"sync"
 	"time"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
@@ -84,11 +83,11 @@ func (s *createCommand) InitCommand() {
 
 func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		var createStorages []request.CreateStorageRequest
+		var createStorages []*request.CreateStorageRequest
 		if err := s.firstCreateStorage.processParams(); err != nil {
 			return nil, err
 		}
-		createStorages = append(createStorages, s.firstCreateStorage.CreateStorageRequest)
+		createStorages = append(createStorages, &s.firstCreateStorage.CreateStorageRequest)
 
 		// Process additional storage create args
 		var additionalCreateArgs = make([]string, 0, len(args))
@@ -107,7 +106,7 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 					if err := dst.processParams(); err != nil {
 						return nil, err
 					}
-					createStorages = append(createStorages, dst.CreateStorageRequest)
+					createStorages = append(createStorages, &dst.CreateStorageRequest)
 				}
 				additionalCreateArgs = additionalCreateArgs[:0]
 				continue
@@ -115,37 +114,16 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 			additionalCreateArgs = append(additionalCreateArgs, arg)
 		}
 
-		var (
-			mu              sync.Mutex
-			numOk           int
-			createdStorages []*upcloud.StorageDetails
-		)
-		handler := func(idx int, e *ui.LogEntry) {
-			storage := createStorages[idx]
-			msg := fmt.Sprintf("Creating storage %q", storage.Title)
-			e.SetMessage(msg)
-			e.Start()
-			details, err := s.service.CreateStorage(&storage)
-			if err != nil {
-				e.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed", msg))
-				e.SetDetails(err.Error(), "error: ")
-			} else {
-				e.SetMessage(fmt.Sprintf("%s: done", msg))
-				e.SetDetails(details.UUID, "UUID: ")
-				mu.Lock()
-				numOk++
-				createdStorages = append(createdStorages, details)
-				mu.Unlock()
-			}
-		}
-		ui.StartWorkQueue(ui.WorkQueueConfig{
-			NumTasks:           len(createStorages),
-			MaxConcurrentTasks: 5,
-			EnableUI:           s.Config().InteractiveUI(),
-		}, handler)
-		if numOk != len(createStorages) {
-			return nil, fmt.Errorf("number of storages that failed: %d", len(createStorages)-numOk)
-		}
-		return createdStorages, nil
+		return ui.HandleContext{
+			Requests:      createStorages,
+			RequestId:     func(in interface{}) string { return in.(*request.CreateStorageRequest).Title },
+			ResultUuid:    getStorageDetailsUuid,
+			InteractiveUi: s.Config().InteractiveUI(),
+			MaxActions:    maxStorageActions,
+			ActionMsg:     "Creating storage",
+			Action: func(req interface{}) (interface{}, error) {
+				return s.service.CreateStorage(req.(*request.CreateStorageRequest))
+			},
+		}.HandleAction()
 	}
 }

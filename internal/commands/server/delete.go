@@ -1,9 +1,6 @@
 package server
 
 import (
-	"fmt"
-	"sync/atomic"
-
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
@@ -48,26 +45,9 @@ func (s *deleteCommand) InitCommand() {
 
 func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		if len(args) < 1 {
-			return nil, fmt.Errorf("server hostname, title or uuid is required")
-		}
-		var (
-			allServers    []upcloud.Server
-			deleteServers []*upcloud.Server
-		)
-		for _, v := range args {
-			server, err := searchServer(&allServers, s.service, v, false)
-			if err != nil {
-				return nil, err
-			}
-			deleteServers = append(deleteServers, server)
-		}
-		var numOk int64
-		handler := func(idx int, e *ui.LogEntry) {
-			server := deleteServers[idx]
-			msg := fmt.Sprintf("Deleting %q", server.Title)
-			e.SetMessage(msg)
-			e.Start()
+
+		var action = func(req interface{}) (interface{}, error) {
+			server := req.(*upcloud.Server)
 			var err error
 			if s.deleteStorages {
 				err = s.service.DeleteServerAndStorages(&request.DeleteServerAndStoragesRequest{
@@ -78,23 +58,19 @@ func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 					UUID: server.UUID,
 				})
 			}
-			if err != nil {
-				e.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed", msg))
-				e.SetDetails(err.Error(), "error: ")
-			} else {
-				atomic.AddInt64(&numOk, 1)
-				e.SetMessage(fmt.Sprintf("%s: done", msg))
-			}
+			return nil, err
 		}
-		ui.StartWorkQueue(ui.WorkQueueConfig{
-			NumTasks:           len(deleteServers),
-			MaxConcurrentTasks: maxServerActions,
-			EnableUI:           s.Config().InteractiveUI(),
-		}, handler)
 
-		if int(numOk) < len(deleteServers) {
-			return nil, fmt.Errorf("number of servers failed to delete: %d", len(deleteServers)-int(numOk))
-		}
-		return deleteServers, nil
+		return Request{
+			BuildRequest: func(server *upcloud.Server) interface{} {return &server},
+			Service:    s.service,
+			HandleContext: ui.HandleContext{
+				RequestId:     func(in interface{}) string { return in.(*upcloud.Server).UUID },
+				InteractiveUi: s.Config().InteractiveUI(),
+				MaxActions:    maxServerActions,
+				ActionMsg:     "Deleting",
+				Action:        action,
+			},
+		}.Send(args)
 	}
 }

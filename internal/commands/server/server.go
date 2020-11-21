@@ -3,6 +3,7 @@ package server
 import (
 	"errors"
 	"fmt"
+	"github.com/UpCloudLtd/cli/internal/ui"
 	"time"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
@@ -11,13 +12,13 @@ import (
 	"github.com/jedib0t/go-pretty/v6/text"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/validation"
 )
 
 const (
 	minStorageSize   = 10
 	maxServerActions = 10
 )
+var cachedServers []upcloud.Server
 
 func ServerCommand() commands.Command {
 	return &serverCommand{
@@ -45,12 +46,12 @@ func matchServers(servers []upcloud.Server, searchVal string) []*upcloud.Server 
 	return r
 }
 
-func searchServer(serversPtr *[]upcloud.Server, service service.Server, uuidOrHostnameOrTitle string, unique bool) (*upcloud.Server, error) {
+func searchServer(serversPtr *[]upcloud.Server, service service.Server, uuidOrHostnameOrTitle string, unique bool) ([]*upcloud.Server, error) {
 	if serversPtr == nil || service == nil {
 		return nil, fmt.Errorf("no servers or service passed")
 	}
 	servers := *serversPtr
-	if err := validation.Uuid4(uuidOrHostnameOrTitle); err != nil || servers == nil {
+	if len(cachedServers) == 0 {
 		res, err := service.GetServers()
 		if err != nil {
 			return nil, err
@@ -65,7 +66,18 @@ func searchServer(serversPtr *[]upcloud.Server, service service.Server, uuidOrHo
 	if len(matched) > 1 && unique {
 		return nil, fmt.Errorf("multiple servers matched to query %q, use UUID to specify", uuidOrHostnameOrTitle)
 	}
-	return matched[0], nil
+	return matched, nil
+}
+
+
+func searchAllArgs(uuidOrTitle []string, service service.Server, unique bool) ([]*upcloud.Server, error) {
+	var result []*upcloud.Server
+	for _, id := range uuidOrTitle {
+		matchedResults, err := searchServer(&cachedServers, service, id, unique)
+		if err != nil { return nil, err }
+		result = append(result, matchedResults...)
+	}
+	return result, nil
 }
 
 func StateColour(state string) text.Colors {
@@ -103,7 +115,41 @@ func WaitForServerState(service service.Server, uuid, desiredState string, timeo
 	}
 }
 
+var WaitForServerFn = func(svc service.Server, state string, timeout time.Duration) func(uuid string, waitMsg string, err error) (interface{}, error) {
+	return func(uuid string, waitMsg string, err error) (interface{}, error) {
+		return WaitForServerState(svc, uuid, state, timeout)
+	}
+}
+
+var getServerDetailsUuid = func(in interface{}) string { return in.(*upcloud.ServerDetails).UUID }
+
 type ServerFirewall interface {
 	service.Server
 	service.Firewall
+}
+
+type Request struct {
+	ExactlyOne   bool
+	BuildRequest func(storage *upcloud.Server)interface{}
+	Service      service.Server
+	ui.HandleContext
+}
+
+func (s Request) Send(args []string) (interface{}, error ){
+	if s.ExactlyOne && len(args) != 1 {
+		return nil, fmt.Errorf("single server uuid is required")
+	}
+	if len(args) < 1 {
+		return nil, fmt.Errorf("at least one server uuid is required")
+	}
+
+	servers, err := searchAllArgs(args, s.Service, true)
+	if err != nil { return nil, err }
+
+	var requests []interface{}
+	for _, server := range servers {
+		requests = append(requests, s.BuildRequest(server))
+	}
+
+	return s.Handle(requests)
 }

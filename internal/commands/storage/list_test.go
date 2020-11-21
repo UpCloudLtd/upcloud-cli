@@ -6,22 +6,11 @@ import (
 	"github.com/UpCloudLtd/cli/internal/config"
 	"github.com/UpCloudLtd/cli/internal/mocks"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
 )
-
-type ListTestMock struct {
-	mocks.MockStorageService
-}
-
-func (m ListTestMock) GetStorages(r *request.GetStoragesRequest) (*upcloud.Storages, error) {
-	var storages []upcloud.Storage
-	storages = append(storages, mocks.Storage1, mocks.Storage2, mocks.Storage3)
-	return &upcloud.Storages{Storages: storages}, nil
-}
 
 func TestListStorages(t *testing.T) {
 
@@ -58,7 +47,7 @@ func TestListStorages(t *testing.T) {
 		},
 	} {
 		t.Run(testcase.name, func(t *testing.T) {
-			stgs := upcloud.Storages{Storages: []upcloud.Storage{mocks.Storage1, mocks.Storage2, mocks.Storage3}}
+			stgs := upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2, Storage3}}
 			mss := new(mocks.MockStorageService)
 			mss.On("GetStorages", mock.Anything).Return(&stgs, nil)
 
@@ -72,22 +61,15 @@ func TestListStorages(t *testing.T) {
 }
 
 func TestListStoragesOutput(t *testing.T) {
-	storages := &upcloud.Storages{
-		Storages: []upcloud.Storage{
-			mocks.Storage1,
-			mocks.Storage2,
-			mocks.Storage3,
-		},
-	}
 
 	lc := commands.BuildCommand(ListCommand(new(mocks.MockStorageService)), nil, config.New(viper.New()))
 
 	expected := `
-  UUID            Title                   Zone        State           Type       Size     Tier        Created  
-─────────────── ─────────────────────── ─────────── ─────────────── ────────── ──────── ─────────── ───────────
-  mock-uuid-1     mock-storage-title1     fi-hel1     maintenance     backup       40     maxiops              
-  mock-uuid-2     mock-storage-title2     fi-hel1     online          normal       40     maxiops              
-  mock-uuid-3     mock-storage-title3     fi-hel1     online          normal       10     maxiops              
+  UUID                                     Title                   Zone        State           Type       Size     Tier        Created  
+──────────────────────────────────────── ─────────────────────── ─────────── ─────────────── ────────── ──────── ─────────── ───────────
+  0127dfd6-3884-4079-a948-3a8881df1a7a     mock-storage-title1     fi-hel1     maintenance     backup       40     maxiops              
+  012bde1d-f0e7-4bb2-9f4a-74e1f2b49c07     mock-storage-title2     fi-hel1     online          normal       40     maxiops              
+  012c61a6-b8f0-48c2-a63a-b4bf7d26a655     mock-storage-title3     fi-hel1     online          normal       10     maxiops              
 
 `
 

@@ -6,6 +6,7 @@ require (
 	github.com/UpCloudLtd/upcloud-go-api v0.0.0-20201118111125-eb04dfda2f11
 	github.com/hashicorp/go-cleanhttp v0.5.1
 	github.com/jedib0t/go-pretty/v6 v6.0.5
+	github.com/magiconair/properties v1.8.1
 	github.com/mattn/go-isatty v0.0.12
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/pflag v1.0.3

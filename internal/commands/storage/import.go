@@ -58,8 +58,8 @@ func (s *importParams) processParams(srv service.Storage) error {
 		if err != nil {
 			return err
 		}
-		s.existingStorage = storage
-		s.CreateStorageImportRequest.StorageUUID = storage.UUID
+		s.existingStorage = storage[0]
+		s.CreateStorageImportRequest.StorageUUID = storage[0].UUID
 	}
 	if s.sourceLocation == "" {
 		return errors.New("source-location is required")
@@ -262,7 +262,7 @@ func (s *importCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 					time.Sleep(time.Duration(sleepSecs) * time.Second)
 				}
 			}
-			// Import from http soure
+			// Import from http source
 			if s.importParams.sourceFile == nil {
 				createdStorageImport, err = s.service.CreateStorageImport(
 					&s.importParams.CreateStorageImportRequest)

@@ -48,15 +48,17 @@ func (s *showCommand) InitCommand() {
 func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 		// TODO(aakso): implement prompting with readline support
-		if len(args) < 1 {
-			return nil, fmt.Errorf("server hostname, title or uuid is required")
+		if len(args) != 1 {
+			return nil, fmt.Errorf("one server hostname, title or uuid is required")
 		}
-		var servers []upcloud.Server
-		server, err := searchServer(&servers, s.service, args[0], true)
+		servers, err := searchAllArgs(args, s.service, true)
 		if err != nil {
 			return nil, err
 		}
-		serverUuid := server.UUID
+		if len(servers) != 1 {
+			return nil, fmt.Errorf("server not found")
+		}
+			serverUuid := servers[0].UUID
 		var (
 			wg        sync.WaitGroup
 			fwRuleErr error

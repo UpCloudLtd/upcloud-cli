@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
@@ -10,7 +9,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"strconv"
-	"sync"
 	"time"
 )
 
@@ -37,7 +35,7 @@ var DefaultRestartParams = &restartParams{
 		StopType:      "soft",
 		TimeoutAction: "ignore",
 	},
-	timeout: 0,
+	timeout: 120,
 }
 
 func (s *restartCommand) InitCommand() {
@@ -67,67 +65,30 @@ func (s *restartCommand) InitCommand() {
 func (s *restartCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 
-		if len(args) < 1 {
-			return nil, fmt.Errorf("server title or uuid is required")
-		}
-
-		var (
-			restartServers []request.RestartServerRequest
-			allServers     []upcloud.Server
-		)
-
 		timeout, err := time.ParseDuration(strconv.Itoa(s.params.timeout) + "s")
 		if err != nil {
 			return nil, err
 		}
+		s.params.Timeout = timeout
 
-		for _, v := range args {
-			server, err := searchServer(&allServers, s.service, v, true)
-			if err != nil {
-				return nil, err
-			}
-			s.params.UUID = server.UUID
-			s.params.Timeout = timeout
-			restartServers = append(restartServers, s.params.RestartServerRequest)
-		}
-		var (
-			mu            sync.Mutex
-			numOk         int
-			serverDetails []*upcloud.ServerDetails
-		)
-		handler := func(idx int, e *ui.LogEntry) {
-			req := restartServers[idx]
-			msg := fmt.Sprintf("Restarting %q", req.UUID)
-			e.SetMessage(msg)
-			e.Start()
-			details, err := s.service.RestartServer(&req)
-
-			if err == nil {
-				e.SetMessage(fmt.Sprintf("%s: restart request sent", msg))
-				_, err = WaitForServerState(s.service, req.UUID, upcloud.ServerStateStarted, s.Config().ClientTimeout())
-			}
-
-			if err != nil {
-				e.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed", msg))
-				e.SetDetails(err.Error(), "error: ")
-			} else {
-				e.SetMessage(fmt.Sprintf("%s: done", msg))
-				e.SetDetails(details.UUID, "UUID: ")
-				mu.Lock()
-				numOk++
-				serverDetails = append(serverDetails, details)
-				mu.Unlock()
-			}
-		}
-		ui.StartWorkQueue(ui.WorkQueueConfig{
-			NumTasks:           len(restartServers),
-			MaxConcurrentTasks: maxServerActions,
-			EnableUI:           s.Config().InteractiveUI(),
-		}, handler)
-
-		if numOk != len(restartServers) {
-			return nil, fmt.Errorf("number of servers failed to start: %d", len(restartServers)-int(numOk))
-		}
-		return serverDetails, nil
+		return Request{
+			BuildRequest: func(server *upcloud.Server) interface{} {
+				req := s.params.RestartServerRequest
+				req.UUID = server.UUID
+				return &req
+			},
+			Service:    s.service,
+			HandleContext: ui.HandleContext{
+				RequestId:     func(in interface{}) string { return in.(*request.RestartServerRequest).UUID },
+				InteractiveUi: s.Config().InteractiveUI(),
+				WaitMsg:       "restart request sent",
+				WaitFn:        WaitForServerFn(s.service, upcloud.ServerStateStarted, s.Config().ClientTimeout()),
+				MaxActions:    maxServerActions,
+				ActionMsg:     "Restarting",
+				Action: func(req interface{}) (interface{}, error) {
+					return s.service.RestartServer(req.(*request.RestartServerRequest))
+				},
+			},
+		}.Send(args)
 	}
 }

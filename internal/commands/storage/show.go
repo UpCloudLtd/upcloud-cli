@@ -62,7 +62,7 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 		go func() {
 			defer wg.Done()
 			s.storageImport, storageImportDetailsErr = s.service.GetStorageImportDetails(
-				&request.GetStorageImportDetailsRequest{UUID: storage.UUID})
+				&request.GetStorageImportDetailsRequest{UUID: storage[0].UUID})
 			if ucErr, ok := storageImportDetailsErr.(*upcloud.Error); ok {
 				if ucErr.ErrorCode == "STORAGE_IMPORT_NOT_FOUND" {
 					storageImportDetailsErr = nil
@@ -76,7 +76,7 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 				cachedServers = servers.Servers
 			}
 		}()
-		storageDetails, err := s.service.GetStorageDetails(&request.GetStorageDetailsRequest{UUID: storage.UUID})
+		storageDetails, err := s.service.GetStorageDetails(&request.GetStorageDetailsRequest{UUID: storage[0].UUID})
 		if err != nil {
 			return nil, err
 		}

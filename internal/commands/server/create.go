@@ -4,14 +4,12 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/interfaces"
-	"os"
-	"strings"
-	"sync"
-
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/pflag"
 	"golang.org/x/crypto/ssh"
+	"os"
+	"strings"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/ui"
@@ -187,20 +185,13 @@ func (s *createCommand) createFlags(fs *pflag.FlagSet, dst, def *createParams) {
 
 }
 
-func (s *createCommand) InitCommand() {
-	s.flagSet = &pflag.FlagSet{}
-	s.createFlags(s.flagSet, &s.firstCreateServer, DefaultCreateParams)
-	s.AddFlags(s.flagSet)
-}
-
 func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		s.initService()
-		var createServers []request.CreateServerRequest
+		var createServers []*request.CreateServerRequest
 		if err := s.firstCreateServer.processParams(s.service); err != nil {
 			return nil, err
 		}
-		createServers = append(createServers, s.firstCreateServer.CreateServerRequest)
+		createServers = append(createServers, &s.firstCreateServer.CreateServerRequest)
 
 		// Process additional server create args
 		var additionalCreateArgs = make([]string, 0, len(args))
@@ -219,7 +210,7 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 					if err := dst.processParams(s.service); err != nil {
 						return nil, err
 					}
-					createServers = append(createServers, dst.CreateServerRequest)
+					createServers = append(createServers, &dst.CreateServerRequest)
 				}
 				additionalCreateArgs = additionalCreateArgs[:0]
 				continue
@@ -227,41 +218,18 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 			additionalCreateArgs = append(additionalCreateArgs, arg)
 		}
 
-		var (
-			mu             sync.Mutex
-			numOk          int
-			createdServers []*upcloud.ServerDetails
-		)
-		handler := func(idx int, e *ui.LogEntry) {
-			server := createServers[idx]
-			msg := fmt.Sprintf("Creating server %q", server.Hostname)
-			e.SetMessage(msg)
-			e.Start()
-			details, err := s.service.CreateServer(&server)
-			if err == nil {
-				e.SetMessage(fmt.Sprintf("%s: server starting", msg))
-				details, err = WaitForServerState(s.service, details.UUID, upcloud.ServerStateStarted,
-					s.Config().ClientTimeout())
-			}
-			if err != nil {
-				e.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed", msg))
-				e.SetDetails(err.Error(), "error: ")
-			} else {
-				e.SetMessage(fmt.Sprintf("%s: done", msg))
-				mu.Lock()
-				numOk++
-				createdServers = append(createdServers, details)
-				mu.Unlock()
-			}
-		}
-		ui.StartWorkQueue(ui.WorkQueueConfig{
-			NumTasks:           len(createServers),
-			MaxConcurrentTasks: 5,
-			EnableUI:           s.Config().InteractiveUI(),
-		}, handler)
-		if numOk != len(createServers) {
-			return nil, fmt.Errorf("number of servers that failed: %d", len(createServers)-numOk)
-		}
-		return createdServers, nil
+		return ui.HandleContext{
+			Requests:      createServers,
+			RequestId:     func(in interface{}) string { return in.(*request.CreateServerRequest).Hostname },
+			ResultUuid: 	 getServerDetailsUuid,
+			InteractiveUi: s.Config().InteractiveUI(),
+			WaitMsg:       "server starting",
+			WaitFn:        WaitForServerFn(s.service, upcloud.ServerStateStarted, s.Config().ClientTimeout()),
+			MaxActions:    5,
+			ActionMsg:     "Creating server",
+			Action: func(req interface{}) (interface{}, error) {
+				return s.service.CreateServer(req.(*request.CreateServerRequest))
+			},
+		}.HandleAction()
 	}
 }

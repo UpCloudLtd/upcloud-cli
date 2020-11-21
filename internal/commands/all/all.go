@@ -28,6 +28,8 @@ func BuildCommands(mainCommand commands.Command, mainConfig *config.Config) {
 		server.StopCommand(svc),
 		server.CreateCommand(svc),
 		server.ModifyCommand(svc),
+		server.AttachCommand(svc),
+		server.LoadCommand(svc),
 		server.DeleteCommand(svc),
 	}
 	for _, svrCmds := range svrCmds {
@@ -40,9 +42,7 @@ func BuildCommands(mainCommand commands.Command, mainConfig *config.Config) {
 		storage.ListCommand(svc),
 		storage.CreateCommand(svc),
 		storage.ModifyCommand(svc),
-		storage.AttachCommand(svc),
 		storage.DetachCommand(svc),
-		storage.LoadCommand(svc),
 		storage.EjectCommand(svc),
 		storage.CloneCommand(svc),
 		storage.TemplatizeCommand(svc),
@@ -50,7 +50,6 @@ func BuildCommands(mainCommand commands.Command, mainConfig *config.Config) {
 		storage.RestoreBackupCommand(svc),
 		storage.DeleteCommand(svc),
 		storage.ImportCommand(svc),
-		storage.ShowImportCommand(svc),
 		storage.ShowCommand(svc),
 	}
 	for _, stgCmd := range stgCmds {
