@@ -58,7 +58,6 @@ func (m *MockStorageService) CreateBackup(r *request.CreateBackupRequest) (*upcl
 	args := m.Called(r)
 	return args[0].(*upcloud.StorageDetails), args.Error(1)
 }
-
 func (m *MockStorageService) RestoreBackup(r *request.RestoreBackupRequest) error {
 	return m.Called(r).Error(0)
 }
