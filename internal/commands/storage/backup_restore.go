@@ -20,7 +20,7 @@ type restoreBackupParams struct {
 
 func RestoreBackupCommand(service service.Storage) commands.Command {
 	return &restoreBackupCommand{
-		BaseCommand: commands.New("restore-backup", "Restore backup of a storage"),
+		BaseCommand: commands.New("restore", "Restore backup of a storage"),
 		service:     service,
 	}
 }

@@ -21,7 +21,7 @@ type createBackupParams struct {
 
 func CreateBackupCommand(service service.Storage) commands.Command {
 	return &createBackupCommand{
-		BaseCommand: commands.New("create-backup", "Create backup of a storage"),
+		BaseCommand: commands.New("create", "Create backup of a storage"),
 		service:     service,
 	}
 }
