@@ -38,7 +38,7 @@ func (s *modifyCommand) InitCommand() {
 	flags.StringVar(&s.params.BootOrder, "boot-order", DefaultModifyParams.BootOrder, "The boot device order.")
 	flags.IntVar(&s.params.CoreNumber, "cores", DefaultModifyParams.CoreNumber, "Number of cores")
 	flags.StringVar(&s.params.Hostname, "hostname", DefaultModifyParams.Hostname, "Hostname")
-	flags.StringVar(&s.params.Firewall, "firewall", DefaultModifyParams.Firewall, "Sets the firewall on or off. You can manage firewall rules with the firewall command\nAvailable: on, off")
+	flags.StringVar(&s.params.Firewall, "firewall", DefaultModifyParams.Firewall, "Enables or disables firewall on the server. You can manage firewall rules with the firewall command\nAvailable: true, false")
 	flags.IntVar(&s.params.MemoryAmount, "memory", DefaultModifyParams.MemoryAmount, "Memory amount in MiB")
 	flags.StringVar(&s.params.metadata, "metadata", DefaultModifyParams.metadata, "Enable metadata service")
 	flags.StringVar(&s.params.Plan, "plan", DefaultModifyParams.Plan, "Server plan to use. Set this to custom to use custom core/memory amounts.")
@@ -67,6 +67,13 @@ func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 			return nil, err
 		}
 		s.params.Metadata = *metadata
+
+		switch s.params.Firewall {
+		case "true":
+			s.params.Firewall = "on"
+		case "false":
+			s.params.Firewall = "off"
+		}
 
 		return Request{
 			BuildRequest: func(server *upcloud.Server) interface{} {
