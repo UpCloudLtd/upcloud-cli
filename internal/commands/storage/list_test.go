@@ -14,6 +14,18 @@ import (
 
 func TestListStorages(t *testing.T) {
 
+	var Storage4 = Storage1
+	Storage4.Title = "mock-storage-title4"
+	Storage4.Type = upcloud.StorageTypeCDROM
+	var Storage5 = Storage1
+	Storage5.Title = "mock-storage-title5"
+	Storage5.Type = upcloud.StorageTypeTemplate
+	var Storage6 = Storage3
+	Storage6.Title = "mock-storage-title6"
+	Storage6.Type = upcloud.StorageTypeBackup
+
+	storages := upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2, Storage3, Storage4, Storage5, Storage6}}
+
 	for _, testcase := range []struct {
 		name    string
 		private bool
@@ -25,7 +37,7 @@ func TestListStorages(t *testing.T) {
 			name: "List storages",
 			args: []string{"--private", "--public"},
 			testFn: func(res upcloud.Storages, e error) {
-				assert.Equal(t, 3, len(res.Storages))
+				assert.ElementsMatch(t, res.Storages, storages.Storages)
 				assert.Nil(t, e)
 			},
 		},
@@ -33,7 +45,7 @@ func TestListStorages(t *testing.T) {
 			name: "List private storages",
 			args: []string{"--private"},
 			testFn: func(res upcloud.Storages, e error) {
-				assert.Equal(t, 2, len(res.Storages))
+				assert.ElementsMatch(t, res.Storages, []upcloud.Storage{Storage1, Storage2, Storage4, Storage5})
 				assert.Nil(t, e)
 			},
 		},
@@ -41,13 +53,45 @@ func TestListStorages(t *testing.T) {
 			name: "List public storages",
 			args: []string{"--public"},
 			testFn: func(res upcloud.Storages, e error) {
-				assert.Equal(t, 3, len(res.Storages))
+				assert.ElementsMatch(t, res.Storages, []upcloud.Storage{Storage3, Storage6})
+				assert.Nil(t, e)
+			},
+		},
+		{
+			name: "List private by default",
+			args: []string{},
+			testFn: func(res upcloud.Storages, e error) {
+				assert.ElementsMatch(t, res.Storages, []upcloud.Storage{Storage1, Storage2, Storage4, Storage5})
+				assert.Nil(t, e)
+			},
+		},
+		{
+			name: "List cdrom",
+			args: []string{"--cdrom"},
+			testFn: func(res upcloud.Storages, e error) {
+				assert.ElementsMatch(t, res.Storages, []upcloud.Storage{Storage4})
+				assert.Nil(t, e)
+			},
+		},
+		{
+			name: "List public backup",
+			args: []string{"--public", "--backup"},
+			testFn: func(res upcloud.Storages, e error) {
+				assert.ElementsMatch(t, res.Storages, []upcloud.Storage{Storage6})
+				assert.Nil(t, e)
+			},
+		},
+		{
+			name: "List public template",
+			args: []string{"--public", "--template"},
+			testFn: func(res upcloud.Storages, e error) {
+				assert.ElementsMatch(t, res.Storages, []upcloud.Storage{})
 				assert.Nil(t, e)
 			},
 		},
 	} {
 		t.Run(testcase.name, func(t *testing.T) {
-			stgs := upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2, Storage3}}
+			stgs := storages
 			mss := new(mocks.MockStorageService)
 			mss.On("GetStorages", mock.Anything).Return(&stgs, nil)
 
