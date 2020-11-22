@@ -17,3 +17,5 @@ vendor/
 
 # IDEs
 .idea/
+
+.DS_Store

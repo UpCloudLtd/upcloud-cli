@@ -95,7 +95,7 @@ func searchStorage(storagesPtr *[]upcloud.Storage, service service.Storage, uuid
 	return matched, nil
 }
 
-func searchAllArgs(uuidOrTitle []string, service service.Storage, unique bool) ([]*upcloud.Storage, error) {
+func SearchAllStorages(uuidOrTitle []string, service service.Storage, unique bool) ([]*upcloud.Storage, error) {
 	var result []*upcloud.Storage
 	for _, id := range uuidOrTitle {
 		matchedResults, err := searchStorage(&cachedStorages, service, id, unique)
@@ -103,6 +103,12 @@ func searchAllArgs(uuidOrTitle []string, service service.Storage, unique bool) (
 		result = append(result, matchedResults...)
 	}
 	return result, nil
+}
+
+func SearchSingleStorage(uuidOrTitle string, service service.Storage) (*upcloud.Storage, error) {
+	matchedResults, err := searchStorage(&cachedStorages, service, uuidOrTitle, true)
+	if err != nil { return nil, err }
+	return matchedResults[0], nil
 }
 
 func WaitForImportState(service *service.Service, uuid, desiredState string, timeout time.Duration) (*upcloud.StorageImportDetails, error) {
@@ -146,7 +152,7 @@ func (s Request) Send(args []string) (interface{}, error ){
 		return nil, fmt.Errorf("at least one storage uuid is required")
 	}
 
-	storages, err := searchAllArgs(args, s.Service, true)
+	storages, err := SearchAllStorages(args, s.Service, true)
 	if err != nil { return nil, err }
 
 	var requests []interface{}

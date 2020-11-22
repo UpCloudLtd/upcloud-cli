@@ -138,7 +138,7 @@ func TestSearchStorage(t *testing.T) {
       mss := new(mocks.MockStorageService)
       mss.On("GetStorages", mock.Anything).Return(storages, nil)
 
-      result, err := searchAllArgs(testcase.args, mss, testcase.unique)
+      result, err := SearchAllStorages(testcase.args, mss, testcase.unique)
 
       if testcase.errMsg == "" {
         assert.Nil(t, err)
