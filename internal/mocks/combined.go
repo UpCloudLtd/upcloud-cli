@@ -121,3 +121,73 @@ func(m *MockServerStorageService)WaitForStorageImportCompletion(r *request.WaitF
 func(m *MockServerStorageService)DeleteStorage(r *request.DeleteStorageRequest) error {
   return m.Called(r).Error(0)
 }
+
+type MockServerFirewallService struct {
+  mock.Mock
+}
+
+func(m *MockServerFirewallService) GetServerConfigurations() (*upcloud.ServerConfigurations, error) {
+  args := m.Called()
+  return args[0].(*upcloud.ServerConfigurations), args.Error(1)
+}
+func(m *MockServerFirewallService) GetServers() (*upcloud.Servers, error) {
+  args := m.Called()
+  return args[0].(*upcloud.Servers), args.Error(1)
+}
+func(m *MockServerFirewallService) GetServerDetails(r *request.GetServerDetailsRequest) (*upcloud.ServerDetails, error) {
+  args := m.Called(r)
+  return args[0].(*upcloud.ServerDetails), args.Error(1)
+}
+func(m *MockServerFirewallService) CreateServer(r *request.CreateServerRequest) (*upcloud.ServerDetails, error) {
+  args := m.Called(r)
+  return args[0].(*upcloud.ServerDetails), args.Error(1)
+}
+func(m *MockServerFirewallService) WaitForServerState(r *request.WaitForServerStateRequest) (*upcloud.ServerDetails, error) {
+  args := m.Called(r)
+  return args[0].(*upcloud.ServerDetails), args.Error(1)
+}
+func(m *MockServerFirewallService) StartServer(r *request.StartServerRequest) (*upcloud.ServerDetails, error) {
+  args := m.Called(r)
+  return args[0].(*upcloud.ServerDetails), args.Error(1)
+}
+func(m *MockServerFirewallService) StopServer(r *request.StopServerRequest) (*upcloud.ServerDetails, error) {
+  args := m.Called(r)
+  return args[0].(*upcloud.ServerDetails), args.Error(1)
+}
+func(m *MockServerFirewallService) RestartServer(r *request.RestartServerRequest) (*upcloud.ServerDetails, error) {
+  args := m.Called(r)
+  return args[0].(*upcloud.ServerDetails), args.Error(1)
+}
+func(m *MockServerFirewallService) ModifyServer(r *request.ModifyServerRequest) (*upcloud.ServerDetails, error) {
+  args := m.Called(r)
+  return args[0].(*upcloud.ServerDetails), args.Error(1)
+}
+func(m *MockServerFirewallService) DeleteServer(r *request.DeleteServerRequest) error {
+  args := m.Called(r)
+  return args.Error(0)
+}
+func(m *MockServerFirewallService) DeleteServerAndStorages(r *request.DeleteServerAndStoragesRequest) error {
+  args := m.Called(r)
+  return args.Error(0)
+}
+
+func(m *MockServerFirewallService) GetFirewallRules(r *request.GetFirewallRulesRequest) (*upcloud.FirewallRules, error) {
+  args := m.Called(r)
+  return args[0].(*upcloud.FirewallRules), args.Error(1)
+}
+func(m *MockServerFirewallService) GetFirewallRuleDetails(r *request.GetFirewallRuleDetailsRequest) (*upcloud.FirewallRule, error) {
+  args := m.Called(r)
+  return args[0].(*upcloud.FirewallRule), args.Error(1)
+}
+func(m *MockServerFirewallService) CreateFirewallRule(r *request.CreateFirewallRuleRequest) (*upcloud.FirewallRule, error) {
+  args := m.Called(r)
+  return args[0].(*upcloud.FirewallRule), args.Error(1)
+}
+func(m *MockServerFirewallService) CreateFirewallRules(r *request.CreateFirewallRulesRequest) error {
+  args := m.Called(r)
+  return args.Error(0)
+}
+func(m *MockServerFirewallService) DeleteFirewallRule(r *request.DeleteFirewallRuleRequest) error {
+  args := m.Called(r)
+  return args.Error(0)
+}

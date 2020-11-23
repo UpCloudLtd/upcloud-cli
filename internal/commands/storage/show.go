@@ -2,11 +2,12 @@ package storage
 
 import (
 	"fmt"
-	"github.com/UpCloudLtd/cli/internal/interfaces"
 	"io"
 	"math"
 	"sync"
 	"time"
+
+	"github.com/UpCloudLtd/cli/internal/interfaces"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
@@ -31,6 +32,13 @@ type showCommand struct {
 	storageImport *upcloud.StorageImportDetails
 }
 
+type commandResponseHolder struct {
+	storageDetails *upcloud.StorageDetails
+	storageImport  *upcloud.StorageImportDetails
+	servers        []upcloud.Server
+	storages       []upcloud.Storage
+}
+
 func (s *showCommand) InitCommand() {
 	s.ArgCompletion(func(toComplete string) ([]string, cobra.ShellCompDirective) {
 		storages, err := s.service.GetStorages(&request.GetStoragesRequest{})
@@ -47,10 +55,14 @@ func (s *showCommand) InitCommand() {
 
 func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
+		var storages []upcloud.Storage
+		var storageImport *upcloud.StorageImportDetails
+		var servers []upcloud.Server
+
 		if len(args) < 1 {
 			return nil, fmt.Errorf("storage title or uuid is required")
 		}
-		storage, err := searchStorage(&cachedStorages, s.service, args[0], true)
+		storage, err := searchStorage(&storages, s.service, args[0], true)
 		if err != nil {
 			return nil, err
 		}
@@ -61,8 +73,9 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			s.storageImport, storageImportDetailsErr = s.service.GetStorageImportDetails(
+			storageImport, storageImportDetailsErr = s.service.GetStorageImportDetails(
 				&request.GetStorageImportDetailsRequest{UUID: storage[0].UUID})
+
 			if ucErr, ok := storageImportDetailsErr.(*upcloud.Error); ok {
 				if ucErr.ErrorCode == "STORAGE_IMPORT_NOT_FOUND" {
 					storageImportDetailsErr = nil
@@ -72,8 +85,8 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			if servers, err := s.service.GetServers(); err == nil {
-				cachedServers = servers.Servers
+			if resp, err := s.service.GetServers(); err == nil {
+				servers = resp.Servers
 			}
 		}()
 		storageDetails, err := s.service.GetStorageDetails(&request.GetStorageDetailsRequest{UUID: storage[0].UUID})
@@ -84,15 +97,15 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 		if storageImportDetailsErr != nil {
 			return nil, storageImportDetailsErr
 		}
-		return storageDetails, nil
+		return &commandResponseHolder{storageDetails, storageImport, servers, storages}, nil
 	}
 }
 
 func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
-	storage := out.(*upcloud.StorageDetails)
+	resp := out.(*commandResponseHolder)
+	storage := resp.storageDetails
+	storageImport := resp.storageImport
 
-	dMain := ui.NewDetailsView()
-	dMain.SetRowSeparators(true)
 	formatBool := func(v bool) interface{} {
 		if v {
 			return ui.DefaultBooleanColoursTrue.Sprint("yes")
@@ -105,7 +118,7 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 			return ""
 		}
 		if len(storageByUuid) == 0 {
-			for _, v := range cachedStorages {
+			for _, v := range resp.storages {
 				storageByUuid[v.UUID] = v
 			}
 		}
@@ -129,31 +142,32 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 		return row
 	}
 
+	dMain := ui.NewListLayout(ui.ListLayoutDefault)
+
 	// Common details
 	{
 		dCommon := ui.NewDetailsView()
 		dCommon.SetRowTransformer(rowTransformer)
 		dCommon.AppendRows([]table.Row{
-			{"UUID", ui.DefaultUuidColours.Sprint(storage.UUID)},
-			{"Title", storage.Title},
-			{"Zone", storage.Zone},
-			{"State", StateColour(storage.State).Sprint(storage.State)},
-			{"Size (GiB)", storage.Size},
-			{"Type", storage.Type},
-			{"Tier", storage.Tier},
-			{"License", storage.License},
-			{"Created", storage.Created},
-			{"Origin", formatStorageReferenceUuid(storage.Origin)},
+			{"UUID:", ui.DefaultUuidColours.Sprint(storage.UUID)},
+			{"Title:", storage.Title},
+			{"Zone:", storage.Zone},
+			{"State:", StateColour(storage.State).Sprint(storage.State)},
+			{"Size (GiB):", storage.Size},
+			{"Type:", storage.Type},
+			{"Tier:", storage.Tier},
+			{"License:", storage.License},
+			{"Created:", storage.Created},
+			{"Origin:", formatStorageReferenceUuid(storage.Origin)},
 		})
-		// fmt.Println(dCommon.Render())
-		dMain.AppendRow(table.Row{"Common", dCommon.Render()})
+		dMain.AppendSection("Common:", dCommon.Render())
 	}
 
 	// Servers
 	if len(storage.ServerUUIDs) > 0 {
 		tServers := ui.NewDataTable("UUID", "Title", "Hostname", "State")
 		serversByUuid := make(map[string]upcloud.Server)
-		for _, v := range cachedServers {
+		for _, v := range resp.servers {
 			serversByUuid[v.UUID] = v
 		}
 		for _, uuid := range storage.ServerUUIDs {
@@ -164,9 +178,9 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 				server.StateColour(serversByUuid[uuid].State).Sprint(serversByUuid[uuid].State),
 			})
 		}
-		dMain.AppendRow(table.Row{"Servers", tServers.Render()})
+		dMain.AppendSection("Servers:", ui.WrapWithListLayout(tServers.Render(), ui.ListLayoutNestedTable).Render())
 	} else {
-		dMain.AppendRow(table.Row{"Servers", "no servers using this storage"})
+		dMain.AppendSection("Servers:", "(no servers using this storage)")
 	}
 
 	// Backups
@@ -176,17 +190,18 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 		if storage.BackupRule != nil && storage.BackupRule.Interval != "" {
 			dBackupRule := ui.NewDetailsView()
 			dBackupRule.AppendRows([]table.Row{
-				{"Interval", storage.BackupRule.Interval},
-				{"Time", storage.BackupRule.Time},
-				{"Retention", storage.BackupRule.Retention},
+				{"Interval:", storage.BackupRule.Interval},
+				{"Time:", storage.BackupRule.Time},
+				{"Retention:", storage.BackupRule.Retention},
 			})
-			dBackups.AppendRow(table.Row{"Backup Rule", dBackupRule.Render()})
+			dMain.AppendSection("Backup Rule:", dBackupRule.Render())
 		} else if storage.BackupRule != nil {
-			dBackups.AppendRow(table.Row{"Backup Rule", "no backup rule configured"})
+			dMain.AppendSection("Backup Rule:", "(no backup rule configured)")
 		}
+
 		if len(storage.BackupUUIDs) > 0 {
 			if len(storageByUuid) == 0 {
-				for _, v := range cachedStorages {
+				for _, v := range resp.storages {
 					storageByUuid[v.UUID] = v
 				}
 			}
@@ -198,47 +213,46 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 					storageByUuid[uuid].Created,
 				})
 			}
-			dBackups.AppendRow(table.Row{"Available Backups", tBackups.Render()})
+			dMain.AppendSection("Available Backups:", ui.WrapWithListLayout(tBackups.Render(), ui.ListLayoutNestedTable).Render())
+		} else {
+			dMain.AppendSection("Available Backups:", "(no backups are available)")
 		}
-		dMain.AppendRow(table.Row{"Backup", dBackups.Render()})
 	}
 
 	// Storage import
-	if s.storageImport != nil {
+	if storageImport != nil {
 		dStorageImport := ui.NewDetailsView()
 		dStorageImport.SetRowTransformer(rowTransformer)
 		dStorageImport.AppendRows([]table.Row{
-			{"State", ImportStateColour(s.storageImport.State).Sprint(s.storageImport.State)},
-			{"Source", s.storageImport.Source},
+			{"State:", ImportStateColour(storageImport.State).Sprint(storageImport.State)},
+			{"Source:", storageImport.Source},
 		})
-		switch s.storageImport.Source {
+		switch storageImport.Source {
 		case upcloud.StorageImportSourceHTTPImport:
-			dStorageImport.AppendRow(table.Row{"Source Location", s.storageImport.SourceLocation})
+			dStorageImport.AppendRow(table.Row{"Source Location", storageImport.SourceLocation})
 		case upcloud.StorageImportSourceDirectUpload:
-			dStorageImport.AppendRow(table.Row{"Upload URL", s.storageImport.DirectUploadURL})
+			dStorageImport.AppendRow(table.Row{"Upload URL", storageImport.DirectUploadURL})
 		}
 		dStorageImport.AppendRows([]table.Row{
-			{"Content Length", ui.FormatBytes(s.storageImport.ClientContentLength)},
-			{"Read", ui.FormatBytes(s.storageImport.ReadBytes)},
-			{"Written", ui.FormatBytes(s.storageImport.WrittenBytes)},
-			{"SHA256 Checksum", s.storageImport.SHA256Sum},
+			{"Content Length:", ui.FormatBytes(storageImport.ClientContentLength)},
+			{"Read:", ui.FormatBytes(storageImport.ReadBytes)},
+			{"Written:", ui.FormatBytes(storageImport.WrittenBytes)},
+			{"SHA256 Checksum:", storageImport.SHA256Sum},
 		})
-		if s.storageImport.ErrorCode != "" {
+		if storageImport.ErrorCode != "" {
 			dStorageImport.AppendRows([]table.Row{
-				{"Error", ui.DefaultErrorColours.Sprintf("%s\n%s",
-					s.storageImport.ErrorCode, s.storageImport.ErrorMessage)},
+				{"Error:", ui.DefaultErrorColours.Sprintf("%s\n%s",
+					storageImport.ErrorCode, storageImport.ErrorMessage)},
 			})
 		}
 		dStorageImport.AppendRows([]table.Row{
-			{"Content Type", s.storageImport.ClientContentType},
-			{"Created", ui.FormatTime(s.storageImport.Created)},
-			{"Completed", ui.FormatTime(s.storageImport.Completed)},
+			{"Content Type:", storageImport.ClientContentType},
+			{"Created:", ui.FormatTime(storageImport.Created)},
+			{"Completed:", ui.FormatTime(storageImport.Completed)},
 		})
-		dMain.AppendRow(table.Row{"Import", dStorageImport.Render()})
+		dMain.AppendSection("Import:", dStorageImport.Render())
 	}
 
-	fmt.Fprintln(writer)
-	fmt.Fprintln(writer, dMain.Render())
-	fmt.Fprintln(writer)
+	_, _ = fmt.Fprintln(writer, dMain.Render())
 	return nil
 }

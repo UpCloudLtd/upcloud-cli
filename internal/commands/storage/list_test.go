@@ -2,6 +2,8 @@ package storage
 
 import (
 	"bytes"
+	"testing"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
 	"github.com/UpCloudLtd/cli/internal/mocks"
@@ -9,7 +11,6 @@ import (
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
 )
 
 func TestListStorages(t *testing.T) {
@@ -109,11 +110,11 @@ func TestListStoragesOutput(t *testing.T) {
 	lc := commands.BuildCommand(ListCommand(new(mocks.MockStorageService)), nil, config.New(viper.New()))
 
 	expected := `
-  UUID                                     Title                   Zone        State           Type       Size     Tier        Created  
-──────────────────────────────────────── ─────────────────────── ─────────── ─────────────── ────────── ──────── ─────────── ───────────
-  0127dfd6-3884-4079-a948-3a8881df1a7a     mock-storage-title1     fi-hel1     maintenance     backup       40     maxiops              
-  012bde1d-f0e7-4bb2-9f4a-74e1f2b49c07     mock-storage-title2     fi-hel1     online          normal       40     maxiops              
-  012c61a6-b8f0-48c2-a63a-b4bf7d26a655     mock-storage-title3     fi-hel1     online          normal       10     maxiops              
+ UUID                                   Title                 Zone      State         Type     Size   Tier      Created 
+────────────────────────────────────── ───────────────────── ───────── ───────────── ──────── ────── ───────── ─────────
+ 0127dfd6-3884-4079-a948-3a8881df1a7a   mock-storage-title1   fi-hel1   maintenance   backup     40   maxiops           
+ 012bde1d-f0e7-4bb2-9f4a-74e1f2b49c07   mock-storage-title2   fi-hel1   online        normal     40   maxiops           
+ 012c61a6-b8f0-48c2-a63a-b4bf7d26a655   mock-storage-title3   fi-hel1   online        normal     10   maxiops           
 
 `
 

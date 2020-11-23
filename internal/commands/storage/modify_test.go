@@ -30,6 +30,7 @@ func TestModifyCommand(t *testing.T) {
     t.Run(test.name, func(t *testing.T) {
       mss := MockStorageService()
       mss.On(methodName, mock.Anything).Return(&details, nil)
+      mss.On("GetStorageDetails", mock.Anything).Return(&details, nil)
 
       tc := commands.BuildCommand(ModifyCommand(mss), nil, config.New(viper.New()))
       mocks.SetFlags(tc, test.args)

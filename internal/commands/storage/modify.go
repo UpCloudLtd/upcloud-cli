@@ -26,8 +26,11 @@ type modifyParams struct {
 
 var DefaultModifyParams = &modifyParams{
 	ModifyStorageRequest: request.ModifyStorageRequest{},
-	backupInterval: "daily",
-	backupRetention: 7,
+}
+
+var defaultBackupRuleParams = upcloud.BackupRule{
+	Interval:  "daily",
+	Retention: 7,
 }
 
 func ModifyCommand(service service.Storage) commands.Command {
@@ -44,8 +47,8 @@ func (s *modifyCommand) InitCommand() {
 	flagSet.StringVar(&s.params.Title, "title", DefaultModifyParams.Title, "Storage title")
 	flagSet.IntVar(&s.params.Size, "size", DefaultModifyParams.Size, "Size of the storage in GiB")
 	flagSet.StringVar(&s.params.backupTime, "backup-time", s.params.backupTime, "The time when to create a backup in HH:MM. Empty value means no backups.")
-	flagSet.StringVar(&s.params.backupInterval, "backup-interval", DefaultModifyParams.backupInterval, "The interval of the backup.\nAvailable: daily,mon,tue,wed,thu,fri,sat,sun")
-	flagSet.IntVar(&s.params.backupRetention, "backup-retention", DefaultModifyParams.backupRetention, "How long to store the backups in days. The accepted range is 1-1095")
+	flagSet.StringVar(&s.params.backupInterval, "backup-interval", "", "The interval of the backup.\nAvailable: daily,mon,tue,wed,thu,fri,sat,sun")
+	flagSet.IntVar(&s.params.backupRetention, "backup-retention", 0, "How long to store the backups in days. The accepted range is 1-1095")
 
 	s.AddFlags(flagSet)
 }
@@ -63,15 +66,23 @@ func setBackupFields(storage *upcloud.Storage, p modifyParams, service service.S
 		}
 	}
 
-	if details.BackupRule.Time == "" {
-		fmt.Println("ret:",p.backupRetention, ", int: ", p.backupInterval, ", time:",p.backupTime)
+	if details.BackupRule == nil || details.BackupRule.Time == "" {
 		if p.backupTime == "" && (p.backupInterval != "" || p.backupRetention != 0) {
 			return fmt.Errorf("backup-time must be provided")
 		}
+
 		req.BackupRule = &upcloud.BackupRule{
-			Interval:  p.backupInterval,
 			Time:      tv.Format("1504"),
-			Retention: p.backupRetention,
+		}
+		if p.backupInterval == "" {
+			req.BackupRule.Interval = defaultBackupRuleParams.Interval
+		} else {
+			req.BackupRule.Interval = p.backupInterval
+		}
+		if p.backupRetention == 0 {
+			req.BackupRule.Retention = defaultBackupRuleParams.Retention
+		} else {
+			req.BackupRule.Retention = p.backupRetention
 		}
 	} else {
 		req.BackupRule = details.BackupRule
@@ -96,7 +107,6 @@ func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 				req := s.params.ModifyStorageRequest
 				if err := setBackupFields(storage, s.params, s.service, &req); err != nil {return nil, err}
 				req.UUID = storage.UUID
-				fmt.Println(req.BackupRule)
 				return &req, nil
 			},
 			Service: s.service,
@@ -106,7 +116,6 @@ func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 				InteractiveUi: s.Config().InteractiveUI(),
 				ActionMsg:  "Modifying storage",
 				Action: func(req interface{}) (interface{}, error) {
-					fmt.Println("sending call")
 					return s.service.ModifyStorage(req.(*request.ModifyStorageRequest))
 				},
 			},
