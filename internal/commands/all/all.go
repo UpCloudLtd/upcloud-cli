@@ -2,6 +2,7 @@ package all
 
 import (
 	"github.com/UpCloudLtd/cli/internal/commands"
+	ip_address "github.com/UpCloudLtd/cli/internal/commands/ip-address"
 	"github.com/UpCloudLtd/cli/internal/commands/plan"
 	"github.com/UpCloudLtd/cli/internal/commands/server"
 	"github.com/UpCloudLtd/cli/internal/commands/storage"
@@ -56,4 +57,12 @@ func BuildCommands(mainCommand commands.Command, mainConfig *config.Config) {
 	backupCommand := commands.BuildCommand(storage.BackupCommand(), storageCommand, cfgFn())
 	commands.BuildCommand(storage.CreateBackupCommand(svc), backupCommand, cfgFn())
 	commands.BuildCommand(storage.RestoreBackupCommand(svc), backupCommand, cfgFn())
+
+	// IP Addresses
+	ipAddressCommand := commands.BuildCommand(ip_address.IpAddressCommand(), mainCommand, cfgFn())
+	commands.BuildCommand(ip_address.ListCommand(svc), ipAddressCommand, cfgFn())
+	commands.BuildCommand(ip_address.ShowCommand(svc), ipAddressCommand, cfgFn())
+	commands.BuildCommand(ip_address.ModifyCommand(svc), ipAddressCommand, cfgFn())
+	commands.BuildCommand(ip_address.AssignCommand(svc), ipAddressCommand, cfgFn())
+	commands.BuildCommand(ip_address.ReleaseCommand(svc), ipAddressCommand, cfgFn())
 }
