@@ -3,7 +3,9 @@ package storage
 import (
 	"github.com/UpCloudLtd/cli/internal/mocks"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"testing"
 )
 
 var (
@@ -72,4 +74,80 @@ func MockStorageService() *mocks.MockStorageService {
 	mss := new(mocks.MockStorageService)
 	mss.On("GetStorages", mock.Anything).Return(storages, nil)
 	return mss
+}
+
+func TestSearchStorage(t *testing.T) {
+	var storages = &upcloud.Storages{
+		Storages: []upcloud.Storage{
+			Storage1,
+			Storage2,
+			Storage3,
+			Storage4,
+		},
+	}
+	for _, testcase := range []struct {
+		name         string
+		args         []string
+		expected     []*upcloud.Storage
+		unique       bool
+		additional   []upcloud.Storage
+		backendCalls int
+		errMsg       string
+	}{
+		{
+			name:         "SingleUuid",
+			args:         []string{Storage2.UUID},
+			expected:     []*upcloud.Storage{&Storage2},
+			backendCalls: 1,
+		},
+		{
+			name:         "MultipleUuidSearched",
+			args:         []string{Storage2.UUID, Storage3.UUID},
+			expected:     []*upcloud.Storage{&Storage2, &Storage3},
+			backendCalls: 1,
+		},
+		{
+			name:         "SingleTitle",
+			args:         []string{Storage2.Title},
+			expected:     []*upcloud.Storage{&Storage2},
+			backendCalls: 1,
+		},
+		{
+			name:         "MultipleTitlesSearched",
+			args:         []string{Storage2.Title, Storage3.Title},
+			expected:     []*upcloud.Storage{&Storage2, &Storage3},
+			backendCalls: 1,
+		},
+		{
+			name:         "MultipleTitlesFound",
+			args:         []string{Title1},
+			expected:     []*upcloud.Storage{&Storage1, &Storage4},
+			backendCalls: 1,
+		},
+		{
+			name:         "MultipleTitlesFound",
+			args:         []string{Title1},
+			expected:     []*upcloud.Storage{&Storage1, &Storage4},
+			backendCalls: 1,
+			unique:       true,
+			errMsg:       "multiple storages matched to query \"" + Title1 + "\", use UUID to specify",
+		},
+	} {
+		t.Run(testcase.name, func(t *testing.T) {
+			cachedStorages = []upcloud.Storage{}
+			mss := new(mocks.MockStorageService)
+			mss.On("GetStorages", mock.Anything).Return(storages, nil)
+
+			result, err := SearchAllStorages(testcase.args, mss, testcase.unique)
+
+			if testcase.errMsg == "" {
+				assert.Nil(t, err)
+				assert.ElementsMatch(t, testcase.expected, result)
+			} else {
+				assert.Nil(t, result)
+				assert.EqualError(t, err, testcase.errMsg)
+			}
+			mss.AssertNumberOfCalls(t, "GetStorages", testcase.backendCalls)
+		})
+	}
 }

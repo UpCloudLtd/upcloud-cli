@@ -19,7 +19,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/ui"
 )
 
-func ShowCommand(service interfaces.StorageServer) commands.Command {
+func ShowCommand(service interfaces.ServerAndStorage) commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New("show", "Show storage details"),
 		service:     service,
@@ -28,7 +28,8 @@ func ShowCommand(service interfaces.StorageServer) commands.Command {
 
 type showCommand struct {
 	*commands.BaseCommand
-	service interfaces.StorageServer
+	service       interfaces.ServerAndStorage
+	storageImport *upcloud.StorageImportDetails
 }
 
 type commandResponseHolder struct {
@@ -73,7 +74,8 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 		go func() {
 			defer wg.Done()
 			storageImport, storageImportDetailsErr = s.service.GetStorageImportDetails(
-				&request.GetStorageImportDetailsRequest{UUID: storage.UUID})
+				&request.GetStorageImportDetailsRequest{UUID: storage[0].UUID})
+
 			if ucErr, ok := storageImportDetailsErr.(*upcloud.Error); ok {
 				if ucErr.ErrorCode == "STORAGE_IMPORT_NOT_FOUND" {
 					storageImportDetailsErr = nil
@@ -87,7 +89,7 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 				servers = resp.Servers
 			}
 		}()
-		storageDetails, err := s.service.GetStorageDetails(&request.GetStorageDetailsRequest{UUID: storage.UUID})
+		storageDetails, err := s.service.GetStorageDetails(&request.GetStorageDetailsRequest{UUID: storage[0].UUID})
 		if err != nil {
 			return nil, err
 		}

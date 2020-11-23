@@ -5,73 +5,43 @@ import (
 	"github.com/UpCloudLtd/cli/internal/config"
 	"github.com/UpCloudLtd/cli/internal/mocks"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
 )
 
-type CreateTestMock struct {
-	mocks.MockStorageService
-}
-
-func (s CreateTestMock) CreateStorage(r *request.CreateStorageRequest) (*upcloud.StorageDetails, error) {
-	return &upcloud.StorageDetails{
-		Storage:     upcloud.Storage{UUID: Uuid1},
-		BackupRule:  nil,
-		BackupUUIDs: upcloud.BackupUUIDSlice{Uuid2},
-		ServerUUIDs: upcloud.ServerUUIDSlice{Uuid3},
-	}, nil
-}
-
-func TestCreateStorage(t *testing.T) {
+func TestCreateCommand(t *testing.T) {
+	methodName := "CreateStorage"
 	details := upcloud.StorageDetails{
 		Storage: Storage1,
 	}
-	for _, testcase := range []struct {
-		name   string
-		args   []string
-		testFn func(res *upcloud.StorageDetails, e error)
+	for _, test := range []struct {
+		name        string
+		args        []string
+		methodCalls int
 	}{
 		{
-			name: "Storage with given title found",
-			args: []string{"--title", Title1, "--size", "1234", "--tier", "test-tier", "--zone", "fi-hel1"},
-			testFn: func(res *upcloud.StorageDetails, e error) {
-				assert.Equal(t, res.UUID, Uuid1)
-				assert.Nil(t, e)
-			},
-		},
-		{
-			name: "Storage with given title does not exist",
-			args: []string{"--asdf", "something"},
-			testFn: func(res *upcloud.StorageDetails, e error) {
-				assert.Nil(t, res)
-				assert.Equal(t, "unknown flag: --asdf", e.Error())
-			},
-		},
-		{
-			name: "When no argument given default parameters are used",
-			args: []string{},
-			testFn: func(res *upcloud.StorageDetails, e error) {
-				assert.Equal(t, res.UUID, Uuid1)
-				assert.Nil(t, e)
-			},
+			name:        "Backend called, details returned",
+			args:        []string{},
+			methodCalls: 1,
 		},
 	} {
-		t.Run(testcase.name, func(t *testing.T) {
+		t.Run(test.name, func(t *testing.T) {
 			mss := MockStorageService()
-			mss.On("CreateStorage", mock.Anything).Return(&details, nil)
-			cc := commands.BuildCommand(CreateCommand(mss), nil, config.New(viper.New()))
+			mss.On(methodName, mock.Anything).Return(&details, nil)
 
-			res, err := cc.MakeExecuteCommand()(testcase.args)
-			var result []*upcloud.StorageDetails
-			if res != nil {
-				result = res.([]*upcloud.StorageDetails)
-				testcase.testFn(result[0], err)
-			} else {
-				testcase.testFn(nil, err)
+			tc := commands.BuildCommand(CreateCommand(mss), nil, config.New(viper.New()))
+			mocks.SetFlags(tc, test.args)
+
+			results, err := tc.MakeExecuteCommand()([]string{Storage2.UUID})
+			for _, result := range results.([]interface{}) {
+				assert.Equal(t, &details, result.(*upcloud.StorageDetails))
 			}
+
+			assert.Nil(t, err)
+
+			mss.AssertNumberOfCalls(t, methodName, test.methodCalls)
 		})
 	}
 }
