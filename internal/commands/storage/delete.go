@@ -40,8 +40,8 @@ func (s *deleteCommand) InitCommand() {
 func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 		return Request{
-			BuildRequest: func(storage *upcloud.Storage) interface{} {
-				return &request.DeleteStorageRequest{UUID: storage.UUID}
+			BuildRequest: func(storage *upcloud.Storage) (interface{}, error) {
+				return &request.DeleteStorageRequest{UUID: storage.UUID}, nil
 			},
 			Service: s.service,
 			HandleContext: ui.HandleContext{

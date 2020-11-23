@@ -11,59 +11,37 @@ import (
 	"testing"
 )
 
-func TestCreateStorage(t *testing.T) {
-
-	details := &upcloud.StorageDetails{
-		Storage:     upcloud.Storage{UUID: Uuid1},
-		BackupRule:  nil,
-		BackupUUIDs: upcloud.BackupUUIDSlice{Uuid2},
-		ServerUUIDs: upcloud.ServerUUIDSlice{Uuid3},
+func TestCreateCommand(t *testing.T) {
+	methodName := "CreateStorage"
+	details := upcloud.StorageDetails{
+		Storage: Storage1,
 	}
-
-	for _, testcase := range []struct {
-		name   string
-		args   []string
-		testFn func(res *upcloud.StorageDetails, e error)
+	for _, test := range []struct {
+		name string
+		args []string
+		methodCalls int
 	}{
 		{
-			name: "Storage with given title found",
-			args: []string{"--title", Title1, "--size", "1234", "--tier", "test-tier", "--zone", "fi-hel1"},
-			testFn: func(res *upcloud.StorageDetails, e error) {
-				assert.Equal(t, res.UUID, Uuid1)
-				assert.Nil(t, e)
-			},
-		},
-		{
-			name: "Storage with given title does not exist",
-			args: []string{"--asdf", "something"},
-			testFn: func(res *upcloud.StorageDetails, e error) {
-				assert.Nil(t, res)
-				assert.Equal(t, "unknown flag: --asdf", e.Error())
-			},
-		},
-		{
-			name: "When no argument given default parameters are used",
+			name: "Backend called, details returned",
 			args: []string{},
-			testFn: func(res *upcloud.StorageDetails, e error) {
-				assert.Equal(t, res.UUID, Uuid1)
-				assert.Nil(t, e)
-			},
+			methodCalls: 1,
 		},
-	} {
-		t.Run(testcase.name, func(t *testing.T) {
+	}{
+		t.Run(test.name, func(t *testing.T) {
+			mss := MockStorageService()
+			mss.On(methodName, mock.Anything).Return(&details, nil)
 
-			mss := new(mocks.MockStorageService)
-			mss.On("CreateStorage", mock.Anything).Return(details, nil)
-			cc := commands.BuildCommand(CreateCommand(mss), nil, config.New(viper.New()))
+			tc := commands.BuildCommand(CreateCommand(mss), nil, config.New(viper.New()))
+			mocks.SetFlags(tc, test.args)
 
-			res, err := cc.MakeExecuteCommand()(testcase.args)
-			//var result []*upcloud.StorageDetails
-			if res != nil {
-				//result = res.([]*upcloud.StorageDetails)
-				//testcase.testFn(result[0], err)
-			} else {
-				testcase.testFn(nil, err)
+			results, err := tc.MakeExecuteCommand()([]string{Storage2.UUID})
+			for _, result := range results.([]interface{}) {
+				assert.Equal(t, &details, result.(*upcloud.StorageDetails))
 			}
+
+			assert.Nil(t, err)
+
+			mss.AssertNumberOfCalls(t, methodName, test.methodCalls)
 		})
 	}
 }

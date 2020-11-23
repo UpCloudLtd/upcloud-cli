@@ -139,7 +139,7 @@ var getStorageDetailsUuid = func(in interface{}) string { return in.(*upcloud.St
 
 type Request struct {
 	ExactlyOne   bool
-	BuildRequest func(storage *upcloud.Storage)interface{}
+	BuildRequest func(storage *upcloud.Storage) (interface{}, error)
 	Service      service.Storage
 	ui.HandleContext
 }
@@ -157,7 +157,9 @@ func (s Request) Send(args []string) (interface{}, error ){
 
 	var requests []interface{}
 	for _, storage := range storages {
-		requests = append(requests, s.BuildRequest(storage))
+		request, err := s.BuildRequest(storage)
+		if err != nil {return nil, err}
+		requests = append(requests, request)
 	}
 
 	return s.Handle(requests)

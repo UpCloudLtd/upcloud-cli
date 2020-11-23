@@ -28,10 +28,10 @@ func RestoreBackupCommand(service service.Storage) commands.Command {
 func (s *restoreBackupCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 		return Request{
-			BuildRequest: func(storage *upcloud.Storage) interface{} {
+			BuildRequest: func(storage *upcloud.Storage) (interface{}, error) {
 				req := s.params.RestoreBackupRequest
 				req.UUID = storage.UUID
-				return &req
+				return &req, nil
 			},
 			Service: s.service,
 			HandleContext: ui.HandleContext{
