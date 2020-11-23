@@ -50,7 +50,7 @@ func (s *templatizeCommand) MakeExecuteCommand() func(args []string) (interface{
 			Service: s.service,
 			HandleContext: ui.HandleContext{
 				RequestId:     func(in interface{}) string { return in.(*request.TemplatizeStorageRequest).UUID },
-				ResultUuid: getStorageDetailsUuid,
+				ResultUuid:    getStorageDetailsUuid,
 				MaxActions:    maxStorageActions,
 				InteractiveUi: s.Config().InteractiveUI(),
 				ActionMsg:     "Templatizing storage",

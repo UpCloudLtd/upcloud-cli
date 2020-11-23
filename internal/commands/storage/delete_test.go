@@ -14,16 +14,16 @@ func TestDeleteStorageCommand(t *testing.T) {
 	methodName := "DeleteStorage"
 
 	for _, test := range []struct {
-		name string
-		args []string
+		name        string
+		args        []string
 		methodCalls int
 	}{
 		{
-			name: "Backend called",
-			args: []string{},
+			name:        "Backend called",
+			args:        []string{},
 			methodCalls: 1,
 		},
-	}{
+	} {
 		t.Run(test.name, func(t *testing.T) {
 			mss := MockStorageService()
 			mss.On(methodName, mock.Anything).Return(nil, nil)
@@ -41,4 +41,3 @@ func TestDeleteStorageCommand(t *testing.T) {
 		})
 	}
 }
-

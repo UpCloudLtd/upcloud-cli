@@ -22,8 +22,8 @@ func StopCommand(service service.Server) commands.Command {
 
 type stopCommand struct {
 	*commands.BaseCommand
-	service  service.Server
-	params stopParams
+	service service.Server
+	params  stopParams
 }
 
 type stopParams struct {

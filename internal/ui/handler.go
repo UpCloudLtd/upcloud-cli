@@ -9,7 +9,7 @@ import (
 type HandleContext struct {
 	RequestId     func(interface{}) string
 	ResultUuid    func(interface{}) string
-	MessageFn	 		func(interface{}) string
+	MessageFn     func(interface{}) string
 	ActionMsg     string
 	Action        func(interface{}) (interface{}, error)
 	MaxActions    int
@@ -56,7 +56,7 @@ func (c HandleContext) Handle(requests []interface{}) (interface{}, error) {
 		var detailsUuid string
 		if c.ResultUuid != nil && details != nil && !reflect.ValueOf(details).IsNil() {
 			detailsUuid = c.ResultUuid(details)
-		} else if c.RequestId != nil{
+		} else if c.RequestId != nil {
 			detailsUuid = c.RequestId(request)
 		}
 

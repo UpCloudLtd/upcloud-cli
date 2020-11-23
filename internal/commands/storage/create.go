@@ -55,9 +55,9 @@ func (s *createParams) processParams() error {
 
 type createCommand struct {
 	*commands.BaseCommand
-	service            service.Storage
-	params 						 createParams
-	flagSet            *pflag.FlagSet
+	service service.Storage
+	params  createParams
+	flagSet *pflag.FlagSet
 }
 
 func createFlags(fs *pflag.FlagSet, dst, def *createParams) {

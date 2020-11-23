@@ -17,16 +17,16 @@ func TestCreateCommand(t *testing.T) {
 		Storage: Storage1,
 	}
 	for _, test := range []struct {
-		name string
-		args []string
+		name        string
+		args        []string
 		methodCalls int
 	}{
 		{
-			name: "Backend called, details returned",
-			args: []string{},
+			name:        "Backend called, details returned",
+			args:        []string{},
 			methodCalls: 1,
 		},
-	}{
+	} {
 		t.Run(test.name, func(t *testing.T) {
 			mss := MockStorageService()
 			mss.On(methodName, mock.Anything).Return(&details, nil)

@@ -77,7 +77,7 @@ func (s *restartCommand) MakeExecuteCommand() func(args []string) (interface{}, 
 				req.UUID = server.UUID
 				return &req
 			},
-			Service:    s.service,
+			Service: s.service,
 			HandleContext: ui.HandleContext{
 				RequestId:     func(in interface{}) string { return in.(*request.RestartServerRequest).UUID },
 				InteractiveUi: s.Config().InteractiveUI(),

@@ -18,6 +18,7 @@ const (
 	minStorageSize   = 10
 	maxServerActions = 10
 )
+
 var cachedServers []upcloud.Server
 
 func ServerCommand() commands.Command {
@@ -69,12 +70,13 @@ func searchServer(serversPtr *[]upcloud.Server, service service.Server, uuidOrHo
 	return matched, nil
 }
 
-
 func searchAllArgs(uuidOrTitle []string, service service.Server, unique bool) ([]*upcloud.Server, error) {
 	var result []*upcloud.Server
 	for _, id := range uuidOrTitle {
 		matchedResults, err := searchServer(&cachedServers, service, id, unique)
-		if err != nil { return nil, err }
+		if err != nil {
+			return nil, err
+		}
 		result = append(result, matchedResults...)
 	}
 	return result, nil
@@ -130,12 +132,12 @@ type ServerFirewall interface {
 
 type Request struct {
 	ExactlyOne   bool
-	BuildRequest func(storage *upcloud.Server)interface{}
+	BuildRequest func(storage *upcloud.Server) interface{}
 	Service      service.Server
 	ui.HandleContext
 }
 
-func (s Request) Send(args []string) (interface{}, error ){
+func (s Request) Send(args []string) (interface{}, error) {
 	if s.ExactlyOne && len(args) != 1 {
 		return nil, fmt.Errorf("single server uuid is required")
 	}
@@ -144,7 +146,9 @@ func (s Request) Send(args []string) (interface{}, error ){
 	}
 
 	servers, err := searchAllArgs(args, s.Service, true)
-	if err != nil { return nil, err }
+	if err != nil {
+		return nil, err
+	}
 
 	var requests []interface{}
 	for _, server := range servers {

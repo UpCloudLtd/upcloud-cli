@@ -26,7 +26,7 @@ func ShowCommand(service ServerFirewall) commands.Command {
 
 type showCommand struct {
 	*commands.BaseCommand
-	service       ServerFirewall
+	service ServerFirewall
 }
 
 type commandResponseHolder struct {
@@ -62,7 +62,7 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 		if len(servers) != 1 {
 			return nil, fmt.Errorf("server not found")
 		}
-			serverUuid := servers[0].UUID
+		serverUuid := servers[0].UUID
 		var (
 			wg        sync.WaitGroup
 			fwRuleErr error

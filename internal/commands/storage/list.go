@@ -31,11 +31,11 @@ type listCommand struct {
 	visibleColumns []string
 	public         bool
 	private        bool
-	normal bool
-	backup bool
-	cdrom bool
-	template bool
-	favorite bool
+	normal         bool
+	backup         bool
+	cdrom          bool
+	template       bool
+	favorite       bool
 }
 
 func (s *listCommand) InitCommand() {
@@ -51,7 +51,6 @@ func (s *listCommand) InitCommand() {
 	flags.BoolVar(&s.backup, "backup", false, "Filters for backup storages")
 	flags.BoolVar(&s.cdrom, "cdrom", false, "Filters for cdrom storages")
 	flags.BoolVar(&s.template, "template", false, "Filters for template storages")
-
 
 	s.AddFlags(flags)
 }

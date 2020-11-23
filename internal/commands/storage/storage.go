@@ -97,7 +97,9 @@ func SearchAllStorages(uuidOrTitle []string, service service.Storage, unique boo
 	var result []*upcloud.Storage
 	for _, id := range uuidOrTitle {
 		matchedResults, err := searchStorage(&cachedStorages, service, id, unique)
-		if err != nil { return nil, err }
+		if err != nil {
+			return nil, err
+		}
 		result = append(result, matchedResults...)
 	}
 	return result, nil
@@ -105,7 +107,9 @@ func SearchAllStorages(uuidOrTitle []string, service service.Storage, unique boo
 
 func SearchSingleStorage(uuidOrTitle string, service service.Storage) (*upcloud.Storage, error) {
 	matchedResults, err := searchStorage(&cachedStorages, service, uuidOrTitle, true)
-	if err != nil { return nil, err }
+	if err != nil {
+		return nil, err
+	}
 	return matchedResults[0], nil
 }
 
@@ -142,7 +146,7 @@ type Request struct {
 	ui.HandleContext
 }
 
-func (s Request) Send(args []string) (interface{}, error ){
+func (s Request) Send(args []string) (interface{}, error) {
 	if s.ExactlyOne && len(args) != 1 {
 		return nil, fmt.Errorf("single storage uuid is required")
 	}
@@ -151,12 +155,16 @@ func (s Request) Send(args []string) (interface{}, error ){
 	}
 
 	storages, err := SearchAllStorages(args, s.Service, true)
-	if err != nil { return nil, err }
+	if err != nil {
+		return nil, err
+	}
 
 	var requests []interface{}
 	for _, storage := range storages {
 		request, err := s.BuildRequest(storage)
-		if err != nil {return nil, err}
+		if err != nil {
+			return nil, err
+		}
 		requests = append(requests, request)
 	}
 

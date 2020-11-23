@@ -55,7 +55,7 @@ type createParams struct {
 	sshKeys        []string
 	username       string
 	createPassword bool
-	remoteAccess	 bool
+	remoteAccess   bool
 }
 
 func findStorage(uuidOrTitle string, srv interfaces.ServerAndStorage) (*upcloud.Storage, error) {
@@ -86,7 +86,9 @@ func (s *createParams) processParams(srv interfaces.ServerAndStorage) error {
 		var osStorage *upcloud.Storage
 
 		osStorage, err := findStorage(s.os, srv)
-		if err != nil {return err}
+		if err != nil {
+			return err
+		}
 
 		size := minStorageSize
 		if s.osStorageSize > size {
@@ -130,11 +132,13 @@ func (s *createParams) processParams(srv interfaces.ServerAndStorage) error {
 }
 
 func splitString(in string) ([]string, error) {
-  var result [] string
+	var result []string
 	args, err := csv.NewReader(strings.NewReader(in)).Read()
-	if err != nil { return nil, err }
+	if err != nil {
+		return nil, err
+	}
 	for _, arg := range args {
-		result = append(result, strings.Split("--" + arg, "=")...)
+		result = append(result, strings.Split("--"+arg, "=")...)
 	}
 	return result, nil
 }
@@ -143,7 +147,9 @@ func (s *createParams) handleStorage(in string, service interfaces.ServerAndStor
 	sd := &request.CreateServerStorageDevice{}
 	fs := &pflag.FlagSet{}
 	args, err := splitString(in)
-	if err != nil { return nil, err }
+	if err != nil {
+		return nil, err
+	}
 	fs.StringVar(&sd.Action, "action", sd.Action, "")
 	fs.StringVar(&sd.Address, "address", sd.Address, "")
 	fs.StringVar(&sd.Storage, "storage", sd.Storage, "")
@@ -152,7 +158,9 @@ func (s *createParams) handleStorage(in string, service interfaces.ServerAndStor
 	fs.StringVar(&sd.Title, "title", sd.Title, "")
 	fs.IntVar(&sd.Size, "size", sd.Size, "")
 	err = fs.Parse(args)
-	if err != nil { return nil, err }
+	if err != nil {
+		return nil, err
+	}
 
 	if sd.Action != request.CreateServerStorageDeviceActionCreate {
 		if sd.Storage == "" {
@@ -181,11 +189,15 @@ func (s *createParams) handleNetwork(in string) (*request.CreateServerInterface,
 	var family string
 	fs := &pflag.FlagSet{}
 	args, err := splitString(in)
-	if err != nil { return nil, err }
+	if err != nil {
+		return nil, err
+	}
 	fs.StringVar(&family, "family", family, "")
 	fs.StringVar(&network.Type, "type", network.Type, "")
 	err = fs.Parse(args)
-	if err != nil { return nil, err }
+	if err != nil {
+		return nil, err
+	}
 
 	var ipAddresses []request.CreateServerIPAddress
 	ipAddresses = append(ipAddresses, request.CreateServerIPAddress{Family: family})
@@ -224,8 +236,8 @@ func (s *createParams) handleSshKey() error {
 
 type createCommand struct {
 	*commands.BaseCommand
-	service   interfaces.ServerAndStorage
-	params    createParams
+	service interfaces.ServerAndStorage
+	params  createParams
 }
 
 func (s *createCommand) InitCommand() {
@@ -273,17 +285,23 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 		var iFaces []request.CreateServerInterface
 		for _, network := range s.params.networks {
 			_interface, err := s.params.handleNetwork(network)
-			if err != nil {return nil, err}
+			if err != nil {
+				return nil, err
+			}
 			iFaces = append(iFaces, *_interface)
 		}
 
 		for _, strg := range s.params.storages {
 			strg, err := s.params.handleStorage(strg, s.service)
-			if err != nil {return nil, err}
+			if err != nil {
+				return nil, err
+			}
 			req.StorageDevices = append(req.StorageDevices, *strg)
 		}
 
-		if err := s.params.handleSshKey(); err != nil { return nil, err }
+		if err := s.params.handleSshKey(); err != nil {
+			return nil, err
+		}
 
 		if len(iFaces) > 0 {
 			req.Networking = &request.CreateServerNetworking{Interfaces: iFaces}
@@ -293,7 +311,7 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 
 		return ui.HandleContext{
 			RequestId:     func(in interface{}) string { return in.(*request.CreateServerRequest).Hostname },
-			ResultUuid: 	 getServerDetailsUuid,
+			ResultUuid:    getServerDetailsUuid,
 			InteractiveUi: s.Config().InteractiveUI(),
 			WaitMsg:       "server starting",
 			WaitFn:        WaitForServerFn(s.service, upcloud.ServerStateStarted, s.Config().ClientTimeout()),

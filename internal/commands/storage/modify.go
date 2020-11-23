@@ -19,8 +19,8 @@ type modifyCommand struct {
 
 type modifyParams struct {
 	request.ModifyStorageRequest
-	backupTime string
-	backupInterval string
+	backupTime      string
+	backupInterval  string
 	backupRetention int
 }
 
@@ -56,7 +56,9 @@ func (s *modifyCommand) InitCommand() {
 func setBackupFields(storage *upcloud.Storage, p modifyParams, service service.Storage, req *request.ModifyStorageRequest) error {
 
 	details, err := service.GetStorageDetails(&request.GetStorageDetailsRequest{UUID: storage.UUID})
-	if err != nil {return err}
+	if err != nil {
+		return err
+	}
 
 	var tv time.Time
 	if p.backupTime != "" {
@@ -72,7 +74,7 @@ func setBackupFields(storage *upcloud.Storage, p modifyParams, service service.S
 		}
 
 		req.BackupRule = &upcloud.BackupRule{
-			Time:      tv.Format("1504"),
+			Time: tv.Format("1504"),
 		}
 		if p.backupInterval == "" {
 			req.BackupRule.Interval = defaultBackupRuleParams.Interval
@@ -105,16 +107,18 @@ func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 		return Request{
 			BuildRequest: func(storage *upcloud.Storage) (interface{}, error) {
 				req := s.params.ModifyStorageRequest
-				if err := setBackupFields(storage, s.params, s.service, &req); err != nil {return nil, err}
+				if err := setBackupFields(storage, s.params, s.service, &req); err != nil {
+					return nil, err
+				}
 				req.UUID = storage.UUID
 				return &req, nil
 			},
 			Service: s.service,
 			HandleContext: ui.HandleContext{
-				RequestId:  func(in interface{}) string { return in.(*request.ModifyStorageRequest).UUID },
-				MaxActions: maxStorageActions,
+				RequestId:     func(in interface{}) string { return in.(*request.ModifyStorageRequest).UUID },
+				MaxActions:    maxStorageActions,
 				InteractiveUi: s.Config().InteractiveUI(),
-				ActionMsg:  "Modifying storage",
+				ActionMsg:     "Modifying storage",
 				Action: func(req interface{}) (interface{}, error) {
 					return s.service.ModifyStorage(req.(*request.ModifyStorageRequest))
 				},

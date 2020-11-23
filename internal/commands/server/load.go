@@ -48,7 +48,7 @@ func (s *loadCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 				req.ServerUUID = server.UUID
 				return &req
 			},
-			Service: s.service,
+			Service:    s.service,
 			ExactlyOne: true,
 			HandleContext: ui.HandleContext{
 				MessageFn: func(in interface{}) string {

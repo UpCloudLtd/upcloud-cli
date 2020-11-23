@@ -31,7 +31,7 @@ var DefaultAttachParams = &attachParams{
 	AttachStorageRequest: request.AttachStorageRequest{
 		Type:     "disk",
 		BootDisk: 0,
-		Address: "virtio",
+		Address:  "virtio",
 	},
 }
 

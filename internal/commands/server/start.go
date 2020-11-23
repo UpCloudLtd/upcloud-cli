@@ -22,8 +22,8 @@ func StartCommand(service service.Server) commands.Command {
 
 type startCommand struct {
 	*commands.BaseCommand
-	service   service.Server
-	params		startParams
+	service service.Server
+	params  startParams
 }
 
 type startParams struct {
@@ -33,7 +33,7 @@ type startParams struct {
 
 var DefaultStartParams = &startParams{
 	StartServerRequest: request.StartServerRequest{},
-	timeout: 120,
+	timeout:            120,
 }
 
 func (s *startCommand) InitCommand() {
@@ -72,7 +72,7 @@ func (s *startCommand) MakeExecuteCommand() func(args []string) (interface{}, er
 				req.UUID = server.UUID
 				return &req
 			},
-			Service:    s.service,
+			Service: s.service,
 			HandleContext: ui.HandleContext{
 				RequestId:     func(in interface{}) string { return in.(*request.StartServerRequest).UUID },
 				InteractiveUi: s.Config().InteractiveUI(),
