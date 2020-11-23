@@ -27,7 +27,11 @@ func ShowCommand() commands.Command {
 
 type showCommand struct {
 	*commands.BaseCommand
-	service       *service.Service
+	service *service.Service
+}
+
+type commandResponseHolder struct {
+	serverDetails *upcloud.ServerDetails
 	firewallRules *upcloud.FirewallRules
 }
 
@@ -71,9 +75,10 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 			fwRuleErr error
 		)
 		wg.Add(1)
+		var firewallRules *upcloud.FirewallRules
 		go func() {
 			defer wg.Done()
-			s.firewallRules, fwRuleErr = s.service.GetFirewallRules(&request.GetFirewallRulesRequest{ServerUUID: serverUuid})
+			firewallRules, fwRuleErr = s.service.GetFirewallRules(&request.GetFirewallRulesRequest{ServerUUID: serverUuid})
 		}()
 		serverDetails, err := s.service.GetServerDetails(&request.GetServerDetailsRequest{UUID: serverUuid})
 		if err != nil {
@@ -83,15 +88,15 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 		if fwRuleErr != nil {
 			return nil, fwRuleErr
 		}
-		return serverDetails, nil
+		return &commandResponseHolder{serverDetails, firewallRules}, nil
 	}
 }
 
 func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
-	srv := out.(*upcloud.ServerDetails)
+	resp := out.(*commandResponseHolder)
+	srv := resp.serverDetails
+	firewallRules := resp.firewallRules
 
-	dMain := ui.NewDetailsView()
-	dMain.SetRowSeparators(true)
 	formatBool := func(v bool) interface{} {
 		if v {
 			return ui.DefaultBooleanColoursTrue.Sprint("yes")
@@ -104,33 +109,29 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 		}
 		return row
 	}
-	sb := &strings.Builder{}
 
-	// Common details
+	l := ui.NewListLayout(ui.ListLayoutDefault)
 	{
 		dCommon := ui.NewDetailsView()
 		dCommon.SetRowTransformer(rowTransformer)
 		dCommon.AppendRows([]table.Row{
-			{"UUID", ui.DefaultUuidColours.Sprint(srv.UUID)},
-			{"Title", srv.Title},
-			{"Hostname", srv.Hostname},
-			{"Plan", srv.Plan},
-			{"Zone", srv.Zone},
-			{"State", StateColour(srv.State).Sprint(srv.State)},
-			{"Tags", strings.Join(srv.Tags, ",")},
-			{"License", srv.License},
-			{"Metadata", srv.Metadata},
-			{"Timezone", srv.Timezone},
-			{"Host ID", srv.Host},
+			{"UUID:", ui.DefaultUuidColours.Sprint(srv.UUID)},
+			{"Title:", srv.Title},
+			{"Hostname:", srv.Hostname},
+			{"Plan:", srv.Plan},
+			{"Zone:", srv.Zone},
+			{"State:", StateColour(srv.State).Sprint(srv.State)},
+			{"Tags:", strings.Join(srv.Tags, ",")},
+			{"License:", srv.License},
+			{"Metadata:", srv.Metadata},
+			{"Timezone:", srv.Timezone},
+			{"Host ID:", srv.Host},
 		})
-		// fmt.Println(dCommon.Render())
-		dMain.AppendRow(table.Row{"Common", dCommon.Render()})
+		l.AppendSection("Common:", dCommon.Render())
 	}
 
 	// Storage details
 	{
-		dStorage := ui.NewDetailsView()
-		dStorage.SetRowSpacing(true)
 		tStorage := ui.NewDataTable("Title (UUID)", "Type", "Address", "Size (GiB)", "Flags")
 		for _, storage := range srv.StorageDevices {
 			var flags []string
@@ -148,16 +149,22 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 				strings.Join(flags, " "),
 			})
 		}
-		sb.Reset()
-		sb.WriteString(tStorage.Render())
-		_, _ = fmt.Fprint(sb, "\n\nFlags: B = bootdisk, P = part of plan")
-		dStorage.AppendRow(table.Row{"Devices", sb.String()})
+
 		simpleBackup := srv.SimpleBackup
 		if simpleBackup == "no" {
 			simpleBackup = ui.DefaultBooleanColoursFalse.Sprint(simpleBackup)
 		}
-		dStorage.AppendRow(table.Row{"Simple Backup", simpleBackup})
-		dMain.AppendRow(table.Row{"Storage", dStorage.Render()})
+
+		dStorage := ui.NewListLayout(ui.ListLayoutNestedTable)
+
+		dBackup := ui.NewDetailsView()
+		dBackup.SetRowTransformer(rowTransformer)
+		dBackup.AppendRows([]table.Row{
+			{"Simple Backup:", simpleBackup},
+		})
+		dStorage.AppendSectionWithNote("Devices:", tStorage.Render(), "(Flags: B = bootdisk, P = part of plan)")
+
+		l.AppendSection("Storage:", dBackup.Render(), dStorage.Render())
 	}
 
 	// Network details
@@ -192,11 +199,12 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 				strings.Join(flags, " "),
 			})
 		}
-		sb.Reset()
-		sb.WriteString(tNics.Render())
-		_, _ = fmt.Fprint(sb, "\n\nFlags: S = source IP filtering, B = bootable")
-		dNetwork.AppendRow(table.Row{"NICS", sb.String()})
-		dNetwork.AppendRow(table.Row{"NIC Model", srv.NICModel})
+
+		dNICs := ui.NewListLayout(ui.ListLayoutNestedTable)
+		dNICs.AppendSectionWithNote("NICS:", tNics.Render(), "(Flags: S = source IP filtering, B = bootable)")
+
+		l.AppendSection("Networking:", dNICs.Render())
+
 		fwEnabled := srv.Firewall == "on"
 		dNetwork.AppendRow(table.Row{"Firewall", formatBool(fwEnabled)})
 		if fwEnabled {
@@ -246,7 +254,8 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 			)
 			tFw.SetColumnConfig("Source", table.ColumnConfig{WidthMax: 27})
 			tFw.SetColumnConfig("Destination", table.ColumnConfig{WidthMax: 27})
-			for _, rule := range s.firewallRules.FirewallRules {
+
+			for _, rule := range firewallRules.FirewallRules {
 				actColour := text.FgHiGreen
 				if rule.Action == "drop" {
 					actColour = text.FgHiRed
@@ -271,9 +280,9 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 						rule.ICMPType),
 				})
 			}
-			dNetwork.AppendRow(table.Row{"Firewall\nRules", tFw.Render()})
+
+			l.AppendSection("Firewall Rules:", ui.WrapWithListLayout(tFw.Render(), ui.ListLayoutNestedTable).Render())
 		}
-		dMain.AppendRow(table.Row{"Networking", dNetwork.Render()})
 	}
 
 	// Remote access
@@ -282,16 +291,14 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 		dRemote.AppendRow(table.Row{"Enabled", formatBool(srv.RemoteAccessEnabled.Bool())})
 		if srv.RemoteAccessEnabled.Bool() {
 			dRemote.AppendRows([]table.Row{
-				{"Type", srv.RemoteAccessType},
-				{"Address", fmt.Sprintf("%s:%d", srv.RemoteAccessHost, srv.RemoteAccessPort)},
-				{"Password", srv.RemoteAccessPassword},
+				{"Type:", srv.RemoteAccessType},
+				{"Address:", fmt.Sprintf("%s:%d", srv.RemoteAccessHost, srv.RemoteAccessPort)},
+				{"Password:", srv.RemoteAccessPassword},
 			})
 		}
-		dMain.AppendRow(table.Row{"Remote Access", dRemote.Render()})
+		l.AppendSection("Remote Access:", dRemote.Render())
 	}
 
-	fmt.Fprintln(writer)
-	fmt.Fprintln(writer, dMain.Render())
-	fmt.Fprintln(writer)
+	_, _ = fmt.Fprintln(writer, l.Render())
 	return nil
 }
