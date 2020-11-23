@@ -8,6 +8,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"testing"
 )
 
@@ -17,15 +18,17 @@ type CreateTestMock struct {
 
 func (s CreateTestMock) CreateStorage(r *request.CreateStorageRequest) (*upcloud.StorageDetails, error) {
 	return &upcloud.StorageDetails{
-		Storage:     upcloud.Storage{UUID: mocks.Uuid1},
+		Storage:     upcloud.Storage{UUID: Uuid1},
 		BackupRule:  nil,
-		BackupUUIDs: upcloud.BackupUUIDSlice{mocks.Uuid2},
-		ServerUUIDs: upcloud.ServerUUIDSlice{mocks.Uuid3},
+		BackupUUIDs: upcloud.BackupUUIDSlice{Uuid2},
+		ServerUUIDs: upcloud.ServerUUIDSlice{Uuid3},
 	}, nil
 }
 
 func TestCreateStorage(t *testing.T) {
-
+	details := upcloud.StorageDetails{
+		Storage: Storage1,
+	}
 	for _, testcase := range []struct {
 		name   string
 		args   []string
@@ -33,9 +36,9 @@ func TestCreateStorage(t *testing.T) {
 	}{
 		{
 			name: "Storage with given title found",
-			args: []string{"--title", mocks.Title1, "--size", "1234", "--tier", "test-tier", "--zone", "fi-hel1"},
+			args: []string{"--title", Title1, "--size", "1234", "--tier", "test-tier", "--zone", "fi-hel1"},
 			testFn: func(res *upcloud.StorageDetails, e error) {
-				assert.Equal(t, res.UUID, mocks.Uuid1)
+				assert.Equal(t, res.UUID, Uuid1)
 				assert.Nil(t, e)
 			},
 		},
@@ -51,13 +54,15 @@ func TestCreateStorage(t *testing.T) {
 			name: "When no argument given default parameters are used",
 			args: []string{},
 			testFn: func(res *upcloud.StorageDetails, e error) {
-				assert.Equal(t, res.UUID, mocks.Uuid1)
+				assert.Equal(t, res.UUID, Uuid1)
 				assert.Nil(t, e)
 			},
 		},
 	} {
 		t.Run(testcase.name, func(t *testing.T) {
-			cc := commands.BuildCommand(CreateCommand(CreateTestMock{}), nil, config.New(viper.New()))
+			mss := MockStorageService()
+			mss.On("CreateStorage", mock.Anything).Return(&details, nil)
+			cc := commands.BuildCommand(CreateCommand(mss), nil, config.New(viper.New()))
 
 			res, err := cc.MakeExecuteCommand()(testcase.args)
 			var result []*upcloud.StorageDetails

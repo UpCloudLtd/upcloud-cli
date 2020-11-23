@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/interfaces"
+	"github.com/UpCloudLtd/cli/internal/validation"
 	"time"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
@@ -12,7 +13,6 @@ import (
 	"github.com/jedib0t/go-pretty/v6/text"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/validation"
 )
 
 var (
