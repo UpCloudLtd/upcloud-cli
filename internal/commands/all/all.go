@@ -4,6 +4,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands"
 	ip_address "github.com/UpCloudLtd/cli/internal/commands/ip_address"
 	"github.com/UpCloudLtd/cli/internal/commands/network"
+	"github.com/UpCloudLtd/cli/internal/commands/network_interface"
 	"github.com/UpCloudLtd/cli/internal/commands/plan"
 	"github.com/UpCloudLtd/cli/internal/commands/router"
 	"github.com/UpCloudLtd/cli/internal/commands/server"
@@ -22,40 +23,37 @@ func BuildCommands(mainCommand commands.Command, mainConfig *config.Config) {
 
 	// Servers
 	serverCommand := commands.BuildCommand(server.ServerCommand(), mainCommand, cfgFn())
-	svrCmds := []commands.Command{
-		server.ListCommand(svc),
-		server.ConfigurationsCommand(svc),
-		server.ShowCommand(svc),
-		server.StartCommand(svc),
-		server.RestartCommand(svc),
-		server.StopCommand(svc),
-		server.CreateCommand(svc, svc),
-		server.ModifyCommand(svc),
-		server.AttachCommand(svc, svc),
-		server.LoadCommand(svc, svc),
-		server.DetachCommand(svc, svc),
-		server.EjectCommand(svc, svc),
-		server.DeleteCommand(svc),
-	}
-	for _, svrCmds := range svrCmds {
-		commands.BuildCommand(svrCmds, serverCommand, cfgFn())
-	}
+	commands.BuildCommand(server.ListCommand(svc), serverCommand, cfgFn())
+	commands.BuildCommand(server.ConfigurationsCommand(svc), serverCommand, cfgFn())
+	commands.BuildCommand(server.ShowCommand(svc), serverCommand, cfgFn())
+	commands.BuildCommand(server.StartCommand(svc), serverCommand, cfgFn())
+	commands.BuildCommand(server.RestartCommand(svc), serverCommand, cfgFn())
+	commands.BuildCommand(server.StopCommand(svc), serverCommand, cfgFn())
+	commands.BuildCommand(server.CreateCommand(svc, svc), serverCommand, cfgFn())
+	commands.BuildCommand(server.ModifyCommand(svc), serverCommand, cfgFn())
+	commands.BuildCommand(server.AttachCommand(svc, svc), serverCommand, cfgFn())
+	commands.BuildCommand(server.LoadCommand(svc, svc), serverCommand, cfgFn())
+	commands.BuildCommand(server.DetachCommand(svc, svc), serverCommand, cfgFn())
+	commands.BuildCommand(server.EjectCommand(svc, svc), serverCommand, cfgFn())
+	commands.BuildCommand(server.DeleteCommand(svc), serverCommand, cfgFn())
+
+	// Network Interfaces
+	networkInterfaceCommand := commands.BuildCommand(network_interface.NetworkInterfaceCommand(), serverCommand, cfgFn())
+	commands.BuildCommand(network_interface.CreateCommand(svc), networkInterfaceCommand, cfgFn())
+	commands.BuildCommand(network_interface.ModifyCommand(svc), networkInterfaceCommand, cfgFn())
+	commands.BuildCommand(network_interface.DeleteCommand(svc), networkInterfaceCommand, cfgFn())
 
 	// Storages
 	storageCommand := commands.BuildCommand(storage.StorageCommand(), mainCommand, cfgFn())
-	stgCmds := []commands.Command{
-		storage.ListCommand(svc),
-		storage.CreateCommand(svc),
-		storage.ModifyCommand(svc),
-		storage.CloneCommand(svc),
-		storage.TemplatizeCommand(svc),
-		storage.DeleteCommand(svc),
-		storage.ImportCommand(svc),
-		storage.ShowCommand(svc, svc),
-	}
-	for _, stgCmd := range stgCmds {
-		commands.BuildCommand(stgCmd, storageCommand, cfgFn())
-	}
+	commands.BuildCommand(storage.ListCommand(svc), storageCommand, cfgFn())
+	commands.BuildCommand(storage.CreateCommand(svc), storageCommand, cfgFn())
+	commands.BuildCommand(storage.ModifyCommand(svc), storageCommand, cfgFn())
+	commands.BuildCommand(storage.CloneCommand(svc), storageCommand, cfgFn())
+	commands.BuildCommand(storage.TemplatizeCommand(svc), storageCommand, cfgFn())
+	commands.BuildCommand(storage.DeleteCommand(svc), storageCommand, cfgFn())
+	commands.BuildCommand(storage.ImportCommand(svc), storageCommand, cfgFn())
+	commands.BuildCommand(storage.ShowCommand(svc, svc), storageCommand, cfgFn())
+
 	backupCommand := commands.BuildCommand(storage.BackupCommand(), storageCommand, cfgFn())
 	commands.BuildCommand(storage.CreateBackupCommand(svc), backupCommand, cfgFn())
 	commands.BuildCommand(storage.RestoreBackupCommand(svc), backupCommand, cfgFn())

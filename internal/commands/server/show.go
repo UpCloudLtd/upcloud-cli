@@ -55,7 +55,7 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 		if len(args) != 1 {
 			return nil, fmt.Errorf("one server hostname, title or uuid is required")
 		}
-		servers, err := searchAllArgs(args, s.service, true)
+		servers, err := SearchAllArgs(args, s.service, true)
 		if err != nil {
 			return nil, err
 		}

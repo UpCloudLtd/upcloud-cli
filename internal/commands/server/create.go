@@ -2,7 +2,6 @@ package server
 
 import (
 	"bufio"
-	"encoding/csv"
 	"fmt"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
@@ -132,22 +131,10 @@ func (s *createParams) processParams(storageSvc service.Storage) error {
 	return nil
 }
 
-func splitString(in string) ([]string, error) {
-	var result []string
-	args, err := csv.NewReader(strings.NewReader(in)).Read()
-	if err != nil {
-		return nil, err
-	}
-	for _, arg := range args {
-		result = append(result, strings.Split("--"+arg, "=")...)
-	}
-	return result, nil
-}
-
 func (s *createParams) handleStorage(in string, storageSvc service.Storage) (*request.CreateServerStorageDevice, error) {
 	sd := &request.CreateServerStorageDevice{}
 	fs := &pflag.FlagSet{}
-	args, err := splitString(in)
+	args, err := commands.Parse(in)
 	if err != nil {
 		return nil, err
 	}
@@ -189,7 +176,7 @@ func (s *createParams) handleNetwork(in string) (*request.CreateServerInterface,
 	network := &request.CreateServerInterface{}
 	var family string
 	fs := &pflag.FlagSet{}
-	args, err := splitString(in)
+	args, err := commands.Parse(in)
 	if err != nil {
 		return nil, err
 	}

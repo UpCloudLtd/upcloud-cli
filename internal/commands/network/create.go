@@ -1,7 +1,6 @@
 package network
 
 import (
-	"encoding/csv"
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
@@ -39,26 +38,12 @@ func (s *createCommand) InitCommand() {
 	s.AddFlags(fs)
 }
 
-func splitString(in string) ([]string, error) {
-	var result []string
-	reader := csv.NewReader(strings.NewReader(in))
-	reader.LazyQuotes = true
-	args, err := reader.Read()
-	if err != nil {
-		return nil, err
-	}
-	for _, arg := range args {
-		result = append(result, strings.Split("--"+arg, "=")...)
-	}
-	return result, nil
-}
-
 func handleNetwork(in string) (*upcloud.IPNetwork, error) {
 	network := upcloud.IPNetwork{}
 	var dhcp bool
 	var dhcpDefRout bool
 	var dds string
-	args, err := splitString(in)
+	args, err := commands.Parse(in)
 	if err != nil {
 		return nil, err
 	}

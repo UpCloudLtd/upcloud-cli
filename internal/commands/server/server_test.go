@@ -229,7 +229,7 @@ func TestSearchServer(t *testing.T) {
 			mss := new(mocks.MockServerService)
 			mss.On("GetServers", mock.Anything).Return(servers, nil)
 
-			result, err := searchAllArgs(testcase.args, mss, testcase.unique)
+			result, err := SearchAllArgs(testcase.args, mss, testcase.unique)
 
 			if testcase.errMsg == "" {
 				assert.Nil(t, err)
