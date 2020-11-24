@@ -26,7 +26,7 @@ type showCommand struct {
 func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 		if len(args) != 1 {
-			return nil, fmt.Errorf("one ip address or  is required")
+			return nil, fmt.Errorf("one network uuid or name is required")
 		}
 		ip, err := searchNetwork(args[0], s.service)
 		if err != nil {

@@ -61,10 +61,10 @@ type Request struct {
 
 func (s Request) Send(args []string) (interface{}, error) {
 	if s.ExactlyOne && len(args) != 1 {
-		return nil, fmt.Errorf("single server uuid is required")
+		return nil, fmt.Errorf("single network uuid or name is required")
 	}
 	if len(args) < 1 {
-		return nil, fmt.Errorf("at least one server uuid is required")
+		return nil, fmt.Errorf("at least one network uuid or name is required")
 	}
 
 	servers, err := searchNetworkes(args, s.Service)

@@ -17,7 +17,7 @@ type modifyCommand struct {
 
 func ModifyCommand(service service.Network) commands.Command {
 	return &modifyCommand{
-		BaseCommand: commands.New("modify", "Modify an ip address"),
+		BaseCommand: commands.New("modify", "Modify a network"),
 		service:     service,
 	}
 }

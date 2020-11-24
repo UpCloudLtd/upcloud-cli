@@ -30,10 +30,10 @@ func searchIpAddress(prtOrAddress string, service service.IpAddress) (*upcloud.I
 		}
 	}
 	if len(result) == 0 {
-		return nil, fmt.Errorf("no ip ip was found with %s", prtOrAddress)
+		return nil, fmt.Errorf("no ip address was found with %s", prtOrAddress)
 	}
 	if len(result) > 1 {
-		return nil, fmt.Errorf("multiple ip ips matched to query %q", prtOrAddress)
+		return nil, fmt.Errorf("multiple ip addresses matched to query %q", prtOrAddress)
 	}
 	return result[0], nil
 }
@@ -59,10 +59,10 @@ type Request struct {
 
 func (s Request) Send(args []string) (interface{}, error) {
 	if s.ExactlyOne && len(args) != 1 {
-		return nil, fmt.Errorf("single server uuid is required")
+		return nil, fmt.Errorf("single ip address or ptr record is required")
 	}
 	if len(args) < 1 {
-		return nil, fmt.Errorf("at least one server uuid is required")
+		return nil, fmt.Errorf("at least one ip address or ptr record is required")
 	}
 
 	servers, err := searchIpAddresses(args, s.Service)
