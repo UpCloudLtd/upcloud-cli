@@ -65,8 +65,8 @@ func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 			BuildRequest: func(server *upcloud.Server) interface{} { return server },
 			Service:      s.service,
 			HandleContext: ui.HandleContext{
-				RequestId:     func(in interface{}) string { return in.(*upcloud.Server).UUID },
-				InteractiveUi: s.Config().InteractiveUI(),
+				RequestID:     func(in interface{}) string { return in.(*upcloud.Server).UUID },
+				InteractiveUI: s.Config().InteractiveUI(),
 				MaxActions:    maxServerActions,
 				ActionMsg:     "Deleting",
 				Action:        action,

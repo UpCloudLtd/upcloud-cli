@@ -48,9 +48,9 @@ func (s *assignCommand) MakeExecuteCommand() func(args []string) (interface{}, e
       },
       Service: s.service,
       HandleContext: ui.HandleContext{
-        RequestId:     func(in interface{}) string { return in.(*request.AssignIPAddressRequest).MAC },
+        RequestID:     func(in interface{}) string { return in.(*request.AssignIPAddressRequest).MAC },
         MaxActions:    maxIpAddressActions,
-        InteractiveUi: s.Config().InteractiveUI(),
+        InteractiveUI: s.Config().InteractiveUI(),
         ActionMsg:     "Assigning IP Address",
         Action: func(req interface{}) (interface{}, error) {
           return s.service.AssignIPAddress(req.(*request.AssignIPAddressRequest))

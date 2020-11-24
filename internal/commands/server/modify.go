@@ -83,9 +83,9 @@ func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 			},
 			Service: s.service,
 			HandleContext: ui.HandleContext{
-				RequestId:     func(in interface{}) string { return in.(*request.ModifyServerRequest).UUID },
-				ResultUuid:    getServerDetailsUuid,
-				InteractiveUi: s.Config().InteractiveUI(),
+				RequestID:     func(in interface{}) string { return in.(*request.ModifyServerRequest).UUID },
+				ResultUUID:    getServerDetailsUuid,
+				InteractiveUI: s.Config().InteractiveUI(),
 				MaxActions:    maxServerActions,
 				ActionMsg:     "Modifying server",
 				Action: func(req interface{}) (interface{}, error) {

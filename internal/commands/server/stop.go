@@ -74,8 +74,8 @@ func (s *stopCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 			},
 			Service: s.service,
 			HandleContext: ui.HandleContext{
-				RequestId:     func(in interface{}) string { return in.(*request.StopServerRequest).UUID },
-				InteractiveUi: s.Config().InteractiveUI(),
+				RequestID:     func(in interface{}) string { return in.(*request.StopServerRequest).UUID },
+				InteractiveUI: s.Config().InteractiveUI(),
 				WaitMsg:       "shutdown request sent",
 				WaitFn:        WaitForServerFn(s.service, upcloud.ServerStateStopped, s.Config().ClientTimeout()),
 				MaxActions:    maxServerActions,

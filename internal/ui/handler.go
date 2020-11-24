@@ -7,13 +7,13 @@ import (
 )
 
 type HandleContext struct {
-	RequestId     func(interface{}) string
-	ResultUuid    func(interface{}) string
+	RequestID     func(interface{}) string
+	ResultUUID    func(interface{}) string
 	MessageFn     func(interface{}) string
 	ActionMsg     string
 	Action        func(interface{}) (interface{}, error)
 	MaxActions    int
-	InteractiveUi bool
+	InteractiveUI bool
 	WaitMsg       string
 	WaitFn        func(uuid string, waitMsg string, err error) (interface{}, error)
 }
@@ -43,8 +43,8 @@ func (c HandleContext) Handle(requests []interface{}) (interface{}, error) {
 		var msg string
 		if c.MessageFn != nil {
 			msg = c.MessageFn(request)
-		} else if c.RequestId != nil && c.ActionMsg != "" {
-			msg = fmt.Sprintf("%s %s", c.ActionMsg, c.RequestId(request))
+		} else if c.RequestID != nil && c.ActionMsg != "" {
+			msg = fmt.Sprintf("%s %s", c.ActionMsg, c.RequestID(request))
 		}
 		e.SetMessage(msg)
 		e.Start()
@@ -54,10 +54,10 @@ func (c HandleContext) Handle(requests []interface{}) (interface{}, error) {
 		details, err = c.Action(request)
 
 		var detailsUuid string
-		if c.ResultUuid != nil && details != nil && !reflect.ValueOf(details).IsNil() {
-			detailsUuid = c.ResultUuid(details)
-		} else if c.RequestId != nil {
-			detailsUuid = c.RequestId(request)
+		if c.ResultUUID != nil && details != nil && !reflect.ValueOf(details).IsNil() {
+			detailsUuid = c.ResultUUID(details)
+		} else if c.RequestID != nil {
+			detailsUuid = c.RequestID(request)
 		}
 
 		if c.WaitFn != nil {
@@ -69,7 +69,7 @@ func (c HandleContext) Handle(requests []interface{}) (interface{}, error) {
 			e.SetDetails(err.Error(), "error: ")
 		} else {
 			e.SetMessage(fmt.Sprintf("%s: done", msg))
-			if c.ResultUuid != nil {
+			if c.ResultUUID != nil {
 				e.SetDetails(detailsUuid, "UUID: ")
 			}
 			mu.Lock()
@@ -82,7 +82,7 @@ func (c HandleContext) Handle(requests []interface{}) (interface{}, error) {
 	StartWorkQueue(WorkQueueConfig{
 		NumTasks:           len(requests),
 		MaxConcurrentTasks: c.MaxActions,
-		EnableUI:           c.InteractiveUi,
+		EnableUI:           c.InteractiveUI,
 	}, handler)
 
 	if numOk != len(requests) {

@@ -37,9 +37,9 @@ func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, e
       },
       Service: s.service,
       HandleContext: ui.HandleContext{
-        RequestId:     func(in interface{}) string { return in.(*request.ModifyIPAddressRequest).IPAddress },
+        RequestID:     func(in interface{}) string { return in.(*request.ModifyIPAddressRequest).IPAddress },
         MaxActions:    maxIpAddressActions,
-        InteractiveUi: s.Config().InteractiveUI(),
+        InteractiveUI: s.Config().InteractiveUI(),
         ActionMsg:     "Modifying IP Address",
         Action: func(req interface{}) (interface{}, error) {
           return s.service.ModifyIPAddress(req.(*request.ModifyIPAddressRequest))

@@ -3,16 +3,17 @@ package server
 import (
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/interfaces"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
 )
 
 type attachCommand struct {
 	*commands.BaseCommand
-	service interfaces.ServerAndStorage
+	serverSvc service.Server
+	storageSvc service.Storage
 	params  attachParams
 }
 
@@ -20,10 +21,11 @@ type attachParams struct {
 	request.AttachStorageRequest
 }
 
-func AttachCommand(service interfaces.ServerAndStorage) commands.Command {
+func AttachCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
 	return &attachCommand{
 		BaseCommand: commands.New("attach-storage", "Attaches a storage as a device to a server"),
-		service:     service,
+		serverSvc: serverSvc,
+		storageSvc: storageSvc,
 	}
 }
 
@@ -55,17 +57,17 @@ func (s *attachCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 				req.ServerUUID = server.UUID
 				return &req
 			},
-			Service:    s.service,
+			Service:    s.serverSvc,
 			ExactlyOne: true,
 			HandleContext: ui.HandleContext{
-				InteractiveUi: s.Config().InteractiveUI(),
+				InteractiveUI: s.Config().InteractiveUI(),
 				MaxActions:    maxServerActions,
 				MessageFn: func(in interface{}) string {
 					req := in.(*request.AttachStorageRequest)
 					return fmt.Sprintf("Attaching storage %q to server %q", req.StorageUUID, req.ServerUUID)
 				},
 				Action: func(req interface{}) (interface{}, error) {
-					return s.service.AttachStorage(req.(*request.AttachStorageRequest))
+					return s.storageSvc.AttachStorage(req.(*request.AttachStorageRequest))
 				},
 			},
 		}.Send(args)

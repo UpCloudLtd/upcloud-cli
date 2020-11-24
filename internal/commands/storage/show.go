@@ -2,12 +2,11 @@ package storage
 
 import (
 	"fmt"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"io"
 	"math"
 	"sync"
 	"time"
-
-	"github.com/UpCloudLtd/cli/internal/interfaces"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
@@ -19,16 +18,18 @@ import (
 	"github.com/UpCloudLtd/cli/internal/ui"
 )
 
-func ShowCommand(service interfaces.ServerAndStorage) commands.Command {
+func ShowCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New("show", "Show storage details"),
-		service:     service,
+		serverSvc:   serverSvc,
+		storageSvc:  storageSvc,
 	}
 }
 
 type showCommand struct {
 	*commands.BaseCommand
-	service       interfaces.ServerAndStorage
+	serverSvc     service.Server
+	storageSvc    service.Storage
 	storageImport *upcloud.StorageImportDetails
 }
 
@@ -41,7 +42,7 @@ type commandResponseHolder struct {
 
 func (s *showCommand) InitCommand() {
 	s.ArgCompletion(func(toComplete string) ([]string, cobra.ShellCompDirective) {
-		storages, err := s.service.GetStorages(&request.GetStoragesRequest{})
+		storages, err := s.storageSvc.GetStorages(&request.GetStoragesRequest{})
 		if err != nil {
 			return nil, cobra.ShellCompDirectiveDefault
 		}
@@ -62,7 +63,7 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 		if len(args) < 1 {
 			return nil, fmt.Errorf("storage title or uuid is required")
 		}
-		storage, err := searchStorage(&storages, s.service, args[0], true)
+		storage, err := searchStorage(&storages, s.storageSvc, args[0], true)
 		if err != nil {
 			return nil, err
 		}
@@ -73,7 +74,7 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			storageImport, storageImportDetailsErr = s.service.GetStorageImportDetails(
+			storageImport, storageImportDetailsErr = s.storageSvc.GetStorageImportDetails(
 				&request.GetStorageImportDetailsRequest{UUID: storage[0].UUID})
 
 			if ucErr, ok := storageImportDetailsErr.(*upcloud.Error); ok {
@@ -85,11 +86,11 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			if resp, err := s.service.GetServers(); err == nil {
+			if resp, err := s.serverSvc.GetServers(); err == nil {
 				servers = resp.Servers
 			}
 		}()
-		storageDetails, err := s.service.GetStorageDetails(&request.GetStorageDetailsRequest{UUID: storage[0].UUID})
+		storageDetails, err := s.storageSvc.GetStorageDetails(&request.GetStorageDetailsRequest{UUID: storage[0].UUID})
 		if err != nil {
 			return nil, err
 		}

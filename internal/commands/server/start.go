@@ -74,8 +74,8 @@ func (s *startCommand) MakeExecuteCommand() func(args []string) (interface{}, er
 			},
 			Service: s.service,
 			HandleContext: ui.HandleContext{
-				RequestId:     func(in interface{}) string { return in.(*request.StartServerRequest).UUID },
-				InteractiveUi: s.Config().InteractiveUI(),
+				RequestID:     func(in interface{}) string { return in.(*request.StartServerRequest).UUID },
+				InteractiveUI: s.Config().InteractiveUI(),
 				MaxActions:    maxServerActions,
 				ActionMsg:     "Starting",
 				Action: func(req interface{}) (interface{}, error) {

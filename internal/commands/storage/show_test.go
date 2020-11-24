@@ -124,7 +124,7 @@ func TestStorageHumanOutput(t *testing.T) {
 `
 
 	buf := new(bytes.Buffer)
-	err := ShowCommand(nil).HandleOutput(buf, &commandResponseHolder{sd, sid, servers, storages})
+	err := ShowCommand(nil, nil).HandleOutput(buf, &commandResponseHolder{sd, sid, servers, storages})
 
 	assert.Nil(t, err)
 	assert.Equal(t, expected, buf.String())

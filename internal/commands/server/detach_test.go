@@ -28,11 +28,12 @@ func TestDetachCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			msss := new(mocks.MockServerStorageService)
-			msss.On("GetServers", mock.Anything).Return(servers, nil)
-			msss.On(methodName, mock.Anything).Return(&details, nil)
+			serverSvc := MockServerService()
+			storageSvc := MockStorageService()
+			serverSvc.On("GetServers", mock.Anything).Return(servers, nil)
+			storageSvc.On(methodName, mock.Anything).Return(&details, nil)
 
-			tc := commands.BuildCommand(DetachCommand(msss), nil, config.New(viper.New()))
+			tc := commands.BuildCommand(DetachCommand(serverSvc, storageSvc), nil, config.New(viper.New()))
 			mocks.SetFlags(tc, test.args)
 
 			results, err := tc.MakeExecuteCommand()([]string{Server1.UUID})
@@ -42,7 +43,7 @@ func TestDetachCommand(t *testing.T) {
 
 			assert.Nil(t, err)
 
-			msss.AssertNumberOfCalls(t, methodName, test.methodCalls)
+			storageSvc.AssertNumberOfCalls(t, methodName, test.methodCalls)
 		})
 	}
 }

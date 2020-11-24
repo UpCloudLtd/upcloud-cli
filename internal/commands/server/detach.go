@@ -3,16 +3,17 @@ package server
 import (
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/interfaces"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
 )
 
 type detachCommand struct {
 	*commands.BaseCommand
-	service interfaces.ServerAndStorage
+	serverSvc service.Server
+	storageSvc service.Storage
 	params  detachParams
 }
 
@@ -20,10 +21,11 @@ type detachParams struct {
 	request.DetachStorageRequest
 }
 
-func DetachCommand(service interfaces.ServerAndStorage) commands.Command {
+func DetachCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
 	return &detachCommand{
 		BaseCommand: commands.New("detach-storage", "Detaches a storage resource from a server"),
-		service:     service,
+		serverSvc: serverSvc,
+		storageSvc: storageSvc,
 	}
 }
 
@@ -48,16 +50,16 @@ func (s *detachCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 				req.ServerUUID = server.UUID
 				return &req
 			},
-			Service: s.service,
+			Service: s.serverSvc,
 			HandleContext: ui.HandleContext{
 				MessageFn: func(in interface{}) string {
 					req := in.(*request.DetachStorageRequest)
 					return fmt.Sprintf("Detaching address %q to server %q", req.Address, req.ServerUUID)
 				},
-				InteractiveUi: s.Config().InteractiveUI(),
+				InteractiveUI: s.Config().InteractiveUI(),
 				MaxActions:    maxServerActions,
 				Action: func(req interface{}) (interface{}, error) {
-					return s.service.DetachStorage(req.(*request.DetachStorageRequest))
+					return s.storageSvc.DetachStorage(req.(*request.DetachStorageRequest))
 				},
 			},
 		}.Send(args)

@@ -3,16 +3,17 @@ package server
 import (
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/interfaces"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
 )
 
 type loadCommand struct {
 	*commands.BaseCommand
-	service interfaces.ServerAndStorage
+	serverSvc service.Server
+	storageSvc service.Storage
 	params  loadParams
 }
 
@@ -20,10 +21,11 @@ type loadParams struct {
 	request.LoadCDROMRequest
 }
 
-func LoadCommand(service interfaces.ServerAndStorage) commands.Command {
+func LoadCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
 	return &loadCommand{
 		BaseCommand: commands.New("load", "Load a CD-ROM"),
-		service:     service,
+		serverSvc: serverSvc,
+		storageSvc: storageSvc,
 	}
 }
 
@@ -48,7 +50,7 @@ func (s *loadCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 				req.ServerUUID = server.UUID
 				return &req
 			},
-			Service:    s.service,
+			Service:    s.serverSvc,
 			ExactlyOne: true,
 			HandleContext: ui.HandleContext{
 				MessageFn: func(in interface{}) string {
@@ -57,7 +59,7 @@ func (s *loadCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 				},
 				MaxActions: maxServerActions,
 				Action: func(req interface{}) (interface{}, error) {
-					return s.service.LoadCDROM(req.(*request.LoadCDROMRequest))
+					return s.storageSvc.LoadCDROM(req.(*request.LoadCDROMRequest))
 				},
 			},
 		}.Send(args)

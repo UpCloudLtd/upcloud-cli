@@ -115,9 +115,9 @@ func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 			},
 			Service: s.service,
 			HandleContext: ui.HandleContext{
-				RequestId:     func(in interface{}) string { return in.(*request.ModifyStorageRequest).UUID },
+				RequestID:     func(in interface{}) string { return in.(*request.ModifyStorageRequest).UUID },
 				MaxActions:    maxStorageActions,
-				InteractiveUi: s.Config().InteractiveUI(),
+				InteractiveUI: s.Config().InteractiveUI(),
 				ActionMsg:     "Modifying storage",
 				Action: func(req interface{}) (interface{}, error) {
 					return s.service.ModifyStorage(req.(*request.ModifyStorageRequest))

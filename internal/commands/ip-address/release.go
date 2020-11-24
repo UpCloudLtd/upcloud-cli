@@ -28,9 +28,9 @@ func (s *releaseCommand) MakeExecuteCommand() func(args []string) (interface{}, 
      },
      Service: s.service,
      HandleContext: ui.HandleContext{
-       RequestId:     func(in interface{}) string { return in.(*request.ReleaseIPAddressRequest).IPAddress },
+       RequestID:     func(in interface{}) string { return in.(*request.ReleaseIPAddressRequest).IPAddress },
        MaxActions:    maxIpAddressActions,
-       InteractiveUi: s.Config().InteractiveUI(),
+       InteractiveUI: s.Config().InteractiveUI(),
        ActionMsg:     "Releasing IP Address",
        Action: func(req interface{}) (interface{}, error) {
          return nil, s.service.ReleaseIPAddress(req.(*request.ReleaseIPAddressRequest))

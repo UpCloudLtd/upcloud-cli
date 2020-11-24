@@ -53,9 +53,9 @@ func (s *cloneCommand) MakeExecuteCommand() func(args []string) (interface{}, er
 			},
 			Service: s.service,
 			HandleContext: ui.HandleContext{
-				RequestId:     func(in interface{}) string { return in.(*request.CloneStorageRequest).UUID },
-				ResultUuid:    getStorageDetailsUuid,
-				InteractiveUi: s.Config().InteractiveUI(),
+				RequestID:     func(in interface{}) string { return in.(*request.CloneStorageRequest).UUID },
+				ResultUUID:    getStorageDetailsUuid,
+				InteractiveUI: s.Config().InteractiveUI(),
 				MaxActions:    maxStorageActions,
 				ActionMsg:     "Cloning storage",
 				Action: func(req interface{}) (interface{}, error) {

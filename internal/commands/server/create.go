@@ -4,9 +4,9 @@ import (
 	"bufio"
 	"encoding/csv"
 	"fmt"
-	"github.com/UpCloudLtd/cli/internal/interfaces"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
 	"golang.org/x/crypto/ssh"
 	"os"
@@ -20,10 +20,11 @@ var (
 	cachedStorages []upcloud.Storage
 )
 
-func CreateCommand(server interfaces.ServerAndStorage) commands.Command {
+func CreateCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
 	return &createCommand{
 		BaseCommand: commands.New("create", "Create a server"),
-		service:     server,
+		serverSvc:     serverSvc,
+		storageSvc: storageSvc,
 	}
 }
 
@@ -58,7 +59,7 @@ type createParams struct {
 	remoteAccess   bool
 }
 
-func findStorage(uuidOrTitle string, srv interfaces.ServerAndStorage) (*upcloud.Storage, error) {
+func findStorage(uuidOrTitle string, srv service.Storage) (*upcloud.Storage, error) {
 	if len(cachedStorages) == 0 {
 		storages, err := srv.GetStorages(&request.GetStoragesRequest{})
 		if err != nil {
@@ -81,11 +82,11 @@ func findStorage(uuidOrTitle string, srv interfaces.ServerAndStorage) (*upcloud.
 	return &results[0], nil
 }
 
-func (s *createParams) processParams(srv interfaces.ServerAndStorage) error {
+func (s *createParams) processParams(storageSvc service.Storage) error {
 	if s.os != "" {
 		var osStorage *upcloud.Storage
 
-		osStorage, err := findStorage(s.os, srv)
+		osStorage, err := findStorage(s.os, storageSvc)
 		if err != nil {
 			return err
 		}
@@ -143,7 +144,7 @@ func splitString(in string) ([]string, error) {
 	return result, nil
 }
 
-func (s *createParams) handleStorage(in string, service interfaces.ServerAndStorage) (*request.CreateServerStorageDevice, error) {
+func (s *createParams) handleStorage(in string, storageSvc service.Storage) (*request.CreateServerStorageDevice, error) {
 	sd := &request.CreateServerStorageDevice{}
 	fs := &pflag.FlagSet{}
 	args, err := splitString(in)
@@ -166,7 +167,7 @@ func (s *createParams) handleStorage(in string, service interfaces.ServerAndStor
 		if sd.Storage == "" {
 			return nil, fmt.Errorf("storage UUID or Title must be provided for %s operation", sd.Action)
 		}
-		strg, err := findStorage(sd.Storage, service)
+		strg, err := findStorage(sd.Storage, storageSvc)
 		if err != nil {
 			return nil, err
 		}
@@ -236,7 +237,8 @@ func (s *createParams) handleSshKey() error {
 
 type createCommand struct {
 	*commands.BaseCommand
-	service interfaces.ServerAndStorage
+	serverSvc service.Server
+	storageSvc service.Storage
 	params  createParams
 }
 
@@ -276,7 +278,7 @@ func (s *createCommand) InitCommand() {
 func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 
-		if err := s.params.processParams(s.service); err != nil {
+		if err := s.params.processParams(s.storageSvc); err != nil {
 			return nil, err
 		}
 
@@ -292,7 +294,7 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 		}
 
 		for _, strg := range s.params.storages {
-			strg, err := s.params.handleStorage(strg, s.service)
+			strg, err := s.params.handleStorage(strg, s.storageSvc)
 			if err != nil {
 				return nil, err
 			}
@@ -310,15 +312,15 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 		createServers := []*request.CreateServerRequest{&req}
 
 		return ui.HandleContext{
-			RequestId:     func(in interface{}) string { return in.(*request.CreateServerRequest).Hostname },
-			ResultUuid:    getServerDetailsUuid,
-			InteractiveUi: s.Config().InteractiveUI(),
+			RequestID:     func(in interface{}) string { return in.(*request.CreateServerRequest).Hostname },
+			ResultUUID:    getServerDetailsUuid,
+			InteractiveUI: s.Config().InteractiveUI(),
 			WaitMsg:       "server starting",
-			WaitFn:        WaitForServerFn(s.service, upcloud.ServerStateStarted, s.Config().ClientTimeout()),
+			WaitFn:        WaitForServerFn(s.serverSvc, upcloud.ServerStateStarted, s.Config().ClientTimeout()),
 			MaxActions:    5,
 			ActionMsg:     "Creating server",
 			Action: func(req interface{}) (interface{}, error) {
-				return s.service.CreateServer(req.(*request.CreateServerRequest))
+				return s.serverSvc.CreateServer(req.(*request.CreateServerRequest))
 			},
 		}.HandleAction(createServers)
 	}
