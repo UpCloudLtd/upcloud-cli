@@ -2,7 +2,7 @@ package all
 
 import (
 	"github.com/UpCloudLtd/cli/internal/commands"
-	ip_address "github.com/UpCloudLtd/cli/internal/commands/ip-address"
+	ip_address "github.com/UpCloudLtd/cli/internal/commands/ip_address"
 	"github.com/UpCloudLtd/cli/internal/commands/network"
 	"github.com/UpCloudLtd/cli/internal/commands/plan"
 	"github.com/UpCloudLtd/cli/internal/commands/router"
