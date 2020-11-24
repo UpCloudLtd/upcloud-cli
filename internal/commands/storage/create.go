@@ -87,9 +87,9 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 		createStorages := []*request.CreateStorageRequest{&s.params.CreateStorageRequest}
 
 		return ui.HandleContext{
-			RequestId:     func(in interface{}) string { return in.(*request.CreateStorageRequest).Title },
-			ResultUuid:    getStorageDetailsUuid,
-			InteractiveUi: s.Config().InteractiveUI(),
+			RequestID:     func(in interface{}) string { return in.(*request.CreateStorageRequest).Title },
+			ResultUUID:    getStorageDetailsUuid,
+			InteractiveUI: s.Config().InteractiveUI(),
 			MaxActions:    maxStorageActions,
 			ActionMsg:     "Creating storage",
 			Action: func(req interface{}) (interface{}, error) {

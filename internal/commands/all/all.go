@@ -36,7 +36,7 @@ func BuildCommands(mainCommand commands.Command, mainConfig *config.Config) {
 		storage.TemplatizeCommand(svc),
 		storage.DeleteCommand(svc),
 		storage.ImportCommand(svc),
-		storage.ShowCommand(svc),
+		storage.ShowCommand(svc, svc),
 	}
 	for _, stgCmd := range stgCmds {
 		commands.BuildCommand(stgCmd, storageCommand, cfgFn())

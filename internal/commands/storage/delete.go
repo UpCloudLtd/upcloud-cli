@@ -45,8 +45,8 @@ func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 			},
 			Service: s.service,
 			HandleContext: ui.HandleContext{
-				RequestId:     func(in interface{}) string { return in.(*request.DeleteStorageRequest).UUID },
-				InteractiveUi: s.Config().InteractiveUI(),
+				RequestID:     func(in interface{}) string { return in.(*request.DeleteStorageRequest).UUID },
+				InteractiveUI: s.Config().InteractiveUI(),
 				MaxActions:    maxStorageActions,
 				ActionMsg:     "Deleting",
 				Action: func(req interface{}) (interface{}, error) {

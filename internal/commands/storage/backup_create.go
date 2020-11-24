@@ -49,9 +49,9 @@ func (s *createBackupCommand) MakeExecuteCommand() func(args []string) (interfac
 			},
 			Service: s.service,
 			HandleContext: ui.HandleContext{
-				RequestId:     func(in interface{}) string { return in.(*request.CreateBackupRequest).UUID },
-				ResultUuid:    getStorageDetailsUuid,
-				InteractiveUi: s.Config().InteractiveUI(),
+				RequestID:     func(in interface{}) string { return in.(*request.CreateBackupRequest).UUID },
+				ResultUUID:    getStorageDetailsUuid,
+				InteractiveUI: s.Config().InteractiveUI(),
 				MaxActions:    maxStorageActions,
 				ActionMsg:     "Creating backup of storage",
 				Action: func(req interface{}) (interface{}, error) {
