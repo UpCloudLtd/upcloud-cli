@@ -11,7 +11,7 @@ import (
 	"io"
 )
 
-func ListCommand(service service.Service) commands.Command {
+func ListCommand(service *service.Service) commands.Command {
 	return &listCommand{
 		BaseCommand: commands.New("list", "List routers"),
 		service:     service,
@@ -20,7 +20,7 @@ func ListCommand(service service.Service) commands.Command {
 
 type listCommand struct {
 	*commands.BaseCommand
-	service        service.Service
+	service        *service.Service
 	header         table.Row
 	columnKeys     []string
 	visibleColumns []string

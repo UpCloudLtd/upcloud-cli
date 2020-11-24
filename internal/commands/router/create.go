@@ -10,11 +10,11 @@ import (
 
 type createCommand struct {
 	*commands.BaseCommand
-	service service.Service
+	service *service.Service
 	params  createParams
 }
 
-func CreateCommand(service service.Service) commands.Command {
+func CreateCommand(service *service.Service) commands.Command {
 	return &createCommand{
 		BaseCommand: commands.New("create", "Create a router"),
 		service:     service,
@@ -22,7 +22,7 @@ func CreateCommand(service service.Service) commands.Command {
 }
 
 type createParams struct {
-	req      request.CreateRouterRequest
+	req     request.CreateRouterRequest
 	routers []string
 }
 

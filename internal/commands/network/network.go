@@ -20,7 +20,7 @@ type networkCommand struct {
 
 var getNetworkUuid = func(in interface{}) string { return in.(*upcloud.Network).UUID }
 
-func searchNetwork(uuidOrName string, service service.Network) (*upcloud.Network, error) {
+func SearchNetwork(uuidOrName string, service service.Network) (*upcloud.Network, error) {
 	var result []*upcloud.Network
 	networks, err := service.GetNetworks()
 	if err != nil {
@@ -40,10 +40,10 @@ func searchNetwork(uuidOrName string, service service.Network) (*upcloud.Network
 	return result[0], nil
 }
 
-func searchNetworkes(uuidOrNames []string, service service.Network) ([]*upcloud.Network, error) {
+func searchNetworks(uuidOrNames []string, service service.Network) ([]*upcloud.Network, error) {
 	var result []*upcloud.Network
 	for _, uuidOrName := range uuidOrNames {
-		ip, err := searchNetwork(uuidOrName, service)
+		ip, err := SearchNetwork(uuidOrName, service)
 		if err != nil {
 			return nil, err
 		}
@@ -67,7 +67,7 @@ func (s Request) Send(args []string) (interface{}, error) {
 		return nil, fmt.Errorf("at least one network uuid or name is required")
 	}
 
-	servers, err := searchNetworkes(args, s.Service)
+	servers, err := searchNetworks(args, s.Service)
 	if err != nil {
 		return nil, err
 	}

@@ -11,11 +11,11 @@ import (
 
 type modifyCommand struct {
 	*commands.BaseCommand
-	service service.Service
+	service *service.Service
 	req     request.ModifyRouterRequest
 }
 
-func ModifyCommand(service service.Service) commands.Command {
+func ModifyCommand(service *service.Service) commands.Command {
 	return &modifyCommand{
 		BaseCommand: commands.New("modify", "Modify a router"),
 		service:     service,

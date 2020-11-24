@@ -28,11 +28,11 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 		if len(args) != 1 {
 			return nil, fmt.Errorf("one network uuid or name is required")
 		}
-		ip, err := searchNetwork(args[0], s.service)
+		n, err := SearchNetwork(args[0], s.service)
 		if err != nil {
 			return nil, err
 		}
-		return ip, nil
+		return n, nil
 	}
 }
 
@@ -53,11 +53,23 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 
 	tIPNetwork := ui.NewDataTable("Address", "Family", "DHCP", "DHCP Def Router", "DHCP DNS")
 	for _, nip := range n.IPNetworks {
+		var dhcp string
+		if nip.DHCP == 1 {
+			dhcp = ui.DefaultBooleanColoursTrue.Sprint(nip.DHCP.String())
+		} else {
+			dhcp = ui.DefaultBooleanColoursFalse.Sprint(nip.DHCP.String())
+		}
+		var ddr string
+		if nip.DHCPDefaultRoute == 1 {
+			ddr = ui.DefaultBooleanColoursTrue.Sprint(nip.DHCPDefaultRoute.String())
+		} else {
+			ddr = ui.DefaultBooleanColoursFalse.Sprint(nip.DHCPDefaultRoute.String())
+		}
 		tIPNetwork.AppendRow(table.Row{
 			ui.DefaultAddressColours.Sprint(nip.Address),
 			nip.Family,
-			nip.DHCP == 1,
-			nip.DHCPDefaultRoute == 1,
+			dhcp,
+			ddr,
 			strings.Join(nip.DHCPDns, " "),
 		})
 	}

@@ -10,10 +10,10 @@ import (
 
 type deleteCommand struct {
 	*commands.BaseCommand
-	service service.Service
+	service *service.Service
 }
 
-func DeleteCommand(service service.Service) commands.Command {
+func DeleteCommand(service *service.Service) commands.Command {
 	return &deleteCommand{
 		BaseCommand: commands.New("delete", "Delete a router"),
 		service:     service,

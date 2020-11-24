@@ -24,24 +24,37 @@ type listCommand struct {
 	header         table.Row
 	columnKeys     []string
 	visibleColumns []string
+	zone 					 string
 }
 
 func (s *listCommand) InitCommand() {
-	s.header = table.Row{"UUID", "Name", "Router", "Zone", "Type"}
-	s.columnKeys = []string{"uuid", "name", "router", "zone", "type"}
-	s.visibleColumns = []string{"uuid", "name", "router", "zone", "type"}
+	s.header = table.Row{"UUID", "Name", "Router", "Type", "Zone"}
+	s.columnKeys = []string{"uuid", "name", "router", "type", "zone"}
+	s.visibleColumns = []string{"uuid", "name", "router", "type", "zone"}
 	flags := &pflag.FlagSet{}
+	flags.StringVar(&s.zone, "zone", "", "Filters for given zone")
 	s.AddVisibleColumnsFlag(flags, &s.visibleColumns, s.columnKeys, s.visibleColumns)
 	s.AddFlags(flags)
 }
 
 func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		ips, err := s.service.GetNetworks()
+		networks, err := s.service.GetNetworks()
 		if err != nil {
 			return nil, err
 		}
-		return ips, nil
+
+		if s.zone != "" {
+			var filtered []upcloud.Network
+			for _, nw := range networks.Networks {
+				if nw.Zone == s.zone {
+					filtered = append(filtered, nw)
+				}
+			}
+			return &upcloud.Networks{Networks: filtered}, nil
+		}
+
+		return networks, nil
 	}
 }
 
@@ -54,7 +67,7 @@ func (s *listCommand) HandleOutput(writer io.Writer, out interface{}) error {
 
 	for _, n := range networks.Networks {
 		t.AppendRow(table.Row{
-			n.UUID,
+			ui.DefaultUuidColours.Sprint(n.UUID),
 			n.Name,
 			n.Router,
 			n.Type,
@@ -64,5 +77,6 @@ func (s *listCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	fmt.Fprintln(writer)
 	fmt.Fprintln(writer, t.Render())
 	fmt.Fprintln(writer)
+
 	return nil
 }
