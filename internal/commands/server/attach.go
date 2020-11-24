@@ -12,9 +12,9 @@ import (
 
 type attachCommand struct {
 	*commands.BaseCommand
-	serverSvc service.Server
+	serverSvc  service.Server
 	storageSvc service.Storage
-	params  attachParams
+	params     attachParams
 }
 
 type attachParams struct {
@@ -24,8 +24,8 @@ type attachParams struct {
 func AttachCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
 	return &attachCommand{
 		BaseCommand: commands.New("attach-storage", "Attaches a storage as a device to a server"),
-		serverSvc: serverSvc,
-		storageSvc: storageSvc,
+		serverSvc:   serverSvc,
+		storageSvc:  storageSvc,
 	}
 }
 

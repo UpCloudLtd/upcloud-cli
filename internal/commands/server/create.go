@@ -23,8 +23,8 @@ var (
 func CreateCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
 	return &createCommand{
 		BaseCommand: commands.New("create", "Create a server"),
-		serverSvc:     serverSvc,
-		storageSvc: storageSvc,
+		serverSvc:   serverSvc,
+		storageSvc:  storageSvc,
 	}
 }
 
@@ -237,9 +237,9 @@ func (s *createParams) handleSshKey() error {
 
 type createCommand struct {
 	*commands.BaseCommand
-	serverSvc service.Server
+	serverSvc  service.Server
 	storageSvc service.Storage
-	params  createParams
+	params     createParams
 }
 
 func (s *createCommand) InitCommand() {

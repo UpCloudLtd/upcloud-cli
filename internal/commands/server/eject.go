@@ -11,10 +11,10 @@ import (
 
 type ejectCommand struct {
 	*commands.BaseCommand
-	serverSvc service.Server
+	serverSvc  service.Server
 	storageSvc service.Storage
-	params  ejectParams
-	flagSet *pflag.FlagSet
+	params     ejectParams
+	flagSet    *pflag.FlagSet
 }
 
 type ejectParams struct {
@@ -24,8 +24,8 @@ type ejectParams struct {
 func EjectCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
 	return &ejectCommand{
 		BaseCommand: commands.New("eject", "Eject a CD-ROM"),
-		serverSvc: serverSvc,
-		storageSvc: storageSvc,
+		serverSvc:   serverSvc,
+		storageSvc:  storageSvc,
 	}
 }
 

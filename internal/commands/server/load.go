@@ -12,9 +12,9 @@ import (
 
 type loadCommand struct {
 	*commands.BaseCommand
-	serverSvc service.Server
+	serverSvc  service.Server
 	storageSvc service.Storage
-	params  loadParams
+	params     loadParams
 }
 
 type loadParams struct {
@@ -24,8 +24,8 @@ type loadParams struct {
 func LoadCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
 	return &loadCommand{
 		BaseCommand: commands.New("load", "Load a CD-ROM"),
-		serverSvc: serverSvc,
-		storageSvc: storageSvc,
+		serverSvc:   serverSvc,
+		storageSvc:  storageSvc,
 	}
 }
 

@@ -12,9 +12,9 @@ import (
 
 type detachCommand struct {
 	*commands.BaseCommand
-	serverSvc service.Server
+	serverSvc  service.Server
 	storageSvc service.Storage
-	params  detachParams
+	params     detachParams
 }
 
 type detachParams struct {
@@ -24,8 +24,8 @@ type detachParams struct {
 func DetachCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
 	return &detachCommand{
 		BaseCommand: commands.New("detach-storage", "Detaches a storage resource from a server"),
-		serverSvc: serverSvc,
-		storageSvc: storageSvc,
+		serverSvc:   serverSvc,
+		storageSvc:  storageSvc,
 	}
 }
 
