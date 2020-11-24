@@ -2,12 +2,11 @@ package storage
 
 import (
 	"fmt"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"io"
 	"math"
 	"sync"
 	"time"
-
-	"github.com/UpCloudLtd/cli/internal/interfaces"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
@@ -19,7 +18,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/ui"
 )
 
-func ShowCommand(serverSvc interfaces.Server, storageSvc interfaces.Storage) commands.Command {
+func ShowCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New("show", "Show storage details"),
 		serverSvc:   serverSvc,
@@ -29,8 +28,8 @@ func ShowCommand(serverSvc interfaces.Server, storageSvc interfaces.Storage) com
 
 type showCommand struct {
 	*commands.BaseCommand
-	serverSvc     interfaces.Server
-	storageSvc    interfaces.Storage
+	serverSvc     service.Server
+	storageSvc    service.Storage
 	storageImport *upcloud.StorageImportDetails
 }
 
