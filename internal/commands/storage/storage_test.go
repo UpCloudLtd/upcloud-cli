@@ -18,65 +18,96 @@ var (
 	Uuid4  = "012c61a6-er4g-mf2t-b63a-b4be4326a655"
 )
 
-var Storage1 = upcloud.Storage{
-	UUID:   Uuid1,
-	Title:  Title1,
-	Access: "private",
-	State:  "maintenance",
-	Type:   "backup",
-	Zone:   "fi-hel1",
-	Size:   40,
-	Tier:   "maxiops",
-}
-
-var Storage2 = upcloud.Storage{
-	UUID:   Uuid2,
-	Title:  Title2,
-	Access: "private",
-	State:  "online",
-	Type:   "normal",
-	Zone:   "fi-hel1",
-	Size:   40,
-	Tier:   "maxiops",
-}
-
-var Storage3 = upcloud.Storage{
-	UUID:   Uuid3,
-	Title:  Title3,
-	Access: "public",
-	State:  "online",
-	Type:   "normal",
-	Zone:   "fi-hel1",
-	Size:   10,
-	Tier:   "maxiops",
-}
-
-var Storage4 = upcloud.Storage{
-	UUID:   Uuid4,
-	Title:  Title1,
-	Access: "public",
-	State:  "online",
-	Type:   "normal",
-	Zone:   "fi-hel1",
-	Size:   20,
-	Tier:   "maxiops",
-}
-
-var storages = &upcloud.Storages{
-	Storages: []upcloud.Storage{
-		Storage1,
-		Storage2,
-		Storage3,
-	},
-}
-
 func MockStorageService() *mocks.MockStorageService {
 	mss := new(mocks.MockStorageService)
+	var Storage1 = upcloud.Storage{
+		UUID:   Uuid1,
+		Title:  Title1,
+		Access: "private",
+		State:  "maintenance",
+		Type:   "backup",
+		Zone:   "fi-hel1",
+		Size:   40,
+		Tier:   "maxiops",
+	}
+
+	var Storage2 = upcloud.Storage{
+		UUID:   Uuid2,
+		Title:  Title2,
+		Access: "private",
+		State:  "online",
+		Type:   "normal",
+		Zone:   "fi-hel1",
+		Size:   40,
+		Tier:   "maxiops",
+	}
+
+	var Storage3 = upcloud.Storage{
+		UUID:   Uuid3,
+		Title:  Title3,
+		Access: "public",
+		State:  "online",
+		Type:   "normal",
+		Zone:   "fi-hel1",
+		Size:   10,
+		Tier:   "maxiops",
+	}
+	var storages = &upcloud.Storages{
+		Storages: []upcloud.Storage{
+			Storage1,
+			Storage2,
+			Storage3,
+		},
+	}
 	mss.On("GetStorages", mock.Anything).Return(storages, nil)
 	return mss
 }
 
 func TestSearchStorage(t *testing.T) {
+	var Storage1 = upcloud.Storage{
+		UUID:   Uuid1,
+		Title:  Title1,
+		Access: "private",
+		State:  "maintenance",
+		Type:   "backup",
+		Zone:   "fi-hel1",
+		Size:   40,
+		Tier:   "maxiops",
+	}
+
+	var Storage2 = upcloud.Storage{
+		UUID:   Uuid2,
+		Title:  Title2,
+		Access: "private",
+		State:  "online",
+		Type:   "normal",
+		Zone:   "fi-hel1",
+		Size:   40,
+		Tier:   "maxiops",
+	}
+
+	var Storage3 = upcloud.Storage{
+		UUID:   Uuid3,
+		Title:  Title3,
+		Access: "public",
+		State:  "online",
+		Type:   "normal",
+		Zone:   "fi-hel1",
+		Size:   10,
+		Tier:   "maxiops",
+	}
+
+	var Storage4 = upcloud.Storage{
+		UUID:   Uuid4,
+		Title:  Title1,
+		Access: "public",
+		State:  "online",
+		Type:   "normal",
+		Zone:   "fi-hel1",
+		Size:   20,
+		Tier:   "maxiops",
+	}
+
 	var storages = &upcloud.Storages{
 		Storages: []upcloud.Storage{
 			Storage1,

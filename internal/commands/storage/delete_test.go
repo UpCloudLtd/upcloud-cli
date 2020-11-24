@@ -4,6 +4,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
 	"github.com/UpCloudLtd/cli/internal/mocks"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -12,7 +13,16 @@ import (
 
 func TestDeleteStorageCommand(t *testing.T) {
 	methodName := "DeleteStorage"
-
+	var Storage2 = upcloud.Storage{
+		UUID:   Uuid2,
+		Title:  Title2,
+		Access: "private",
+		State:  "online",
+		Type:   "normal",
+		Zone:   "fi-hel1",
+		Size:   40,
+		Tier:   "maxiops",
+	}
 	for _, test := range []struct {
 		name        string
 		args        []string

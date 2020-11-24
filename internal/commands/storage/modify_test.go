@@ -13,6 +13,26 @@ import (
 
 func TestModifyCommand(t *testing.T) {
 	methodName := "ModifyStorage"
+	var Storage1 = upcloud.Storage{
+		UUID:   Uuid1,
+		Title:  Title1,
+		Access: "private",
+		State:  "maintenance",
+		Type:   "backup",
+		Zone:   "fi-hel1",
+		Size:   40,
+		Tier:   "maxiops",
+	}
+	var Storage2 = upcloud.Storage{
+		UUID:   Uuid2,
+		Title:  Title2,
+		Access: "private",
+		State:  "online",
+		Type:   "normal",
+		Zone:   "fi-hel1",
+		Size:   40,
+		Tier:   "maxiops",
+	}
 	details := upcloud.StorageDetails{
 		Storage: Storage1,
 	}

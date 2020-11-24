@@ -22,15 +22,15 @@ import (
 func ShowCommand(serverSvc interfaces.Server, storageSvc interfaces.Storage) commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New("show", "Show storage details"),
-		serverSvc: serverSvc,
-		storageSvc: storageSvc,
+		serverSvc:   serverSvc,
+		storageSvc:  storageSvc,
 	}
 }
 
 type showCommand struct {
 	*commands.BaseCommand
-	serverSvc interfaces.Server
-	storageSvc interfaces.Storage
+	serverSvc     interfaces.Server
+	storageSvc    interfaces.Storage
 	storageImport *upcloud.StorageImportDetails
 }
 
