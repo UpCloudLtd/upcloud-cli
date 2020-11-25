@@ -2,6 +2,7 @@ package all
 
 import (
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/commands/account"
 	ip_address "github.com/UpCloudLtd/cli/internal/commands/ip_address"
 	"github.com/UpCloudLtd/cli/internal/commands/network"
 	"github.com/UpCloudLtd/cli/internal/commands/network_interface"
@@ -81,4 +82,9 @@ func BuildCommands(mainCommand commands.Command, mainConfig *config.Config) {
 	commands.BuildCommand(router.ShowCommand(svc), routerCommand, cfgFn())
 	commands.BuildCommand(router.ModifyCommand(svc), routerCommand, cfgFn())
 	commands.BuildCommand(router.DeleteCommand(svc), routerCommand, cfgFn())
+
+	// Account
+	accountCommand := commands.BuildCommand(account.AccountCommand(), mainCommand, cfgFn())
+	commands.BuildCommand(account.ShowCommand(svc), accountCommand, cfgFn())
+
 }
