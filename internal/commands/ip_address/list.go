@@ -1,7 +1,6 @@
 package ip_address
 
 import (
-	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
@@ -27,9 +26,9 @@ type listCommand struct {
 }
 
 func (s *listCommand) InitCommand() {
-	s.header = table.Row{"Access", "Address", "Family", "PartOfPlan", "PTRRecord", "Server", "MAC", "Floating", "Zone"}
-	s.columnKeys = []string{"access", "address", "family", "partofplan", "ptrrecord", "server", "mac", "floating", "zone"}
-	s.visibleColumns = []string{"access", "address", "family", "partofplan", "ptrrecord", "server", "mac", "floating", "zone"}
+	s.header = table.Row {"Address", "Access", "Family", "Part of Plan", "PTR Record", "Server", "MAC", "Floating", "Zone"}
+	s.columnKeys = []string {"address", "access", "family", "partofplan", "ptrrecord", "server", "mac", "floating", "zone"}
+	s.visibleColumns = []string	{"address", "access", "family", "partofplan", "ptrrecord", "server", "mac", "floating", "zone"}
 	flags := &pflag.FlagSet{}
 	s.AddVisibleColumnsFlag(flags, &s.visibleColumns, s.columnKeys, s.visibleColumns)
 	s.AddFlags(flags)
@@ -54,19 +53,16 @@ func (s *listCommand) HandleOutput(writer io.Writer, out interface{}) error {
 
 	for _, ip := range ips.IPAddresses {
 		t.AppendRow(table.Row{
+			ui.DefaultAddressColours.Sprint(ip.Address),
 			ip.Access,
-			ip.Address,
 			ip.Family,
-			ip.PartOfPlan == 1,
+			ui.FormatBool(ip.PartOfPlan.Bool()),
 			ip.PTRRecord,
-			ip.ServerUUID,
+			ui.DefaultUuidColours.Sprint(ip.ServerUUID),
 			ip.MAC,
-			ip.Floating == 1,
+			ui.FormatBool(ip.Floating.Bool()),
 			ip.Zone})
 	}
 
-	fmt.Fprintln(writer)
-	fmt.Fprintln(writer, t.Render())
-	fmt.Fprintln(writer)
-	return nil
+	return t.Paginate(writer)
 }

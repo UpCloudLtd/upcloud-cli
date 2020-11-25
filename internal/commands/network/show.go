@@ -15,15 +15,15 @@ import (
 func ShowCommand(networkSvc service.Network, serverSvc service.Server) commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New("show", "Show current network"),
-		networkSvc:     networkSvc,
-		serverSvc:     serverSvc,
+		networkSvc:  networkSvc,
+		serverSvc:   serverSvc,
 	}
 }
 
 type showCommand struct {
 	*commands.BaseCommand
 	networkSvc service.Network
-	serverSvc service.Server
+	serverSvc  service.Server
 }
 
 type networkWithServers struct {
@@ -43,7 +43,7 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 
 		var servers []upcloud.Server
 		for _, networkServer := range n.Servers {
-			svr, err := server.SearchServer(&servers, s.serverSvc, networkServer.ServerUUID,true)
+			svr, err := server.SearchServer(&servers, s.serverSvc, networkServer.ServerUUID, true)
 			if err != nil {
 				return nil, err
 			}

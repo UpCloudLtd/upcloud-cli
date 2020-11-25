@@ -1,10 +1,10 @@
 package network
 
 import (
-	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/pflag"
@@ -24,7 +24,7 @@ type listCommand struct {
 	header         table.Row
 	columnKeys     []string
 	visibleColumns []string
-	zone 					 string
+	zone           string
 }
 
 func (s *listCommand) InitCommand() {
@@ -39,19 +39,17 @@ func (s *listCommand) InitCommand() {
 
 func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
+		if s.zone != "" {
+			filtered, err := s.service.GetNetworksInZone(&request.GetNetworksInZoneRequest{Zone: s.zone})
+			if err != nil {
+				return nil, err
+			}
+			return filtered, nil
+		}
+
 		networks, err := s.service.GetNetworks()
 		if err != nil {
 			return nil, err
-		}
-
-		if s.zone != "" {
-			var filtered []upcloud.Network
-			for _, nw := range networks.Networks {
-				if nw.Zone == s.zone {
-					filtered = append(filtered, nw)
-				}
-			}
-			return &upcloud.Networks{Networks: filtered}, nil
 		}
 
 		return networks, nil
@@ -71,12 +69,9 @@ func (s *listCommand) HandleOutput(writer io.Writer, out interface{}) error {
 			n.Name,
 			n.Router,
 			n.Type,
-			n.Zone})
+			n.Zone,
+		})
 	}
 
-	fmt.Fprintln(writer)
-	fmt.Fprintln(writer, t.Render())
-	fmt.Fprintln(writer)
-
-	return nil
+	return t.Paginate(writer)
 }
