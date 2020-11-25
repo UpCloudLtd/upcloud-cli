@@ -31,6 +31,8 @@ var DefaultTemplatizeParams = &templatizeParams{
 }
 
 func (s *templatizeCommand) InitCommand() {
+	s.SetPositionalArgHelp(positionalArgHelp)
+	s.ArgCompletion(GetArgCompFn(s.service))
 	s.params = templatizeParams{TemplatizeStorageRequest: request.TemplatizeStorageRequest{}}
 
 	flagSet := &pflag.FlagSet{}

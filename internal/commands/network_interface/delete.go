@@ -18,6 +18,8 @@ type deleteCommand struct {
 }
 
 func (s *deleteCommand) InitCommand() {
+	s.SetPositionalArgHelp(server.PositionalArgHelp)
+	s.ArgCompletion(server.GetArgCompFn(s.service))
 	fs := &pflag.FlagSet{}
 	fs.IntVar(&s.index, "index", 0, "Interface index.")
 	s.AddFlags(fs)

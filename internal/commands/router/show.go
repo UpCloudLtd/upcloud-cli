@@ -24,6 +24,11 @@ type showCommand struct {
 	service *service.Service
 }
 
+func (s *showCommand) InitCommand() {
+	s.SetPositionalArgHelp(positionalArgHelp)
+	s.ArgCompletion(GetArgCompFn(s.service))
+}
+
 type routerWithNetworks struct {
 	router   *upcloud.Router
 	networks []*upcloud.Network

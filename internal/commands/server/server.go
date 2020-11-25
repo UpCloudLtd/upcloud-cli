@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/ui"
+	"github.com/spf13/cobra"
 	"time"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
@@ -15,8 +16,9 @@ import (
 )
 
 const (
-	minStorageSize   = 10
-	maxServerActions = 10
+	minStorageSize    = 10
+	maxServerActions  = 10
+	PositionalArgHelp = "<UUID/Title/Hostname...>"
 )
 
 var cachedServers []upcloud.Server
@@ -156,4 +158,18 @@ func (s Request) Send(args []string) (interface{}, error) {
 	}
 
 	return s.Handle(requests)
+}
+
+func GetArgCompFn(s service.Server) func(toComplete string) ([]string, cobra.ShellCompDirective) {
+	return func(toComplete string) ([]string, cobra.ShellCompDirective) {
+		servers, err := s.GetServers()
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveDefault
+		}
+		var vals []string
+		for _, v := range servers.Servers {
+			vals = append(vals, v.UUID, v.Hostname)
+		}
+		return commands.MatchStringPrefix(vals, toComplete, true), cobra.ShellCompDirectiveNoFileComp
+	}
 }

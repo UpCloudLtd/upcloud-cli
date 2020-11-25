@@ -20,6 +20,11 @@ func ReleaseCommand(service service.IpAddress) commands.Command {
 	}
 }
 
+func (s *releaseCommand) InitCommand() {
+	s.SetPositionalArgHelp(positionalArgHelp)
+	s.ArgCompletion(GetArgCompFn(s.service))
+}
+
 func (s *releaseCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 		return Request{

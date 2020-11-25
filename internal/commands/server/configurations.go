@@ -12,7 +12,7 @@ import (
 
 type configurationsCommand struct {
 	*commands.BaseCommand
-	service service.Server
+	service        service.Server
 	header         table.Row
 	columnKeys     []string
 	visibleColumns []string

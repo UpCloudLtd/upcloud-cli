@@ -41,6 +41,8 @@ func ModifyCommand(service service.Storage) commands.Command {
 }
 
 func (s *modifyCommand) InitCommand() {
+	s.SetPositionalArgHelp(positionalArgHelp)
+	s.ArgCompletion(GetArgCompFn(s.service))
 	s.params = modifyParams{ModifyStorageRequest: request.ModifyStorageRequest{}}
 
 	flagSet := &pflag.FlagSet{}

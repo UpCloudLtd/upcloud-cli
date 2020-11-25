@@ -6,9 +6,11 @@ import (
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
+	"github.com/spf13/cobra"
 )
 
 const maxIpAddressActions = 10
+const positionalArgHelp = "<Address/PTRRecord...>"
 
 func IpAddressCommand() commands.Command {
 	return &ipAddressCommand{commands.New("ip-address", "Manage ip address")}
@@ -76,4 +78,18 @@ func (s Request) Send(args []string) (interface{}, error) {
 	}
 
 	return s.Handle(requests)
+}
+
+func GetArgCompFn(s service.IpAddress) func(toComplete string) ([]string, cobra.ShellCompDirective) {
+	return func(toComplete string) ([]string, cobra.ShellCompDirective) {
+		ip, err := s.GetIPAddresses()
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveDefault
+		}
+		var vals []string
+		for _, v := range ip.IPAddresses {
+			vals = append(vals, v.Address, v.PTRRecord)
+		}
+		return commands.MatchStringPrefix(vals, toComplete, true), cobra.ShellCompDirectiveNoFileComp
+	}
 }

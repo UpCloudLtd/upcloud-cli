@@ -22,6 +22,11 @@ type showCommand struct {
 	service service.IpAddress
 }
 
+func (s *showCommand) InitCommand() {
+	s.SetPositionalArgHelp(positionalArgHelp)
+	s.ArgCompletion(GetArgCompFn(s.service))
+}
+
 func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 		if len(args) != 1 {

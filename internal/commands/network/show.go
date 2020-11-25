@@ -26,6 +26,11 @@ type showCommand struct {
 	serverSvc  service.Server
 }
 
+func (s *showCommand) InitCommand() {
+	s.SetPositionalArgHelp(positionalArgHelp)
+	s.ArgCompletion(GetArgCompFn(s.networkSvc))
+}
+
 type networkWithServers struct {
 	network *upcloud.Network
 	servers []upcloud.Server

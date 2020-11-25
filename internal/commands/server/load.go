@@ -34,6 +34,8 @@ var DefaultLoadParams = &loadParams{
 }
 
 func (s *loadCommand) InitCommand() {
+	s.SetPositionalArgHelp(PositionalArgHelp)
+	s.ArgCompletion(GetArgCompFn(s.serverSvc))
 	s.params = loadParams{LoadCDROMRequest: request.LoadCDROMRequest{}}
 
 	flagSet := &pflag.FlagSet{}

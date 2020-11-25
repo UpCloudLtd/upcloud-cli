@@ -23,6 +23,8 @@ func ModifyCommand(service service.IpAddress) commands.Command {
 }
 
 func (s *modifyCommand) InitCommand() {
+	s.SetPositionalArgHelp(positionalArgHelp)
+	s.ArgCompletion(GetArgCompFn(s.service))
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.req.MAC, "mac", "", "MAC address of server interface to attach floating IP to.")
 	fs.StringVar(&s.req.PTRRecord, "ptr-record", "", "A fully qualified domain name.")

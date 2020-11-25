@@ -31,6 +31,8 @@ var DefaultCreateBackupParams = &createBackupParams{
 }
 
 func (s *createBackupCommand) InitCommand() {
+	s.SetPositionalArgHelp(positionalArgHelp)
+	s.ArgCompletion(GetArgCompFn(s.service))
 	s.params = createBackupParams{CreateBackupRequest: request.CreateBackupRequest{}}
 
 	flagSet := &pflag.FlagSet{}

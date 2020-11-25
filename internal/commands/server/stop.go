@@ -4,7 +4,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
-	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"strconv"
 	"time"
@@ -39,17 +38,8 @@ var DefaultStopParams = &stopParams{
 }
 
 func (s *stopCommand) InitCommand() {
-	s.ArgCompletion(func(toComplete string) ([]string, cobra.ShellCompDirective) {
-		servers, err := s.service.GetServers()
-		if err != nil {
-			return nil, cobra.ShellCompDirectiveDefault
-		}
-		var vals []string
-		for _, v := range servers.Servers {
-			vals = append(vals, v.UUID, v.Hostname)
-		}
-		return commands.MatchStringPrefix(vals, toComplete, false), cobra.ShellCompDirectiveNoFileComp
-	})
+	s.SetPositionalArgHelp(PositionalArgHelp)
+	s.ArgCompletion(GetArgCompFn(s.service))
 
 	flags := &pflag.FlagSet{}
 	flags.StringVar(&s.params.StopType, "type", DefaultStopParams.StopType, "The type of stop operation. Soft waits for the OS to shut down cleanly while hard forcibly shuts down a server")

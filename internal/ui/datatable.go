@@ -272,7 +272,6 @@ func (s *DataTable) Paginate(writer io.Writer) error {
 		}
 		t.SetStyle(*s.t.Style())
 
-
 		for rowCount < height-4 && i < len(s.rows) {
 			t.AppendRow(s.rows[i])
 			rowCount++

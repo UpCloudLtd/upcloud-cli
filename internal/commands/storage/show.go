@@ -8,14 +8,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/jedib0t/go-pretty/v6/table"
-	"github.com/spf13/cobra"
-
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/commands/server"
 	"github.com/UpCloudLtd/cli/internal/ui"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/jedib0t/go-pretty/v6/table"
 )
 
 func ShowCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
@@ -41,17 +39,8 @@ type commandResponseHolder struct {
 }
 
 func (s *showCommand) InitCommand() {
-	s.ArgCompletion(func(toComplete string) ([]string, cobra.ShellCompDirective) {
-		storages, err := s.storageSvc.GetStorages(&request.GetStoragesRequest{})
-		if err != nil {
-			return nil, cobra.ShellCompDirectiveDefault
-		}
-		var vals []string
-		for _, v := range storages.Storages {
-			vals = append(vals, v.UUID, v.Title)
-		}
-		return commands.MatchStringPrefix(vals, toComplete, false), cobra.ShellCompDirectiveNoSpace | cobra.ShellCompDirectiveNoFileComp
-	})
+	s.SetPositionalArgHelp(positionalArgHelp)
+	s.ArgCompletion(GetArgCompFn(s.storageSvc))
 }
 
 func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {

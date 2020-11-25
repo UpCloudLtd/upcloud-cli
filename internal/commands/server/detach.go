@@ -34,6 +34,8 @@ var DefaultDetachParams = &detachParams{
 }
 
 func (s *detachCommand) InitCommand() {
+	s.SetPositionalArgHelp(PositionalArgHelp)
+	s.ArgCompletion(GetArgCompFn(s.serverSvc))
 	s.params = detachParams{DetachStorageRequest: request.DetachStorageRequest{}}
 
 	flagSet := &pflag.FlagSet{}

@@ -20,6 +20,11 @@ func DeleteCommand(service service.Network) commands.Command {
 	}
 }
 
+func (s *deleteCommand) InitCommand() {
+	s.SetPositionalArgHelp(positionalArgHelp)
+	s.ArgCompletion(GetArgCompFn(s.service))
+}
+
 func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 		return Request{

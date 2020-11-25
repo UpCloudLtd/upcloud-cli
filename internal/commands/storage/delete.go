@@ -1,13 +1,11 @@
 package storage
 
 import (
+	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
-	"github.com/spf13/cobra"
-
-	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/ui"
 )
 
 func DeleteCommand(service service.Storage) commands.Command {
@@ -23,18 +21,8 @@ type deleteCommand struct {
 }
 
 func (s *deleteCommand) InitCommand() {
-	s.ArgCompletion(func(toComplete string) ([]string, cobra.ShellCompDirective) {
-		storages, err := s.service.GetStorages(&request.GetStoragesRequest{Access: upcloud.StorageAccessPrivate})
-		if err != nil {
-			return nil, cobra.ShellCompDirectiveDefault
-		}
-		var vals []string
-		for _, v := range storages.Storages {
-			vals = append(vals, v.UUID, v.Title)
-		}
-		return commands.MatchStringPrefix(vals, toComplete, true), cobra.ShellCompDirectiveNoFileComp
-	})
-	s.SetPositionalArgHelp("<uuidOrTitle ...>")
+	s.SetPositionalArgHelp(positionalArgHelp)
+	s.ArgCompletion(GetArgCompFn(s.service))
 }
 
 func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {

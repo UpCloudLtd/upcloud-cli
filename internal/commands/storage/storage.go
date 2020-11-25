@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/ui"
+	"github.com/spf13/cobra"
 	"time"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
@@ -20,6 +21,7 @@ var (
 )
 
 const minStorageSize = 10
+const positionalArgHelp = "<UUID or Title>"
 
 func StorageCommand() commands.Command {
 	return &storageCommand{commands.New("storage", "Manage storages")}
@@ -169,4 +171,18 @@ func (s Request) Send(args []string) (interface{}, error) {
 	}
 
 	return s.Handle(requests)
+}
+
+func GetArgCompFn(s service.Storage) func(toComplete string) ([]string, cobra.ShellCompDirective) {
+	return func(toComplete string) ([]string, cobra.ShellCompDirective) {
+		storages, err := s.GetStorages(&request.GetStoragesRequest{})
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveDefault
+		}
+		var vals []string
+		for _, v := range storages.Storages {
+			vals = append(vals, v.UUID, v.Title)
+		}
+		return commands.MatchStringPrefix(vals, toComplete, false), cobra.ShellCompDirectiveNoSpace | cobra.ShellCompDirectiveNoFileComp
+	}
 }

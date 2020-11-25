@@ -23,6 +23,8 @@ func ModifyCommand(service *service.Service) commands.Command {
 }
 
 func (s *modifyCommand) InitCommand() {
+	s.SetPositionalArgHelp(positionalArgHelp)
+	s.ArgCompletion(GetArgCompFn(s.service))
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.req.Name, "name", "", "Name of the router.")
 	s.AddFlags(fs)

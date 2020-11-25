@@ -23,6 +23,8 @@ func ModifyCommand(service service.Network) commands.Command {
 }
 
 func (s *modifyCommand) InitCommand() {
+	s.SetPositionalArgHelp(positionalArgHelp)
+	s.ArgCompletion(GetArgCompFn(s.service))
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.req.Name, "name", "", "Names the private network.")
 	fs.StringVar(&s.req.Router, "router", "", "Change or clear the router attachment.")

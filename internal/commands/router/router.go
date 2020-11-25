@@ -6,9 +6,11 @@ import (
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
+	"github.com/spf13/cobra"
 )
 
 const maxRouterActions = 10
+const positionalArgHelp = "<UUID/Name...>"
 
 func RouterCommand() commands.Command {
 	return &routerCommand{commands.New("router", "Manage router")}
@@ -78,4 +80,18 @@ func (s Request) Send(args []string) (interface{}, error) {
 	}
 
 	return s.Handle(requests)
+}
+
+func GetArgCompFn(s *service.Service) func(toComplete string) ([]string, cobra.ShellCompDirective) {
+	return func(toComplete string) ([]string, cobra.ShellCompDirective) {
+		routers, err := s.GetRouters()
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveDefault
+		}
+		var vals []string
+		for _, v := range routers.Routers {
+			vals = append(vals, v.UUID, v.Name)
+		}
+		return commands.MatchStringPrefix(vals, toComplete, true), cobra.ShellCompDirectiveNoFileComp
+	}
 }

@@ -29,6 +29,8 @@ var defCreateParams = request.AssignIPAddressRequest{
 }
 
 func (s *assignCommand) InitCommand() {
+	s.SetPositionalArgHelp(positionalArgHelp)
+	s.ArgCompletion(GetArgCompFn(s.service))
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.req.Access, "access", defCreateParams.Access, "Is address for utility or public network.")
 	fs.StringVar(&s.req.Family, "family", defCreateParams.Family, "The address family of new IP address.")

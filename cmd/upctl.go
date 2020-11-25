@@ -39,7 +39,10 @@ func (s *completionCommand) MakeExecuteCommand() func(args []string) (interface{
 		switch args[0] {
 		case "bash":
 			_ = s.Cobra().Root().GenBashCompletion(os.Stdout)
+		case "powershell":
+			_ = s.Cobra().Root().GenPowerShellCompletion(os.Stdout)
 		}
+
 		return nil, nil
 	}
 }

@@ -7,14 +7,12 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
-	"github.com/spf13/cobra"
-
-	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/ui"
 )
 
 func ShowCommand(service ServerFirewall) commands.Command {
@@ -35,18 +33,8 @@ type commandResponseHolder struct {
 }
 
 func (s *showCommand) InitCommand() {
-	s.ArgCompletion(func(toComplete string) ([]string, cobra.ShellCompDirective) {
-		servers, err := s.service.GetServers()
-		if err != nil {
-			return nil, cobra.ShellCompDirectiveDefault
-		}
-		var vals []string
-		for _, v := range servers.Servers {
-			vals = append(vals, v.UUID, v.Hostname)
-		}
-		return commands.MatchStringPrefix(vals, toComplete, false),
-			cobra.ShellCompDirectiveNoSpace | cobra.ShellCompDirectiveNoFileComp
-	})
+	s.SetPositionalArgHelp(PositionalArgHelp)
+	s.ArgCompletion(GetArgCompFn(s.service))
 }
 
 func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {

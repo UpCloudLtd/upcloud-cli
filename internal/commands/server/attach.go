@@ -38,6 +38,8 @@ var DefaultAttachParams = &attachParams{
 }
 
 func (s *attachCommand) InitCommand() {
+	s.SetPositionalArgHelp(PositionalArgHelp)
+	s.ArgCompletion(GetArgCompFn(s.serverSvc))
 	s.params = attachParams{AttachStorageRequest: request.AttachStorageRequest{}}
 
 	flagSet := &pflag.FlagSet{}

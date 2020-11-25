@@ -33,6 +33,8 @@ var DefaultCloneParams = &cloneParams{
 }
 
 func (s *cloneCommand) InitCommand() {
+	s.SetPositionalArgHelp(positionalArgHelp)
+	s.ArgCompletion(GetArgCompFn(s.service))
 	s.params = cloneParams{CloneStorageRequest: request.CloneStorageRequest{}}
 
 	flagSet := &pflag.FlagSet{}

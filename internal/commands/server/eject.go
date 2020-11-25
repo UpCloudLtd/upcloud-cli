@@ -21,6 +21,11 @@ type ejectParams struct {
 	request.EjectCDROMRequest
 }
 
+func (s *ejectCommand) InitCommand() {
+	s.SetPositionalArgHelp(PositionalArgHelp)
+	s.ArgCompletion(GetArgCompFn(s.serverSvc))
+}
+
 func EjectCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
 	return &ejectCommand{
 		BaseCommand: commands.New("eject", "Eject a CD-ROM"),

@@ -33,6 +33,8 @@ var DefaultModifyParams = modifyParams{
 }
 
 func (s *modifyCommand) InitCommand() {
+	s.SetPositionalArgHelp(PositionalArgHelp)
+	s.ArgCompletion(GetArgCompFn(s.service))
 	s.params = modifyParams{ModifyServerRequest: request.ModifyServerRequest{}}
 	flags := &pflag.FlagSet{}
 	flags.StringVar(&s.params.BootOrder, "boot-order", DefaultModifyParams.BootOrder, "The boot device order.")
