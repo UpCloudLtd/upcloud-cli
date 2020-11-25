@@ -60,8 +60,8 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 		var storageImport *upcloud.StorageImportDetails
 		var servers []upcloud.Server
 
-		if len(args) < 1 {
-			return nil, fmt.Errorf("storage title or uuid is required")
+		if len(args) != 1 {
+			return nil, fmt.Errorf("one storage title or uuid is required")
 		}
 		storage, err := searchStorage(&storages, s.storageSvc, args[0], true)
 		if err != nil {

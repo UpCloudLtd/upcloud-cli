@@ -74,23 +74,11 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	if len(n.IPNetworks) > 0 {
 		tIPNetwork := ui.NewDataTable("Address", "Family", "DHCP", "DHCP Def Router", "DHCP DNS")
 		for _, nip := range n.IPNetworks {
-			var dhcp string
-			if nip.DHCP == 1 {
-				dhcp = ui.DefaultBooleanColoursTrue.Sprint(nip.DHCP.String())
-			} else {
-				dhcp = ui.DefaultBooleanColoursFalse.Sprint(nip.DHCP.String())
-			}
-			var ddr string
-			if nip.DHCPDefaultRoute == 1 {
-				ddr = ui.DefaultBooleanColoursTrue.Sprint(nip.DHCPDefaultRoute.String())
-			} else {
-				ddr = ui.DefaultBooleanColoursFalse.Sprint(nip.DHCPDefaultRoute.String())
-			}
 			tIPNetwork.AppendRow(table.Row{
 				ui.DefaultAddressColours.Sprint(nip.Address),
 				nip.Family,
-				dhcp,
-				ddr,
+				ui.FormatBool(nip.DHCP.Bool()),
+				ui.FormatBool(nip.DHCPDefaultRoute.Bool()),
 				strings.Join(nip.DHCPDns, " "),
 			})
 		}
@@ -100,11 +88,11 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	}
 
 	if len(servers) > 0 {
-		tServers := ui.NewDataTable("UUID", "Title", "Hostname", "State")
+		tServers := ui.NewDataTable("Title (UUID)", "Hostname", "State")
 
 		for _, s := range servers {
 			tServers.AppendRow(table.Row{
-				ui.DefaultUuidColours.Sprint(s.UUID),
+				fmt.Sprintf("%s\n(%s)", s.Title, ui.DefaultUuidColours.Sprint(s.UUID)),
 				s.Title,
 				s.Hostname,
 				server.StateColour(s.State).Sprint(s.State),

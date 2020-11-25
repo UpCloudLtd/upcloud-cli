@@ -25,7 +25,7 @@ type showCommand struct {
 func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 		if len(args) != 1 {
-			return nil, fmt.Errorf("one ip address or  is required")
+			return nil, fmt.Errorf("one ip address or PTR Record is required")
 		}
 		ip, err := searchIpAddress(args[0], s.service)
 		if err != nil {
@@ -45,14 +45,14 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	{
 		dCommon := ui.NewDetailsView()
 		dCommon.AppendRows([]table.Row{
+			{"Address:", ui.DefaultAddressColours.Sprint(ip.Address)},
 			{"Access:", ip.Access},
-			{"Address:", ip.Address},
 			{"Family:", ip.Family},
-			{"PartOfPlan:", ip.PartOfPlan == 1},
-			{"PTRRecord:", ip.PTRRecord},
-			{"ServerUUID:", ip.ServerUUID},
+			{"Part of Plan:", ui.FormatBool(ip.PartOfPlan.Bool())},
+			{"PTR Record:", ip.PTRRecord},
+			{"Server UUID:", ui.DefaultUuidColours.Sprint(ip.ServerUUID)},
 			{"MAC:", ip.MAC},
-			{"Floating:", ip.Floating == 1},
+			{"Floating:", ui.FormatBool(ip.Floating.Bool())},
 			{"Zone:", ip.Zone},
 		})
 		l.AppendSection("", dCommon.Render())
