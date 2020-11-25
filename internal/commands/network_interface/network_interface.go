@@ -19,7 +19,9 @@ type networkInterfaceCommand struct {
 func handleIpAddress(ipStrings []string) ([]request.CreateNetworkInterfaceIPAddress, error) {
 	var ipAddresses []request.CreateNetworkInterfaceIPAddress
 	for _, ipAddrStr := range ipStrings {
-		ip := request.CreateNetworkInterfaceIPAddress{}
+		ip := request.CreateNetworkInterfaceIPAddress{
+			Family: "IPv4",
+		}
 		args, err := commands.Parse(ipAddrStr)
 		if err != nil {
 			return nil, err
@@ -27,7 +29,7 @@ func handleIpAddress(ipStrings []string) ([]request.CreateNetworkInterfaceIPAddr
 
 		fs := &pflag.FlagSet{}
 		fs.StringVar(&ip.Address, "address", "", "A valid IP address within the IP space of the network. If not given, the next free address is selected.")
-		fs.StringVar(&ip.Family, "family", "", "IP address family. Currently only IPv4 networks are supported.")
+		fs.StringVar(&ip.Family, "family", ip.Family, "IP address family. Currently only IPv4 networks are supported.")
 
 		err = fs.Parse(args)
 		if err != nil {

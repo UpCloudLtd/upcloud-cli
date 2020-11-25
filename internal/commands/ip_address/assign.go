@@ -3,7 +3,6 @@ package ip_address
 import (
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
@@ -29,8 +28,6 @@ var defCreateParams = request.AssignIPAddressRequest{
 }
 
 func (s *assignCommand) InitCommand() {
-	s.SetPositionalArgHelp(positionalArgHelp)
-	s.ArgCompletion(GetArgCompFn(s.service))
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.req.Access, "access", defCreateParams.Access, "Is address for utility or public network.")
 	fs.StringVar(&s.req.Family, "family", defCreateParams.Family, "The address family of new IP address.")
@@ -43,12 +40,7 @@ func (s *assignCommand) InitCommand() {
 
 func (s *assignCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		return Request{
-			BuildRequest: func(ip *upcloud.IPAddress) interface{} {
-				return &s.req
-			},
-			Service: s.service,
-			HandleContext: ui.HandleContext{
+		return ui.HandleContext{
 				RequestID:     func(in interface{}) string { return in.(*request.AssignIPAddressRequest).MAC },
 				MaxActions:    maxIpAddressActions,
 				InteractiveUI: s.Config().InteractiveUI(),
@@ -56,7 +48,6 @@ func (s *assignCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 				Action: func(req interface{}) (interface{}, error) {
 					return s.service.AssignIPAddress(req.(*request.AssignIPAddressRequest))
 				},
-			},
-		}.Send(args)
+			}.HandleAction(&s.req)
 	}
 }

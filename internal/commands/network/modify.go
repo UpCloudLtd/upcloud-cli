@@ -35,7 +35,8 @@ func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 	return func(args []string) (interface{}, error) {
 		return Request{
 			BuildRequest: func(network *upcloud.Network) interface{} {
-				return &request.ModifyNetworkRequest{UUID: network.UUID}
+				s.req.UUID = network.UUID
+				return &s.req
 			},
 			Service: s.service,
 			HandleContext: ui.HandleContext{

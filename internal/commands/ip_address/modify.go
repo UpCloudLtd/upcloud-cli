@@ -35,7 +35,8 @@ func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 	return func(args []string) (interface{}, error) {
 		return Request{
 			BuildRequest: func(ip *upcloud.IPAddress) interface{} {
-				return &request.ModifyIPAddressRequest{IPAddress: ip.Address}
+				s.req.IPAddress = ip.Address
+				return &s.req
 			},
 			Service: s.service,
 			HandleContext: ui.HandleContext{

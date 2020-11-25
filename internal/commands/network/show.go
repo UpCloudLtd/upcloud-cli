@@ -98,7 +98,6 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 		for _, s := range servers {
 			tServers.AppendRow(table.Row{
 				fmt.Sprintf("%s\n(%s)", s.Title, ui.DefaultUuidColours.Sprint(s.UUID)),
-				s.Title,
 				s.Hostname,
 				server.StateColour(s.State).Sprint(s.State),
 			})

@@ -59,7 +59,8 @@ func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 	return func(args []string) (interface{}, error) {
 		return server.Request{
 			BuildRequest: func(server *upcloud.Server) interface{} {
-				return &request.ModifyNetworkInterfaceRequest{ServerUUID: server.UUID}
+				s.req.ServerUUID = server.UUID
+				return &s.req
 			},
 			Service:    s.service,
 			ExactlyOne: true,

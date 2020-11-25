@@ -21,7 +21,7 @@ var (
 )
 
 const minStorageSize = 10
-const positionalArgHelp = "<UUID or Title>"
+const positionalArgHelp = "<UUID or Title...>"
 
 func StorageCommand() commands.Command {
 	return &storageCommand{commands.New("storage", "Manage storages")}
@@ -163,11 +163,11 @@ func (s Request) Send(args []string) (interface{}, error) {
 
 	var requests []interface{}
 	for _, storage := range storages {
-		request, err := s.BuildRequest(storage)
+		req, err := s.BuildRequest(storage)
 		if err != nil {
 			return nil, err
 		}
-		requests = append(requests, request)
+		requests = append(requests, req)
 	}
 
 	return s.Handle(requests)

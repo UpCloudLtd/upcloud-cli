@@ -83,8 +83,7 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 			HandleContext: ui.HandleContext{
 				MessageFn: func(in interface{}) string {
 					req := in.(*request.CreateNetworkInterfaceRequest)
-					fmt.Println(req)
-					return fmt.Sprintf("Creating network interface %s of server %s", req.NetworkUUID, req.ServerUUID)
+					return fmt.Sprintf("Creating network interface for server %s network %s", req.ServerUUID, req.NetworkUUID)
 				},
 				ResultUUID:    func(in interface{}) string { return fmt.Sprintf("Index %d", in.(*upcloud.Interface).Index) },
 				MaxActions:    maxNetworkInterfaceActions,

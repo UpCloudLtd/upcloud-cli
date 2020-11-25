@@ -34,7 +34,7 @@ func (s *createCommand) InitCommand() {
 	fs.StringVar(&s.params.req.Name, "name", s.params.req.Name, "Names the network.")
 	fs.StringVar(&s.params.req.Zone, "zone", s.params.req.Zone, "The zone in which the network is configured.")
 	fs.StringVar(&s.params.req.Router, "router", s.params.req.Router, "Add this network to an existing router.")
-	fs.StringArrayVar(&s.params.networks, "network", s.params.networks, "A network interface for the server")
+	fs.StringArrayVar(&s.params.networks, "ip-network", s.params.networks, "A network interface for the server")
 	s.AddFlags(fs)
 }
 
