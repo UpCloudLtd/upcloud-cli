@@ -70,7 +70,7 @@ func BuildCommands(mainCommand commands.Command, mainConfig *config.Config) {
 	networkCommand := commands.BuildCommand(network.NetworkCommand(), mainCommand, cfgFn())
 	commands.BuildCommand(network.CreateCommand(svc), networkCommand, cfgFn())
 	commands.BuildCommand(network.ListCommand(svc), networkCommand, cfgFn())
-	commands.BuildCommand(network.ShowCommand(svc), networkCommand, cfgFn())
+	commands.BuildCommand(network.ShowCommand(svc, svc), networkCommand, cfgFn())
 	commands.BuildCommand(network.ModifyCommand(svc), networkCommand, cfgFn())
 	commands.BuildCommand(network.DeleteCommand(svc), networkCommand, cfgFn())
 

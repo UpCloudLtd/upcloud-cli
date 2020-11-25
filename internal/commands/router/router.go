@@ -21,14 +21,14 @@ type routerCommand struct {
 var getRouterUuid = func(in interface{}) string { return in.(*upcloud.Router).UUID }
 
 func searchRouter(uuidOrName string, service *service.Service) (*upcloud.Router, error) {
-	var result []*upcloud.Router
+	var result []upcloud.Router
 	routers, err := service.GetRouters()
 	if err != nil {
 		return nil, err
 	}
 	for _, router := range routers.Routers {
 		if router.UUID == uuidOrName || router.Name == uuidOrName {
-			result = append(result, &router)
+			result = append(result, router)
 		}
 	}
 	if len(result) == 0 {
@@ -37,10 +37,10 @@ func searchRouter(uuidOrName string, service *service.Service) (*upcloud.Router,
 	if len(result) > 1 {
 		return nil, fmt.Errorf("multiple routers matched to query %q", uuidOrName)
 	}
-	return result[0], nil
+	return &result[0], nil
 }
 
-func searchRouteres(uuidOrNames []string, service *service.Service) ([]*upcloud.Router, error) {
+func searchRouters(uuidOrNames []string, service *service.Service) ([]*upcloud.Router, error) {
 	var result []*upcloud.Router
 	for _, uuidOrName := range uuidOrNames {
 		ip, err := searchRouter(uuidOrName, service)
@@ -67,7 +67,7 @@ func (s Request) Send(args []string) (interface{}, error) {
 		return nil, fmt.Errorf("at least one router uuid is required")
 	}
 
-	servers, err := searchRouteres(args, s.Service)
+	servers, err := searchRouters(args, s.Service)
 	if err != nil {
 		return nil, err
 	}

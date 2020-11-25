@@ -47,7 +47,7 @@ func matchServers(servers []upcloud.Server, searchVal string) []*upcloud.Server 
 	return r
 }
 
-func searchServer(serversPtr *[]upcloud.Server, service service.Server, uuidOrHostnameOrTitle string, unique bool) ([]*upcloud.Server, error) {
+func SearchServer(serversPtr *[]upcloud.Server, service service.Server, uuidOrHostnameOrTitle string, unique bool) ([]*upcloud.Server, error) {
 	if serversPtr == nil || service == nil {
 		return nil, fmt.Errorf("no servers or service passed")
 	}
@@ -73,7 +73,7 @@ func searchServer(serversPtr *[]upcloud.Server, service service.Server, uuidOrHo
 func SearchAllArgs(uuidOrTitle []string, service service.Server, unique bool) ([]*upcloud.Server, error) {
 	var result []*upcloud.Server
 	for _, id := range uuidOrTitle {
-		matchedResults, err := searchServer(&cachedServers, service, id, unique)
+		matchedResults, err := SearchServer(&cachedServers, service, id, unique)
 		if err != nil {
 			return nil, err
 		}

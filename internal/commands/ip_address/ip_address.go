@@ -19,14 +19,14 @@ type ipAddressCommand struct {
 }
 
 func searchIpAddress(prtOrAddress string, service service.IpAddress) (*upcloud.IPAddress, error) {
-	var result []*upcloud.IPAddress
+	var result []upcloud.IPAddress
 	ips, err := service.GetIPAddresses()
 	if err != nil {
 		return nil, err
 	}
 	for _, ip := range ips.IPAddresses {
 		if ip.Address == prtOrAddress || ip.PTRRecord == prtOrAddress {
-			result = append(result, &ip)
+			result = append(result, ip)
 		}
 	}
 	if len(result) == 0 {
@@ -35,7 +35,7 @@ func searchIpAddress(prtOrAddress string, service service.IpAddress) (*upcloud.I
 	if len(result) > 1 {
 		return nil, fmt.Errorf("multiple ip addresses matched to query %q", prtOrAddress)
 	}
-	return result[0], nil
+	return &result[0], nil
 }
 
 func searchIpAddresses(prtOrAddresses []string, service service.IpAddress) ([]*upcloud.IPAddress, error) {

@@ -3,6 +3,7 @@ package network
 import (
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/commands/server"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
@@ -11,16 +12,23 @@ import (
 	"strings"
 )
 
-func ShowCommand(service service.Network) commands.Command {
+func ShowCommand(networkSvc service.Network, serverSvc service.Server) commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New("show", "Show current network"),
-		service:     service,
+		networkSvc:     networkSvc,
+		serverSvc:     serverSvc,
 	}
 }
 
 type showCommand struct {
 	*commands.BaseCommand
-	service service.Network
+	networkSvc service.Network
+	serverSvc service.Server
+}
+
+type networkWithServers struct {
+	network *upcloud.Network
+	servers []upcloud.Server
 }
 
 func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
@@ -28,16 +36,28 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 		if len(args) != 1 {
 			return nil, fmt.Errorf("one network uuid or name is required")
 		}
-		n, err := SearchNetwork(args[0], s.service)
+		n, err := SearchNetwork(args[0], s.networkSvc)
 		if err != nil {
 			return nil, err
 		}
-		return n, nil
+
+		var servers []upcloud.Server
+		for _, networkServer := range n.Servers {
+			svr, err := server.SearchServer(&servers, s.serverSvc, networkServer.ServerUUID,true)
+			if err != nil {
+				return nil, err
+			}
+			servers = append(servers, *svr[0])
+		}
+
+		return networkWithServers{network: n, servers: servers}, nil
 	}
 }
 
 func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
-	n := out.(*upcloud.Network)
+	networkWithServers := out.(networkWithServers)
+	n := networkWithServers.network
+	servers := networkWithServers.servers
 
 	l := ui.NewListLayout(ui.ListLayoutDefault)
 
@@ -51,38 +71,49 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	})
 	l.AppendSection("Common", dCommon.Render())
 
-	tIPNetwork := ui.NewDataTable("Address", "Family", "DHCP", "DHCP Def Router", "DHCP DNS")
-	for _, nip := range n.IPNetworks {
-		var dhcp string
-		if nip.DHCP == 1 {
-			dhcp = ui.DefaultBooleanColoursTrue.Sprint(nip.DHCP.String())
-		} else {
-			dhcp = ui.DefaultBooleanColoursFalse.Sprint(nip.DHCP.String())
+	if len(n.IPNetworks) > 0 {
+		tIPNetwork := ui.NewDataTable("Address", "Family", "DHCP", "DHCP Def Router", "DHCP DNS")
+		for _, nip := range n.IPNetworks {
+			var dhcp string
+			if nip.DHCP == 1 {
+				dhcp = ui.DefaultBooleanColoursTrue.Sprint(nip.DHCP.String())
+			} else {
+				dhcp = ui.DefaultBooleanColoursFalse.Sprint(nip.DHCP.String())
+			}
+			var ddr string
+			if nip.DHCPDefaultRoute == 1 {
+				ddr = ui.DefaultBooleanColoursTrue.Sprint(nip.DHCPDefaultRoute.String())
+			} else {
+				ddr = ui.DefaultBooleanColoursFalse.Sprint(nip.DHCPDefaultRoute.String())
+			}
+			tIPNetwork.AppendRow(table.Row{
+				ui.DefaultAddressColours.Sprint(nip.Address),
+				nip.Family,
+				dhcp,
+				ddr,
+				strings.Join(nip.DHCPDns, " "),
+			})
 		}
-		var ddr string
-		if nip.DHCPDefaultRoute == 1 {
-			ddr = ui.DefaultBooleanColoursTrue.Sprint(nip.DHCPDefaultRoute.String())
-		} else {
-			ddr = ui.DefaultBooleanColoursFalse.Sprint(nip.DHCPDefaultRoute.String())
-		}
-		tIPNetwork.AppendRow(table.Row{
-			ui.DefaultAddressColours.Sprint(nip.Address),
-			nip.Family,
-			dhcp,
-			ddr,
-			strings.Join(nip.DHCPDns, " "),
-		})
+		l.AppendSection("IP Networks:", tIPNetwork.Render())
+	} else {
+		l.AppendSection("IP Networks:", "(no ip network found)")
 	}
-	l.AppendSection("IP Networks:", tIPNetwork.Render())
 
-	tServer := ui.NewDataTable("UUID", "Title")
-	for _, server := range n.Servers {
-		tIPNetwork.AppendRow(table.Row{
-			ui.DefaultUuidColours.Sprint(server.ServerUUID),
-			server.ServerTitle,
-		})
+	if len(servers) > 0 {
+		tServers := ui.NewDataTable("UUID", "Title", "Hostname", "State")
+
+		for _, s := range servers {
+			tServers.AppendRow(table.Row{
+				ui.DefaultUuidColours.Sprint(s.UUID),
+				s.Title,
+				s.Hostname,
+				server.StateColour(s.State).Sprint(s.State),
+			})
+		}
+		l.AppendSection("Servers:", ui.WrapWithListLayout(tServers.Render(), ui.ListLayoutNestedTable).Render())
+	} else {
+		l.AppendSection("Servers:", "(no servers using this storage)")
 	}
-	l.AppendSection("Server:", tServer.Render())
 
 	_, _ = fmt.Fprintln(writer, l.Render())
 	return nil

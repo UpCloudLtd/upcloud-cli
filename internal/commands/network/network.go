@@ -21,14 +21,14 @@ type networkCommand struct {
 var getNetworkUuid = func(in interface{}) string { return in.(*upcloud.Network).UUID }
 
 func SearchNetwork(uuidOrName string, service service.Network) (*upcloud.Network, error) {
-	var result []*upcloud.Network
+	var result []upcloud.Network
 	networks, err := service.GetNetworks()
 	if err != nil {
 		return nil, err
 	}
 	for _, network := range networks.Networks {
 		if network.UUID == uuidOrName || network.Name == uuidOrName {
-			result = append(result, &network)
+			result = append(result, network)
 		}
 	}
 	if len(result) == 0 {
@@ -37,7 +37,7 @@ func SearchNetwork(uuidOrName string, service service.Network) (*upcloud.Network
 	if len(result) > 1 {
 		return nil, fmt.Errorf("multiple networks matched to query %q", uuidOrName)
 	}
-	return result[0], nil
+	return &result[0], nil
 }
 
 func searchNetworks(uuidOrNames []string, service service.Network) ([]*upcloud.Network, error) {

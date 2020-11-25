@@ -80,18 +80,21 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	})
 	l.AppendSection("Common", dCommon.Render())
 
-	tIPRouter := ui.NewDataTable("UUID", "Name", "Router", "Type", "Zone")
-	for _, n := range networks {
-		tIPRouter.AppendRow(table.Row{
-			ui.DefaultUuidColours.Sprint(n.UUID),
-			n.Name,
-			n.Router,
-			n.Type,
-			n.Zone,
-		})
+	if len(networks) > 0 {
+		tIPRouter := ui.NewDataTable("UUID", "Name", "Router", "Type", "Zone")
+		for _, n := range networks {
+			tIPRouter.AppendRow(table.Row{
+				ui.DefaultUuidColours.Sprint(n.UUID),
+				n.Name,
+				n.Router,
+				n.Type,
+				n.Zone,
+			})
+		}
+		l.AppendSection("Networks:", tIPRouter.Render())
+	} else {
+		l.AppendSection("Networks:", "no network found for this router")
 	}
-	l.AppendSection("Networks:", tIPRouter.Render())
-
 	_, _ = fmt.Fprintln(writer, l.Render())
 	return nil
 }
