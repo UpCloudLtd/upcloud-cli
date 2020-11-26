@@ -11,8 +11,9 @@ import (
 	"testing"
 )
 
-func TestDeleteStorageCommand(t *testing.T) {
-	methodName := "DeleteStorage"
+func TestRestoreBackupCommand(t *testing.T) {
+	methodName := "RestoreBackup"
+
 	var Storage2 = upcloud.Storage{
 		UUID:   Uuid2,
 		Title:  Title2,
@@ -38,13 +39,14 @@ func TestDeleteStorageCommand(t *testing.T) {
 			mss := MockStorageService()
 			mss.On(methodName, mock.Anything).Return(nil, nil)
 
-			tc := commands.BuildCommand(DeleteCommand(mss), nil, config.New(viper.New()))
+			tc := commands.BuildCommand(RestoreBackupCommand(mss), nil, config.New(viper.New()))
 			mocks.SetFlags(tc, test.args)
 
 			results, err := tc.MakeExecuteCommand()([]string{Storage2.UUID})
 			for _, result := range results.([]interface{}) {
-				assert.Nil(t, result)
+				assert.Equal(t, nil, result)
 			}
+
 			assert.Nil(t, err)
 
 			mss.AssertNumberOfCalls(t, methodName, test.methodCalls)

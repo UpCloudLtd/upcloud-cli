@@ -2,7 +2,7 @@ package storage
 
 import (
 	"fmt"
-	"github.com/UpCloudLtd/cli/internal/interfaces"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"io"
 	"sort"
 	"strings"
@@ -16,7 +16,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/ui"
 )
 
-func ListCommand(service interfaces.Storage) commands.Command {
+func ListCommand(service service.Storage) commands.Command {
 	return &listCommand{
 		BaseCommand: commands.New("list", "List current storages"),
 		service:     service,
@@ -25,12 +25,17 @@ func ListCommand(service interfaces.Storage) commands.Command {
 
 type listCommand struct {
 	*commands.BaseCommand
-	service        interfaces.Storage
+	service        service.Storage
 	header         table.Row
 	columnKeys     []string
 	visibleColumns []string
 	public         bool
 	private        bool
+	normal         bool
+	backup         bool
+	cdrom          bool
+	template       bool
+	favorite       bool
 }
 
 func (s *listCommand) InitCommand() {
@@ -40,7 +45,13 @@ func (s *listCommand) InitCommand() {
 	flags := &pflag.FlagSet{}
 	s.AddVisibleColumnsFlag(flags, &s.visibleColumns, s.columnKeys, s.visibleColumns)
 	flags.BoolVar(&s.public, "public", false, "List public storages")
-	flags.BoolVar(&s.private, "private", true, "List private storages")
+	flags.BoolVar(&s.private, "private", false, "List private storages")
+
+	flags.BoolVar(&s.normal, "normal", false, "Filters for normal storages")
+	flags.BoolVar(&s.backup, "backup", false, "Filters for backup storages")
+	flags.BoolVar(&s.cdrom, "cdrom", false, "Filters for cdrom storages")
+	flags.BoolVar(&s.template, "template", false, "Filters for template storages")
+
 	s.AddFlags(flags)
 }
 
@@ -53,14 +64,33 @@ func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 		}
 		var filtered []upcloud.Storage
 		for _, v := range storages.Storages {
-			if !s.public && v.Access == upcloud.StorageAccessPublic {
+			if !s.public && !s.private {
+				s.private = true
+			}
+			if s.private && !s.public && v.Access == upcloud.StorageAccessPublic {
 				continue
 			}
-			if !s.private && v.Access == upcloud.StorageAccessPrivate {
+			if s.public && !s.private && v.Access == upcloud.StorageAccessPrivate {
 				continue
 			}
-			filtered = append(filtered, v)
+			if !s.normal && !s.backup && !s.cdrom && !s.template {
+				filtered = append(filtered, v)
+				continue
+			}
+			if s.normal && v.Type == upcloud.StorageTypeNormal {
+				filtered = append(filtered, v)
+			}
+			if s.backup && v.Type == upcloud.StorageTypeBackup {
+				filtered = append(filtered, v)
+			}
+			if s.cdrom && v.Type == upcloud.StorageTypeCDROM {
+				filtered = append(filtered, v)
+			}
+			if s.template && v.Type == upcloud.StorageTypeTemplate {
+				filtered = append(filtered, v)
+			}
 		}
+
 		storages.Storages = filtered
 		return storages, nil
 	}

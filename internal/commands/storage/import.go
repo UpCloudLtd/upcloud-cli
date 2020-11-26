@@ -3,7 +3,7 @@ package storage
 import (
 	"errors"
 	"fmt"
-	"github.com/UpCloudLtd/cli/internal/interfaces"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"io"
 	"math"
 	"net/url"
@@ -20,7 +20,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/ui"
 )
 
-func ImportCommand(service interfaces.Storage) commands.Command {
+func ImportCommand(service service.Storage) commands.Command {
 	return &importCommand{
 		BaseCommand: commands.New("import", "Import a storage from external or local source"),
 		service:     service,
@@ -52,14 +52,14 @@ type importParams struct {
 	existingStorage *upcloud.Storage
 }
 
-func (s *importParams) processParams(srv interfaces.Storage) error {
+func (s *importParams) processParams(srv service.Storage) error {
 	if s.existingStorageUuidOrName != "" {
 		storage, err := searchStorage(&cachedStorages, srv, s.existingStorageUuidOrName, true)
 		if err != nil {
 			return err
 		}
-		s.existingStorage = storage
-		s.CreateStorageImportRequest.StorageUUID = storage.UUID
+		s.existingStorage = storage[0]
+		s.CreateStorageImportRequest.StorageUUID = storage[0].UUID
 	}
 	if s.sourceLocation == "" {
 		return errors.New("source-location is required")
@@ -138,7 +138,7 @@ func (s *readerCounter) Counter() int {
 
 type importCommand struct {
 	*commands.BaseCommand
-	service      interfaces.Storage
+	service      service.Storage
 	importParams importParams
 	flagSet      *pflag.FlagSet
 }
@@ -262,7 +262,7 @@ func (s *importCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 					time.Sleep(time.Duration(sleepSecs) * time.Second)
 				}
 			}
-			// Import from http soure
+			// Import from http source
 			if s.importParams.sourceFile == nil {
 				createdStorageImport, err = s.service.CreateStorageImport(
 					&s.importParams.CreateStorageImportRequest)

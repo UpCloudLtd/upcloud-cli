@@ -11,8 +11,18 @@ import (
 	"testing"
 )
 
-func TestDeleteStorageCommand(t *testing.T) {
-	methodName := "DeleteStorage"
+func TestCreateBackupCommand(t *testing.T) {
+	methodName := "CreateBackup"
+	var Storage1 = upcloud.Storage{
+		UUID:   Uuid1,
+		Title:  Title1,
+		Access: "private",
+		State:  "maintenance",
+		Type:   "backup",
+		Zone:   "fi-hel1",
+		Size:   40,
+		Tier:   "maxiops",
+	}
 	var Storage2 = upcloud.Storage{
 		UUID:   Uuid2,
 		Title:  Title2,
@@ -23,28 +33,32 @@ func TestDeleteStorageCommand(t *testing.T) {
 		Size:   40,
 		Tier:   "maxiops",
 	}
+	details := upcloud.StorageDetails{
+		Storage: Storage1,
+	}
 	for _, test := range []struct {
 		name        string
 		args        []string
 		methodCalls int
 	}{
 		{
-			name:        "Backend called",
+			name:        "Backend called, details returned",
 			args:        []string{},
 			methodCalls: 1,
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			mss := MockStorageService()
-			mss.On(methodName, mock.Anything).Return(nil, nil)
+			mss.On(methodName, mock.Anything).Return(&details, nil)
 
-			tc := commands.BuildCommand(DeleteCommand(mss), nil, config.New(viper.New()))
+			tc := commands.BuildCommand(CreateBackupCommand(mss), nil, config.New(viper.New()))
 			mocks.SetFlags(tc, test.args)
 
 			results, err := tc.MakeExecuteCommand()([]string{Storage2.UUID})
 			for _, result := range results.([]interface{}) {
-				assert.Nil(t, result)
+				assert.Equal(t, &details, result.(*upcloud.StorageDetails))
 			}
+
 			assert.Nil(t, err)
 
 			mss.AssertNumberOfCalls(t, methodName, test.methodCalls)
