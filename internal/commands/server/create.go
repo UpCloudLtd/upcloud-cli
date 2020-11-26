@@ -173,7 +173,9 @@ func (s *createParams) handleStorage(in string, storageSvc service.Storage) (*re
 }
 
 func (s *createParams) handleNetwork(in string) (*request.CreateServerInterface, error) {
-	network := &request.CreateServerInterface{}
+	network := &request.CreateServerInterface{
+		Type: "private",
+	}
 	var family string
 	fs := &pflag.FlagSet{}
 	args, err := commands.Parse(in)
@@ -295,7 +297,6 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 		if len(iFaces) > 0 {
 			req.Networking = &request.CreateServerNetworking{Interfaces: iFaces}
 		}
-
 		createServers := []*request.CreateServerRequest{&req}
 
 		return ui.HandleContext{
