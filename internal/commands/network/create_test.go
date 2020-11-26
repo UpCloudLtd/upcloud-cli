@@ -43,7 +43,7 @@ func TestCreateCommand(t *testing.T) {
 		},
 		{
 			name: "with multiple network",
-			args: []string{"--ip-network", "family=IPv4,\"dns=one,two,three\",gateway=gw,dhcp", "--ip-network", "family=IPv6,\"dns=four\""},
+			args: []string{"--ip-network", "family=IPv4,\"dns=one,two,three\",gateway=gw,dhcp", "--ip-network", "family=IPv6,dns=four"},
 			expected: request.CreateNetworkRequest{
 				IPNetworks: []upcloud.IPNetwork{
 					{

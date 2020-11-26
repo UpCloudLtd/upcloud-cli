@@ -51,7 +51,7 @@ func (s *modifyCommand) InitCommand() {
 	fs.IntVar(&s.req.NewIndex, "new-index", 0, "Index of the interface to modify.")
 	fs.StringVar(&s.bootable, "bootable", "", "Whether to try booting through the interface.")
 	fs.StringVar(&s.filtering, "source-ip-filtering", "", "Whether source IP filtering is enabled on the interface. Disabling it is allowed only for SDN private interfaces.")
-	fs.StringArrayVar(&s.ipAddresses, "ip-address", s.ipAddresses, "Array of IP addresses")
+	fs.StringArrayVar(&s.ipAddresses, "ip-address", s.ipAddresses, "Array of IP addresses, multiple can be declared\nUsage: --ip-address address=94.237.112.143,family=IPv4")
 	s.AddFlags(fs)
 }
 
