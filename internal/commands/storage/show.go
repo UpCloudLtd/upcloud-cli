@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"io"
@@ -35,6 +36,10 @@ type commandResponseHolder struct {
 	storageImport  *upcloud.StorageImportDetails
 	servers        []upcloud.Server
 	storages       []upcloud.Storage
+}
+
+func (c *commandResponseHolder) MarshalJSON() ([]byte, error) {
+	return json.Marshal(c.storageDetails)
 }
 
 func (s *showCommand) InitCommand() {

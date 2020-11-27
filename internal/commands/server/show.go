@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"io"
@@ -33,6 +34,10 @@ type showCommand struct {
 type commandResponseHolder struct {
 	serverDetails *upcloud.ServerDetails
 	firewallRules *upcloud.FirewallRules
+}
+
+func (c *commandResponseHolder) MarshalJSON() ([]byte, error) {
+	return json.Marshal(c.serverDetails)
 }
 
 func (s *showCommand) InitCommand() {

@@ -8,13 +8,13 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/UpCloudLtd/cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+	gyaml "github.com/ghodss/yaml"
 	"github.com/mattn/go-isatty"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"gopkg.in/yaml.v2"
-
-	"github.com/UpCloudLtd/cli/internal/config"
 )
 
 func New(name, usage string) *BaseCommand {
@@ -364,9 +364,11 @@ func handleOutput(out interface{}, format string) error {
 		}
 		_ = enc.Encode(out)
 	case "yaml":
-		// TODO(aakso): maybe we need to patch the yaml library to get field names from json tags?
-		//              that will doubtly get accepted though.
-		_ = yaml.NewEncoder(os.Stdout).Encode(out)
+		bytes, err := gyaml.Marshal(out)
+		if err != nil {
+			return err
+		}
+		_, _ = os.Stdout.Write(bytes)
 	default:
 		fmt.Printf("%v", out)
 	}
