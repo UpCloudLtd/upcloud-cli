@@ -54,7 +54,7 @@ type importParams struct {
 
 func (s *importParams) processParams(srv service.Storage) error {
 	if s.existingStorageUuidOrName != "" {
-		storage, err := searchStorage(&cachedStorages, srv, s.existingStorageUuidOrName, true)
+		storage, err := searchStorage(&CachedStorages, srv, s.existingStorageUuidOrName, true)
 		if err != nil {
 			return err
 		}
@@ -144,22 +144,19 @@ type importCommand struct {
 }
 
 func importFlags(fs *pflag.FlagSet, dst, def *importParams) {
-	fs.StringVar(&dst.sourceLocation, "source-location", def.sourceLocation,
-		"Location of the source of the import. Can be a file or a URL.")
-	fs.StringVar(&dst.Source, "source", def.Source,
-		fmt.Sprintf("Source type. Available: %s,%s",
-			upcloud.StorageImportSourceHTTPImport,
-			upcloud.StorageImportSourceDirectUpload))
-	fs.StringVar(&dst.existingStorageUuidOrName, "storage", def.existingStorageUuidOrName,
-		"Import to an existing storage. Storage must be large enough and must be undetached "+
-			"or the server where the storage is attached must be in shutdown state.")
-	fs.BoolVar(&dst.wait, "wait", def.wait,
-		fmt.Sprintf("Wait until the import finishes. Implied if source is set to %s",
-			upcloud.StorageImportSourceDirectUpload))
+	fs.StringVar(&dst.sourceLocation, "source-location", def.sourceLocation, "Location of the source of the import. Can be a file or a URL.")
+	fs.StringVar(&dst.Source, "source", def.Source, fmt.Sprintf("Source type. Available: %s,%s",
+		upcloud.StorageImportSourceHTTPImport,
+		upcloud.StorageImportSourceDirectUpload))
+	fs.StringVar(&dst.existingStorageUuidOrName, "storage", def.existingStorageUuidOrName, "Import to an existing storage. Storage must be large enough and must be undetached "+"or the server where the storage is attached must be in shutdown state.")
+	fs.BoolVar(&dst.wait, "wait", def.wait, fmt.Sprintf("Wait until the import finishes. Implied if source is set to %s",
+		upcloud.StorageImportSourceDirectUpload))
 	createFlags(fs, &dst.createStorage, DefaultCreateParams)
 }
 
 func (s *importCommand) InitCommand() {
+	s.SetPositionalArgHelp(positionalArgHelp)
+	s.ArgCompletion(GetArgCompFn(s.service))
 	s.flagSet = &pflag.FlagSet{}
 	s.importParams = newImportParams()
 	importFlags(s.flagSet, &s.importParams, DefaultImportParams)

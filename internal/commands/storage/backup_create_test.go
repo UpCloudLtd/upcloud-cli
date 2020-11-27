@@ -5,6 +5,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/config"
 	"github.com/UpCloudLtd/cli/internal/mocks"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -37,31 +38,37 @@ func TestCreateBackupCommand(t *testing.T) {
 		Storage: Storage1,
 	}
 	for _, test := range []struct {
-		name        string
-		args        []string
-		methodCalls int
+		name     string
+		args     []string
+		expected request.CreateBackupRequest
+		error    string
 	}{
 		{
-			name:        "Backend called, details returned",
-			args:        []string{},
-			methodCalls: 1,
+			name:  "title is missing",
+			args:  []string{},
+			error: "title is required",
+		},
+		{
+			name:     "title is provided",
+			args:     []string{"--title", "test-title"},
+			expected: request.CreateBackupRequest{Title: "test-title"},
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mss := MockStorageService()
+			mss := mocks.MockStorageService{}
+			mss.On("GetStorages", &request.GetStoragesRequest{}).Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2}}, nil)
 			mss.On(methodName, mock.Anything).Return(&details, nil)
 
-			tc := commands.BuildCommand(CreateBackupCommand(mss), nil, config.New(viper.New()))
+			tc := commands.BuildCommand(CreateBackupCommand(&mss), nil, config.New(viper.New()))
 			mocks.SetFlags(tc, test.args)
 
-			results, err := tc.MakeExecuteCommand()([]string{Storage2.UUID})
-			for _, result := range results.([]interface{}) {
-				assert.Equal(t, &details, result.(*upcloud.StorageDetails))
+			_, err := tc.MakeExecuteCommand()([]string{Storage2.UUID})
+
+			if test.error != "" {
+				assert.Errorf(t, err, test.error)
+			} else {
+				mss.AssertNumberOfCalls(t, methodName, 1)
 			}
-
-			assert.Nil(t, err)
-
-			mss.AssertNumberOfCalls(t, methodName, test.methodCalls)
 		})
 	}
 }

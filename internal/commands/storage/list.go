@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"fmt"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"io"
 	"sort"
@@ -58,7 +57,7 @@ func (s *listCommand) InitCommand() {
 func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 		storages, err := s.service.GetStorages(&request.GetStoragesRequest{})
-		cachedStorages = storages.Storages
+		CachedStorages = storages.Storages
 		if err != nil {
 			return nil, err
 		}
@@ -127,8 +126,5 @@ func (s *listCommand) HandleOutput(writer io.Writer, out interface{}) error {
 			storage.Access})
 	}
 
-	fmt.Fprintln(writer)
-	fmt.Fprintln(writer, t.Render())
-	fmt.Fprintln(writer)
-	return nil
+	return t.Paginate(writer)
 }

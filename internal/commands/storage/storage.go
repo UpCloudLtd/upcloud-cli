@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/ui"
+	"github.com/spf13/cobra"
 	"time"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
@@ -16,10 +17,11 @@ import (
 
 var (
 	maxStorageActions = 10
-	cachedStorages    []upcloud.Storage
+	CachedStorages    []upcloud.Storage
 )
 
 const minStorageSize = 10
+const positionalArgHelp = "<UUID or Title...>"
 
 func StorageCommand() commands.Command {
 	return &storageCommand{commands.New("storage", "Manage storages")}
@@ -75,7 +77,7 @@ func searchStorage(storagesPtr *[]upcloud.Storage, service service.Storage, uuid
 		return nil, fmt.Errorf("no storages or service passed")
 	}
 	storages := *storagesPtr
-	if len(cachedStorages) == 0 {
+	if len(CachedStorages) == 0 {
 		res, err := service.GetStorages(&request.GetStoragesRequest{})
 		if err != nil {
 			return nil, err
@@ -96,7 +98,7 @@ func searchStorage(storagesPtr *[]upcloud.Storage, service service.Storage, uuid
 func SearchAllStorages(uuidOrTitle []string, service service.Storage, unique bool) ([]*upcloud.Storage, error) {
 	var result []*upcloud.Storage
 	for _, id := range uuidOrTitle {
-		matchedResults, err := searchStorage(&cachedStorages, service, id, unique)
+		matchedResults, err := searchStorage(&CachedStorages, service, id, unique)
 		if err != nil {
 			return nil, err
 		}
@@ -106,7 +108,7 @@ func SearchAllStorages(uuidOrTitle []string, service service.Storage, unique boo
 }
 
 func SearchSingleStorage(uuidOrTitle string, service service.Storage) (*upcloud.Storage, error) {
-	matchedResults, err := searchStorage(&cachedStorages, service, uuidOrTitle, true)
+	matchedResults, err := searchStorage(&CachedStorages, service, uuidOrTitle, true)
 	if err != nil {
 		return nil, err
 	}
@@ -143,7 +145,7 @@ type Request struct {
 	ExactlyOne   bool
 	BuildRequest func(storage *upcloud.Storage) (interface{}, error)
 	Service      service.Storage
-	ui.HandleContext
+	Handler      ui.Handler
 }
 
 func (s Request) Send(args []string) (interface{}, error) {
@@ -161,12 +163,26 @@ func (s Request) Send(args []string) (interface{}, error) {
 
 	var requests []interface{}
 	for _, storage := range storages {
-		request, err := s.BuildRequest(storage)
+		req, err := s.BuildRequest(storage)
 		if err != nil {
 			return nil, err
 		}
-		requests = append(requests, request)
+		requests = append(requests, req)
 	}
 
-	return s.Handle(requests)
+	return s.Handler.Handle(requests)
+}
+
+func GetArgCompFn(s service.Storage) func(toComplete string) ([]string, cobra.ShellCompDirective) {
+	return func(toComplete string) ([]string, cobra.ShellCompDirective) {
+		storages, err := s.GetStorages(&request.GetStoragesRequest{})
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveDefault
+		}
+		var vals []string
+		for _, v := range storages.Storages {
+			vals = append(vals, v.UUID, v.Title)
+		}
+		return commands.MatchStringPrefix(vals, toComplete, false), cobra.ShellCompDirectiveNoSpace | cobra.ShellCompDirectiveNoFileComp
+	}
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/config"
 	"github.com/UpCloudLtd/cli/internal/mocks"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -38,31 +39,62 @@ func TestCloneCommand(t *testing.T) {
 		Storage: Storage1,
 	}
 	for _, test := range []struct {
-		name        string
-		args        []string
-		methodCalls int
+		name     string
+		args     []string
+		error    string
+		expected request.CloneStorageRequest
 	}{
 		{
-			name:        "Backend called, details returned",
-			args:        []string{},
-			methodCalls: 1,
+			name: "using default tier",
+			args: []string{"--zone", "test-zone", "--title", "test-title"},
+			expected: request.CloneStorageRequest{
+				UUID:  Storage2.UUID,
+				Zone:  "test-zone",
+				Tier:  "hdd",
+				Title: "test-title",
+			},
+		},
+		{
+			name: "tier from args",
+			args: []string{"--zone", "test-zone", "--title", "test-title", "--tier", "abc"},
+			expected: request.CloneStorageRequest{
+				UUID:  Storage2.UUID,
+				Zone:  "test-zone",
+				Tier:  "abc",
+				Title: "test-title",
+			},
+		},
+		{
+			name: "title is missing",
+			args: []string{
+				"--zone", "zone",
+			},
+			error: "title and zone are required",
+		},
+		{
+			name: "zone is missing",
+			args: []string{
+				"--title", "title",
+			},
+			error: "title and zone are required",
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mss := MockStorageService()
-			mss.On(methodName, mock.Anything).Return(&details, nil)
+			CachedStorages = nil
+			mss := mocks.MockStorageService{}
+			mss.On(methodName, &test.expected).Return(&details, nil)
+			mss.On("GetStorages", mock.Anything).Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2}}, nil)
 
-			tc := commands.BuildCommand(CloneCommand(mss), nil, config.New(viper.New()))
+			tc := commands.BuildCommand(CloneCommand(&mss), nil, config.New(viper.New()))
 			mocks.SetFlags(tc, test.args)
 
-			results, err := tc.MakeExecuteCommand()([]string{Storage2.UUID})
-			for _, result := range results.([]interface{}) {
-				assert.Equal(t, &details, result.(*upcloud.StorageDetails))
+			_, err := tc.MakeExecuteCommand()([]string{Storage2.UUID})
+
+			if test.error != "" {
+				assert.Errorf(t, err, test.error)
+			} else {
+				mss.AssertNumberOfCalls(t, methodName, 1)
 			}
-
-			assert.Nil(t, err)
-
-			mss.AssertNumberOfCalls(t, methodName, test.methodCalls)
 		})
 	}
 }

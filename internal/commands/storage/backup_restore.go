@@ -25,6 +25,11 @@ func RestoreBackupCommand(service service.Storage) commands.Command {
 	}
 }
 
+func (s *restoreBackupCommand) InitCommand() {
+	s.SetPositionalArgHelp(positionalArgHelp)
+	s.ArgCompletion(GetArgCompFn(s.service))
+}
+
 func (s *restoreBackupCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 		return Request{
@@ -34,7 +39,7 @@ func (s *restoreBackupCommand) MakeExecuteCommand() func(args []string) (interfa
 				return &req, nil
 			},
 			Service: s.service,
-			HandleContext: ui.HandleContext{
+			Handler: ui.HandleContext{
 				RequestID:  func(in interface{}) string { return in.(*request.RestoreBackupRequest).UUID },
 				MaxActions: maxStorageActions,
 				ActionMsg:  "Restoring backup of storage",

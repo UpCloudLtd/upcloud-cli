@@ -8,14 +8,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/jedib0t/go-pretty/v6/table"
-	"github.com/spf13/cobra"
-
-	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/commands/server"
-	"github.com/UpCloudLtd/cli/internal/ui"
 )
 
 func ShowCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
@@ -41,17 +38,8 @@ type commandResponseHolder struct {
 }
 
 func (s *showCommand) InitCommand() {
-	s.ArgCompletion(func(toComplete string) ([]string, cobra.ShellCompDirective) {
-		storages, err := s.storageSvc.GetStorages(&request.GetStoragesRequest{})
-		if err != nil {
-			return nil, cobra.ShellCompDirectiveDefault
-		}
-		var vals []string
-		for _, v := range storages.Storages {
-			vals = append(vals, v.UUID, v.Title)
-		}
-		return commands.MatchStringPrefix(vals, toComplete, false), cobra.ShellCompDirectiveNoSpace | cobra.ShellCompDirectiveNoFileComp
-	})
+	s.SetPositionalArgHelp(positionalArgHelp)
+	s.ArgCompletion(GetArgCompFn(s.storageSvc))
 }
 
 func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
@@ -60,8 +48,8 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 		var storageImport *upcloud.StorageImportDetails
 		var servers []upcloud.Server
 
-		if len(args) < 1 {
-			return nil, fmt.Errorf("storage title or uuid is required")
+		if len(args) != 1 {
+			return nil, fmt.Errorf("one storage title or uuid is required")
 		}
 		storage, err := searchStorage(&storages, s.storageSvc, args[0], true)
 		if err != nil {
@@ -157,7 +145,7 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 			{"Size (GiB):", storage.Size},
 			{"Type:", storage.Type},
 			{"Tier:", storage.Tier},
-			{"License:", storage.License},
+			{"Licence:", storage.License},
 			{"Created:", storage.Created},
 			{"Origin:", formatStorageReferenceUuid(storage.Origin)},
 		})
@@ -176,7 +164,7 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 				ui.DefaultUuidColours.Sprint(uuid),
 				serversByUuid[uuid].Title,
 				serversByUuid[uuid].Hostname,
-				server.StateColour(serversByUuid[uuid].State).Sprint(serversByUuid[uuid].State),
+				StateColour(serversByUuid[uuid].State).Sprint(serversByUuid[uuid].State),
 			})
 		}
 		dMain.AppendSection("Servers:", ui.WrapWithListLayout(tServers.Render(), ui.ListLayoutNestedTable).Render())
