@@ -13,6 +13,7 @@ type Handler interface {
 type HandleContext struct {
 	RequestID     func(interface{}) string
 	ResultUUID    func(interface{}) string
+	ResultPrefix  string
 	MessageFn     func(interface{}) string
 	ActionMsg     string
 	Action        func(interface{}) (interface{}, error)
@@ -61,7 +62,11 @@ func (c HandleContext) Handle(requests []interface{}) (interface{}, error) {
 		} else {
 			e.SetMessage(fmt.Sprintf("%s: done", msg))
 			if c.ResultUUID != nil {
-				e.SetDetails(detailsUuid, "UUID: ")
+				var prefix = "UUID"
+				if c.ResultPrefix != "" {
+					prefix = c.ResultPrefix
+				}
+				e.SetDetails(detailsUuid, fmt.Sprintf("%s: ", prefix))
 			}
 			mu.Lock()
 			numOk++

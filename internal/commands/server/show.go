@@ -173,7 +173,11 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 				if addr.Family == "IPv6" {
 					prefix = "IPv6: "
 				}
-				addrs = append(addrs, prefix+ui.DefaultAddressColours.Sprint(addr.Address))
+				var floating string
+				if addr.Floating.Bool() {
+					floating = "(f) "
+				}
+				addrs = append(addrs, floating+prefix+ui.DefaultAddressColours.Sprint(addr.Address))
 			}
 			tNics.AppendRow(table.Row{
 				nic.Index,

@@ -10,6 +10,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
+	"strconv"
 )
 
 type createCommand struct {
@@ -98,7 +99,8 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 					req := in.(*request.CreateNetworkInterfaceRequest)
 					return fmt.Sprintf("Creating network interface for server %s network %s", req.ServerUUID, req.NetworkUUID)
 				},
-				ResultUUID:    func(in interface{}) string { return fmt.Sprintf("Index %d", in.(*upcloud.Interface).Index) },
+				ResultUUID:    func(in interface{}) string { return strconv.Itoa(in.(*upcloud.Interface).Index) },
+				ResultPrefix:  "Index",
 				MaxActions:    maxNetworkInterfaceActions,
 				InteractiveUI: s.Config().InteractiveUI(),
 				Action: func(req interface{}) (interface{}, error) {

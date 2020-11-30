@@ -3,6 +3,7 @@ package ip_address
 import (
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/commands/server"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
@@ -12,15 +13,17 @@ import (
 
 type assignCommand struct {
 	*commands.BaseCommand
-	service  service.IpAddress
-	req      request.AssignIPAddressRequest
-	floating bool
+	ipSvc     service.IpAddress
+	serverSvc service.Server
+	req       request.AssignIPAddressRequest
+	floating  bool
 }
 
-func AssignCommand(service service.IpAddress) commands.Command {
+func AssignCommand(serverSvc service.Server, ipSvc service.IpAddress) commands.Command {
 	return &assignCommand{
 		BaseCommand: commands.New("assign", "Assign an ip address"),
-		service:     service,
+		serverSvc:   serverSvc,
+		ipSvc:       ipSvc,
 	}
 }
 
@@ -42,10 +45,21 @@ func (s *assignCommand) InitCommand() {
 
 func (s *assignCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		if s.req.Zone == "" && s.req.MAC == "" {
-			return nil, fmt.Errorf("MAC or zone must be specified")
+		if s.floating && s.req.Zone == "" && s.req.MAC == "" {
+			return nil, fmt.Errorf("MAC or zone is required for floating IP")
+		}
+		if !s.floating && s.req.ServerUUID == "" {
+			return nil, fmt.Errorf("server is required for non-floating IP")
 		}
 		s.req.Floating = upcloud.FromBool(s.floating)
+
+		if s.req.ServerUUID != "" {
+			svr, err := server.SearchSingleServer(s.req.ServerUUID, s.serverSvc)
+			if err != nil {
+				return nil, err
+			}
+			s.req.ServerUUID = svr.UUID
+		}
 
 		return ui.HandleContext{
 			RequestID: func(in interface{}) string {
@@ -56,11 +70,13 @@ func (s *assignCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 					return req.Zone
 				}
 			},
+			ResultUUID:    func(in interface{}) string { return in.(*upcloud.IPAddress).Address },
+			ResultPrefix:  "IP Address",
 			MaxActions:    maxIpAddressActions,
 			InteractiveUI: s.Config().InteractiveUI(),
-			ActionMsg:     "Assigning IP Address",
+			ActionMsg:     "Assigning IP Address to",
 			Action: func(req interface{}) (interface{}, error) {
-				return s.service.AssignIPAddress(req.(*request.AssignIPAddressRequest))
+				return s.ipSvc.AssignIPAddress(req.(*request.AssignIPAddressRequest))
 			},
 		}.Handle(commands.ToArray(&s.req))
 	}

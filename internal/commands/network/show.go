@@ -1,6 +1,7 @@
 package network
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/commands/server"
@@ -33,7 +34,11 @@ func (s *showCommand) InitCommand() {
 
 type networkWithServers struct {
 	network *upcloud.Network
-	servers []upcloud.Server
+	servers []*upcloud.Server
+}
+
+func (c *networkWithServers) MarshalJSON() ([]byte, error) {
+	return json.Marshal(c.network)
 }
 
 func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
@@ -46,16 +51,16 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 			return nil, err
 		}
 
-		var servers []upcloud.Server
+		var servers []*upcloud.Server
 		for _, networkServer := range n.Servers {
-			svr, err := server.SearchServer(&servers, s.serverSvc, networkServer.ServerUUID, true)
+			svr, err := server.SearchSingleServer(networkServer.ServerUUID, s.serverSvc)
 			if err != nil {
 				return nil, err
 			}
-			servers = append(servers, *svr[0])
+			servers = append(servers, svr)
 		}
 
-		return networkWithServers{network: n, servers: servers}, nil
+		return &networkWithServers{network: n, servers: servers}, nil
 	}
 }
 
@@ -105,7 +110,7 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 		}
 		l.AppendSection("Servers:", ui.WrapWithListLayout(tServers.Render(), ui.ListLayoutNestedTable).Render())
 	} else {
-		l.AppendSection("Servers:", "(no servers using this storage)")
+		l.AppendSection("Servers:", "(no servers assigned to this network)")
 	}
 
 	_, _ = fmt.Fprintln(writer, l.Render())

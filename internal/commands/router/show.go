@@ -1,6 +1,7 @@
 package router
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/commands/network"
@@ -34,6 +35,10 @@ func (s *showCommand) InitCommand() {
 type routerWithNetworks struct {
 	router   *upcloud.Router
 	networks []*upcloud.Network
+}
+
+func (c *routerWithNetworks) MarshalJSON() ([]byte, error) {
+	return json.Marshal(c.router)
 }
 
 func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {

@@ -9,7 +9,7 @@ import (
 
 func TestShowCommand(t *testing.T) {
 
-	servers := []upcloud.Server{
+	servers := []*upcloud.Server{
 		{
 			CoreNumber:   1,
 			Hostname:     "server1.example.com",

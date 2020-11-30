@@ -42,6 +42,14 @@ func matchServers(servers []upcloud.Server, searchVal string) []*upcloud.Server 
 	return r
 }
 
+func SearchSingleServer(term string, service service.Server) (*upcloud.Server, error) {
+	servers, err := SearchServer(&CachedServers, service, term, true)
+	if err != nil {
+		return nil, err
+	}
+	return servers[0], nil
+}
+
 func SearchServer(serversPtr *[]upcloud.Server, service service.Server, uuidOrHostnameOrTitle string, unique bool) ([]*upcloud.Server, error) {
 	if serversPtr == nil || service == nil {
 		return nil, fmt.Errorf("no servers or service passed")
