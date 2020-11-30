@@ -2,7 +2,12 @@ package ui
 
 import (
 	"fmt"
+	"io"
 	"math"
+	"os"
+	"os/exec"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/jedib0t/go-pretty/v6/table"
@@ -238,4 +243,50 @@ func (s *DataTable) AppendRows(rows []table.Row) {
 	for _, row := range rows {
 		s.AppendRow(row)
 	}
+}
+
+func (s *DataTable) Paginate(writer io.Writer) error {
+
+	cmd := exec.Command("stty", "size")
+	cmd.Stdin = os.Stdin
+	out, err := cmd.Output()
+	if err != nil {
+		return err
+	}
+	height, err := strconv.Atoi(strings.Split(string(out), " ")[0])
+	if err != nil {
+		return err
+	}
+
+	var i int
+	var rowCount int
+	b := make([]byte, 1)
+
+	fmt.Fprintln(writer)
+	for i < len(s.rows) {
+		t := NewDataTable(s.columnKeys...)
+		t.OverrideColumnKeys(s.overrideColumnKeys...)
+		t.SetHeader(s.header)
+		for key, value := range s.columnConfig {
+			t.SetColumnConfig(key, *value)
+		}
+		t.SetStyle(*s.t.Style())
+
+		for rowCount < height-4 && i < len(s.rows) {
+			t.AppendRow(s.rows[i])
+			rowCount++
+			i++
+		}
+
+		fmt.Fprintln(writer, t.Render())
+
+		if i < len(s.rows) {
+			fmt.Println("Press Enter for next page...")
+			os.Stdin.Read(b)
+			rowCount = 0
+			continue
+		}
+	}
+	fmt.Fprintln(writer)
+	return nil
 }

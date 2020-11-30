@@ -5,6 +5,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/config"
 	"github.com/UpCloudLtd/cli/internal/mocks"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -27,24 +28,25 @@ func TestDeleteStorageCommand(t *testing.T) {
 		name        string
 		args        []string
 		methodCalls int
+		expected    request.DeleteStorageRequest
 	}{
 		{
 			name:        "Backend called",
 			args:        []string{},
 			methodCalls: 1,
+			expected:    request.DeleteStorageRequest{UUID: Storage2.UUID},
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mss := MockStorageService()
-			mss.On(methodName, mock.Anything).Return(nil, nil)
+			CachedStorages = nil
+			mss := mocks.MockStorageService{}
+			mss.On(methodName, &test.expected).Return(nil, nil)
+			mss.On("GetStorages", mock.Anything).Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage2}}, nil)
 
-			tc := commands.BuildCommand(DeleteCommand(mss), nil, config.New(viper.New()))
+			tc := commands.BuildCommand(DeleteCommand(&mss), nil, config.New(viper.New()))
 			mocks.SetFlags(tc, test.args)
 
-			results, err := tc.MakeExecuteCommand()([]string{Storage2.UUID})
-			for _, result := range results.([]interface{}) {
-				assert.Nil(t, result)
-			}
+			_, err := tc.MakeExecuteCommand()([]string{Storage2.UUID})
 			assert.Nil(t, err)
 
 			mss.AssertNumberOfCalls(t, methodName, test.methodCalls)

@@ -88,7 +88,7 @@ func TestStorageHumanOutput(t *testing.T) {
     Size (GiB): 10                                   
     Type:       normal                               
     Tier:       maxiops                              
-    License:    0                                    
+    Licence:    0                                    
     Created:                                         
     Origin:                                          
   

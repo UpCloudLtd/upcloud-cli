@@ -41,6 +41,8 @@ func ModifyCommand(service service.Storage) commands.Command {
 }
 
 func (s *modifyCommand) InitCommand() {
+	s.SetPositionalArgHelp(positionalArgHelp)
+	s.ArgCompletion(GetArgCompFn(s.service))
 	s.params = modifyParams{ModifyStorageRequest: request.ModifyStorageRequest{}}
 
 	flagSet := &pflag.FlagSet{}
@@ -114,7 +116,7 @@ func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 				return &req, nil
 			},
 			Service: s.service,
-			HandleContext: ui.HandleContext{
+			Handler: ui.HandleContext{
 				RequestID:     func(in interface{}) string { return in.(*request.ModifyStorageRequest).UUID },
 				MaxActions:    maxStorageActions,
 				InteractiveUI: s.Config().InteractiveUI(),

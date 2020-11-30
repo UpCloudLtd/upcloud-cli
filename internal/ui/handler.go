@@ -6,6 +6,10 @@ import (
 	"sync"
 )
 
+type Handler interface {
+	Handle(requests []interface{}) (interface{}, error)
+}
+
 type HandleContext struct {
 	RequestID     func(interface{}) string
 	ResultUUID    func(interface{}) string
