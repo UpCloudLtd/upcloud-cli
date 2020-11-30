@@ -26,6 +26,10 @@ func BuildCommands(mainCommand commands.Command, mainConfig *config.Config) {
 	commands.BuildCommand(server.StopCommand(svc), serverCommand, cfgFn())
 	commands.BuildCommand(server.CreateCommand(svc, svc), serverCommand, cfgFn())
 	commands.BuildCommand(server.ModifyCommand(svc), serverCommand, cfgFn())
+	commands.BuildCommand(server.LoadCommand(svc, svc), serverCommand, cfgFn())
+	commands.BuildCommand(server.EjectCommand(svc, svc), serverCommand, cfgFn())
+	commands.BuildCommand(server.AttachCommand(svc, svc), serverCommand, cfgFn())
+	commands.BuildCommand(server.DetachCommand(svc, svc), serverCommand, cfgFn())
 	commands.BuildCommand(server.DeleteCommand(svc), serverCommand, cfgFn())
 
 	// Storages
