@@ -26,24 +26,24 @@ func TestCreateCommand(t *testing.T) {
 		error    string
 		expected request.CreateNetworkRequest
 	}{
-		//{
-		//	name: "name is missing",
-		//	args: []string{"--zone", n.Zone},
-		//	error: "name is required",
-		//},
-		//{
-		//	name: "zone is missing",
-		//	args: []string{"--name", n.Name},
-		//	error: "zone is required",
-		//},
-		//{
-		//	name: "without network",
-		//	args: []string{"--name", n.Name, "--zone", n.Zone},
-		//	expected: request.CreateNetworkRequest{
-		//		Name: n.Name,
-		//		Zone: n.Zone,
-		//	},
-		//},
+		{
+			name:  "name is missing",
+			args:  []string{"--zone", n.Zone},
+			error: "name is required",
+		},
+		{
+			name:  "zone is missing",
+			args:  []string{"--name", n.Name},
+			error: "zone is required",
+		},
+		{
+			name: "without network",
+			args: []string{"--name", n.Name, "--zone", n.Zone},
+			expected: request.CreateNetworkRequest{
+				Name: n.Name,
+				Zone: n.Zone,
+			},
+		},
 		{
 			name: "with single network",
 			args: []string{

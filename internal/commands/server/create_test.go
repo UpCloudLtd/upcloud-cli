@@ -238,7 +238,7 @@ func TestCreateServer(t *testing.T) {
 				"--zone", "uk-lon1",
 				"--network", "family=IPv4,type=utility",
 				"--network", "family=IPv6,type=public",
-				"--network", "family=IPv6",
+				"--network", "family=IPv6,type=private",
 			},
 			createServerReq: request.CreateServerRequest{
 				VideoModel: "vga",
@@ -272,6 +272,18 @@ func TestCreateServer(t *testing.T) {
 					},
 				}},
 			},
+		},
+		{
+			name: "networks type missing",
+			args: []string{
+				"--hostname", "example.com",
+				"--title", "test-server",
+				"--zone", "uk-lon1",
+				"--network", "family=IPv4,type=utility",
+				"--network", "family=IPv6,type=public",
+				"--network", "family=IPv6",
+			},
+			error: "network type is required",
 		},
 		{
 			name: "hostname is missing",

@@ -147,9 +147,7 @@ func (s *createParams) handleStorage(in string, storageSvc service.Storage) (*re
 }
 
 func (s *createParams) handleNetwork(in string) (*request.CreateServerInterface, error) {
-	network := &request.CreateServerInterface{
-		Type: "private",
-	}
+	network := &request.CreateServerInterface{}
 	var family string
 	fs := &pflag.FlagSet{}
 	args, err := commands.Parse(in)
@@ -161,6 +159,10 @@ func (s *createParams) handleNetwork(in string) (*request.CreateServerInterface,
 	err = fs.Parse(args)
 	if err != nil {
 		return nil, err
+	}
+
+	if network.Type == "" {
+		return nil, fmt.Errorf("network type is required")
 	}
 
 	var ipAddresses []request.CreateServerIPAddress
