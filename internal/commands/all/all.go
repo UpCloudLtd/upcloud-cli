@@ -25,6 +25,7 @@ func BuildCommands(mainCommand commands.Command, mainConfig *config.Config) {
 	commands.BuildCommand(server.RestartCommand(svc), serverCommand, cfgFn())
 	commands.BuildCommand(server.StopCommand(svc), serverCommand, cfgFn())
 	commands.BuildCommand(server.CreateCommand(svc, svc), serverCommand, cfgFn())
+	commands.BuildCommand(server.ModifyCommand(svc), serverCommand, cfgFn())
 	commands.BuildCommand(server.DeleteCommand(svc), serverCommand, cfgFn())
 
 	// Storages
