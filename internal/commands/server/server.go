@@ -77,7 +77,7 @@ func SearchAllServers(terms []string, service service.Server, unique bool) ([]st
 func WaitForServerState(service service.Server, uuid, desiredState string, timeout time.Duration) (*upcloud.ServerDetails, error) {
 	timer := time.After(timeout)
 	for {
-		time.Sleep(5 * time.Second)
+		time.Sleep(1 * time.Second)
 		details, err := service.GetServerDetails(&request.GetServerDetailsRequest{UUID: uuid})
 		if err != nil {
 			return nil, err
