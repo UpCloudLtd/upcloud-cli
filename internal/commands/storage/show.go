@@ -164,7 +164,7 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 				ui.DefaultUuidColours.Sprint(uuid),
 				serversByUuid[uuid].Title,
 				serversByUuid[uuid].Hostname,
-				StateColour(serversByUuid[uuid].State).Sprint(serversByUuid[uuid].State),
+				commands.StateColour(serversByUuid[uuid].State).Sprint(serversByUuid[uuid].State),
 			})
 		}
 		dMain.AppendSection("Servers:", ui.WrapWithListLayout(tServers.Render(), ui.ListLayoutNestedTable).Render())

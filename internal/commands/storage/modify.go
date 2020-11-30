@@ -55,9 +55,9 @@ func (s *modifyCommand) InitCommand() {
 	s.AddFlags(flagSet)
 }
 
-func setBackupFields(storage *upcloud.Storage, p modifyParams, service service.Storage, req *request.ModifyStorageRequest) error {
+func setBackupFields(storageUUID string, p modifyParams, service service.Storage, req *request.ModifyStorageRequest) error {
 
-	details, err := service.GetStorageDetails(&request.GetStorageDetailsRequest{UUID: storage.UUID})
+	details, err := service.GetStorageDetails(&request.GetStorageDetailsRequest{UUID: storageUUID})
 	if err != nil {
 		return err
 	}
@@ -107,12 +107,12 @@ func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 	return func(args []string) (interface{}, error) {
 
 		return Request{
-			BuildRequest: func(storage *upcloud.Storage) (interface{}, error) {
+			BuildRequest: func(uuid string) (interface{}, error) {
 				req := s.params.ModifyStorageRequest
-				if err := setBackupFields(storage, s.params, s.service, &req); err != nil {
+				if err := setBackupFields(uuid, s.params, s.service, &req); err != nil {
 					return nil, err
 				}
-				req.UUID = storage.UUID
+				req.UUID = uuid
 				return &req, nil
 			},
 			Service: s.service,

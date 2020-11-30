@@ -3,7 +3,6 @@ package storage
 import (
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 )
@@ -28,8 +27,8 @@ func (s *deleteCommand) InitCommand() {
 func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 		return Request{
-			BuildRequest: func(storage *upcloud.Storage) (interface{}, error) {
-				return &request.DeleteStorageRequest{UUID: storage.UUID}, nil
+			BuildRequest: func(uuid string) (interface{}, error) {
+				return &request.DeleteStorageRequest{UUID: uuid}, nil
 			},
 			Service: s.service,
 			Handler: ui.HandleContext{

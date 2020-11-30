@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
-	"github.com/UpCloudLtd/cli/internal/mocks"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
@@ -66,6 +65,8 @@ func TestImportCommand(t *testing.T) {
 			name: "source is missing",
 			args: []string{
 				"--source-location", "http://example.com",
+				"--zone", "fi-hel1",
+				"--title", "test-1",
 			},
 			request: request.CreateStorageImportRequest{
 				StorageUUID:    Storage1.UUID,
@@ -78,6 +79,8 @@ func TestImportCommand(t *testing.T) {
 			args: []string{
 				"--source", upcloud.StorageImportSourceHTTPImport,
 				"--source-location", "http://example.com",
+				"--zone", "fi-hel1",
+				"--title", "test-2",
 			},
 			request: request.CreateStorageImportRequest{
 				StorageUUID:    Storage1.UUID,
@@ -88,18 +91,17 @@ func TestImportCommand(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			CachedStorages = nil
-			mss := mocks.MockStorageService{}
+			mss := MockStorageService{}
 			mss.On("GetStorages", mock.Anything).Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2}}, nil)
 			mss.On("CreateStorageImport", &test.request).Return(&StorageImportCompleted, nil)
 			mss.On("GetStorageImportDetails", &request.GetStorageImportDetailsRequest{UUID: Storage1.UUID}).Return(&StorageImportCompleted, nil)
 			mss.On("CreateStorage", mock.Anything).Return(&StorageDetails1, nil)
 
 			ic := commands.BuildCommand(ImportCommand(&mss), nil, config.New(viper.New()))
-			mocks.SetFlags(ic, test.args)
+			ic.SetFlags(test.args)
 
 			_, err := ic.MakeExecuteCommand()(test.args)
 
-			fmt.Println(err)
 			if test.error != "" {
 				assert.Errorf(t, err, test.error)
 			} else {

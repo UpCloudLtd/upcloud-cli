@@ -95,16 +95,13 @@ func searchStorage(storagesPtr *[]upcloud.Storage, service service.Storage, uuid
 	return matched, nil
 }
 
-func SearchAllStorages(uuidOrTitle []string, service service.Storage, unique bool) ([]*upcloud.Storage, error) {
-	var result []*upcloud.Storage
-	for _, id := range uuidOrTitle {
-		matchedResults, err := searchStorage(&CachedStorages, service, id, unique)
-		if err != nil {
-			return nil, err
-		}
-		result = append(result, matchedResults...)
-	}
-	return result, nil
+func SearchAllStorages(terms []string, service service.Storage, unique bool) ([]string, error) {
+	return commands.SearchResources(
+		terms,
+		func(id string) (interface{}, error) {
+			return searchStorage(&CachedStorages, service, id, unique)
+		},
+		func(in interface{}) string { return in.(*upcloud.Storage).UUID })
 }
 
 func SearchSingleStorage(uuidOrTitle string, service service.Storage) (*upcloud.Storage, error) {
@@ -143,7 +140,7 @@ var getStorageDetailsUuid = func(in interface{}) string { return in.(*upcloud.St
 
 type Request struct {
 	ExactlyOne   bool
-	BuildRequest func(storage *upcloud.Storage) (interface{}, error)
+	BuildRequest func(storage string) (interface{}, error)
 	Service      service.Storage
 	Handler      ui.Handler
 }

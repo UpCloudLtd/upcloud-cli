@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
@@ -50,9 +49,9 @@ func (s *templatizeCommand) MakeExecuteCommand() func(args []string) (interface{
 		}
 
 		return Request{
-			BuildRequest: func(storage *upcloud.Storage) (interface{}, error) {
+			BuildRequest: func(uuid string) (interface{}, error) {
 				req := s.params.TemplatizeStorageRequest
-				req.UUID = storage.UUID
+				req.UUID = uuid
 				return &req, nil
 			},
 			Service: s.service,

@@ -3,7 +3,6 @@ package storage
 import (
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
-	"github.com/UpCloudLtd/cli/internal/mocks"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
@@ -93,14 +92,14 @@ func TestModifyCommand(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			CachedStorages = nil
-			mss := mocks.MockStorageService{}
+			mss := MockStorageService{}
 			mss.On("GetStorages", mock.Anything).Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2}}, nil)
 			mss.On(methodName, mock.Anything).Return(&StorageDetails1, nil)
 			mss.On("GetStorageDetails", &request.GetStorageDetailsRequest{UUID: Storage1.UUID}).Return(&StorageDetails1, nil)
 			mss.On("GetStorageDetails", &request.GetStorageDetailsRequest{UUID: Storage2.UUID}).Return(&StorageDetails2, nil)
 
 			tc := commands.BuildCommand(ModifyCommand(&mss), nil, config.New(viper.New()))
-			mocks.SetFlags(tc, test.args)
+			tc.SetFlags(test.args)
 
 			_, err := tc.MakeExecuteCommand()([]string{test.storage.UUID})
 			assert.Nil(t, err)
