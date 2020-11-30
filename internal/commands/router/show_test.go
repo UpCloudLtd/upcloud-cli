@@ -58,7 +58,7 @@ func TestShowCommand(t *testing.T) {
 `
 
 	buf := new(bytes.Buffer)
-	command := ShowCommand(&MockRouterService{}, &MockNetworkService{})
+	command := ShowCommand(&MockNetworkService{})
 	err := command.HandleOutput(buf, &routerWithNetworks{
 		router:   &router,
 		networks: networks,

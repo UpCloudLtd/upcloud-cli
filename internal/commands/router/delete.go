@@ -4,14 +4,15 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 )
 
 type deleteCommand struct {
 	*commands.BaseCommand
-	service Router
+	service service.Network
 }
 
-func DeleteCommand(service Router) commands.Command {
+func DeleteCommand(service service.Network) commands.Command {
 	return &deleteCommand{
 		BaseCommand: commands.New("delete", "Delete a router"),
 		service:     service,

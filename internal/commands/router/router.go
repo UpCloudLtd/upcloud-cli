@@ -5,17 +5,9 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/cobra"
 )
-
-type Router interface {
-	GetRouters() (*upcloud.Routers, error)
-	GetRouterDetails(r *request.GetRouterDetailsRequest) (*upcloud.Router, error)
-	CreateRouter(r *request.CreateRouterRequest) (*upcloud.Router, error)
-	ModifyRouter(r *request.ModifyRouterRequest) (*upcloud.Router, error)
-	DeleteRouter(r *request.DeleteRouterRequest) error
-}
 
 var cachedRouters []upcloud.Router
 
@@ -32,7 +24,7 @@ type routerCommand struct {
 
 var getRouterUuid = func(in interface{}) string { return in.(*upcloud.Router).UUID }
 
-func searchRouter(term string, service Router, unique bool) ([]*upcloud.Router, error) {
+func searchRouter(term string, service service.Network, unique bool) ([]*upcloud.Router, error) {
 	var result []*upcloud.Router
 
 	if len(cachedRouters) == 0 {
@@ -58,7 +50,7 @@ func searchRouter(term string, service Router, unique bool) ([]*upcloud.Router, 
 	return result, nil
 }
 
-func searchAllRouters(terms []string, service Router) ([]string, error) {
+func searchAllRouters(terms []string, service service.Network) ([]string, error) {
 	return commands.SearchResources(
 		terms,
 		func(id string) (interface{}, error) {
@@ -70,7 +62,7 @@ func searchAllRouters(terms []string, service Router) ([]string, error) {
 type Request struct {
 	ExactlyOne   bool
 	BuildRequest func(uuid string) interface{}
-	Service      Router
+	Service      service.Network
 	Handler      ui.Handler
 }
 
@@ -95,7 +87,7 @@ func (s Request) Send(args []string) (interface{}, error) {
 	return s.Handler.Handle(requests)
 }
 
-func GetArgCompFn(s Router) func(toComplete string) ([]string, cobra.ShellCompDirective) {
+func GetArgCompFn(s service.Network) func(toComplete string) ([]string, cobra.ShellCompDirective) {
 	return func(toComplete string) ([]string, cobra.ShellCompDirective) {
 		routers, err := s.GetRouters()
 		if err != nil {

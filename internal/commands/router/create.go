@@ -5,16 +5,17 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
 )
 
 type createCommand struct {
 	*commands.BaseCommand
-	service Router
+	service service.Network
 	params  createParams
 }
 
-func CreateCommand(service Router) commands.Command {
+func CreateCommand(service service.Network) commands.Command {
 	return &createCommand{
 		BaseCommand: commands.New("create", "Create a router"),
 		service:     service,

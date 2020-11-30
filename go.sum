@@ -20,6 +20,8 @@ github.com/UpCloudLtd/upcloud-go-api v0.0.0-20201118111125-eb04dfda2f11 h1:ODNbf
 github.com/UpCloudLtd/upcloud-go-api v0.0.0-20201118111125-eb04dfda2f11/go.mod h1:nKv1Y0cTJTGYSd3lEcFfEnbPPiIj3gT4lJzV0ZfTlpQ=
 github.com/UpCloudLtd/upcloud-go-api v0.0.0-20201123135118-0d93a789b5f8 h1:lSAH62QKQQ8NLBYnZBYfy/EVNz6her81s2E4zQZlSNI=
 github.com/UpCloudLtd/upcloud-go-api v0.0.0-20201123135118-0d93a789b5f8/go.mod h1:nKv1Y0cTJTGYSd3lEcFfEnbPPiIj3gT4lJzV0ZfTlpQ=
+github.com/UpCloudLtd/upcloud-go-api v0.0.0-20201130170350-7fc02444127a h1:9dQjUEQKfRIuVAaDjWOfyjpydGPTq/MjJTuyBjVH7go=
+github.com/UpCloudLtd/upcloud-go-api v0.0.0-20201130170350-7fc02444127a/go.mod h1:nKv1Y0cTJTGYSd3lEcFfEnbPPiIj3gT4lJzV0ZfTlpQ=
 github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=
 github.com/alecthomas/units v0.0.0-20151022065526-2efee857e7cf/go.mod h1:ybxpYRFXyAe+OPACYpWeL0wqObRcbAqCMya13uyzqw0=
 github.com/armon/circbuf v0.0.0-20150827004946-bbbad097214e/go.mod h1:3U/XgcO3hCbHZ8TKRvWD2dDTCfh9M9ya+I9JpbB7O8o=

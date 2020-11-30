@@ -4,12 +4,13 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/pflag"
 	"io"
 )
 
-func ListCommand(service Router) commands.Command {
+func ListCommand(service service.Network) commands.Command {
 	return &listCommand{
 		BaseCommand: commands.New("list", "List routers"),
 		service:     service,
@@ -18,7 +19,7 @@ func ListCommand(service Router) commands.Command {
 
 type listCommand struct {
 	*commands.BaseCommand
-	service        Router
+	service        service.Network
 	header         table.Row
 	columnKeys     []string
 	visibleColumns []string

@@ -35,7 +35,7 @@ func TestModifyCommand(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			cachedRouters = nil
-			mrs := MockRouterService{}
+			mrs := MockNetworkService{}
 			mrs.On(methodName, &test.req).Return(&router, nil)
 			mrs.On("GetRouters", mock.Anything).Return(&upcloud.Routers{Routers: []upcloud.Router{router}}, nil)
 

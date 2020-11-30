@@ -79,7 +79,7 @@ func BuildCommands(mainCommand commands.Command, mainConfig *config.Config) {
 	routerCommand := commands.BuildCommand(router.RouterCommand(), mainCommand, cfgFn())
 	commands.BuildCommand(router.CreateCommand(svc), routerCommand, cfgFn())
 	commands.BuildCommand(router.ListCommand(svc), routerCommand, cfgFn())
-	commands.BuildCommand(router.ShowCommand(svc, svc), routerCommand, cfgFn())
+	commands.BuildCommand(router.ShowCommand(svc), routerCommand, cfgFn())
 	commands.BuildCommand(router.ModifyCommand(svc), routerCommand, cfgFn())
 	commands.BuildCommand(router.DeleteCommand(svc), routerCommand, cfgFn())
 

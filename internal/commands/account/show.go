@@ -5,11 +5,12 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"io"
 )
 
-func ShowCommand(service Account) commands.Command {
+func ShowCommand(service service.Account) commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New("show", "Show account"),
 		service:     service,
@@ -18,7 +19,7 @@ func ShowCommand(service Account) commands.Command {
 
 type showCommand struct {
 	*commands.BaseCommand
-	service Account
+	service service.Account
 }
 
 func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {

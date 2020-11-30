@@ -5,16 +5,17 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
 )
 
 type modifyCommand struct {
 	*commands.BaseCommand
-	service Router
+	service service.Network
 	req     request.ModifyRouterRequest
 }
 
-func ModifyCommand(service Router) commands.Command {
+func ModifyCommand(service service.Network) commands.Command {
 	return &modifyCommand{
 		BaseCommand: commands.New("modify", "Modify a router"),
 		service:     service,

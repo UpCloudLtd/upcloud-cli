@@ -101,6 +101,26 @@ func (m *MockServerService) DeleteServerAndStorages(r *request.DeleteServerAndSt
 	args := m.Called(r)
 	return args.Error(0)
 }
+func (m *MockNetworkService) GetRouters() (*upcloud.Routers, error) {
+	args := m.Called()
+	return args[0].(*upcloud.Routers), args.Error(1)
+}
+func (m *MockNetworkService) GetRouterDetails(r *request.GetRouterDetailsRequest) (*upcloud.Router, error) {
+	args := m.Called(r)
+	return args[0].(*upcloud.Router), args.Error(1)
+}
+func (m *MockNetworkService) CreateRouter(r *request.CreateRouterRequest) (*upcloud.Router, error) {
+	args := m.Called(r)
+	return args[0].(*upcloud.Router), args.Error(1)
+}
+func (m *MockNetworkService) ModifyRouter(r *request.ModifyRouterRequest) (*upcloud.Router, error) {
+	args := m.Called(r)
+	return args[0].(*upcloud.Router), args.Error(1)
+}
+func (m *MockNetworkService) DeleteRouter(r *request.DeleteRouterRequest) error {
+	args := m.Called(r)
+	return args.Error(0)
+}
 
 func TestSearchAllNetworks(t *testing.T) {
 

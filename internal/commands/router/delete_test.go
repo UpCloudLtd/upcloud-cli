@@ -37,7 +37,7 @@ func TestDeleteCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mrs := MockRouterService{}
+			mrs := MockNetworkService{}
 			mrs.On(methodName, &test.req).Return(nil)
 			mrs.On("GetRouters", mock.Anything).Return(&upcloud.Routers{Routers: []upcloud.Router{router}}, nil)
 

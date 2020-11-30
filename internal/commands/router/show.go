@@ -13,23 +13,21 @@ import (
 	"sync"
 )
 
-func ShowCommand(routerSvc Router, networkSvc service.Network) commands.Command {
+func ShowCommand(service service.Network) commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New("show", "Show current router"),
-		routerSvc:   routerSvc,
-		networkSvc:  networkSvc,
+		service:     service,
 	}
 }
 
 type showCommand struct {
 	*commands.BaseCommand
-	routerSvc  Router
-	networkSvc service.Network
+	service service.Network
 }
 
 func (s *showCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	s.ArgCompletion(GetArgCompFn(s.routerSvc))
+	s.ArgCompletion(GetArgCompFn(s.service))
 }
 
 type routerWithNetworks struct {
@@ -46,7 +44,7 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 		if len(args) != 1 {
 			return nil, fmt.Errorf("one router uuid or name is required")
 		}
-		r, err := searchRouter(args[0], s.routerSvc, true)
+		r, err := searchRouter(args[0], s.service, true)
 		if err != nil {
 			return nil, err
 		}
@@ -59,7 +57,7 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 			wg.Add(1)
 			go func(rn upcloud.RouterNetwork) {
 				defer wg.Done()
-				nw, err := network.SearchUniqueNetwork(rn.NetworkUUID, s.networkSvc)
+				nw, err := network.SearchUniqueNetwork(rn.NetworkUUID, s.service)
 				if err != nil {
 					getNetworkError = err
 				}

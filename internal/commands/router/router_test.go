@@ -9,31 +9,6 @@ import (
 	"testing"
 )
 
-type MockRouterService struct {
-	mock.Mock
-}
-
-func (m *MockRouterService) GetRouters() (*upcloud.Routers, error) {
-	args := m.Called()
-	return args[0].(*upcloud.Routers), args.Error(1)
-}
-func (m *MockRouterService) GetRouterDetails(r *request.GetRouterDetailsRequest) (*upcloud.Router, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.Router), args.Error(1)
-}
-func (m *MockRouterService) CreateRouter(r *request.CreateRouterRequest) (*upcloud.Router, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.Router), args.Error(1)
-}
-func (m *MockRouterService) ModifyRouter(r *request.ModifyRouterRequest) (*upcloud.Router, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.Router), args.Error(1)
-}
-func (m *MockRouterService) DeleteRouter(r *request.DeleteRouterRequest) error {
-	args := m.Called(r)
-	return args.Error(0)
-}
-
 type MockNetworkService struct {
 	mock.Mock
 }
@@ -79,6 +54,27 @@ func (m *MockNetworkService) DeleteNetworkInterface(r *request.DeleteNetworkInte
 	return args.Error(0)
 }
 
+func (m *MockNetworkService) GetRouters() (*upcloud.Routers, error) {
+	args := m.Called()
+	return args[0].(*upcloud.Routers), args.Error(1)
+}
+func (m *MockNetworkService) GetRouterDetails(r *request.GetRouterDetailsRequest) (*upcloud.Router, error) {
+	args := m.Called(r)
+	return args[0].(*upcloud.Router), args.Error(1)
+}
+func (m *MockNetworkService) CreateRouter(r *request.CreateRouterRequest) (*upcloud.Router, error) {
+	args := m.Called(r)
+	return args[0].(*upcloud.Router), args.Error(1)
+}
+func (m *MockNetworkService) ModifyRouter(r *request.ModifyRouterRequest) (*upcloud.Router, error) {
+	args := m.Called(r)
+	return args[0].(*upcloud.Router), args.Error(1)
+}
+func (m *MockNetworkService) DeleteRouter(r *request.DeleteRouterRequest) error {
+	args := m.Called(r)
+	return args.Error(0)
+}
+
 const mockResponse = "mock-response"
 const mockRequest = "mock-request"
 
@@ -107,7 +103,7 @@ func TestSearchRouter(t *testing.T) {
 		UUID: "f14dd3e7-3dbb-4e3c-92b9-d1cf5178a13e",
 	}
 
-	mss := MockRouterService{}
+	mss := MockNetworkService{}
 
 	getRouters := "GetRouters"
 	mss.On(getRouters).Return(&upcloud.Routers{Routers: []upcloud.Router{Router1, Router2}}, nil)

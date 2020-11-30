@@ -33,7 +33,7 @@ func TestCreateCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mrs := MockRouterService{}
+			mrs := MockNetworkService{}
 			mrs.On(methodName, &test.req).Return(&router, nil)
 
 			c := commands.BuildCommand(CreateCommand(&mrs), nil, config.New(viper.New()))
