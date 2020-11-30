@@ -6,6 +6,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands/network"
 	"github.com/UpCloudLtd/cli/internal/commands/network_interface"
 	"github.com/UpCloudLtd/cli/internal/commands/plan"
+	"github.com/UpCloudLtd/cli/internal/commands/router"
 	"github.com/UpCloudLtd/cli/internal/commands/server"
 	"github.com/UpCloudLtd/cli/internal/commands/storage"
 	"github.com/UpCloudLtd/cli/internal/config"
@@ -72,4 +73,11 @@ func BuildCommands(mainCommand commands.Command, mainConfig *config.Config) {
 	commands.BuildCommand(network_interface.CreateCommand(svc, svc), networkInterfaceCommand, cfgFn())
 	commands.BuildCommand(network_interface.ModifyCommand(svc, svc), networkInterfaceCommand, cfgFn())
 	commands.BuildCommand(network_interface.DeleteCommand(svc, svc), networkInterfaceCommand, cfgFn())
+
+	// Routers
+	routerCommand := commands.BuildCommand(router.RouterCommand(), mainCommand, cfgFn())
+	commands.BuildCommand(router.CreateCommand(svc), routerCommand, cfgFn())
+	commands.BuildCommand(router.ListCommand(svc), routerCommand, cfgFn())
+	commands.BuildCommand(router.ShowCommand(svc, svc), routerCommand, cfgFn())
+	commands.BuildCommand(router.ModifyCommand(svc), routerCommand, cfgFn())
 }
