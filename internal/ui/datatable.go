@@ -245,25 +245,33 @@ func (s *DataTable) AppendRows(rows []table.Row) {
 	}
 }
 
-func (s *DataTable) Paginate(writer io.Writer) error {
-
+func TerminalHeight() (int, error) {
 	cmd := exec.Command("stty", "size")
 	cmd.Stdin = os.Stdin
 	out, err := cmd.Output()
 	if err != nil {
-		return err
+		return 0, err
 	}
-	height, err := strconv.Atoi(strings.Split(string(out), " ")[0])
-	if err != nil {
-		return err
-	}
+	return strconv.Atoi(strings.Split(string(out), " ")[0])
+}
 
+func (s *DataTable) Paginate(writer io.Writer) error {
 	var i int
 	var rowCount int
 	b := make([]byte, 1)
 
 	fmt.Fprintln(writer)
 	for i < len(s.rows) {
+		height, err := TerminalHeight()
+		if err != nil {
+			return err
+		}
+
+		if i-len(s.rows) < height && i > 0 {
+			cmd := exec.Command("clear")
+			cmd.Stdout = os.Stdout
+			cmd.Run()
+		}
 		t := NewDataTable(s.columnKeys...)
 		t.OverrideColumnKeys(s.overrideColumnKeys...)
 		t.SetHeader(s.header)

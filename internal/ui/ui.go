@@ -11,3 +11,10 @@ var (
 	DefaultBooleanColoursFalse = text.Colors{text.FgHiBlack}
 	DefaultNoteColours         = text.Colors{text.FgHiBlack}
 )
+
+func FormatBool(v bool) string {
+	if v {
+		return DefaultBooleanColoursTrue.Sprint("yes")
+	}
+	return DefaultBooleanColoursFalse.Sprint("no")
+}

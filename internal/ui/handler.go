@@ -22,19 +22,6 @@ type HandleContext struct {
 	WaitFn        func(uuid string, waitMsg string, err error) (interface{}, error)
 }
 
-func (c HandleContext) HandleAction(in interface{}) (interface{}, error) {
-	var elems []interface{}
-	if reflect.TypeOf(in).Kind() == reflect.Slice {
-		is := reflect.ValueOf(in)
-		for i := 0; i < is.Len(); i++ {
-			elems = append(elems, is.Index(i).Interface())
-		}
-	} else {
-		elems = append(elems, in)
-	}
-	return c.Handle(elems)
-}
-
 func (c HandleContext) Handle(requests []interface{}) (interface{}, error) {
 	var (
 		mu      sync.Mutex
@@ -64,7 +51,7 @@ func (c HandleContext) Handle(requests []interface{}) (interface{}, error) {
 			detailsUuid = c.RequestID(request)
 		}
 
-		if c.WaitFn != nil {
+		if c.WaitFn != nil && err == nil {
 			e.SetMessage(fmt.Sprintf("%s: %s", msg, c.WaitMsg))
 			details, err = c.WaitFn(detailsUuid, c.WaitMsg, err)
 		}
