@@ -71,8 +71,5 @@ func (s *listCommand) HandleOutput(writer io.Writer, out interface{}) error {
 		})
 	}
 
-	fmt.Fprintln(writer)
-	fmt.Fprintln(writer, t.Render())
-	fmt.Fprintln(writer)
-	return nil
+	return t.Paginate(writer)
 }
