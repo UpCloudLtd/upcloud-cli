@@ -15,23 +15,24 @@ import (
 	"github.com/UpCloudLtd/cli/internal/upapi"
 )
 
-func ListCommand() commands.Command {
+func ListCommand(service service.Server) commands.Command {
 	return &listCommand{
 		BaseCommand: commands.New("list", "List current servers"),
+		service:     service,
 	}
 }
 
 type listCommand struct {
 	*commands.BaseCommand
-	service        *service.Service
+	service        service.Server
 	header         table.Row
 	columnKeys     []string
 	visibleColumns []string
 }
 
 func (s *listCommand) InitCommand() {
-	s.header = table.Row{"UUID", "Hostname", "Plan", "Zone", "State", "Tags", "Title", "License"}
-	s.columnKeys = []string{"uuid", "hostname", "plan", "zone", "state", "tags", "title", "license"}
+	s.header = table.Row{"UUID", "Hostname", "Plan", "Zone", "State", "Tags", "Title", "Licence"}
+	s.columnKeys = []string{"uuid", "hostname", "plan", "zone", "state", "tags", "title", "licence"}
 	s.visibleColumns = []string{"uuid", "hostname", "plan", "zone", "state"}
 	flags := &pflag.FlagSet{}
 	s.AddVisibleColumnsFlag(flags, &s.visibleColumns, s.columnKeys, s.visibleColumns)
@@ -56,7 +57,7 @@ func (s *listCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	t.SetHeader(s.header)
 
 	t.SetColumnConfig("state", table.ColumnConfig{Transformer: func(val interface{}) string {
-		return StateColour(val.(string)).Sprint(val)
+		return commands.StateColour(val.(string)).Sprint(val)
 	}})
 
 	for _, server := range servers.Servers {
@@ -76,8 +77,5 @@ func (s *listCommand) HandleOutput(writer io.Writer, out interface{}) error {
 			server.License})
 	}
 
-	fmt.Fprintln(writer)
-	fmt.Fprintln(writer, t.Render())
-	fmt.Fprintln(writer)
-	return nil
+	return t.Paginate(writer)
 }

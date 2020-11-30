@@ -3,21 +3,23 @@ package server
 import (
 	"errors"
 	"fmt"
+	"github.com/UpCloudLtd/cli/internal/ui"
+	"github.com/spf13/cobra"
 	"time"
 
+	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
-	"github.com/jedib0t/go-pretty/v6/text"
-
-	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/validation"
 )
 
 const (
-	minStorageSize   = 10
-	maxServerActions = 10
+	minStorageSize    = 10
+	maxServerActions  = 10
+	PositionalArgHelp = "<UUID/Title/Hostname...>"
 )
+
+var CachedServers []upcloud.Server
 
 func ServerCommand() commands.Command {
 	return &serverCommand{
@@ -27,11 +29,6 @@ func ServerCommand() commands.Command {
 
 type serverCommand struct {
 	commands.Command
-}
-
-type ActionResult struct {
-	Error error
-	Uuid  string
 }
 
 func matchServers(servers []upcloud.Server, searchVal string) []*upcloud.Server {
@@ -45,12 +42,12 @@ func matchServers(servers []upcloud.Server, searchVal string) []*upcloud.Server 
 	return r
 }
 
-func searchServer(serversPtr *[]upcloud.Server, service *service.Service, uuidOrHostnameOrTitle string, unique bool) (*upcloud.Server, error) {
+func SearchServer(serversPtr *[]upcloud.Server, service service.Server, uuidOrHostnameOrTitle string, unique bool) ([]*upcloud.Server, error) {
 	if serversPtr == nil || service == nil {
 		return nil, fmt.Errorf("no servers or service passed")
 	}
 	servers := *serversPtr
-	if err := validation.Uuid4(uuidOrHostnameOrTitle); err != nil || servers == nil {
+	if len(CachedServers) == 0 {
 		res, err := service.GetServers()
 		if err != nil {
 			return nil, err
@@ -65,23 +62,19 @@ func searchServer(serversPtr *[]upcloud.Server, service *service.Service, uuidOr
 	if len(matched) > 1 && unique {
 		return nil, fmt.Errorf("multiple servers matched to query %q, use UUID to specify", uuidOrHostnameOrTitle)
 	}
-	return matched[0], nil
+	return matched, nil
 }
 
-func StateColour(state string) text.Colors {
-	switch state {
-	case upcloud.ServerStateStarted:
-		return text.Colors{text.FgGreen}
-	case upcloud.ServerStateError:
-		return text.Colors{text.FgHiRed, text.Bold}
-	case upcloud.ServerStateMaintenance:
-		return text.Colors{text.FgYellow}
-	default:
-		return text.Colors{text.FgHiBlack}
-	}
+func SearchAllServers(terms []string, service service.Server, unique bool) ([]string, error) {
+	return commands.SearchResources(
+		terms,
+		func(term string) (interface{}, error) {
+			return SearchServer(&CachedServers, service, term, unique)
+		},
+		func(in interface{}) string { return in.(*upcloud.Server).UUID })
 }
 
-func WaitForServerState(service *service.Service, uuid, desiredState string, timeout time.Duration) (*upcloud.ServerDetails, error) {
+func WaitForServerState(service service.Server, uuid, desiredState string, timeout time.Duration) (*upcloud.ServerDetails, error) {
 	timer := time.After(timeout)
 	for {
 		time.Sleep(5 * time.Second)
@@ -100,5 +93,55 @@ func WaitForServerState(service *service.Service, uuid, desiredState string, tim
 			return nil, fmt.Errorf("timed out while waiting server to transition into %q", desiredState)
 		default:
 		}
+	}
+}
+
+var WaitForServerFn = func(svc service.Server, state string, timeout time.Duration) func(uuid string, waitMsg string, err error) (interface{}, error) {
+	return func(uuid string, waitMsg string, err error) (interface{}, error) {
+		return WaitForServerState(svc, uuid, state, timeout)
+	}
+}
+
+var getServerDetailsUuid = func(in interface{}) string { return in.(*upcloud.ServerDetails).UUID }
+
+type Request struct {
+	ExactlyOne   bool
+	BuildRequest func(server string) interface{}
+	Service      service.Server
+	Handler      ui.Handler
+}
+
+func (s Request) Send(args []string) (interface{}, error) {
+	if s.ExactlyOne && len(args) != 1 {
+		return nil, fmt.Errorf("single server uuid is required")
+	}
+	if len(args) < 1 {
+		return nil, fmt.Errorf("at least one server uuid is required")
+	}
+
+	servers, err := SearchAllServers(args, s.Service, true)
+	if err != nil {
+		return nil, err
+	}
+
+	var requests []interface{}
+	for _, server := range servers {
+		requests = append(requests, s.BuildRequest(server))
+	}
+
+	return s.Handler.Handle(requests)
+}
+
+func GetArgCompFn(s service.Server) func(toComplete string) ([]string, cobra.ShellCompDirective) {
+	return func(toComplete string) ([]string, cobra.ShellCompDirective) {
+		servers, err := s.GetServers()
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveDefault
+		}
+		var vals []string
+		for _, v := range servers.Servers {
+			vals = append(vals, v.UUID, v.Hostname, v.Title)
+		}
+		return commands.MatchStringPrefix(vals, toComplete, true), cobra.ShellCompDirectiveNoFileComp
 	}
 }

@@ -2,32 +2,32 @@ package server
 
 import (
 	"fmt"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"io"
 	"net"
 	"strings"
 	"sync"
 
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
-	"github.com/jedib0t/go-pretty/v6/table"
-	"github.com/jedib0t/go-pretty/v6/text"
-	"github.com/spf13/cobra"
-
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/ui"
-	"github.com/UpCloudLtd/cli/internal/upapi"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jedib0t/go-pretty/v6/text"
 )
 
-func ShowCommand() commands.Command {
+func ShowCommand(serverSvc service.Server, firewallSvc service.Firewall) commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New("show", "Show server details"),
+		serverSvc:   serverSvc,
+		firewallSvc: firewallSvc,
 	}
 }
 
 type showCommand struct {
 	*commands.BaseCommand
-	service *service.Service
+	serverSvc   service.Server
+	firewallSvc service.Firewall
 }
 
 type commandResponseHolder struct {
@@ -35,41 +35,25 @@ type commandResponseHolder struct {
 	firewallRules *upcloud.FirewallRules
 }
 
-func (s *showCommand) initService() {
-	if s.service == nil {
-		s.service = upapi.Service(s.Config())
-	}
-}
-
 func (s *showCommand) InitCommand() {
-	s.ArgCompletion(func(toComplete string) ([]string, cobra.ShellCompDirective) {
-		s.initService()
-		servers, err := s.service.GetServers()
-		if err != nil {
-			return nil, cobra.ShellCompDirectiveDefault
-		}
-		var vals []string
-		for _, v := range servers.Servers {
-			vals = append(vals, v.UUID, v.Hostname)
-		}
-		return commands.MatchStringPrefix(vals, toComplete, false),
-			cobra.ShellCompDirectiveNoSpace | cobra.ShellCompDirectiveNoFileComp
-	})
+	s.SetPositionalArgHelp(PositionalArgHelp)
+	s.ArgCompletion(GetArgCompFn(s.serverSvc))
 }
 
 func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		s.initService()
 		// TODO(aakso): implement prompting with readline support
-		if len(args) < 1 {
-			return nil, fmt.Errorf("server hostname, title or uuid is required")
+		if len(args) != 1 {
+			return nil, fmt.Errorf("one server hostname, title or uuid is required")
 		}
-		var servers []upcloud.Server
-		server, err := searchServer(&servers, s.service, args[0], true)
+		serverUuids, err := SearchAllServers(args, s.serverSvc, true)
 		if err != nil {
 			return nil, err
 		}
-		serverUuid := server.UUID
+		if len(serverUuids) != 1 {
+			return nil, fmt.Errorf("server not found")
+		}
+		serverUuid := serverUuids[0]
 		var (
 			wg        sync.WaitGroup
 			fwRuleErr error
@@ -78,9 +62,9 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 		var firewallRules *upcloud.FirewallRules
 		go func() {
 			defer wg.Done()
-			firewallRules, fwRuleErr = s.service.GetFirewallRules(&request.GetFirewallRulesRequest{ServerUUID: serverUuid})
+			firewallRules, fwRuleErr = s.firewallSvc.GetFirewallRules(&request.GetFirewallRulesRequest{ServerUUID: serverUuid})
 		}()
-		serverDetails, err := s.service.GetServerDetails(&request.GetServerDetailsRequest{UUID: serverUuid})
+		serverDetails, err := s.serverSvc.GetServerDetails(&request.GetServerDetailsRequest{UUID: serverUuid})
 		if err != nil {
 			return nil, err
 		}
@@ -120,9 +104,9 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 			{"Hostname:", srv.Hostname},
 			{"Plan:", srv.Plan},
 			{"Zone:", srv.Zone},
-			{"State:", StateColour(srv.State).Sprint(srv.State)},
+			{"State:", commands.StateColour(srv.State).Sprint(srv.State)},
 			{"Tags:", strings.Join(srv.Tags, ",")},
-			{"License:", srv.License},
+			{"Licence:", srv.License},
 			{"Metadata:", srv.Metadata},
 			{"Timezone:", srv.Timezone},
 			{"Host ID:", srv.Host},

@@ -138,7 +138,7 @@ func TestServerHumanOutput(t *testing.T) {
     Zone:     fi-hel1                              
     State:    started                              
     Tags:     DEV,Ubuntu                           
-    License:  0                                    
+    Licence:  0                                    
     Metadata: yes                                  
     Timezone: UTC                                  
     Host ID:  7653311107                           
@@ -182,7 +182,7 @@ func TestServerHumanOutput(t *testing.T) {
 `
 
 	buf := new(bytes.Buffer)
-	command := ShowCommand()
+	command := ShowCommand(&MockServerService{}, &MockFirewallService{})
 	err := command.HandleOutput(buf, &commandResponseHolder{s, firewallRules})
 
 	assert.Nil(t, err)
