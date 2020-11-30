@@ -3,7 +3,7 @@ module github.com/UpCloudLtd/cli
 go 1.13
 
 require (
-	github.com/UpCloudLtd/upcloud-go-api v0.0.0-20201118111125-eb04dfda2f11
+	github.com/UpCloudLtd/upcloud-go-api v0.0.0-20201123135118-0d93a789b5f8
 	github.com/hashicorp/go-cleanhttp v0.5.1
 	github.com/jedib0t/go-pretty/v6 v6.0.5
 	github.com/mattn/go-isatty v0.0.12
