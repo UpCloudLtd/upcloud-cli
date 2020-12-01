@@ -40,20 +40,14 @@ func TestDeleteServerCommand(t *testing.T) {
 		deleteServStorageCalls int
 	}{
 		{
-			name:                   "Backend called, no args",
-			args:                   []string{},
-			deleteServCalls:        0,
-			deleteServStorageCalls: 1,
-		},
-		{
 			name:                   "Delete-storages true",
-			args:                   []string{"--delete-storages", "true"},
+			args:                   []string{"--delete-storages"},
 			deleteServCalls:        0,
 			deleteServStorageCalls: 1,
 		},
 		{
 			name:                   "Delete-storages false",
-			args:                   []string{"--delete-storages", "false"},
+			args:                   []string{},
 			deleteServCalls:        1,
 			deleteServStorageCalls: 0,
 		},

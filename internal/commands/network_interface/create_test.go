@@ -26,9 +26,17 @@ func TestCreateCommand(t *testing.T) {
 		req   request.CreateNetworkInterfaceRequest
 	}{
 		{
-			name:  "network is missing",
-			args:  []string{"--ip-addresses", "127.0.0.1"},
-			error: "network is required",
+			name: "network is missing",
+			args: []string{"--type", "public"},
+			req: request.CreateNetworkInterfaceRequest{
+				ServerUUID:        s.UUID,
+				Bootable:          upcloud.FromBool(false),
+				SourceIPFiltering: upcloud.FromBool(false),
+				IPAddresses: request.CreateNetworkInterfaceIPAddressSlice{
+					{Family: upcloud.IPAddressFamilyIPv4},
+				},
+				Type: upcloud.NetworkTypePublic,
+			},
 		},
 		{
 			name: "ip-address is missing",

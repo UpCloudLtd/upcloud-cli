@@ -2,45 +2,49 @@ package network
 
 import (
 	"bytes"
+	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestShowCommand(t *testing.T) {
 
-	servers := []*upcloud.Server{
-		{
-			CoreNumber:   1,
-			Hostname:     "server1.example.com",
-			License:      0,
-			MemoryAmount: 2048,
-			State:        "started",
-			Plan:         "1xCPU-2GB",
-			Title:        "server1",
-			UUID:         "0077fa3d-32db-4b09-9f5f-30d9e9afb568",
-			Zone:         "fi-hel1",
-			Tags: []string{
-				"DEV",
-				"Ubuntu",
-			},
-		},
-		{
-			CoreNumber:   2,
-			Hostname:     "server2.example.com",
-			License:      0,
-			MemoryAmount: 2048,
-			State:        "stopped",
-			Plan:         "1xCPU-2GB",
-			Title:        "server2",
-			UUID:         "0077fa3d-32db-4b09-9f5f-30d9e9afb569",
-			Zone:         "fi-hel1",
-			Tags: []string{
-				"DEV",
-				"Ubuntu",
-			},
+	server1 := upcloud.Server{
+		CoreNumber:   1,
+		Hostname:     "server1.example.com",
+		License:      0,
+		MemoryAmount: 2048,
+		State:        "started",
+		Plan:         "1xCPU-2GB",
+		Title:        "server1",
+		UUID:         "0077fa3d-32db-4b09-9f5f-30d9e9afb568",
+		Zone:         "fi-hel1",
+		Tags: []string{
+			"DEV",
+			"Ubuntu",
 		},
 	}
+
+	server2 := upcloud.Server{
+		CoreNumber:   2,
+		Hostname:     "server2.example.com",
+		License:      0,
+		MemoryAmount: 2048,
+		State:        "stopped",
+		Plan:         "1xCPU-2GB",
+		Title:        "server2",
+		UUID:         "0077fa3d-32db-4b09-9f5f-30d9e9afb569",
+		Zone:         "fi-hel1",
+		Tags: []string{
+			"DEV",
+			"Ubuntu",
+		},
+	}
+
+	servers := []upcloud.Server{server1, server2}
 
 	network := upcloud.Network{
 		IPNetworks: upcloud.IPNetworkSlice{
@@ -61,12 +65,15 @@ func TestShowCommand(t *testing.T) {
 				Gateway:          "196.15.0.5",
 			},
 		},
-		Name:    "test-network",
-		Type:    "utility",
-		UUID:    "ce6a9934-c0c6-4d84-9ad4-0611f5b95e79",
-		Zone:    "uk-lon1",
-		Router:  "79c0ad83-ac84-44f3-a2f8-06cbd524ee8c",
-		Servers: nil,
+		Name:   "test-network",
+		Type:   "utility",
+		UUID:   "ce6a9934-c0c6-4d84-9ad4-0611f5b95e79",
+		Zone:   "uk-lon1",
+		Router: "79c0ad83-ac84-44f3-a2f8-06cbd524ee8c",
+		Servers: []upcloud.NetworkServer{
+			{ServerUUID: server1.UUID, ServerTitle: server1.Title},
+			{ServerUUID: server2.UUID, ServerTitle: server2.Title},
+		},
 	}
 
 	expected := `  
@@ -91,12 +98,19 @@ func TestShowCommand(t *testing.T) {
      0077fa3d-32db-4b09-9f5f-30d9e9afb569   server2   server2.example.com   stopped 
 `
 
+	cachedNetworks = nil
+	mns := MockNetworkService{}
+	mns.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{network}}, nil)
+	mss := MockServerService{}
+	mss.On("GetServers").Return(&upcloud.Servers{Servers: servers}, nil)
+
+	command := commands.BuildCommand(ShowCommand(&mns, &mss), nil, config.New(viper.New()))
+	res, err := command.MakeExecuteCommand()([]string{network.UUID})
+
+	assert.Nil(t, err)
+
 	buf := new(bytes.Buffer)
-	command := ShowCommand(&MockNetworkService{}, &MockServerService{})
-	err := command.HandleOutput(buf, networkWithServers{
-		network: &network,
-		servers: servers,
-	})
+	err = command.HandleOutput(buf, res)
 
 	assert.Nil(t, err)
 	assert.Equal(t, expected, buf.String())

@@ -85,6 +85,9 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 		if s.params.req.Zone == "" {
 			return nil, fmt.Errorf("zone is required")
 		}
+		if len(s.params.networks) == 0 {
+			return nil, fmt.Errorf("at least one IP network is required")
+		}
 
 		req, err := s.BuildRequest()
 		if err != nil {

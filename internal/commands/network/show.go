@@ -65,7 +65,7 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 }
 
 func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
-	networkWithServers := out.(networkWithServers)
+	networkWithServers := out.(*networkWithServers)
 	n := networkWithServers.network
 	servers := networkWithServers.servers
 

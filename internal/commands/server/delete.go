@@ -19,14 +19,14 @@ func DeleteCommand(service service.Server) commands.Command {
 type deleteCommand struct {
 	*commands.BaseCommand
 	service        service.Server
-	deleteStorages string
+	deleteStorages bool
 }
 
 func (s *deleteCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
 	s.ArgCompletion(GetArgCompFn(s.service))
 	flags := &pflag.FlagSet{}
-	flags.StringVar(&s.deleteStorages, "delete-storages", "true", "Delete storages that are attached to the server.")
+	flags.BoolVar(&s.deleteStorages, "delete-storages", false, "Delete storages that are attached to the server.")
 	s.AddFlags(flags)
 }
 
@@ -35,7 +35,7 @@ func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 
 		var action = func(uuid interface{}) (interface{}, error) {
 			var err error
-			if s.deleteStorages == "true" {
+			if s.deleteStorages {
 				err = s.service.DeleteServerAndStorages(&request.DeleteServerAndStoragesRequest{
 					UUID: uuid.(string),
 				})

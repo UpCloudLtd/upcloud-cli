@@ -5,7 +5,6 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/commands/server"
 	"github.com/UpCloudLtd/cli/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
@@ -37,10 +36,18 @@ func (s *modifyCommand) BuildRequest() (*request.ModifyNetworkInterfaceRequest, 
 	s.req.IPAddresses = ipAddresses
 
 	if s.bootable != "" {
-		s.req.Bootable = upcloud.FromBool(s.bootable == "true")
+		bootable, err := commands.BoolFromString(s.bootable)
+		if err != nil {
+			return nil, err
+		}
+		s.req.Bootable = *bootable
 	}
 	if s.filtering != "" {
-		s.req.SourceIPFiltering = upcloud.FromBool(s.filtering == "true")
+		filtering, err := commands.BoolFromString(s.filtering)
+		if err != nil {
+			return nil, err
+		}
+		s.req.SourceIPFiltering = *filtering
 	}
 	return &s.req, nil
 }

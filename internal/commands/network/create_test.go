@@ -37,12 +37,9 @@ func TestCreateCommand(t *testing.T) {
 			error: "zone is required",
 		},
 		{
-			name: "without network",
-			args: []string{"--name", n.Name, "--zone", n.Zone},
-			expected: request.CreateNetworkRequest{
-				Name: n.Name,
-				Zone: n.Zone,
-			},
+			name:  "without network",
+			args:  []string{"--name", n.Name, "--zone", n.Zone},
+			error: "at least one IP network is required",
 		},
 		{
 			name: "with single network",

@@ -22,7 +22,7 @@ type createCommand struct {
 
 func CreateCommand(serverSvc service.Server, networkSvc service.Network) commands.Command {
 	return &createCommand{
-		BaseCommand: commands.New("create", "Create a network"),
+		BaseCommand: commands.New("create", "Create a network interface"),
 		serverSvc:   serverSvc,
 		networkSvc:  networkSvc,
 	}
@@ -34,12 +34,14 @@ type createParams struct {
 	bootable    bool
 	filtering   bool
 	network     string
+	family      string
 }
 
 var def = createParams{
 	req: request.CreateNetworkInterfaceRequest{
 		Type: upcloud.NetworkTypePrivate,
 	},
+	family: upcloud.IPAddressFamilyIPv4,
 }
 
 func (s *createCommand) InitCommand() {
@@ -47,33 +49,37 @@ func (s *createCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.params.network, "network", def.network, "Virtual network ID or name to join.\n[Required]")
 	fs.StringVar(&s.params.req.Type, "type", def.req.Type, "Set the type of the network.\nAvailable: public, utility, private")
+	fs.StringVar(&s.params.family, "family", def.family, "The address family of new IP address.")
 	fs.IntVar(&s.params.req.Index, "index", def.req.Index, "Interface index.")
 	fs.BoolVar(&s.params.bootable, "bootable", def.bootable, "Whether to try booting through the interface.")
 	fs.BoolVar(&s.params.filtering, "source-ip-filtering", def.filtering, "Whether source IP filtering is enabled on the interface. Disabling it is allowed only for SDN private interfaces.")
 	fs.StringSliceVar(&s.params.ipAddresses, "ip-addresses", s.params.ipAddresses, "Array of IP addresses, multiple can be declared\n\n"+
-		"Usage: --ip-addresses 94.237.112.143,94.237.112.144\n\n"+
-		"[Required]")
+		"Usage: --ip-addresses 94.237.112.143,94.237.112.144")
 	s.AddFlags(fs)
 }
 
 func (s *createCommand) BuildRequest() (*request.CreateNetworkInterfaceRequest, error) {
 	if s.params.network == "" {
-		return nil, fmt.Errorf("network is required")
-	}
-	if len(s.params.ipAddresses) == 0 {
-		return nil, fmt.Errorf("ip-address is required")
+		s.params.req.IPAddresses = request.CreateNetworkInterfaceIPAddressSlice{{Family: s.params.family}}
+	} else {
+
+		if len(s.params.ipAddresses) == 0 {
+			return nil, fmt.Errorf("ip-address is required")
+		} else {
+			ipAddresses, err := handleIpAddress(s.params.ipAddresses)
+			if err != nil {
+				return nil, err
+			}
+			s.params.req.IPAddresses = ipAddresses
+		}
+
+		nw, err := network.SearchUniqueNetwork(s.params.network, s.networkSvc)
+		if err != nil {
+			return nil, err
+		}
+		s.params.req.NetworkUUID = nw.UUID
 	}
 
-	ipAddresses, err := handleIpAddress(s.params.ipAddresses)
-	if err != nil {
-		return nil, err
-	}
-	nw, err := network.SearchUniqueNetwork(s.params.network, s.networkSvc)
-	if err != nil {
-		return nil, err
-	}
-	s.params.req.NetworkUUID = nw.UUID
-	s.params.req.IPAddresses = ipAddresses
 	s.params.req.Bootable = upcloud.FromBool(s.params.bootable)
 	s.params.req.SourceIPFiltering = upcloud.FromBool(s.params.filtering)
 	return &s.params.req, nil

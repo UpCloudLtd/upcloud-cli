@@ -2,6 +2,7 @@ package commands
 
 import (
 	"encoding/csv"
+	"fmt"
 	"github.com/UpCloudLtd/cli/internal/validation"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/jedib0t/go-pretty/v6/text"
@@ -69,4 +70,16 @@ func StateColour(state string) text.Colors {
 	default:
 		return text.Colors{text.FgHiBlack}
 	}
+}
+
+func BoolFromString(b string) (*upcloud.Boolean, error) {
+	var result upcloud.Boolean
+	if b == "true" {
+		result = upcloud.FromBool(true)
+	} else if b == "false" {
+		result = upcloud.FromBool(false)
+	} else {
+		return nil, fmt.Errorf("invalid boolean value %s", b)
+	}
+	return &result, nil
 }
