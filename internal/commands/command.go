@@ -28,6 +28,7 @@ type Command interface {
 	SetConfig(config *config.Config)
 	SetParent(Command)
 	SetChild(command Command)
+	SetFlags(flags []string) error
 	DeleteChild(command Command)
 	Children() []Command
 	Parent() Command
@@ -214,6 +215,10 @@ func (s *BaseCommand) SetParent(command Command) {
 
 func (s *BaseCommand) Parent() Command {
 	return s.parent
+}
+
+func (s *BaseCommand) SetFlags(flags []string) error {
+	return s.Cobra().Flags().Parse(flags)
 }
 
 // A hook to handle flag registration.

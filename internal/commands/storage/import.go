@@ -61,8 +61,8 @@ func (s *importParams) processParams(srv service.Storage) error {
 		s.existingStorage = storage[0]
 		s.CreateStorageImportRequest.StorageUUID = storage[0].UUID
 	}
-	if s.sourceLocation == "" {
-		return errors.New("source-location is required")
+	if s.sourceLocation == "" || s.createStorage.Zone == "" || s.createStorage.Title == "" {
+		return errors.New("source-location, zone and title are required")
 	}
 	// Infer source type from source location
 	if s.Source == "" {
@@ -144,7 +144,7 @@ type importCommand struct {
 }
 
 func importFlags(fs *pflag.FlagSet, dst, def *importParams) {
-	fs.StringVar(&dst.sourceLocation, "source-location", def.sourceLocation, "Location of the source of the import. Can be a file or a URL.")
+	fs.StringVar(&dst.sourceLocation, "source-location", def.sourceLocation, "Location of the source of the import. Can be a file or a URL.\n[Required]")
 	fs.StringVar(&dst.Source, "source", def.Source, fmt.Sprintf("Source type. Available: %s,%s",
 		upcloud.StorageImportSourceHTTPImport,
 		upcloud.StorageImportSourceDirectUpload))
@@ -165,6 +165,7 @@ func (s *importCommand) InitCommand() {
 
 func (s *importCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
+
 		errorOrGenericError := func(err error) error {
 			if s.Config().InteractiveUI() {
 				return errors.New("import failed")

@@ -23,9 +23,9 @@ func CreateCommand(service service.Storage) commands.Command {
 var DefaultCreateParams = &createParams{
 	CreateStorageRequest: request.CreateStorageRequest{
 		Size: 10,
-		Tier: "maxiops",
+		Tier: upcloud.StorageTierMaxIOPS,
 		BackupRule: &upcloud.BackupRule{
-			Interval:  "daily",
+			Interval:  upcloud.BackupRuleIntervalDaily,
 			Retention: 7,
 		},
 	},
@@ -62,7 +62,7 @@ type createCommand struct {
 
 func createFlags(fs *pflag.FlagSet, dst, def *createParams) {
 	fs.StringVar(&dst.Title, "title", def.Title, "Storage title.\n[Required]")
-	fs.IntVar(&dst.Size, "size", def.Size, "Size of the storage in GiB.\n[Required]")
+	fs.IntVar(&dst.Size, "size", def.Size, "Size of the storage in GiB.")
 	fs.StringVar(&dst.Zone, "zone", def.Zone, "The zone to create the storage on.\n[Required]")
 	fs.StringVar(&dst.Tier, "tier", def.Tier, "Storage tier.")
 	fs.StringVar(&dst.backupTime, "backup-time", def.backupTime, "The time when to create a backup in HH:MM. Empty value means no backups.")
@@ -88,8 +88,6 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 			return nil, err
 		}
 
-		createStorages := []*request.CreateStorageRequest{&s.params.CreateStorageRequest}
-
 		return ui.HandleContext{
 			RequestID:     func(in interface{}) string { return in.(*request.CreateStorageRequest).Title },
 			ResultUUID:    getStorageDetailsUuid,
@@ -99,6 +97,6 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 			Action: func(req interface{}) (interface{}, error) {
 				return s.service.CreateStorage(req.(*request.CreateStorageRequest))
 			},
-		}.HandleAction(createStorages)
+		}.Handle(commands.ToArray(&s.params.CreateStorageRequest))
 	}
 }

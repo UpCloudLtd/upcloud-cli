@@ -3,7 +3,6 @@ package storage
 import (
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 )
@@ -33,9 +32,9 @@ func (s *restoreBackupCommand) InitCommand() {
 func (s *restoreBackupCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 		return Request{
-			BuildRequest: func(storage *upcloud.Storage) (interface{}, error) {
+			BuildRequest: func(uuid string) (interface{}, error) {
 				req := s.params.RestoreBackupRequest
-				req.UUID = storage.UUID
+				req.UUID = uuid
 				return &req, nil
 			},
 			Service: s.service,

@@ -15,17 +15,19 @@ import (
 type transport struct{}
 
 func (t *transport) RoundTrip(req *http.Request) (*http.Response, error) {
-	req.Header.Add("User-Agent", fmt.Sprintf("upctl/%s", globals.Version))
 	return cleanhttp.DefaultTransport().RoundTrip(req)
 }
 
 func Service(config *config.Config) *service.Service {
 	hc := &http.Client{Transport: &transport{}}
 
-	svc := service.New(client.NewWithHTTPClient(
+	whc := client.NewWithHTTPClient(
 		config.Top().GetString("username"),
 		config.Top().GetString("password"),
-		hc))
+		hc)
+	whc.UserAgent = fmt.Sprintf("upctl/%s", globals.Version)
+
+	svc := service.New(whc)
 	hc.Timeout = config.ClientTimeout()
 	return svc
 }

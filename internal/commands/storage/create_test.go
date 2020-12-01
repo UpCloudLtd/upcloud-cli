@@ -3,7 +3,6 @@ package storage
 import (
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
-	"github.com/UpCloudLtd/cli/internal/mocks"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
@@ -111,11 +110,11 @@ func TestCreateCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mss := mocks.MockStorageService{}
+			mss := MockStorageService{}
 			mss.On(methodName, &test.expected).Return(&details, nil)
 
 			tc := commands.BuildCommand(CreateCommand(&mss), nil, config.New(viper.New()))
-			mocks.SetFlags(tc, test.args)
+			tc.SetFlags(test.args)
 
 			_, err := tc.MakeExecuteCommand()([]string{Storage2.UUID})
 			if test.error != "" {

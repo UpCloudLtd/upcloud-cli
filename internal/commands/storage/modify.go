@@ -55,9 +55,9 @@ func (s *modifyCommand) InitCommand() {
 	s.AddFlags(flagSet)
 }
 
-func setBackupFields(storage *upcloud.Storage, p modifyParams, service service.Storage, req *request.ModifyStorageRequest) error {
+func setBackupFields(storageUUID string, p modifyParams, service service.Storage, req *request.ModifyStorageRequest) error {
 
-	details, err := service.GetStorageDetails(&request.GetStorageDetailsRequest{UUID: storage.UUID})
+	details, err := service.GetStorageDetails(&request.GetStorageDetailsRequest{UUID: storageUUID})
 	if err != nil {
 		return err
 	}
@@ -68,30 +68,38 @@ func setBackupFields(storage *upcloud.Storage, p modifyParams, service service.S
 		if err != nil {
 			return fmt.Errorf("invalid backup time %q", p.backupTime)
 		}
+		p.backupTime = tv.Format("1504")
 	}
 
-	if details.BackupRule == nil || details.BackupRule.Time == "" {
-		if p.backupTime == "" && (p.backupInterval != "" || p.backupRetention != 0) {
-			return fmt.Errorf("backup-time must be provided")
+	var newBUR *upcloud.BackupRule
+	if p.backupTime != "" || p.backupInterval != "" || p.backupRetention != 0 {
+		newBUR = &upcloud.BackupRule{
+			Interval:  p.backupInterval,
+			Time:      p.backupTime,
+			Retention: p.backupRetention,
 		}
+	}
 
-		req.BackupRule = &upcloud.BackupRule{
-			Time: tv.Format("1504"),
-		}
-		if p.backupInterval == "" {
-			req.BackupRule.Interval = defaultBackupRuleParams.Interval
+	if details.BackupRule.Time == "" {
+		if newBUR != nil {
+			if newBUR.Time == "" {
+				return fmt.Errorf("backup-time is required")
+			} else {
+				if newBUR.Interval == "" {
+					newBUR.Interval = defaultBackupRuleParams.Interval
+				}
+				if newBUR.Retention == 0 {
+					newBUR.Retention = defaultBackupRuleParams.Retention
+				}
+				req.BackupRule = newBUR
+			}
 		} else {
-			req.BackupRule.Interval = p.backupInterval
-		}
-		if p.backupRetention == 0 {
-			req.BackupRule.Retention = defaultBackupRuleParams.Retention
-		} else {
-			req.BackupRule.Retention = p.backupRetention
+			req.BackupRule = nil
 		}
 	} else {
 		req.BackupRule = details.BackupRule
 		if p.backupTime != "" {
-			req.BackupRule.Time = tv.Format("1504")
+			req.BackupRule.Time = p.backupTime
 		}
 		if p.backupInterval != "" {
 			req.BackupRule.Interval = p.backupInterval
@@ -100,6 +108,7 @@ func setBackupFields(storage *upcloud.Storage, p modifyParams, service service.S
 			req.BackupRule.Retention = p.backupRetention
 		}
 	}
+
 	return nil
 }
 
@@ -107,12 +116,12 @@ func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 	return func(args []string) (interface{}, error) {
 
 		return Request{
-			BuildRequest: func(storage *upcloud.Storage) (interface{}, error) {
+			BuildRequest: func(uuid string) (interface{}, error) {
 				req := s.params.ModifyStorageRequest
-				if err := setBackupFields(storage, s.params, s.service, &req); err != nil {
+				if err := setBackupFields(uuid, s.params, s.service, &req); err != nil {
 					return nil, err
 				}
-				req.UUID = storage.UUID
+				req.UUID = uuid
 				return &req, nil
 			},
 			Service: s.service,

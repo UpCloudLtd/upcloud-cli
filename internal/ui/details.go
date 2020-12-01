@@ -57,6 +57,7 @@ type DetailsView struct {
 	t              *table.Table
 	rows           []table.Row
 	rowTransformer func(row table.Row) table.Row
+	headerWidth    int
 }
 
 func (s *DetailsView) Render() string {
@@ -64,7 +65,10 @@ func (s *DetailsView) Render() string {
 		return ""
 	}
 	s.t.ResetRows()
-	const headerMaxwidth = 20
+	const headerMaxWidth = 20
+	if s.headerWidth == 0 {
+		s.headerWidth = headerMaxWidth
+	}
 	widthRemaining := 140
 	var colConfigs []table.ColumnConfig
 	for i := range s.rows[0] {
@@ -74,9 +78,9 @@ func (s *DetailsView) Render() string {
 				Align:     text.AlignLeft,
 				Colors:    DefaultHeaderColours,
 				AutoMerge: true,
-				WidthMax:  headerMaxwidth,
+				WidthMax:  s.headerWidth,
 			})
-			widthRemaining -= headerMaxwidth
+			widthRemaining -= s.headerWidth
 			continue
 		}
 		colConfigs = append(colConfigs, table.ColumnConfig{WidthMax: widthRemaining})
@@ -121,4 +125,8 @@ func (s *DetailsView) AppendRows(rows []table.Row) {
 	for _, row := range rows {
 		s.AppendRow(row)
 	}
+}
+
+func (s *DetailsView) SetHeaderWidth(width int) {
+	s.headerWidth = width
 }

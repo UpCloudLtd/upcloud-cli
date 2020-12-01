@@ -13,6 +13,7 @@ type Handler interface {
 type HandleContext struct {
 	RequestID     func(interface{}) string
 	ResultUUID    func(interface{}) string
+	ResultPrefix  string
 	MessageFn     func(interface{}) string
 	ActionMsg     string
 	Action        func(interface{}) (interface{}, error)
@@ -20,19 +21,6 @@ type HandleContext struct {
 	InteractiveUI bool
 	WaitMsg       string
 	WaitFn        func(uuid string, waitMsg string, err error) (interface{}, error)
-}
-
-func (c HandleContext) HandleAction(in interface{}) (interface{}, error) {
-	var elems []interface{}
-	if reflect.TypeOf(in).Kind() == reflect.Slice {
-		is := reflect.ValueOf(in)
-		for i := 0; i < is.Len(); i++ {
-			elems = append(elems, is.Index(i).Interface())
-		}
-	} else {
-		elems = append(elems, in)
-	}
-	return c.Handle(elems)
 }
 
 func (c HandleContext) Handle(requests []interface{}) (interface{}, error) {
@@ -64,7 +52,7 @@ func (c HandleContext) Handle(requests []interface{}) (interface{}, error) {
 			detailsUuid = c.RequestID(request)
 		}
 
-		if c.WaitFn != nil {
+		if c.WaitFn != nil && err == nil {
 			e.SetMessage(fmt.Sprintf("%s: %s", msg, c.WaitMsg))
 			details, err = c.WaitFn(detailsUuid, c.WaitMsg, err)
 		}
@@ -74,7 +62,11 @@ func (c HandleContext) Handle(requests []interface{}) (interface{}, error) {
 		} else {
 			e.SetMessage(fmt.Sprintf("%s: done", msg))
 			if c.ResultUUID != nil {
-				e.SetDetails(detailsUuid, "UUID: ")
+				var prefix = "UUID"
+				if c.ResultPrefix != "" {
+					prefix = c.ResultPrefix
+				}
+				e.SetDetails(detailsUuid, fmt.Sprintf("%s: ", prefix))
 			}
 			mu.Lock()
 			numOk++

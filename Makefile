@@ -18,4 +18,6 @@ fmtcheck:
 vet:
 	go vet $(ALL_FILES)
 
+all: build test fmt vet
+
 .PHONY: build test fmt fmtcheck vet

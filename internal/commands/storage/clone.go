@@ -29,7 +29,7 @@ func CloneCommand(service service.Storage) commands.Command {
 
 var DefaultCloneParams = &cloneParams{
 	CloneStorageRequest: request.CloneStorageRequest{
-		Tier: "hdd",
+		Tier: upcloud.StorageTierHDD,
 	},
 }
 
@@ -54,9 +54,9 @@ func (s *cloneCommand) MakeExecuteCommand() func(args []string) (interface{}, er
 		}
 
 		return Request{
-			BuildRequest: func(storage *upcloud.Storage) (interface{}, error) {
+			BuildRequest: func(uuid string) (interface{}, error) {
 				req := s.params.CloneStorageRequest
-				req.UUID = storage.UUID
+				req.UUID = uuid
 				return &req, nil
 			},
 			Service: s.service,

@@ -70,7 +70,7 @@ func TestServerHumanOutput(t *testing.T) {
 						{
 							Address:  "10.6.3.95",
 							Family:   "IPv4",
-							Floating: upcloud.False,
+							Floating: upcloud.True,
 						},
 					},
 					MAC:      "de:ff:ff:ff:ed:85",
@@ -138,7 +138,7 @@ func TestServerHumanOutput(t *testing.T) {
     Zone:     fi-hel1                              
     State:    started                              
     Tags:     DEV,Ubuntu                           
-    License:  0                                    
+    Licence:  0                                    
     Metadata: yes                                  
     Timezone: UTC                                  
     Host ID:  7653311107                           
@@ -162,7 +162,7 @@ func TestServerHumanOutput(t *testing.T) {
        1   public    037fcf2a-6745-45dd-   MAC:  de:ff:ff:ff:66:89                                    
                      867e-f9479ea8c044     IPv4: 94.237.0.207                                         
        2   utility   03000000-0000-4000-   MAC:  de:ff:ff:ff:ed:85                                    
-                     8045-000000000000     IPv4: 10.6.3.95                                            
+                     8045-000000000000     (f) IPv4: 10.6.3.95                                        
        3   public    03c93fd8-cc60-4849-   MAC:  de:ff:ff:ff:cc:20                                    
                      91b8-6e404b228e2a     IPv6: xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx         
       
@@ -182,7 +182,7 @@ func TestServerHumanOutput(t *testing.T) {
 `
 
 	buf := new(bytes.Buffer)
-	command := ShowCommand()
+	command := ShowCommand(&MockServerService{}, &MockFirewallService{})
 	err := command.HandleOutput(buf, &commandResponseHolder{s, firewallRules})
 
 	assert.Nil(t, err)
