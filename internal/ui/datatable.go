@@ -6,6 +6,7 @@ import (
 	"math"
 	"os"
 	"os/exec"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -246,6 +247,9 @@ func (s *DataTable) AppendRows(rows []table.Row) {
 }
 
 func TerminalHeight() (int, error) {
+	if runtime.GOOS == "windows" {
+		return math.MaxInt16, nil
+	}
 	cmd := exec.Command("stty", "size")
 	cmd.Stdin = os.Stdin
 	out, err := cmd.Output()
