@@ -113,7 +113,10 @@ nextChild:
 				}
 				valueNode := &yaml.Node{}
 				s.applyYamlScalarValue(valueNode, flag.Value.Type(), flag.DefValue)
-				if valueNode.Kind == 0 && strings.HasSuffix(flag.Value.Type(), "Slice") {
+				if valueNode.Kind == 0 &&
+					(strings.HasSuffix(flag.Value.Type(), "Slice") ||
+						strings.HasSuffix(flag.Value.Type(), "Array")) {
+
 					styp := flag.Value.Type()[0 : len(flag.Value.Type())-5]
 					valueNode.Kind = yaml.SequenceNode
 					valueNode.Style = yaml.FlowStyle
