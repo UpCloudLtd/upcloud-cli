@@ -59,7 +59,7 @@ func BuildCommands(mainCommand commands.Command, mainConfig *config.Config) {
 	commands.BuildCommand(ip_address.ShowCommand(svc), ipAddressCommand, cfgFn())
 	commands.BuildCommand(ip_address.ModifyCommand(svc), ipAddressCommand, cfgFn())
 	commands.BuildCommand(ip_address.AssignCommand(svc, svc), ipAddressCommand, cfgFn())
-	commands.BuildCommand(ip_address.ReleaseCommand(svc), ipAddressCommand, cfgFn())
+	commands.BuildCommand(ip_address.RemoveCommand(svc), ipAddressCommand, cfgFn())
 
 	// Networks
 	networkCommand := commands.BuildCommand(network.NetworkCommand(), mainCommand, cfgFn())

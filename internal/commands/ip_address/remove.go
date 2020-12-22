@@ -7,24 +7,24 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 )
 
-type releaseCommand struct {
+type removeCommand struct {
 	*commands.BaseCommand
 	service service.IpAddress
 }
 
-func ReleaseCommand(service service.IpAddress) commands.Command {
-	return &releaseCommand{
-		BaseCommand: commands.New("release", "Release an ip address"),
+func RemoveCommand(service service.IpAddress) commands.Command {
+	return &removeCommand{
+		BaseCommand: commands.New("remove", "Removes an ip address"),
 		service:     service,
 	}
 }
 
-func (s *releaseCommand) InitCommand() {
+func (s *removeCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
 	s.ArgCompletion(GetArgCompFn(s.service))
 }
 
-func (s *releaseCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
+func (s *removeCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 		return Request{
 			BuildRequest: func(address string) interface{} {
@@ -35,7 +35,7 @@ func (s *releaseCommand) MakeExecuteCommand() func(args []string) (interface{}, 
 				RequestID:     func(in interface{}) string { return in.(*request.ReleaseIPAddressRequest).IPAddress },
 				MaxActions:    maxIpAddressActions,
 				InteractiveUI: s.Config().InteractiveUI(),
-				ActionMsg:     "Releasing IP Address",
+				ActionMsg:     "Removing IP Address",
 				Action: func(req interface{}) (interface{}, error) {
 					return nil, s.service.ReleaseIPAddress(req.(*request.ReleaseIPAddressRequest))
 				},
