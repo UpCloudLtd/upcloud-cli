@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestReleaseCommand(t *testing.T) {
+func TestRemoveCommand(t *testing.T) {
 	methodName := "ReleaseIPAddress"
 
 	ip := upcloud.IPAddress{
@@ -45,7 +45,7 @@ func TestReleaseCommand(t *testing.T) {
 			mips.On(methodName, &test.expected).Return(nil)
 			mips.On("GetIPAddresses").Return(&upcloud.IPAddresses{IPAddresses: []upcloud.IPAddress{ip}}, nil)
 
-			c := commands.BuildCommand(ReleaseCommand(&mips), nil, config.New(viper.New()))
+			c := commands.BuildCommand(RemoveCommand(&mips), nil, config.New(viper.New()))
 
 			_, err := c.MakeExecuteCommand()(test.args)
 
