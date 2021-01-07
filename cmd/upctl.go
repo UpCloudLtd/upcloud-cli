@@ -207,7 +207,7 @@ func (s *mainCommand) InitCommand() {
 	flags.String("config", "", "Config file")
 	flags.String("output", "human", "Output format (supported: json, yaml and human")
 	flags.String("colours", "auto", "Use terminal colours (supported: auto, true, false)")
-	flags.Duration("client-timeout", 600*time.Second, "Timeout for requests")
+	flags.Duration("client-timeout", 300*time.Second, "Timeout for requests")
 	s.AddPersistentFlags(flags)
 
 	s.SetConfigLoader(func(config *config.Config, loadContext int) {
