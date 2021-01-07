@@ -6,7 +6,6 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands/ip_address"
 	"github.com/UpCloudLtd/cli/internal/commands/network"
 	"github.com/UpCloudLtd/cli/internal/commands/network_interface"
-	"github.com/UpCloudLtd/cli/internal/commands/plan"
 	"github.com/UpCloudLtd/cli/internal/commands/router"
 	"github.com/UpCloudLtd/cli/internal/commands/server"
 	"github.com/UpCloudLtd/cli/internal/commands/storage"
@@ -18,13 +17,10 @@ func BuildCommands(mainCommand commands.Command, mainConfig *config.Config) {
 	cfgFn := func() *config.Config { return config.New(mainConfig.Viper()) }
 	svc := upapi.Service(cfgFn())
 
-	// Plans
-	planCommand := commands.BuildCommand(plan.PlanCommand(), mainCommand, cfgFn())
-	commands.BuildCommand(plan.ListCommand(), planCommand, cfgFn())
-
 	// Servers
 	serverCommand := commands.BuildCommand(server.ServerCommand(), mainCommand, cfgFn())
 	commands.BuildCommand(server.ListCommand(svc), serverCommand, cfgFn())
+	commands.BuildCommand(server.PlanListCommand(), serverCommand, cfgFn())
 	commands.BuildCommand(server.ShowCommand(svc, svc), serverCommand, cfgFn())
 	commands.BuildCommand(server.StartCommand(svc), serverCommand, cfgFn())
 	commands.BuildCommand(server.RestartCommand(svc), serverCommand, cfgFn())
