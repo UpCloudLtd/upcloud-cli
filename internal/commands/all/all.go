@@ -25,7 +25,6 @@ func BuildCommands(mainCommand commands.Command, mainConfig *config.Config) {
 	// Servers
 	serverCommand := commands.BuildCommand(server.ServerCommand(), mainCommand, cfgFn())
 	commands.BuildCommand(server.ListCommand(svc), serverCommand, cfgFn())
-	commands.BuildCommand(server.ConfigurationsCommand(svc), serverCommand, cfgFn())
 	commands.BuildCommand(server.ShowCommand(svc, svc), serverCommand, cfgFn())
 	commands.BuildCommand(server.StartCommand(svc), serverCommand, cfgFn())
 	commands.BuildCommand(server.RestartCommand(svc), serverCommand, cfgFn())
