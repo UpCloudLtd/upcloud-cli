@@ -1,4 +1,4 @@
-package plan
+package server
 
 import (
 	"fmt"
@@ -14,20 +14,20 @@ import (
 	"github.com/UpCloudLtd/cli/internal/upapi"
 )
 
-func ListCommand() commands.Command {
-	return &listCommand{
-		BaseCommand: commands.New("list", "List Server Plans"),
+func PlanListCommand() commands.Command {
+	return &planListCommand{
+		BaseCommand: commands.New("plans", "List Server Plans"),
 	}
 }
 
-type listCommand struct {
+type planListCommand struct {
 	*commands.BaseCommand
 	header         table.Row
 	columnKeys     []string
 	visibleColumns []string
 }
 
-func (s *listCommand) InitCommand() {
+func (s *planListCommand) InitCommand() {
 	s.header = table.Row{"Name", "Cores", "Memory (MiB)", "Storage (GiB)", "Storage tier", "Traffic out / month (MiB)"}
 	s.columnKeys = []string{"name", "cores", "memory", "storage", "storage_tier", "traffic"}
 	s.visibleColumns = []string{"name", "cores", "memory", "storage", "storage_tier", "traffic"}
@@ -36,7 +36,7 @@ func (s *listCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
-func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
+func (s *planListCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 		service := upapi.Service(s.Config())
 		plans, err := service.GetPlans()
@@ -47,7 +47,7 @@ func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 	}
 }
 
-func (s *listCommand) HandleOutput(writer io.Writer, out interface{}) error {
+func (s *planListCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	plans := out.(*upcloud.Plans)
 	t := ui.NewDataTable(s.columnKeys...)
 	t.SetHeader(s.header)

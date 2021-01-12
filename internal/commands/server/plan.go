@@ -1,4 +1,4 @@
-package plan
+package server
 
 import "github.com/UpCloudLtd/cli/internal/commands"
 
