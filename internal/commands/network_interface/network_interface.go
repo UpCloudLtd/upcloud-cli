@@ -9,7 +9,7 @@ import (
 const maxNetworkInterfaceActions = 10
 
 func NetworkInterfaceCommand() commands.Command {
-	return &networkInterfaceCommand{commands.New("network-interface", "Manage network interface")}
+	return &networkInterfaceCommand{commands.New("network", "Manage network interface")}
 }
 
 type networkInterfaceCommand struct {

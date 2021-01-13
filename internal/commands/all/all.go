@@ -8,6 +8,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands/network_interface"
 	"github.com/UpCloudLtd/cli/internal/commands/router"
 	"github.com/UpCloudLtd/cli/internal/commands/server"
+	"github.com/UpCloudLtd/cli/internal/commands/server_storage"
 	"github.com/UpCloudLtd/cli/internal/commands/storage"
 	"github.com/UpCloudLtd/cli/internal/config"
 	"github.com/UpCloudLtd/cli/internal/upapi"
@@ -29,9 +30,12 @@ func BuildCommands(mainCommand commands.Command, mainConfig *config.Config) {
 	commands.BuildCommand(server.ModifyCommand(svc), serverCommand, cfgFn())
 	commands.BuildCommand(server.LoadCommand(svc, svc), serverCommand, cfgFn())
 	commands.BuildCommand(server.EjectCommand(svc, svc), serverCommand, cfgFn())
-	commands.BuildCommand(server.AttachCommand(svc, svc), serverCommand, cfgFn())
-	commands.BuildCommand(server.DetachCommand(svc, svc), serverCommand, cfgFn())
 	commands.BuildCommand(server.DeleteCommand(svc), serverCommand, cfgFn())
+
+	// Server storage operations
+	serverStorageCommand := commands.BuildCommand(server_storage.ServerStorageCommand(), serverCommand, cfgFn())
+	commands.BuildCommand(server_storage.AttachCommand(svc, svc), serverStorageCommand, cfgFn())
+	commands.BuildCommand(server_storage.DetachCommand(svc, svc), serverStorageCommand, cfgFn())
 
 	// Storages
 	storageCommand := commands.BuildCommand(storage.StorageCommand(), mainCommand, cfgFn())
