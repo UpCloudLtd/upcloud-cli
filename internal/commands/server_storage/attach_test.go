@@ -2,8 +2,8 @@ package server_storage
 
 import (
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/commands/storage"
 	"github.com/UpCloudLtd/cli/internal/commands/server"
+	"github.com/UpCloudLtd/cli/internal/commands/storage"
 	"github.com/UpCloudLtd/cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"

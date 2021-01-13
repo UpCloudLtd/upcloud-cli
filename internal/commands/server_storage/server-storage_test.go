@@ -126,6 +126,7 @@ func (m *MockStorageService) WaitForStorageImportCompletion(r *request.WaitForSt
 func (m *MockStorageService) DeleteStorage(r *request.DeleteStorageRequest) error {
 	return m.Called(r).Error(0)
 }
+
 var (
 	Title1 = "mock-storage-title1"
 	Title2 = "mock-storage-title2"
