@@ -24,7 +24,7 @@ type attachParams struct {
 
 func AttachCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
 	return &attachCommand{
-		BaseCommand: commands.New("attach-storage", "Attaches a storage as a device to a server"),
+		BaseCommand: commands.New("attach", "Attaches a storage as a device to a server"),
 		serverSvc:   serverSvc,
 		storageSvc:  storageSvc,
 	}

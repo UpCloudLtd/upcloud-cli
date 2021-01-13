@@ -23,7 +23,7 @@ type detachParams struct {
 
 func DetachCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
 	return &detachCommand{
-		BaseCommand: commands.New("detach-storage", "Detaches a storage resource from a server"),
+		BaseCommand: commands.New("detach", "Detaches a storage resource from a server"),
 		serverSvc:   serverSvc,
 		storageSvc:  storageSvc,
 	}
