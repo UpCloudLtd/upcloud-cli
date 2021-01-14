@@ -63,7 +63,7 @@ func TestDetachCommand(t *testing.T) {
 			server.CachedServers = nil
 			storage.CachedStorages = nil
 
-			mServerService := MockServerService{}
+			mServerService := server.MockServerService{}
 			mServerService.On("GetServers", mock.Anything).Return(servers, nil)
 
 			mStorageService := MockStorageService{}
