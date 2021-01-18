@@ -180,9 +180,9 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 				}
 				var floating string
 				if addr.Floating.Bool() {
-					floating = "(f) "
+					floating = " (f)"
 				}
-				addrs = append(addrs, floating+prefix+ui.DefaultAddressColours.Sprint(addr.Address))
+				addrs = append(addrs, prefix+ui.DefaultAddressColours.Sprint(addr.Address)+floating)
 			}
 			tNics.AppendRow(table.Row{
 				nic.Index,
