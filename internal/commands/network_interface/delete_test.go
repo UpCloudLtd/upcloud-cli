@@ -52,7 +52,7 @@ func TestDeleteCommand(t *testing.T) {
 			mns := MockNetworkService{}
 			mns.On(methodName, &test.req).Return(nil)
 
-			mss := MockServerService{}
+			mss := server.MockServerService{}
 			mss.On("GetServers").Return(&servers, nil)
 			c := commands.BuildCommand(DeleteCommand(&mns, &mss), nil, config.New(viper.New()))
 			c.SetFlags(test.flags)

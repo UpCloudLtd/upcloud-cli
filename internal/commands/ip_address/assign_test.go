@@ -2,6 +2,7 @@ package ip_address
 
 import (
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/commands/server"
 	"github.com/UpCloudLtd/cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
@@ -64,7 +65,7 @@ func TestAssignCommand(t *testing.T) {
 			cachedIPs = nil
 			mips := MockIpAddressService{}
 			mips.On(methodName, &test.expected).Return(&ip, nil)
-			mss := MockServerService{}
+			mss := server.MockServerService{}
 			mss.On("GetServers").Return(&servers, nil)
 
 			c := commands.BuildCommand(AssignCommand(&mss, &mips), nil, config.New(viper.New()))

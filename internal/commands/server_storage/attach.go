@@ -1,8 +1,9 @@
-package server
+package server_storage
 
 import (
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/commands/server"
 	"github.com/UpCloudLtd/cli/internal/commands/storage"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
@@ -23,7 +24,7 @@ type attachParams struct {
 
 func AttachCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
 	return &attachCommand{
-		BaseCommand: commands.New("attach-storage", "Attaches a storage as a device to a server"),
+		BaseCommand: commands.New("attach", "Attaches a storage as a device to a server"),
 		serverSvc:   serverSvc,
 		storageSvc:  storageSvc,
 	}
@@ -39,7 +40,7 @@ var DefaultAttachParams = &attachParams{
 
 func (s *attachCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetArgCompFn(s.serverSvc))
+	s.ArgCompletion(server.GetArgCompFn(s.serverSvc))
 	s.params = attachParams{AttachStorageRequest: request.AttachStorageRequest{}}
 
 	flagSet := &pflag.FlagSet{}
@@ -64,7 +65,7 @@ func (s *attachCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 		}
 		s.params.StorageUUID = strg.UUID
 
-		return Request{
+		return server.Request{
 			BuildRequest: func(uuid string) interface{} {
 				req := s.params.AttachStorageRequest
 				req.ServerUUID = uuid

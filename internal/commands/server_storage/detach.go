@@ -1,8 +1,9 @@
-package server
+package server_storage
 
 import (
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/commands/server"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
@@ -22,7 +23,7 @@ type detachParams struct {
 
 func DetachCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
 	return &detachCommand{
-		BaseCommand: commands.New("detach-storage", "Detaches a storage resource from a server"),
+		BaseCommand: commands.New("detach", "Detaches a storage resource from a server"),
 		serverSvc:   serverSvc,
 		storageSvc:  storageSvc,
 	}
@@ -34,7 +35,7 @@ var DefaultDetachParams = &detachParams{
 
 func (s *detachCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetArgCompFn(s.serverSvc))
+	s.ArgCompletion(server.GetArgCompFn(s.serverSvc))
 	s.params = detachParams{DetachStorageRequest: request.DetachStorageRequest{}}
 
 	flagSet := &pflag.FlagSet{}
@@ -50,7 +51,7 @@ func (s *detachCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 			return nil, fmt.Errorf("address is required")
 		}
 
-		return Request{
+		return server.Request{
 			BuildRequest: func(uuid string) interface{} {
 				req := s.params.DetachStorageRequest
 				req.ServerUUID = uuid

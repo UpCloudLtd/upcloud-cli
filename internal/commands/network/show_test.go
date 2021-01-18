@@ -3,6 +3,7 @@ package network
 import (
 	"bytes"
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/commands/server"
 	"github.com/UpCloudLtd/cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/spf13/viper"
@@ -101,7 +102,7 @@ func TestShowCommand(t *testing.T) {
 	cachedNetworks = nil
 	mns := MockNetworkService{}
 	mns.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{network}}, nil)
-	mss := MockServerService{}
+	mss := server.MockServerService{}
 	mss.On("GetServers").Return(&upcloud.Servers{Servers: servers}, nil)
 
 	command := commands.BuildCommand(ShowCommand(&mns, &mss), nil, config.New(viper.New()))

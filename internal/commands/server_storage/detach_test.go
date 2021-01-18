@@ -1,7 +1,8 @@
-package server
+package server_storage
 
 import (
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/commands/server"
 	"github.com/UpCloudLtd/cli/internal/commands/storage"
 	"github.com/UpCloudLtd/cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
@@ -59,10 +60,10 @@ func TestDetachCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			CachedServers = nil
+			server.CachedServers = nil
 			storage.CachedStorages = nil
 
-			mServerService := MockServerService{}
+			mServerService := server.MockServerService{}
 			mServerService.On("GetServers", mock.Anything).Return(servers, nil)
 
 			mStorageService := MockStorageService{}
