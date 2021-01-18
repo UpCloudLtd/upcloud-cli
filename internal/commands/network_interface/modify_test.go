@@ -67,7 +67,7 @@ func TestModifyCommand(t *testing.T) {
 			mns.On("GetNetworks").Return(&networks, nil)
 			mns.On(methodName, &test.req).Return(&upcloud.Interface{}, nil)
 
-			mss := MockServerService{}
+			mss := server.MockServerService{}
 			mss.On("GetServers").Return(&servers, nil)
 			c := commands.BuildCommand(ModifyCommand(&mns, &mss), nil, config.New(viper.New()))
 			c.SetFlags(test.args)

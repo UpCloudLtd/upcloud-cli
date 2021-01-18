@@ -3,6 +3,7 @@ package network
 import (
 	"bytes"
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/commands/server"
 	"github.com/UpCloudLtd/cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/spf13/viper"
@@ -76,32 +77,32 @@ func TestShowCommand(t *testing.T) {
 		},
 	}
 
-	expected := `  
+	expected := `
   Common
-    UUID:   ce6a9934-c0c6-4d84-9ad4-0611f5b95e79 
-    Name:   test-network                         
-    Router: 79c0ad83-ac84-44f3-a2f8-06cbd524ee8c 
-    Type:   utility                              
-    Zone:   uk-lon1                              
-  
+    UUID:   ce6a9934-c0c6-4d84-9ad4-0611f5b95e79
+    Name:   test-network
+    Router: 79c0ad83-ac84-44f3-a2f8-06cbd524ee8c
+    Type:   utility
+    Zone:   uk-lon1
+
   IP Networks:
-     Address      Family   DHCP   DHCP Def Router   DHCP DNS              
+     Address      Family   DHCP   DHCP Def Router   DHCP DNS
     ──────────── ──────── ────── ───────────────── ───────────────────────
-     196.12.0.1   IPv4     yes    yes               196.12.0.3 196.12.0.4 
-     196.15.0.1   IPv4     yes    no                196.15.0.3 196.15.0.4 
-  
+     196.12.0.1   IPv4     yes    yes               196.12.0.3 196.12.0.4
+     196.15.0.1   IPv4     yes    no                196.15.0.3 196.15.0.4
+
   Servers:
-    
-     UUID                                   Title     Hostname              State   
+
+     UUID                                   Title     Hostname              State
     ────────────────────────────────────── ───────── ───────────────────── ─────────
-     0077fa3d-32db-4b09-9f5f-30d9e9afb568   server1   server1.example.com   started 
-     0077fa3d-32db-4b09-9f5f-30d9e9afb569   server2   server2.example.com   stopped 
+     0077fa3d-32db-4b09-9f5f-30d9e9afb568   server1   server1.example.com   started
+     0077fa3d-32db-4b09-9f5f-30d9e9afb569   server2   server2.example.com   stopped
 `
 
 	cachedNetworks = nil
 	mns := MockNetworkService{}
 	mns.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{network}}, nil)
-	mss := MockServerService{}
+	mss := server.MockServerService{}
 	mss.On("GetServers").Return(&upcloud.Servers{Servers: servers}, nil)
 
 	command := commands.BuildCommand(ShowCommand(&mns, &mss), nil, config.New(viper.New()))
