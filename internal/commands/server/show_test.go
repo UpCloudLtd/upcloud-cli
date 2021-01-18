@@ -162,7 +162,7 @@ func TestServerHumanOutput(t *testing.T) {
        1   public    037fcf2a-6745-45dd-   MAC:  de:ff:ff:ff:66:89                                    
                      867e-f9479ea8c044     IPv4: 94.237.0.207                                         
        2   utility   03000000-0000-4000-   MAC:  de:ff:ff:ff:ed:85                                    
-                     8045-000000000000     (f) IPv4: 10.6.3.95                                        
+                     8045-000000000000     IPv4: 10.6.3.95 (f)                                        
        3   public    03c93fd8-cc60-4849-   MAC:  de:ff:ff:ff:cc:20                                    
                      91b8-6e404b228e2a     IPv6: xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx         
       
