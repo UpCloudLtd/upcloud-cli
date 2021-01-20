@@ -291,15 +291,7 @@ func TestCreateServer(t *testing.T) {
 				"--title", "title",
 				"--zone", "zone",
 			},
-			error: "hostname, title and zone are required",
-		},
-		{
-			name: "title is missing",
-			args: []string{
-				"--hostname", "hostname",
-				"--zone", "zone",
-			},
-			error: "hostname, title and zone are required",
+			error: "hostname and zone are required",
 		},
 		{
 			name: "zone is missing",
@@ -307,7 +299,7 @@ func TestCreateServer(t *testing.T) {
 				"--title", "title",
 				"--hostname", "hostname",
 			},
-			error: "hostname, title and zone are required",
+			error: "hostname and zone are required",
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
