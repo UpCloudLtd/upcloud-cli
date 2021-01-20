@@ -243,8 +243,12 @@ func (s *createCommand) InitCommand() {
 func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 
-		if s.params.Hostname == "" || s.params.Zone == "" || s.params.Title == "" {
-			return nil, fmt.Errorf("hostname, title and zone are required")
+		if s.params.Hostname == "" || s.params.Zone == "" {
+			return nil, fmt.Errorf("hostname and zone are required")
+		}
+
+		if s.params.Title == "" {
+			s.params.Title = s.params.Hostname
 		}
 
 		if err := s.params.processParams(s.storageSvc); err != nil {
