@@ -40,7 +40,7 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	if account.Credits == 0.0 {
 		credits = "Denied"
 	} else {
-		credits = fmt.Sprintf("%.f$", account.Credits / 100)
+		credits = fmt.Sprintf("%.2f$", account.Credits / 100)
 	}
 
 	layout := ui.ListLayoutDefault
