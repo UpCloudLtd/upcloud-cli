@@ -35,16 +35,25 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	account := out.(*upcloud.Account)
 
+	var credits = "0"
+
+	if account.Credits == 0.0 {
+		credits = "Denied"
+	} else {
+		credits = fmt.Sprintf("%.2f$", account.Credits/100)
+	}
+
 	layout := ui.ListLayoutDefault
 	l := ui.NewListLayout(layout)
 	{
 		dCommon := ui.NewDetailsView()
 		dCommon.AppendRows([]table.Row{
 			{"Username:", account.UserName},
-			{"Credits:", account.Credits},
+			{"Credits:", credits},
 		})
 		l.AppendSection("", dCommon.Render())
 	}
+
 	{
 		dCommon := ui.NewDetailsView()
 		dCommon.SetHeaderWidth(25)

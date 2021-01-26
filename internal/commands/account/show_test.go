@@ -32,7 +32,7 @@ func TestShowCommand(t *testing.T) {
 
 	expected := `  
   Username: opencredo 
-  Credits:  42        
+  Credits:  0.42$     
   
   Resource Limits:
     Cores:                    100 
