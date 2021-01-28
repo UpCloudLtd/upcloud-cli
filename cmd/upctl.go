@@ -36,11 +36,18 @@ type completionCommand struct {
 
 func (s *completionCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		switch args[0] {
-		case "bash":
-			_ = s.Cobra().Root().GenBashCompletion(os.Stdout)
+		if len(args) != 1 {
+			return nil, fmt.Errorf("shell name is requred")
 		}
-		return nil, nil
+		shellName := args[0]
+
+		switch shellName {
+		case "bash":
+			err := s.Cobra().Root().GenBashCompletion(os.Stdout)
+			return nil, err
+		}
+
+		return nil, fmt.Errorf("completion for %s is not supported", shellName)
 	}
 }
 
