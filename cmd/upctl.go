@@ -41,8 +41,7 @@ func (s *completionCommand) MakeExecuteCommand() func(args []string) (interface{
 		}
 		shellName := args[0]
 
-		switch shellName {
-		case "bash":
+		if shellName == "bash" {
 			err := s.Cobra().Root().GenBashCompletion(os.Stdout)
 			return nil, err
 		}

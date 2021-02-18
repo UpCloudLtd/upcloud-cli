@@ -3,6 +3,7 @@ package ui
 import (
 	"fmt"
 	"reflect"
+	"strings"
 	"sync"
 )
 
@@ -11,16 +12,18 @@ type Handler interface {
 }
 
 type HandleContext struct {
-	RequestID     func(interface{}) string
-	ResultUUID    func(interface{}) string
-	ResultPrefix  string
-	MessageFn     func(interface{}) string
-	ActionMsg     string
-	Action        func(interface{}) (interface{}, error)
-	MaxActions    int
-	InteractiveUI bool
-	WaitMsg       string
-	WaitFn        func(uuid string, waitMsg string, err error) (interface{}, error)
+	RequestID       func(interface{}) string
+	ResultUUID      func(interface{}) string
+	ResultPrefix    string
+	ResultExtras    func(interface{}) []string
+	ResultExtraName string
+	MessageFn       func(interface{}) string
+	ActionMsg       string
+	Action          func(interface{}) (interface{}, error)
+	MaxActions      int
+	InteractiveUI   bool
+	WaitMsg         string
+	WaitFn          func(uuid string, waitMsg string, err error) (interface{}, error)
 }
 
 func (c HandleContext) Handle(requests []interface{}) (interface{}, error) {
@@ -52,6 +55,11 @@ func (c HandleContext) Handle(requests []interface{}) (interface{}, error) {
 			detailsUuid = c.RequestID(request)
 		}
 
+		var extras []string
+		if c.ResultExtras != nil && details != nil && !reflect.ValueOf(details).IsNil() {
+			extras = c.ResultExtras(details)
+		}
+
 		if c.WaitFn != nil && err == nil {
 			e.SetMessage(fmt.Sprintf("%s: %s", msg, c.WaitMsg))
 			details, err = c.WaitFn(detailsUuid, c.WaitMsg, err)
@@ -67,6 +75,9 @@ func (c HandleContext) Handle(requests []interface{}) (interface{}, error) {
 					prefix = c.ResultPrefix
 				}
 				e.SetDetails(detailsUuid, fmt.Sprintf("%s: ", prefix))
+			}
+			if c.ResultExtraName != "" && c.ResultExtras != nil {
+				e.SetDetails(strings.Join(extras, ", "), fmt.Sprintf("%s: ", c.ResultExtraName))
 			}
 			mu.Lock()
 			numOk++

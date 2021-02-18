@@ -140,11 +140,12 @@ func handleNetwork(in string) (*upcloud.IPNetwork, error) {
 	}
 
 	if dhcp != "" {
-		if dhcp == "false" {
-			result.DHCP = upcloud.FromBool(false)
-		} else if dhcp == "true" {
+		switch dhcp {
+		case "true":
 			result.DHCP = upcloud.FromBool(true)
-		} else {
+		case "false":
+			result.DHCP = upcloud.FromBool(false)
+		default:
 			return nil, fmt.Errorf("%s is an invalid value for dhcp, it can be true of false", dhcp)
 		}
 	}

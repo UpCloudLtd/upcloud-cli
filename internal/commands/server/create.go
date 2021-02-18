@@ -26,9 +26,10 @@ func CreateCommand(serverSvc service.Server, storageSvc service.Storage) command
 
 var DefaultCreateParams = &createParams{
 	CreateServerRequest: request.CreateServerRequest{
-		VideoModel: "vga",
-		TimeZone:   "UTC",
-		Plan:       "1xCPU-2GB",
+		VideoModel:       "vga",
+		TimeZone:         "UTC",
+		Plan:             "1xCPU-2GB",
+		PasswordDelivery: request.PasswordDeliveryNone,
 	},
 	firewall:       false,
 	metadata:       false,
@@ -283,13 +284,15 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 		}
 
 		return ui.HandleContext{
-			RequestID:     func(in interface{}) string { return in.(*request.CreateServerRequest).Hostname },
-			ResultUUID:    getServerDetailsUuid,
-			InteractiveUI: s.Config().InteractiveUI(),
-			WaitMsg:       "server starting",
-			WaitFn:        WaitForServerFn(s.serverSvc, upcloud.ServerStateStarted, s.Config().ClientTimeout()),
-			MaxActions:    5,
-			ActionMsg:     "Creating server",
+			RequestID:       func(in interface{}) string { return in.(*request.CreateServerRequest).Hostname },
+			ResultUUID:      getServerDetailsUuid,
+			ResultExtras:    getServerDetailsIpAddresses,
+			ResultExtraName: "IP addresses",
+			InteractiveUI:   s.Config().InteractiveUI(),
+			WaitMsg:         "server starting",
+			WaitFn:          WaitForServerFn(s.serverSvc, upcloud.ServerStateStarted, s.Config().ClientTimeout()),
+			MaxActions:      5,
+			ActionMsg:       "Creating server",
 			Action: func(req interface{}) (interface{}, error) {
 				return s.serverSvc.CreateServer(req.(*request.CreateServerRequest))
 			},

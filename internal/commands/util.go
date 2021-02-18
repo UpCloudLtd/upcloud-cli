@@ -74,11 +74,12 @@ func StateColour(state string) text.Colors {
 
 func BoolFromString(b string) (*upcloud.Boolean, error) {
 	var result upcloud.Boolean
-	if b == "true" {
+	switch b {
+	case "true":
 		result = upcloud.FromBool(true)
-	} else if b == "false" {
+	case "false":
 		result = upcloud.FromBool(false)
-	} else {
+	default:
 		return nil, fmt.Errorf("invalid boolean value %s", b)
 	}
 	return &result, nil

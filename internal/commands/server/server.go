@@ -23,7 +23,7 @@ var CachedServers []upcloud.Server
 
 func ServerCommand() commands.Command {
 	return &serverCommand{
-		Command: commands.New("server", "List, show & control servers"),
+		Command: commands.New("server", "Manage servers"),
 	}
 }
 
@@ -111,6 +111,17 @@ var WaitForServerFn = func(svc service.Server, state string, timeout time.Durati
 }
 
 var getServerDetailsUuid = func(in interface{}) string { return in.(*upcloud.ServerDetails).UUID }
+
+var getServerDetailsIpAddresses = func(in interface{}) []string {
+	addresses := []string{}
+	for _, iface := range in.(*upcloud.ServerDetails).Networking.Interfaces {
+		for _, addr := range iface.IPAddresses {
+			addresses = append(addresses, addr.Address)
+		}
+	}
+
+	return addresses
+}
 
 type Request struct {
 	ExactlyOne   bool
