@@ -56,13 +56,13 @@ func (s *listCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	t.SetHeader(s.header)
 
 	for _, ip := range ips.IPAddresses {
-		t.AppendRow(table.Row{
+		t.Append(table.Row{
 			ui.DefaultAddressColours.Sprint(ip.Address),
 			ip.Access,
 			ip.Family,
 			ui.FormatBool(ip.PartOfPlan.Bool()),
 			ip.PTRRecord,
-			ui.DefaultUuidColours.Sprint(ip.ServerUUID),
+			ui.DefaultUUUIDColours.Sprint(ip.ServerUUID),
 			ip.MAC,
 			ui.FormatBool(ip.Floating.Bool()),
 			ip.Zone})

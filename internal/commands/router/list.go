@@ -56,8 +56,8 @@ func (s *listCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	t.SetHeader(s.header)
 
 	for _, r := range routers.Routers {
-		t.AppendRow(table.Row{
-			ui.DefaultUuidColours.Sprint(r.UUID),
+		t.Append(table.Row{
+			ui.DefaultUUUIDColours.Sprint(r.UUID),
 			r.Name,
 			r.Type,
 		})

@@ -65,7 +65,7 @@ func (s *planListCommand) HandleOutput(writer io.Writer, out interface{}) error 
 	})
 
 	for _, plan := range plans.Plans {
-		t.AppendRow(table.Row{
+		t.Append(table.Row{
 			plan.Name,
 			fmt.Sprintf("%d", plan.CoreNumber),
 			fmt.Sprintf("%d", plan.MemoryAmount),

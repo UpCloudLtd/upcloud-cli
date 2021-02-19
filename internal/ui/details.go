@@ -5,7 +5,7 @@ import (
 	"github.com/jedib0t/go-pretty/v6/text"
 )
 
-func StyleDetails(t *table.Table) {
+func styleDetails(t *table.Table) {
 	t.SetStyle(table.Style{
 		Name: "Details",
 		Box: table.BoxStyle{
@@ -47,12 +47,14 @@ func StyleDetails(t *table.Table) {
 	})
 }
 
+// NewDetailsView returns a new output data container for details rendered as a table
 func NewDetailsView() *DetailsView {
 	t := &DetailsView{t: &table.Table{}}
-	StyleDetails(t.t)
+	styleDetails(t.t)
 	return t
 }
 
+// DetailsView is an output data container for details rendered as a table
 type DetailsView struct {
 	t              *table.Table
 	rows           []table.Row
@@ -60,6 +62,7 @@ type DetailsView struct {
 	headerWidth    int
 }
 
+// Render renders a ata container for details as a table
 func (s *DetailsView) Render() string {
 	if len(s.rows) < 1 {
 		return ""
@@ -96,6 +99,7 @@ func (s *DetailsView) Render() string {
 	return s.t.Render()
 }
 
+// SetRowSeparators sets whether Render() outputs separators ascii lines between data rows
 func (s *DetailsView) SetRowSeparators(v bool) {
 	style := s.t.Style()
 	style.Options.SeparateRows = v
@@ -104,6 +108,7 @@ func (s *DetailsView) SetRowSeparators(v bool) {
 	style.Box.MiddleVertical = "│"
 }
 
+// SetRowSpacing sets whether  whether Render() outputs separators empty lines between data rows
 func (s *DetailsView) SetRowSpacing(v bool) {
 	style := s.t.Style()
 	style.Options.SeparateRows = v
@@ -113,20 +118,19 @@ func (s *DetailsView) SetRowSpacing(v bool) {
 	style.Box.MiddleVertical = "│"
 }
 
+// SetRowTransformer sets a method to transform rwos before rendering
 func (s *DetailsView) SetRowTransformer(fn func(row table.Row) table.Row) {
 	s.rowTransformer = fn
 }
 
-func (s *DetailsView) AppendRow(row table.Row) {
-	s.rows = append(s.rows, row)
-}
-
-func (s *DetailsView) AppendRows(rows []table.Row) {
+// Append appends new rows to the DetailsView
+func (s *DetailsView) Append(rows ...table.Row) {
 	for _, row := range rows {
-		s.AppendRow(row)
+		s.rows = append(s.rows, row)
 	}
 }
 
+// SetHeaderWidth sets the width of the header rendered
 func (s *DetailsView) SetHeaderWidth(width int) {
 	s.headerWidth = width
 }

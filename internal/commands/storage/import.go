@@ -193,7 +193,7 @@ func (s *importCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 		handlerCreateStorage := func(idx int, e *ui.LogEntry) {
 			msg := fmt.Sprintf("Creating storage %q", s.importParams.createStorage.Title)
 			e.SetMessage(msg)
-			e.Start()
+			e.StartedNow()
 			details, err := s.service.CreateStorage(&s.importParams.createStorage.CreateStorageRequest)
 			if err != nil {
 				e.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed", msg))
@@ -223,7 +223,7 @@ func (s *importCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 		handlerImport := func(idx int, e *ui.LogEntry) {
 			msg := "Importing to storage"
 			e.SetMessage(msg)
-			e.Start()
+			e.StartedNow()
 			var err error
 			// Import from local file
 			if s.importParams.sourceFile != nil {

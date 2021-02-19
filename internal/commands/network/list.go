@@ -79,8 +79,8 @@ func (s *listCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	t.SetHeader(s.header)
 
 	for _, n := range networks.Networks {
-		t.AppendRow(table.Row{
-			ui.DefaultUuidColours.Sprint(n.UUID),
+		t.Append(table.Row{
+			ui.DefaultUUUIDColours.Sprint(n.UUID),
 			n.Name,
 			n.Router,
 			n.Type,

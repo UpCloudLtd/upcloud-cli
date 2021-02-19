@@ -70,7 +70,7 @@ func (s *listCommand) HandleOutput(writer io.Writer, out interface{}) error {
 			memory := server.MemoryAmount / 1024
 			plan = fmt.Sprintf("Custom (%dxCPU, %dGB)", server.CoreNumber, memory)
 		}
-		t.AppendRow(table.Row{
+		t.Append(table.Row{
 			server.UUID,
 			server.Hostname,
 			plan,

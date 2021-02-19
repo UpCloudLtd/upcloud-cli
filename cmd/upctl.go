@@ -234,7 +234,7 @@ func (s *mainCommand) InitCommand() {
 
 	all.BuildCommands(s, s.Config())
 
-	s.Cobra().SetUsageTemplate(ui.CommandUsage())
+	s.Cobra().SetUsageTemplate(ui.CommandUsageTemplate())
 	s.Cobra().SetUsageFunc(ui.UsageFunc)
 }
 

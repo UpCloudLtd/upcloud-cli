@@ -118,7 +118,7 @@ func (s *listCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	})
 
 	for _, storage := range storages.Storages {
-		t.AppendRow(table.Row{
+		t.Append(table.Row{
 			storage.UUID,
 			storage.Title,
 			storage.Zone,

@@ -108,19 +108,19 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	{
 		dCommon := ui.NewDetailsView()
 		dCommon.SetRowTransformer(rowTransformer)
-		dCommon.AppendRows([]table.Row{
-			{"UUID:", ui.DefaultUuidColours.Sprint(srv.UUID)},
-			{"Title:", srv.Title},
-			{"Hostname:", srv.Hostname},
-			{"Plan:", srv.Plan},
-			{"Zone:", srv.Zone},
-			{"State:", commands.StateColour(srv.State).Sprint(srv.State)},
-			{"Tags:", strings.Join(srv.Tags, ",")},
-			{"Licence:", srv.License},
-			{"Metadata:", srv.Metadata},
-			{"Timezone:", srv.Timezone},
-			{"Host ID:", srv.Host},
-		})
+		dCommon.Append(
+			table.Row{"UUID:", ui.DefaultUUUIDColours.Sprint(srv.UUID)},
+			table.Row{"Title:", srv.Title},
+			table.Row{"Hostname:", srv.Hostname},
+			table.Row{"Plan:", srv.Plan},
+			table.Row{"Zone:", srv.Zone},
+			table.Row{"State:", commands.StateColour(srv.State).Sprint(srv.State)},
+			table.Row{"Tags:", strings.Join(srv.Tags, ",")},
+			table.Row{"Licence:", srv.License},
+			table.Row{"Metadata:", srv.Metadata},
+			table.Row{"Timezone:", srv.Timezone},
+			table.Row{"Host ID:", srv.Host},
+		)
 		l.AppendSection("Common:", dCommon.Render())
 	}
 
@@ -135,8 +135,8 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 			if storage.BootDisk == 1 {
 				flags = append(flags, "B")
 			}
-			tStorage.AppendRow(table.Row{
-				fmt.Sprintf("%s\n(%s)", storage.Title, ui.DefaultUuidColours.Sprint(storage.UUID)),
+			tStorage.Append(table.Row{
+				fmt.Sprintf("%s\n(%s)", storage.Title, ui.DefaultUUUIDColours.Sprint(storage.UUID)),
 				storage.Type,
 				storage.Address,
 				storage.Size,
@@ -153,9 +153,7 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 
 		dBackup := ui.NewDetailsView()
 		dBackup.SetRowTransformer(rowTransformer)
-		dBackup.AppendRows([]table.Row{
-			{"Simple Backup:", simpleBackup},
-		})
+		dBackup.Append(table.Row{"Simple Backup:", simpleBackup})
 		dStorage.AppendSectionWithNote("Devices:", tStorage.Render(), "(Flags: B = bootdisk, P = part of plan)")
 
 		l.AppendSection("Storage:", dBackup.Render(), dStorage.Render())
@@ -189,10 +187,10 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 				}
 				addrs = append(addrs, prefix+ui.DefaultAddressColours.Sprint(addr.Address)+floating)
 			}
-			tNics.AppendRow(table.Row{
+			tNics.Append(table.Row{
 				nic.Index,
 				nic.Type,
-				ui.DefaultUuidColours.Sprint(nic.Network),
+				ui.DefaultUUUIDColours.Sprint(nic.Network),
 				strings.Join(addrs, "\n"),
 				strings.Join(flags, " "),
 			})
@@ -204,7 +202,7 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 		l.AppendSection("Networking:", dNICs.Render())
 
 		fwEnabled := srv.Firewall == "on"
-		dNetwork.AppendRow(table.Row{"Firewall", formatBool(fwEnabled)})
+		dNetwork.Append(table.Row{"Firewall", formatBool(fwEnabled)})
 		if fwEnabled {
 			formatMatch := func(start, stop, portStart, portStop string) string {
 				var sb strings.Builder
@@ -258,7 +256,7 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 				if rule.Action == "drop" {
 					actColour = text.FgHiRed
 				}
-				tFw.AppendRow(table.Row{
+				tFw.Append(table.Row{
 					rule.Position,
 					actColour.Sprint(rule.Action),
 					formatMatch(
@@ -286,13 +284,13 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	// Remote access
 	{
 		dRemote := ui.NewDetailsView()
-		dRemote.AppendRow(table.Row{"Enabled", formatBool(srv.RemoteAccessEnabled.Bool())})
+		dRemote.Append(table.Row{"Enabled", formatBool(srv.RemoteAccessEnabled.Bool())})
 		if srv.RemoteAccessEnabled.Bool() {
-			dRemote.AppendRows([]table.Row{
-				{"Type:", srv.RemoteAccessType},
-				{"Address:", fmt.Sprintf("%s:%d", srv.RemoteAccessHost, srv.RemoteAccessPort)},
-				{"Password:", srv.RemoteAccessPassword},
-			})
+			dRemote.Append(
+				table.Row{"Type:", srv.RemoteAccessType},
+				table.Row{"Address:", fmt.Sprintf("%s:%d", srv.RemoteAccessHost, srv.RemoteAccessPort)},
+				table.Row{"Password:", srv.RemoteAccessPassword},
+			)
 		}
 		l.AppendSection("Remote Access:", dRemote.Render())
 	}

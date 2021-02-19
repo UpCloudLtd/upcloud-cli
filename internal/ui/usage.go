@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	CommandUsageLineLength = 100
+	wrappingLineLength = 100
 )
 
 var templateFuncs = template.FuncMap{
@@ -24,7 +24,7 @@ var templateFuncs = template.FuncMap{
 
 func formatFlags(fs *pflag.FlagSet) string {
 	t := NewDataTable("flag", "usage")
-	t.SetStyle(StyleFlagsTable())
+	t.setStyle(styleFlagsTable())
 	t.SetHeader(nil)
 	fs.VisitAll(func(flag *pflag.Flag) {
 		if flag.Name == "help" {
@@ -35,7 +35,7 @@ func formatFlags(fs *pflag.FlagSet) string {
 			flagText.WriteString(fmt.Sprintf("-%s, ", flag.Shorthand))
 		}
 		flagText.WriteString(fmt.Sprintf("--%s %s", flag.Name, flag.Value.Type()))
-		flagUsage.WriteString(text.WrapSoft(flag.Usage, CommandUsageLineLength))
+		flagUsage.WriteString(text.WrapSoft(flag.Usage, wrappingLineLength))
 		def := flag.DefValue
 		if strings.HasSuffix(flag.Value.Type(), "Slice") {
 			def = strings.TrimPrefix(def, "[")
@@ -44,7 +44,7 @@ func formatFlags(fs *pflag.FlagSet) string {
 		if def != "" {
 			flagUsage.WriteString(fmt.Sprintf("\nDefault: %s", def))
 		}
-		t.AppendRow(table.Row{flagText.String(), flagUsage.String()})
+		t.Append(table.Row{flagText.String(), flagUsage.String()})
 	})
 	return t.Render()
 }
@@ -53,12 +53,14 @@ func formatFlags(fs *pflag.FlagSet) string {
 func trimRightSpace(s string) string {
 	return strings.TrimRightFunc(s, unicode.IsSpace)
 }
+
 func rpad(s string, padding int) string {
-	template := fmt.Sprintf("%%-%ds", padding)
-	return fmt.Sprintf(template, s)
+	padTemplate := fmt.Sprintf("%%-%ds", padding)
+	return fmt.Sprintf(padTemplate, s)
 }
 
-func CommandUsage() string {
+// CommandUsageTemplate returns the template for usage
+func CommandUsageTemplate() string {
 	return `Usage:{{if .Runnable}}
 {{.UseLine}}{{end}}{{if .HasAvailableSubCommands}}
 {{.CommandPath}} [command]{{end}}{{if gt (len .Aliases) 0}}
@@ -85,7 +87,7 @@ Use "{{.CommandPath}} [command] --help" for more information about a command.{{e
 `
 }
 
-// Used to override cobra's default usage func to get some more stylistic control
+// UsageFunc is used to override cobra's default usage func to get some more stylistic control
 func UsageFunc(cmd *cobra.Command) error {
 	t := template.New("top")
 	t.Funcs(templateFuncs)

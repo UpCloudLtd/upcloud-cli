@@ -50,26 +50,26 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	l := ui.NewListLayout(layout)
 	{
 		dCommon := ui.NewDetailsView()
-		dCommon.AppendRows([]table.Row{
-			{"Username:", account.UserName},
-			{"Credits:", credits},
-		})
+		dCommon.Append(
+			table.Row{"Username:", account.UserName},
+			table.Row{"Credits:", credits},
+		)
 		l.AppendSection("", dCommon.Render())
 	}
 
 	{
 		dCommon := ui.NewDetailsView()
 		dCommon.SetHeaderWidth(25)
-		dCommon.AppendRows([]table.Row{
-			{"Cores:", account.ResourceLimits.Cores},
-			{"Detached Floating IPs:", account.ResourceLimits.DetachedFloatingIps},
-			{"Memory:", account.ResourceLimits.Memory},
-			{"Networks:", account.ResourceLimits.Networks},
-			{"Public IPv4:", account.ResourceLimits.PublicIPv4},
-			{"Public IPv6:", account.ResourceLimits.PublicIPv6},
-			{"Storage HDD:", account.ResourceLimits.StorageHDD},
-			{"Storage SSD:", account.ResourceLimits.StorageSSD},
-		})
+		dCommon.Append(
+			table.Row{"Cores:", account.ResourceLimits.Cores},
+			table.Row{"Detached Floating IPs:", account.ResourceLimits.DetachedFloatingIps},
+			table.Row{"Memory:", account.ResourceLimits.Memory},
+			table.Row{"Networks:", account.ResourceLimits.Networks},
+			table.Row{"Public IPv4:", account.ResourceLimits.PublicIPv4},
+			table.Row{"Public IPv6:", account.ResourceLimits.PublicIPv6},
+			table.Row{"Storage HDD:", account.ResourceLimits.StorageHDD},
+			table.Row{"Storage SSD:", account.ResourceLimits.StorageSSD},
+		)
 		l.AppendSection("Resource Limits:", dCommon.Render())
 	}
 	_, _ = fmt.Fprintln(writer, l.Render())

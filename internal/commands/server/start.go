@@ -15,7 +15,7 @@ import (
 // StartCommand creates the "server start" command
 func StartCommand(service service.Server) commands.Command {
 	return &startCommand{
-		BaseCommand: commands.New("start", "Start a server"),
+		BaseCommand: commands.New("start", "StartedNow a server"),
 		service:     service,
 	}
 }
@@ -43,7 +43,7 @@ func (s *startCommand) InitCommand() {
 
 	flags := &pflag.FlagSet{}
 	flags.IntVar(&s.params.AvoidHost, "avoid-host", defaultStartParams.AvoidHost, "Avoid specific host when starting a server")
-	flags.IntVar(&s.params.Host, "host", defaultStartParams.Host, "Start server on a specific host. Note that this is generally available for private clouds only")
+	flags.IntVar(&s.params.Host, "host", defaultStartParams.Host, "StartedNow server on a specific host. Note that this is generally available for private clouds only")
 	flags.IntVar(&s.params.timeout, "timeout", defaultStartParams.timeout, "Stop timeout in seconds\nAvailable: 1-600")
 	s.AddFlags(flags)
 }

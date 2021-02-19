@@ -51,17 +51,17 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	l := ui.NewListLayout(layout)
 	{
 		dCommon := ui.NewDetailsView()
-		dCommon.AppendRows([]table.Row{
-			{"Address:", ui.DefaultAddressColours.Sprint(ip.Address)},
-			{"Access:", ip.Access},
-			{"Family:", ip.Family},
-			{"Part of Plan:", ui.FormatBool(ip.PartOfPlan.Bool())},
-			{"PTR Record:", ip.PTRRecord},
-			{"Server UUID:", ui.DefaultUuidColours.Sprint(ip.ServerUUID)},
-			{"MAC:", ip.MAC},
-			{"Floating:", ui.FormatBool(ip.Floating.Bool())},
-			{"Zone:", ip.Zone},
-		})
+		dCommon.Append(
+			table.Row{"Address:", ui.DefaultAddressColours.Sprint(ip.Address)},
+			table.Row{"Access:", ip.Access},
+			table.Row{"Family:", ip.Family},
+			table.Row{"Part of Plan:", ui.FormatBool(ip.PartOfPlan.Bool())},
+			table.Row{"PTR Record:", ip.PTRRecord},
+			table.Row{"Server UUID:", ui.DefaultUUUIDColours.Sprint(ip.ServerUUID)},
+			table.Row{"MAC:", ip.MAC},
+			table.Row{"Floating:", ui.FormatBool(ip.Floating.Bool())},
+			table.Row{"Zone:", ip.Zone},
+		)
 		l.AppendSection("", dCommon.Render())
 	}
 	_, _ = fmt.Fprintln(writer, l.Render())

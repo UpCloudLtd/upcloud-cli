@@ -122,9 +122,9 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 			}
 		}
 		if v, ok := storageByUUID[uuid]; ok {
-			return fmt.Sprintf("%s (%s)", v.Title, ui.DefaultUuidColours.Sprint(uuid))
+			return fmt.Sprintf("%s (%s)", v.Title, ui.DefaultUUUIDColours.Sprint(uuid))
 		}
-		return ui.DefaultUuidColours.Sprint(uuid)
+		return ui.DefaultUUUIDColours.Sprint(uuid)
 	}
 	rowTransformer := func(row table.Row) table.Row {
 		if v, ok := row[len(row)-1].(upcloud.Boolean); ok {
@@ -147,18 +147,18 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	{
 		dCommon := ui.NewDetailsView()
 		dCommon.SetRowTransformer(rowTransformer)
-		dCommon.AppendRows([]table.Row{
-			{"UUID:", ui.DefaultUuidColours.Sprint(storage.UUID)},
-			{"Title:", storage.Title},
-			{"Zone:", storage.Zone},
-			{"State:", storageStateColor(storage.State).Sprint(storage.State)},
-			{"Size (GiB):", storage.Size},
-			{"Type:", storage.Type},
-			{"Tier:", storage.Tier},
-			{"Licence:", storage.License},
-			{"Created:", storage.Created},
-			{"Origin:", formatStorageReferenceUUID(storage.Origin)},
-		})
+		dCommon.Append(
+			table.Row{"UUID:", ui.DefaultUUUIDColours.Sprint(storage.UUID)},
+			table.Row{"Title:", storage.Title},
+			table.Row{"Zone:", storage.Zone},
+			table.Row{"State:", storageStateColor(storage.State).Sprint(storage.State)},
+			table.Row{"Size (GiB):", storage.Size},
+			table.Row{"Type:", storage.Type},
+			table.Row{"Tier:", storage.Tier},
+			table.Row{"Licence:", storage.License},
+			table.Row{"Created:", storage.Created},
+			table.Row{"Origin:", formatStorageReferenceUUID(storage.Origin)},
+		)
 		dMain.AppendSection("Common:", dCommon.Render())
 	}
 
@@ -170,8 +170,8 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 			serversByUUID[v.UUID] = v
 		}
 		for _, uuid := range storage.ServerUUIDs {
-			tServers.AppendRow(table.Row{
-				ui.DefaultUuidColours.Sprint(uuid),
+			tServers.Append(table.Row{
+				ui.DefaultUUUIDColours.Sprint(uuid),
 				serversByUUID[uuid].Title,
 				serversByUUID[uuid].Hostname,
 				commands.StateColour(serversByUUID[uuid].State).Sprint(serversByUUID[uuid].State),
@@ -188,11 +188,11 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 		dBackups.SetRowSpacing(true)
 		if storage.BackupRule != nil && storage.BackupRule.Interval != "" {
 			dBackupRule := ui.NewDetailsView()
-			dBackupRule.AppendRows([]table.Row{
-				{"Interval:", storage.BackupRule.Interval},
-				{"Time:", storage.BackupRule.Time},
-				{"Retention:", storage.BackupRule.Retention},
-			})
+			dBackupRule.Append(
+				table.Row{"Interval:", storage.BackupRule.Interval},
+				table.Row{"Time:", storage.BackupRule.Time},
+				table.Row{"Retention:", storage.BackupRule.Retention},
+			)
 			dMain.AppendSection("Backup Rule:", dBackupRule.Render())
 		} else if storage.BackupRule != nil {
 			dMain.AppendSection("Backup Rule:", "(no backup rule configured)")
@@ -206,8 +206,8 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 			}
 			tBackups := ui.NewDataTable("UUID", "Title", "Created")
 			for _, uuid := range storage.BackupUUIDs {
-				tBackups.AppendRow(table.Row{
-					ui.DefaultUuidColours.Sprint(uuid),
+				tBackups.Append(table.Row{
+					ui.DefaultUUUIDColours.Sprint(uuid),
 					storageByUUID[uuid].Title,
 					storageByUUID[uuid].Created,
 				})
@@ -222,33 +222,33 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	if storageImport != nil {
 		dStorageImport := ui.NewDetailsView()
 		dStorageImport.SetRowTransformer(rowTransformer)
-		dStorageImport.AppendRows([]table.Row{
-			{"State:", importStateColor(storageImport.State).Sprint(storageImport.State)},
-			{"Source:", storageImport.Source},
-		})
+		dStorageImport.Append(
+			table.Row{"State:", importStateColor(storageImport.State).Sprint(storageImport.State)},
+			table.Row{"Source:", storageImport.Source},
+		)
 		switch storageImport.Source {
 		case upcloud.StorageImportSourceHTTPImport:
-			dStorageImport.AppendRow(table.Row{"Source Location", storageImport.SourceLocation})
+			dStorageImport.Append(table.Row{"Source Location", storageImport.SourceLocation})
 		case upcloud.StorageImportSourceDirectUpload:
-			dStorageImport.AppendRow(table.Row{"Upload URL", storageImport.DirectUploadURL})
+			dStorageImport.Append(table.Row{"Upload URL", storageImport.DirectUploadURL})
 		}
-		dStorageImport.AppendRows([]table.Row{
-			{"Content Length:", ui.FormatBytes(storageImport.ClientContentLength)},
-			{"Read:", ui.FormatBytes(storageImport.ReadBytes)},
-			{"Written:", ui.FormatBytes(storageImport.WrittenBytes)},
-			{"SHA256 Checksum:", storageImport.SHA256Sum},
-		})
+		dStorageImport.Append(
+			table.Row{"Content Length:", ui.FormatBytes(storageImport.ClientContentLength)},
+			table.Row{"Read:", ui.FormatBytes(storageImport.ReadBytes)},
+			table.Row{"Written:", ui.FormatBytes(storageImport.WrittenBytes)},
+			table.Row{"SHA256 Checksum:", storageImport.SHA256Sum},
+		)
 		if storageImport.ErrorCode != "" {
-			dStorageImport.AppendRows([]table.Row{
-				{"Error:", ui.DefaultErrorColours.Sprintf("%s\n%s",
+			dStorageImport.Append(
+				table.Row{"Error:", ui.DefaultErrorColours.Sprintf("%s\n%s",
 					storageImport.ErrorCode, storageImport.ErrorMessage)},
-			})
+			)
 		}
-		dStorageImport.AppendRows([]table.Row{
-			{"Content Type:", storageImport.ClientContentType},
-			{"Created:", ui.FormatTime(storageImport.Created)},
-			{"Completed:", ui.FormatTime(storageImport.Completed)},
-		})
+		dStorageImport.Append(
+			table.Row{"Content Type:", storageImport.ClientContentType},
+			table.Row{"Created:", ui.FormatTime(storageImport.Created)},
+			table.Row{"Completed:", ui.FormatTime(storageImport.Completed)},
+		)
 		dMain.AppendSection("Import:", dStorageImport.Render())
 	}
 
