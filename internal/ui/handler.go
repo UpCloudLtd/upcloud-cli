@@ -79,7 +79,11 @@ func (c HandleContext) Handle(requests []interface{}) (interface{}, error) {
 				if c.ResultPrefix != "" {
 					prefix = c.ResultPrefix
 				}
-				e.SetDetails(detailsUUID, fmt.Sprintf("%s: ", prefix))
+				message := detailsUUID
+				if c.ResultExtraName != "" && c.ResultExtras != nil {
+					message = fmt.Sprintf("%s (%s: %s)", message, c.ResultExtraName, strings.Join(extras, ", "))
+				}
+				e.SetDetails(message, fmt.Sprintf("%s: ", prefix))
 			}
 			if c.ResultExtraName != "" && c.ResultExtras != nil {
 				e.SetDetails(strings.Join(extras, ", "), fmt.Sprintf("%s: ", c.ResultExtraName))
