@@ -52,7 +52,7 @@ func SearchResources(
 ) ([]string, error) {
 	var result []string
 	for _, id := range ids {
-		if err := validation.Uuid4(id); err == nil {
+		if err := validation.UUID4(id); err == nil {
 			result = append(result, id)
 		} else {
 			matchedResults, err := searchFn(id)

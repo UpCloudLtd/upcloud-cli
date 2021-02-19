@@ -11,10 +11,12 @@ var forceColours *bool
 
 func init() {
 	if !Colours() {
+		// TODO: make color/colour consistent (from everywhere in the codebase)
 		text.DisableColors()
 	}
 }
 
+// ForceColours forces the color mode to match the value given in v
 func ForceColours(v bool) {
 	forceColours = &v
 	text.EnableColors()
@@ -23,6 +25,7 @@ func ForceColours(v bool) {
 	}
 }
 
+// Colours returns true if the color mode is enabled
 func Colours() bool {
 	if forceColours != nil {
 		return *forceColours

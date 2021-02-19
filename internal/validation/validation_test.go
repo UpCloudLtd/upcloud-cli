@@ -20,8 +20,8 @@ func TestUuid4(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := Uuid4(tt.args.val); (err != nil) != tt.wantErr {
-				t.Errorf("Uuid4() error = %v, wantErr %v", err, tt.wantErr)
+			if err := UUID4(tt.args.val); (err != nil) != tt.wantErr {
+				t.Errorf("UUID4() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
