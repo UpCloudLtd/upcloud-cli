@@ -1,4 +1,4 @@
-package ip_address
+package ipaddress
 
 import (
 	"bytes"
@@ -34,7 +34,7 @@ func TestShowCommand(t *testing.T) {
 `
 
 	buf := new(bytes.Buffer)
-	command := ShowCommand(&MockIpAddressService{})
+	command := ShowCommand(&MockIPAddressService{})
 	err := command.HandleOutput(buf, &account)
 
 	assert.Nil(t, err)

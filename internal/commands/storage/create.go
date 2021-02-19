@@ -13,6 +13,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/ui"
 )
 
+// CreateCommand creates the "storage create" command
 func CreateCommand(service service.Storage) commands.Command {
 	return &createCommand{
 		BaseCommand: commands.New("create", "Create a storage"),
@@ -20,7 +21,7 @@ func CreateCommand(service service.Storage) commands.Command {
 	}
 }
 
-var DefaultCreateParams = &createParams{
+var defaultCreateParams = &createParams{
 	CreateStorageRequest: request.CreateStorageRequest{
 		Size: 10,
 		Tier: upcloud.StorageTierMaxIOPS,
@@ -70,13 +71,15 @@ func createFlags(fs *pflag.FlagSet, dst, def *createParams) {
 	fs.IntVar(&dst.BackupRule.Retention, "backup-retention", def.BackupRule.Retention, "How long to store the backups in days. The accepted range is 1-1095")
 }
 
+// InitCommand implements Command.InitCommand
 func (s *createCommand) InitCommand() {
 	s.flagSet = &pflag.FlagSet{}
 	s.params = newCreateParams()
-	createFlags(s.flagSet, &s.params, DefaultCreateParams)
+	createFlags(s.flagSet, &s.params, defaultCreateParams)
 	s.AddFlags(s.flagSet)
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 
@@ -90,7 +93,7 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 
 		return ui.HandleContext{
 			RequestID:     func(in interface{}) string { return in.(*request.CreateStorageRequest).Title },
-			ResultUUID:    getStorageDetailsUuid,
+			ResultUUID:    getStorageDetailsUUID,
 			InteractiveUI: s.Config().InteractiveUI(),
 			MaxActions:    maxStorageActions,
 			ActionMsg:     "Creating storage",

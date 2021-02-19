@@ -12,6 +12,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/ui"
 )
 
+// StopCommand creates the "server stop" command
 func StopCommand(service service.Server) commands.Command {
 	return &stopCommand{
 		BaseCommand: commands.New("stop", "Stop a server"),
@@ -30,23 +31,25 @@ type stopParams struct {
 	timeout int
 }
 
-var DefaultStopParams = &stopParams{
+var defaultStopParams = &stopParams{
 	StopServerRequest: request.StopServerRequest{
 		StopType: upcloud.StopTypeSoft,
 	},
 	timeout: 120,
 }
 
+// InitCommand implements Command.InitCommand
 func (s *stopCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetArgCompFn(s.service))
+	s.ArgCompletion(GetServerArgumentCompletionFunction(s.service))
 
 	flags := &pflag.FlagSet{}
-	flags.StringVar(&s.params.StopType, "type", DefaultStopParams.StopType, "The type of stop operation. Soft waits for the OS to shut down cleanly while hard forcibly shuts down a server.\nAvailable: soft, hard")
-	flags.IntVar(&s.params.timeout, "timeout", DefaultStartParams.timeout, "Stop timeout in seconds\nAvailable: 1-600")
+	flags.StringVar(&s.params.StopType, "type", defaultStopParams.StopType, "The type of stop operation. Soft waits for the OS to shut down cleanly while hard forcibly shuts down a server.\nAvailable: soft, hard")
+	flags.IntVar(&s.params.timeout, "timeout", defaultStartParams.timeout, "Stop timeout in seconds\nAvailable: 1-600")
 	s.AddFlags(flags)
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *stopCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 
@@ -67,7 +70,7 @@ func (s *stopCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 				RequestID:     func(in interface{}) string { return in.(*request.StopServerRequest).UUID },
 				InteractiveUI: s.Config().InteractiveUI(),
 				WaitMsg:       "shutdown request sent",
-				WaitFn:        WaitForServerFn(s.service, upcloud.ServerStateStopped, s.Config().ClientTimeout()),
+				WaitFn:        waitForServer(s.service, upcloud.ServerStateStopped, s.Config().ClientTimeout()),
 				MaxActions:    maxServerActions,
 				ActionMsg:     "Stopping",
 				Action: func(req interface{}) (interface{}, error) {

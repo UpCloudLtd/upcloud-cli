@@ -1,4 +1,4 @@
-package ip_address
+package ipaddress
 
 import (
 	"fmt"
@@ -10,6 +10,7 @@ import (
 	"io"
 )
 
+// ShowCommand creates the 'ip-address show' command
 func ShowCommand(service service.IpAddress) commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New("show", "Show current ip address"),
@@ -22,17 +23,19 @@ type showCommand struct {
 	service service.IpAddress
 }
 
+// InitCommand implements Command.InitCommand
 func (s *showCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	s.ArgCompletion(GetArgCompFn(s.service))
+	s.ArgCompletion(getArgCompFn(s.service))
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 		if len(args) != 1 {
 			return nil, fmt.Errorf("one ip address or PTR Record is required")
 		}
-		ip, err := searchIpAddress(args[0], s.service, true)
+		ip, err := searchIPAddress(args[0], s.service, true)
 		if err != nil {
 			return nil, err
 		}
@@ -40,6 +43,7 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 	}
 }
 
+// HandleOutput implements Command.HandleOutput
 func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	ip := out.(*upcloud.IPAddress)
 

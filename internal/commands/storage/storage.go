@@ -1,29 +1,28 @@
 package storage
 
 import (
-	"errors"
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/ui"
-	"github.com/spf13/cobra"
-	"time"
-
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/jedib0t/go-pretty/v6/text"
+	"github.com/spf13/cobra"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
 )
 
 var (
 	maxStorageActions = 10
-	CachedStorages    []upcloud.Storage
+	// CachedStorages stores the cached list of storages in order to not hit the service more than once
+	// TODO: remove the cross-command dependencies
+	CachedStorages []upcloud.Storage
 )
 
-const minStorageSize = 10
 const positionalArgHelp = "<UUID or Title...>"
 
-func StorageCommand() commands.Command {
+// BaseStorageCommand creates the base "storage" command
+func BaseStorageCommand() commands.Command {
 	return &storageCommand{commands.New("storage", "Manage storages")}
 }
 
@@ -31,7 +30,7 @@ type storageCommand struct {
 	*commands.BaseCommand
 }
 
-func StateColour(state string) text.Colors {
+func storageStateColor(state string) text.Colors {
 	switch state {
 	case upcloud.StorageStateOnline, upcloud.StorageStateSyncing:
 		return text.Colors{text.FgGreen}
@@ -46,7 +45,7 @@ func StateColour(state string) text.Colors {
 	}
 }
 
-func ImportStateColour(state string) text.Colors {
+func importStateColor(state string) text.Colors {
 	switch state {
 	case "completed":
 		return text.Colors{text.FgGreen}
@@ -95,7 +94,7 @@ func searchStorage(storagesPtr *[]upcloud.Storage, service service.Storage, uuid
 	return matched, nil
 }
 
-func SearchAllStorages(terms []string, service service.Storage, unique bool) ([]string, error) {
+func searchAllStorages(terms []string, service service.Storage, unique bool) ([]string, error) {
 	return commands.SearchResources(
 		terms,
 		func(id string) (interface{}, error) {
@@ -104,6 +103,8 @@ func SearchAllStorages(terms []string, service service.Storage, unique bool) ([]
 		func(in interface{}) string { return in.(*upcloud.Storage).UUID })
 }
 
+// SearchSingleStorage returns exactly one storage where title or uuid matches uuidOrTitle
+// TODO: remove the cross-command dependencies
 func SearchSingleStorage(uuidOrTitle string, service service.Storage) (*upcloud.Storage, error) {
 	matchedResults, err := searchStorage(&CachedStorages, service, uuidOrTitle, true)
 	if err != nil {
@@ -112,40 +113,18 @@ func SearchSingleStorage(uuidOrTitle string, service service.Storage) (*upcloud.
 	return matchedResults[0], nil
 }
 
-func WaitForImportState(service *service.Service, uuid, desiredState string, timeout time.Duration) (*upcloud.StorageImportDetails, error) {
-	timer := time.After(timeout)
-	for {
-		time.Sleep(5 * time.Second)
-		details, err := service.GetStorageImportDetails(&request.GetStorageImportDetailsRequest{UUID: uuid})
-		if err != nil {
-			return nil, err
-		}
-		switch details.State {
-		case upcloud.StorageImportStateFailed:
-			return nil, errors.New("import in failed state")
-		case upcloud.StorageImportStateCancelled:
-			return nil, errors.New("import in cancelled state")
-		case desiredState:
-			return details, nil
-		}
-		select {
-		case <-timer:
-			return nil, fmt.Errorf("timed out while waiting an import to transition into %q", desiredState)
-		default:
-		}
-	}
+func getStorageDetailsUUID(in interface{}) string {
+	return in.(*upcloud.StorageDetails).UUID
 }
 
-var getStorageDetailsUuid = func(in interface{}) string { return in.(*upcloud.StorageDetails).UUID }
-
-type Request struct {
+type storageRequest struct {
 	ExactlyOne   bool
 	BuildRequest func(storage string) (interface{}, error)
 	Service      service.Storage
 	Handler      ui.Handler
 }
 
-func (s Request) Send(args []string) (interface{}, error) {
+func (s storageRequest) send(args []string) (interface{}, error) {
 	if s.ExactlyOne && len(args) != 1 {
 		return nil, fmt.Errorf("single storage uuid is required")
 	}
@@ -153,7 +132,7 @@ func (s Request) Send(args []string) (interface{}, error) {
 		return nil, fmt.Errorf("at least one storage uuid is required")
 	}
 
-	storages, err := SearchAllStorages(args, s.Service, true)
+	storages, err := searchAllStorages(args, s.Service, true)
 	if err != nil {
 		return nil, err
 	}
@@ -170,7 +149,7 @@ func (s Request) Send(args []string) (interface{}, error) {
 	return s.Handler.Handle(requests)
 }
 
-func GetArgCompFn(s service.Storage) func(toComplete string) ([]string, cobra.ShellCompDirective) {
+func getStorageArgumentCompletionFunction(s service.Storage) func(toComplete string) ([]string, cobra.ShellCompDirective) {
 	return func(toComplete string) ([]string, cobra.ShellCompDirective) {
 		storages, err := s.GetStorages(&request.GetStoragesRequest{})
 		if err != nil {

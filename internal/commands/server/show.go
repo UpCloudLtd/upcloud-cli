@@ -17,6 +17,7 @@ import (
 	"github.com/jedib0t/go-pretty/v6/text"
 )
 
+// ShowCommand creates the "server show" command
 func ShowCommand(serverSvc service.Server, firewallSvc service.Firewall) commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New("show", "Show server details"),
@@ -36,29 +37,32 @@ type commandResponseHolder struct {
 	firewallRules *upcloud.FirewallRules
 }
 
+// MarshalJSON implements json.Marshaler
 func (c *commandResponseHolder) MarshalJSON() ([]byte, error) {
 	return json.Marshal(c.serverDetails)
 }
 
+// InitCommand implements Command.InitCommand
 func (s *showCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetArgCompFn(s.serverSvc))
+	s.ArgCompletion(GetServerArgumentCompletionFunction(s.serverSvc))
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 		// TODO(aakso): implement prompting with readline support
 		if len(args) != 1 {
 			return nil, fmt.Errorf("one server hostname, title or uuid is required")
 		}
-		serverUuids, err := SearchAllServers(args, s.serverSvc, true)
+		serverUUIDs, err := searchAllServers(args, s.serverSvc, true)
 		if err != nil {
 			return nil, err
 		}
-		if len(serverUuids) != 1 {
+		if len(serverUUIDs) != 1 {
 			return nil, fmt.Errorf("server not found")
 		}
-		serverUuid := serverUuids[0]
+		serverUUID := serverUUIDs[0]
 		var (
 			wg        sync.WaitGroup
 			fwRuleErr error
@@ -67,9 +71,9 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 		var firewallRules *upcloud.FirewallRules
 		go func() {
 			defer wg.Done()
-			firewallRules, fwRuleErr = s.firewallSvc.GetFirewallRules(&request.GetFirewallRulesRequest{ServerUUID: serverUuid})
+			firewallRules, fwRuleErr = s.firewallSvc.GetFirewallRules(&request.GetFirewallRulesRequest{ServerUUID: serverUUID})
 		}()
-		serverDetails, err := s.serverSvc.GetServerDetails(&request.GetServerDetailsRequest{UUID: serverUuid})
+		serverDetails, err := s.serverSvc.GetServerDetails(&request.GetServerDetailsRequest{UUID: serverUUID})
 		if err != nil {
 			return nil, err
 		}
@@ -81,6 +85,7 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 	}
 }
 
+// HandleOutput implements Command.HandleOutput
 func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	resp := out.(*commandResponseHolder)
 	srv := resp.serverDetails

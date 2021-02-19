@@ -1,4 +1,4 @@
-package ip_address
+package ipaddress
 
 import (
 	"github.com/UpCloudLtd/cli/internal/commands"
@@ -10,6 +10,7 @@ import (
 	"io"
 )
 
+// ListCommand creates the "ip-address list" command
 func ListCommand(service service.IpAddress) commands.Command {
 	return &listCommand{
 		BaseCommand: commands.New("list", "List ip addresses"),
@@ -25,6 +26,7 @@ type listCommand struct {
 	visibleColumns []string
 }
 
+// InitCommand implements Command.MakeExecuteCommand
 func (s *listCommand) InitCommand() {
 	s.header = table.Row{"Address", "Access", "Family", "Part of Plan", "PTR Record", "Server", "MAC", "Floating", "Zone"}
 	s.columnKeys = []string{"address", "access", "family", "partofplan", "ptrrecord", "server", "mac", "floating", "zone"}
@@ -34,6 +36,7 @@ func (s *listCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 		ips, err := s.service.GetIPAddresses()
@@ -44,6 +47,7 @@ func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 	}
 }
 
+// HandleOutput implements Command.HandleOutput
 func (s *listCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	ips := out.(*upcloud.IPAddresses)
 

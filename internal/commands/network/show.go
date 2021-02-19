@@ -13,6 +13,7 @@ import (
 	"strings"
 )
 
+// ShowCommand creates the "network show" command
 func ShowCommand(networkSvc service.Network, serverSvc service.Server) commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New("show", "Show current network"),
@@ -29,7 +30,7 @@ type showCommand struct {
 
 func (s *showCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	s.ArgCompletion(GetArgCompFn(s.networkSvc))
+	s.ArgCompletion(getArgCompFn(s.networkSvc))
 }
 
 type networkWithServers struct {

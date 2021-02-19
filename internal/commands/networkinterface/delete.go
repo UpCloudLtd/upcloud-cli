@@ -1,4 +1,4 @@
-package network_interface
+package networkinterface
 
 import (
 	"fmt"
@@ -17,14 +17,7 @@ type deleteCommand struct {
 	index      int
 }
 
-func (s *deleteCommand) InitCommand() {
-	s.SetPositionalArgHelp(server.PositionalArgHelp)
-	s.ArgCompletion(server.GetArgCompFn(s.serverSvc))
-	fs := &pflag.FlagSet{}
-	fs.IntVar(&s.index, "index", 0, "Interface index.[Required]")
-	s.AddFlags(fs)
-}
-
+// DeleteCommand creates the "network-interface delete" command
 func DeleteCommand(networkSvc service.Network, serverSvc service.Server) commands.Command {
 	return &deleteCommand{
 		BaseCommand: commands.New("delete", "Delete a network interface"),
@@ -33,6 +26,16 @@ func DeleteCommand(networkSvc service.Network, serverSvc service.Server) command
 	}
 }
 
+// InitCommand implements Command.InitCommand
+func (s *deleteCommand) InitCommand() {
+	s.SetPositionalArgHelp(server.PositionalArgHelp)
+	s.ArgCompletion(server.GetServerArgumentCompletionFunction(s.serverSvc))
+	fs := &pflag.FlagSet{}
+	fs.IntVar(&s.index, "index", 0, "Interface index.[Required]")
+	s.AddFlags(fs)
+}
+
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 

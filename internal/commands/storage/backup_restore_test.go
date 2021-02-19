@@ -15,7 +15,7 @@ func TestRestoreBackupCommand(t *testing.T) {
 	methodName := "RestoreBackup"
 
 	var Storage2 = upcloud.Storage{
-		UUID:   Uuid2,
+		UUID:   UUID2,
 		Title:  Title2,
 		Access: "private",
 		State:  "online",

@@ -1,4 +1,4 @@
-package server_storage
+package serverstorage
 
 import (
 	"github.com/UpCloudLtd/cli/internal/commands"
@@ -17,7 +17,7 @@ func TestAttachStorageCommand(t *testing.T) {
 	methodName := "AttachStorage"
 
 	var Storage1 = upcloud.Storage{
-		UUID:   Uuid1,
+		UUID:   UUID1,
 		Title:  Title1,
 		Access: "private",
 		State:  "maintenance",
@@ -54,7 +54,7 @@ func TestAttachStorageCommand(t *testing.T) {
 
 	var serverDetails = upcloud.ServerDetails{
 		Server: upcloud.Server{
-			UUID:  Uuid1,
+			UUID:  UUID1,
 			State: upcloud.ServerStateStarted,
 		},
 		VideoModel: "vga",

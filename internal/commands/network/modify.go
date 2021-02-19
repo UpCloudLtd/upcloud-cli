@@ -17,6 +17,7 @@ type modifyCommand struct {
 	networks []string
 }
 
+// ModifyCommand createsthe "network modify" command
 func ModifyCommand(service service.Network) commands.Command {
 	return &modifyCommand{
 		BaseCommand: commands.New("modify", "Modify a network"),
@@ -24,9 +25,10 @@ func ModifyCommand(service service.Network) commands.Command {
 	}
 }
 
+// InitCommand implements Command.InitCommand
 func (s *modifyCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	s.ArgCompletion(GetArgCompFn(s.service))
+	s.ArgCompletion(getArgCompFn(s.service))
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.req.Name, "name", s.req.Name, "Names the private network.")
 	fs.StringVar(&s.req.Router, "router", s.req.Router, "Change or clear the router attachment.")
@@ -43,6 +45,7 @@ func (s *modifyCommand) InitCommand() {
 	s.AddFlags(fs)
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 
@@ -60,7 +63,7 @@ func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 		}
 		s.req.IPNetworks = networks
 
-		return Request{
+		return networkRequest{
 			BuildRequest: func(uuid string) interface{} {
 				s.req.UUID = uuid
 				return &s.req
@@ -75,6 +78,6 @@ func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 					return s.service.ModifyNetwork(req.(*request.ModifyNetworkRequest))
 				},
 			},
-		}.Send(args)
+		}.send(args)
 	}
 }

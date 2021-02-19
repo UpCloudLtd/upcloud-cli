@@ -39,7 +39,7 @@ func TestLoadCDROMCommand(t *testing.T) {
 	}
 
 	var Storage1 = upcloud.Storage{
-		UUID:   Uuid1,
+		UUID:   UUID1,
 		Title:  Title1,
 		Access: "private",
 		State:  "maintenance",

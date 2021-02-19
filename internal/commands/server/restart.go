@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+// RestartCommand creates the "server restart" command
 func RestartCommand(service service.Server) commands.Command {
 	return &restartCommand{
 		BaseCommand: commands.New("restart", "Restart a server"),
@@ -29,7 +30,7 @@ type restartParams struct {
 	timeout int
 }
 
-var DefaultRestartParams = &restartParams{
+var defaultRestartParams = &restartParams{
 	RestartServerRequest: request.RestartServerRequest{
 		StopType:      "soft",
 		TimeoutAction: "ignore",
@@ -37,21 +38,23 @@ var DefaultRestartParams = &restartParams{
 	timeout: 120,
 }
 
+// InitCommand implements Command.InitCommand
 func (s *restartCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetArgCompFn(s.service))
+	s.ArgCompletion(GetServerArgumentCompletionFunction(s.service))
 
 	s.params = restartParams{RestartServerRequest: request.RestartServerRequest{}}
 	flags := &pflag.FlagSet{}
 
-	flags.StringVar(&s.params.StopType, "stop-type", DefaultRestartParams.StopType, "Restart type\nAvailable: soft, hard")
-	flags.StringVar(&s.params.TimeoutAction, "timeout-action", DefaultRestartParams.TimeoutAction, "Action to take if timeout limit is exceeded\nAvailable: destroy, ignore")
-	flags.IntVar(&s.params.timeout, "timeout", DefaultRestartParams.timeout, "Stop timeout in seconds\nAvailable: 1-600")
-	flags.IntVar(&s.params.Host, "host", DefaultRestartParams.Host, "Use this to restart the VM on a specific host. Refers to value from host attribute. Only available for private cloud hosts")
+	flags.StringVar(&s.params.StopType, "stop-type", defaultRestartParams.StopType, "Restart type\nAvailable: soft, hard")
+	flags.StringVar(&s.params.TimeoutAction, "timeout-action", defaultRestartParams.TimeoutAction, "Action to take if timeout limit is exceeded\nAvailable: destroy, ignore")
+	flags.IntVar(&s.params.timeout, "timeout", defaultRestartParams.timeout, "Stop timeout in seconds\nAvailable: 1-600")
+	flags.IntVar(&s.params.Host, "host", defaultRestartParams.Host, "Use this to restart the VM on a specific host. Refers to value from host attribute. Only available for private cloud hosts")
 
 	s.AddFlags(flags)
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *restartCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 
@@ -72,7 +75,7 @@ func (s *restartCommand) MakeExecuteCommand() func(args []string) (interface{}, 
 				RequestID:     func(in interface{}) string { return in.(*request.RestartServerRequest).UUID },
 				InteractiveUI: s.Config().InteractiveUI(),
 				WaitMsg:       "restart request sent",
-				WaitFn:        WaitForServerFn(s.service, upcloud.ServerStateStarted, s.Config().ClientTimeout()),
+				WaitFn:        waitForServer(s.service, upcloud.ServerStateStarted, s.Config().ClientTimeout()),
 				MaxActions:    maxServerActions,
 				ActionMsg:     "Restarting",
 				Action: func(req interface{}) (interface{}, error) {

@@ -11,6 +11,7 @@ import (
 	"io"
 )
 
+// ListCommand creates the "network list" command
 func ListCommand(service service.Network) commands.Command {
 	return &listCommand{
 		BaseCommand: commands.New("list", "List networks"),
@@ -28,6 +29,7 @@ type listCommand struct {
 	networkType    string
 }
 
+// InitCommand implements Command.InitCommand
 func (s *listCommand) InitCommand() {
 	s.header = table.Row{"UUID", "Name", "Router", "Type", "Zone"}
 	s.columnKeys = []string{"uuid", "name", "router", "type", "zone"}
@@ -39,6 +41,7 @@ func (s *listCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 		var filtered []upcloud.Network
@@ -67,6 +70,7 @@ func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 	}
 }
 
+// HandleOutput implements Command.HandleOutput
 func (s *listCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	networks := out.(*upcloud.Networks)
 

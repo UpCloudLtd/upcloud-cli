@@ -9,6 +9,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/ui"
 )
 
+// DeleteCommand creates the "server delete" command
 func DeleteCommand(service service.Server) commands.Command {
 	return &deleteCommand{
 		BaseCommand: commands.New("delete", "Delete a server"),
@@ -22,14 +23,16 @@ type deleteCommand struct {
 	deleteStorages bool
 }
 
+// InitCommand implements Command.InitCommand
 func (s *deleteCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetArgCompFn(s.service))
+	s.ArgCompletion(GetServerArgumentCompletionFunction(s.service))
 	flags := &pflag.FlagSet{}
 	flags.BoolVar(&s.deleteStorages, "delete-storages", false, "Delete storages that are attached to the server.")
 	s.AddFlags(flags)
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 

@@ -16,6 +16,7 @@ import (
 	"github.com/jedib0t/go-pretty/v6/table"
 )
 
+// ShowCommand creates the "storage show" command
 func ShowCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New("show", "Show storage details"),
@@ -38,15 +39,18 @@ type commandResponseHolder struct {
 	storages       []upcloud.Storage
 }
 
+// MarshalJSON implements json.Marshaler
 func (c *commandResponseHolder) MarshalJSON() ([]byte, error) {
 	return json.Marshal(c.storageDetails)
 }
 
+// InitCommand implements Command.InitCommand
 func (s *showCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	s.ArgCompletion(GetArgCompFn(s.storageSvc))
+	s.ArgCompletion(getStorageArgumentCompletionFunction(s.storageSvc))
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 		var storages []upcloud.Storage
@@ -95,6 +99,7 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 	}
 }
 
+// HandleOutput implements Command.HandleOutput
 func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	resp := out.(*commandResponseHolder)
 	storage := resp.storageDetails
@@ -106,17 +111,17 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 		}
 		return ui.DefaultBooleanColoursFalse.Sprint("no")
 	}
-	storageByUuid := make(map[string]upcloud.Storage)
-	formatStorageReferenceUuid := func(uuid string) string {
+	storageByUUID := make(map[string]upcloud.Storage)
+	formatStorageReferenceUUID := func(uuid string) string {
 		if uuid == "" {
 			return ""
 		}
-		if len(storageByUuid) == 0 {
+		if len(storageByUUID) == 0 {
 			for _, v := range resp.storages {
-				storageByUuid[v.UUID] = v
+				storageByUUID[v.UUID] = v
 			}
 		}
-		if v, ok := storageByUuid[uuid]; ok {
+		if v, ok := storageByUUID[uuid]; ok {
 			return fmt.Sprintf("%s (%s)", v.Title, ui.DefaultUuidColours.Sprint(uuid))
 		}
 		return ui.DefaultUuidColours.Sprint(uuid)
@@ -146,13 +151,13 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 			{"UUID:", ui.DefaultUuidColours.Sprint(storage.UUID)},
 			{"Title:", storage.Title},
 			{"Zone:", storage.Zone},
-			{"State:", StateColour(storage.State).Sprint(storage.State)},
+			{"State:", storageStateColor(storage.State).Sprint(storage.State)},
 			{"Size (GiB):", storage.Size},
 			{"Type:", storage.Type},
 			{"Tier:", storage.Tier},
 			{"Licence:", storage.License},
 			{"Created:", storage.Created},
-			{"Origin:", formatStorageReferenceUuid(storage.Origin)},
+			{"Origin:", formatStorageReferenceUUID(storage.Origin)},
 		})
 		dMain.AppendSection("Common:", dCommon.Render())
 	}
@@ -160,16 +165,16 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	// Servers
 	if len(storage.ServerUUIDs) > 0 {
 		tServers := ui.NewDataTable("UUID", "Title", "Hostname", "State")
-		serversByUuid := make(map[string]upcloud.Server)
+		serversByUUID := make(map[string]upcloud.Server)
 		for _, v := range resp.servers {
-			serversByUuid[v.UUID] = v
+			serversByUUID[v.UUID] = v
 		}
 		for _, uuid := range storage.ServerUUIDs {
 			tServers.AppendRow(table.Row{
 				ui.DefaultUuidColours.Sprint(uuid),
-				serversByUuid[uuid].Title,
-				serversByUuid[uuid].Hostname,
-				commands.StateColour(serversByUuid[uuid].State).Sprint(serversByUuid[uuid].State),
+				serversByUUID[uuid].Title,
+				serversByUUID[uuid].Hostname,
+				commands.StateColour(serversByUUID[uuid].State).Sprint(serversByUUID[uuid].State),
 			})
 		}
 		dMain.AppendSection("Servers:", ui.WrapWithListLayout(tServers.Render(), ui.ListLayoutNestedTable).Render())
@@ -194,17 +199,17 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 		}
 
 		if len(storage.BackupUUIDs) > 0 {
-			if len(storageByUuid) == 0 {
+			if len(storageByUUID) == 0 {
 				for _, v := range resp.storages {
-					storageByUuid[v.UUID] = v
+					storageByUUID[v.UUID] = v
 				}
 			}
 			tBackups := ui.NewDataTable("UUID", "Title", "Created")
 			for _, uuid := range storage.BackupUUIDs {
 				tBackups.AppendRow(table.Row{
 					ui.DefaultUuidColours.Sprint(uuid),
-					storageByUuid[uuid].Title,
-					storageByUuid[uuid].Created,
+					storageByUUID[uuid].Title,
+					storageByUUID[uuid].Created,
 				})
 			}
 			dMain.AppendSection("Available Backups:", ui.WrapWithListLayout(tBackups.Render(), ui.ListLayoutNestedTable).Render())
@@ -218,7 +223,7 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 		dStorageImport := ui.NewDetailsView()
 		dStorageImport.SetRowTransformer(rowTransformer)
 		dStorageImport.AppendRows([]table.Row{
-			{"State:", ImportStateColour(storageImport.State).Sprint(storageImport.State)},
+			{"State:", importStateColor(storageImport.State).Sprint(storageImport.State)},
 			{"Source:", storageImport.Source},
 		})
 		switch storageImport.Source {

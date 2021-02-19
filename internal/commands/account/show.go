@@ -10,6 +10,7 @@ import (
 	"io"
 )
 
+// ShowCommand creates the 'account show' command
 func ShowCommand(service service.Account) commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New("show", "Show account"),
@@ -22,6 +23,7 @@ type showCommand struct {
 	service service.Account
 }
 
+// MakeExecuteCommand implements command.MakeExecuteCommand
 func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 		account, err := s.service.GetAccount()
@@ -32,6 +34,7 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 	}
 }
 
+// HandleOutput implements command.HandleOutput
 func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	account := out.(*upcloud.Account)
 

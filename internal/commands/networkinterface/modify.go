@@ -1,4 +1,4 @@
-package network_interface
+package networkinterface
 
 import (
 	"fmt"
@@ -20,6 +20,7 @@ type modifyCommand struct {
 	ipAddresses []string
 }
 
+// ModifyCommand creates the "network-interface modify" command
 func ModifyCommand(networkSvc service.Network, serverSvc service.Server) commands.Command {
 	return &modifyCommand{
 		BaseCommand: commands.New("modify", "Modify a network interface"),
@@ -28,8 +29,8 @@ func ModifyCommand(networkSvc service.Network, serverSvc service.Server) command
 	}
 }
 
-func (s *modifyCommand) BuildRequest() (*request.ModifyNetworkInterfaceRequest, error) {
-	ipAddresses, err := handleIpAddress(s.ipAddresses)
+func (s *modifyCommand) buildRequest() (*request.ModifyNetworkInterfaceRequest, error) {
+	ipAddresses, err := handleIPAddress(s.ipAddresses)
 	if err != nil {
 		return nil, err
 	}
@@ -52,9 +53,10 @@ func (s *modifyCommand) BuildRequest() (*request.ModifyNetworkInterfaceRequest, 
 	return &s.req, nil
 }
 
+// InitCommand implements Command.InitCommand
 func (s *modifyCommand) InitCommand() {
 	s.SetPositionalArgHelp(server.PositionalArgHelp)
-	s.ArgCompletion(server.GetArgCompFn(s.serverSvc))
+	s.ArgCompletion(server.GetServerArgumentCompletionFunction(s.serverSvc))
 	fs := &pflag.FlagSet{}
 	fs.IntVar(&s.req.CurrentIndex, "index", s.req.CurrentIndex, "Index of the interface to modify. [Required]")
 	fs.IntVar(&s.req.NewIndex, "new-index", s.req.NewIndex, "Index of the interface to modify.")
@@ -64,13 +66,14 @@ func (s *modifyCommand) InitCommand() {
 	s.AddFlags(fs)
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 		if s.req.CurrentIndex == 0 {
 			return nil, fmt.Errorf("index is required")
 		}
 
-		req, err := s.BuildRequest()
+		req, err := s.buildRequest()
 		if err != nil {
 			return nil, err
 		}

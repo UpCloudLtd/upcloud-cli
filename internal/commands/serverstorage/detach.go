@@ -1,4 +1,4 @@
-package server_storage
+package serverstorage
 
 import (
 	"fmt"
@@ -21,6 +21,7 @@ type detachParams struct {
 	request.DetachStorageRequest
 }
 
+// DetachCommand creates the "server storage detach" command
 func DetachCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
 	return &detachCommand{
 		BaseCommand: commands.New("detach", "Detaches a storage resource from a server"),
@@ -29,21 +30,23 @@ func DetachCommand(serverSvc service.Server, storageSvc service.Storage) command
 	}
 }
 
-var DefaultDetachParams = &detachParams{
+var defaultDetachParams = &detachParams{
 	DetachStorageRequest: request.DetachStorageRequest{},
 }
 
+// InitCommand implements Command.InitCommand
 func (s *detachCommand) InitCommand() {
-	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(server.GetArgCompFn(s.serverSvc))
+	s.SetPositionalArgHelp(positionalArgHelp)
+	s.ArgCompletion(server.GetServerArgumentCompletionFunction(s.serverSvc))
 	s.params = detachParams{DetachStorageRequest: request.DetachStorageRequest{}}
 
 	flagSet := &pflag.FlagSet{}
-	flagSet.StringVar(&s.params.Address, "address", DefaultDetachParams.Address, "Detach the storage attached to this address.\n[Required]")
+	flagSet.StringVar(&s.params.Address, "address", defaultDetachParams.Address, "Detach the storage attached to this address.\n[Required]")
 
 	s.AddFlags(flagSet)
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *detachCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 

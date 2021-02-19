@@ -14,7 +14,7 @@ import (
 func TestDeleteStorageCommand(t *testing.T) {
 	methodName := "DeleteStorage"
 	var Storage2 = upcloud.Storage{
-		UUID:   Uuid2,
+		UUID:   UUID2,
 		Title:  Title2,
 		Access: "private",
 		State:  "online",

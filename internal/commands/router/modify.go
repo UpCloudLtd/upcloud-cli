@@ -15,6 +15,7 @@ type modifyCommand struct {
 	req     request.ModifyRouterRequest
 }
 
+// ModifyCommand creates the "router modify" command
 func ModifyCommand(service service.Network) commands.Command {
 	return &modifyCommand{
 		BaseCommand: commands.New("modify", "Modify a router"),
@@ -22,14 +23,16 @@ func ModifyCommand(service service.Network) commands.Command {
 	}
 }
 
+// InitCommand implements Command.InitCommand
 func (s *modifyCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	s.ArgCompletion(GetArgCompFn(s.service))
+	s.ArgCompletion(getRouterArgCompletionFunction(s.service))
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.req.Name, "name", "", "Name of the router. [Required]")
 	s.AddFlags(fs)
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 
@@ -37,7 +40,7 @@ func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 			return nil, fmt.Errorf("name is required")
 		}
 
-		return Request{
+		return routerRequest{
 			BuildRequest: func(uuid string) interface{} {
 				s.req.UUID = uuid
 				return &s.req
@@ -52,6 +55,6 @@ func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 					return s.service.ModifyRouter(req.(*request.ModifyRouterRequest))
 				},
 			},
-		}.Send(args)
+		}.send(args)
 	}
 }
