@@ -245,7 +245,11 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 	return func(args []string) (interface{}, error) {
 
 		if s.params.Hostname == "" || s.params.Zone == "" {
-			return nil, fmt.Errorf("hostname and zone are required")
+			return nil, fmt.Errorf("hostname and zone are both required")
+		}
+
+		if s.params.os == DefaultCreateParams.os && s.params.PasswordDelivery == "none" && s.params.sshKeys == nil {
+			return nil, fmt.Errorf("password-delivery, ssh-keys or non-default OS must be specified")
 		}
 
 		if s.params.Title == "" {
