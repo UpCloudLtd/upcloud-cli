@@ -2,6 +2,7 @@ package networkinterface
 
 import (
 	"fmt"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/commands/server"
 	"github.com/UpCloudLtd/cli/internal/ui"

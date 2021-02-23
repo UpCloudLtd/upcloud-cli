@@ -1,6 +1,8 @@
 package networkinterface
 
 import (
+	"testing"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/commands/server"
 	"github.com/UpCloudLtd/cli/internal/config"
@@ -8,7 +10,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestCreateCommand(t *testing.T) {
@@ -43,7 +44,16 @@ func TestCreateCommand(t *testing.T) {
 			args: []string{
 				"--network", network.Name,
 			},
-			error: "ip-address is required",
+			req: request.CreateNetworkInterfaceRequest{
+				ServerUUID:        s.UUID,
+				Bootable:          upcloud.FromBool(false),
+				SourceIPFiltering: upcloud.FromBool(false),
+				NetworkUUID:       network.UUID,
+				IPAddresses: request.CreateNetworkInterfaceIPAddressSlice{
+					{Family: upcloud.IPAddressFamilyIPv4},
+				},
+				Type: upcloud.NetworkTypePrivate,
+			},
 		},
 		{
 			name: "invalid ip-address",
