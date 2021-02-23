@@ -60,14 +60,13 @@ func (c HandleContext) Handle(requests []interface{}) (interface{}, error) {
 			detailsUUID = c.RequestID(request)
 		}
 
-		var extras []string
-		if c.ResultExtras != nil && details != nil && !reflect.ValueOf(details).IsNil() {
-			extras = c.ResultExtras(details)
-		}
-
 		if c.WaitFn != nil && err == nil {
 			e.SetMessage(fmt.Sprintf("%s: %s", msg, c.WaitMsg))
 			details, err = c.WaitFn(detailsUUID, c.WaitMsg, err)
+		}
+		var extras []string
+		if c.ResultExtras != nil && details != nil && !reflect.ValueOf(details).IsNil() {
+			extras = c.ResultExtras(details)
 		}
 		if err != nil {
 			e.SetMessage(LiveLogEntryErrorColours.Sprintf("%s: failed", msg))
@@ -84,9 +83,6 @@ func (c HandleContext) Handle(requests []interface{}) (interface{}, error) {
 					message = fmt.Sprintf("%s (%s: %s)", message, c.ResultExtraName, strings.Join(extras, ", "))
 				}
 				e.SetDetails(message, fmt.Sprintf("%s: ", prefix))
-			}
-			if c.ResultExtraName != "" && c.ResultExtras != nil {
-				e.SetDetails(strings.Join(extras, ", "), fmt.Sprintf("%s: ", c.ResultExtraName))
 			}
 			mu.Lock()
 			numOk++
