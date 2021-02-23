@@ -63,7 +63,7 @@ func TestListStorages(t *testing.T) {
 	}{
 		{
 			name: "List storages",
-			args: []string{"--private", "--public"},
+			args: []string{"--all"},
 			testFn: func(res upcloud.Storages, e error) {
 				assert.ElementsMatch(t, res.Storages, storages.Storages)
 				assert.Nil(t, e)
@@ -74,14 +74,6 @@ func TestListStorages(t *testing.T) {
 			args: []string{"--public"},
 			testFn: func(res upcloud.Storages, e error) {
 				assert.ElementsMatch(t, res.Storages, []upcloud.Storage{Storage3, Storage6})
-				assert.Nil(t, e)
-			},
-		},
-		{
-			name: "List private storages",
-			args: []string{"--private"},
-			testFn: func(res upcloud.Storages, e error) {
-				assert.ElementsMatch(t, res.Storages, []upcloud.Storage{Storage1, Storage2, Storage4, Storage5})
 				assert.Nil(t, e)
 			},
 		},
