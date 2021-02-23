@@ -20,6 +20,7 @@ type cloneParams struct {
 	request.CloneStorageRequest
 }
 
+// CloneCommand creates the "storage clone" command
 func CloneCommand(service service.Storage) commands.Command {
 	return &cloneCommand{
 		BaseCommand: commands.New("clone", "Clone a storage"),
@@ -27,25 +28,27 @@ func CloneCommand(service service.Storage) commands.Command {
 	}
 }
 
-var DefaultCloneParams = &cloneParams{
+var defaultCloneParams = &cloneParams{
 	CloneStorageRequest: request.CloneStorageRequest{
 		Tier: upcloud.StorageTierHDD,
 	},
 }
 
+// InitCommand implements Command.InitCommand
 func (s *cloneCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	s.ArgCompletion(GetArgCompFn(s.service))
+	s.ArgCompletion(getStorageArgumentCompletionFunction(s.service))
 	s.params = cloneParams{CloneStorageRequest: request.CloneStorageRequest{}}
 
 	flagSet := &pflag.FlagSet{}
-	flagSet.StringVar(&s.params.Tier, "tier", DefaultCloneParams.Tier, "The storage tier to use.")
-	flagSet.StringVar(&s.params.Title, "title", DefaultCloneParams.Title, "A short, informational description.\n[Required]")
-	flagSet.StringVar(&s.params.Zone, "zone", DefaultCloneParams.Zone, "The zone in which the storage will be created, e.g. fi-hel1.\n[Required]")
+	flagSet.StringVar(&s.params.Tier, "tier", defaultCloneParams.Tier, "The storage tier to use.")
+	flagSet.StringVar(&s.params.Title, "title", defaultCloneParams.Title, "A short, informational description.\n[Required]")
+	flagSet.StringVar(&s.params.Zone, "zone", defaultCloneParams.Zone, "The zone in which the storage will be created, e.g. fi-hel1.\n[Required]")
 
 	s.AddFlags(flagSet)
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *cloneCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 
@@ -53,7 +56,7 @@ func (s *cloneCommand) MakeExecuteCommand() func(args []string) (interface{}, er
 			return nil, fmt.Errorf("title and zone are required")
 		}
 
-		return Request{
+		return storageRequest{
 			BuildRequest: func(uuid string) (interface{}, error) {
 				req := s.params.CloneStorageRequest
 				req.UUID = uuid
@@ -62,7 +65,7 @@ func (s *cloneCommand) MakeExecuteCommand() func(args []string) (interface{}, er
 			Service: s.service,
 			Handler: ui.HandleContext{
 				RequestID:     func(in interface{}) string { return in.(*request.CloneStorageRequest).UUID },
-				ResultUUID:    getStorageDetailsUuid,
+				ResultUUID:    getStorageDetailsUUID,
 				InteractiveUI: s.Config().InteractiveUI(),
 				MaxActions:    maxStorageActions,
 				ActionMsg:     "Cloning storage",
@@ -70,6 +73,6 @@ func (s *cloneCommand) MakeExecuteCommand() func(args []string) (interface{}, er
 					return s.service.CloneStorage(req.(*request.CloneStorageRequest))
 				},
 			},
-		}.Send(args)
+		}.send(args)
 	}
 }

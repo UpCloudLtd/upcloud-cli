@@ -1,4 +1,4 @@
-package ip_address
+package ipaddress
 
 import (
 	"fmt"
@@ -19,6 +19,7 @@ type assignCommand struct {
 	floating  bool
 }
 
+// AssignCommand creates the 'ip-address assign' command
 func AssignCommand(serverSvc service.Server, ipSvc service.IpAddress) commands.Command {
 	return &assignCommand{
 		BaseCommand: commands.New("assign", "Assign an ip address"),
@@ -32,6 +33,7 @@ var defCreateParams = request.AssignIPAddressRequest{
 	Family: upcloud.IPAddressFamilyIPv4,
 }
 
+// InitCommand implements Command.InitCommand
 func (s *assignCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.req.Access, "access", defCreateParams.Access, "Is address for utility or public network.")
@@ -43,6 +45,7 @@ func (s *assignCommand) InitCommand() {
 	s.AddFlags(fs)
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *assignCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 		if s.floating && s.req.Zone == "" && s.req.MAC == "" {
@@ -66,13 +69,12 @@ func (s *assignCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 				req := in.(*request.AssignIPAddressRequest)
 				if req.MAC != "" {
 					return req.MAC
-				} else {
-					return req.Zone
 				}
+				return req.Zone
 			},
 			ResultUUID:    func(in interface{}) string { return in.(*upcloud.IPAddress).Address },
 			ResultPrefix:  "IP Address",
-			MaxActions:    maxIpAddressActions,
+			MaxActions:    maxIPAddressActions,
 			InteractiveUI: s.Config().InteractiveUI(),
 			ActionMsg:     "Assigning IP Address to",
 			Action: func(req interface{}) (interface{}, error) {

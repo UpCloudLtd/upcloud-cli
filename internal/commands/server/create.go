@@ -16,6 +16,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/ui"
 )
 
+// CreateCommand creates the "server create" command
 func CreateCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
 	return &createCommand{
 		BaseCommand: commands.New("create", "Create a server"),
@@ -24,7 +25,7 @@ func CreateCommand(serverSvc service.Server, storageSvc service.Storage) command
 	}
 }
 
-var DefaultCreateParams = &createParams{
+var defaultCreateParams = &createParams{
 	CreateServerRequest: request.CreateServerRequest{
 		VideoModel:       "vga",
 		TimeZone:         "UTC",
@@ -173,14 +174,14 @@ func (s *createParams) handleNetwork(in string) (*request.CreateServerInterface,
 	return network, nil
 }
 
-func (s *createParams) handleSshKey() error {
-	var allSshKeys []string
+func (s *createParams) handleSSHKey() error {
+	var allSSHKeys []string
 	for _, keyOrFile := range s.sshKeys {
 		if strings.HasPrefix(keyOrFile, "ssh-") {
 			if _, _, _, _, err := ssh.ParseAuthorizedKey([]byte(keyOrFile)); err != nil {
 				return fmt.Errorf("invalid ssh key %q: %v", keyOrFile, err)
 			}
-			allSshKeys = append(allSshKeys, keyOrFile)
+			allSSHKeys = append(allSSHKeys, keyOrFile)
 			continue
 		}
 		f, err := os.Open(keyOrFile)
@@ -193,11 +194,11 @@ func (s *createParams) handleSshKey() error {
 				_ = f.Close()
 				return fmt.Errorf("invalid ssh key %q in file %s: %v", rdr.Text(), keyOrFile, err)
 			}
-			allSshKeys = append(allSshKeys, rdr.Text())
+			allSSHKeys = append(allSSHKeys, rdr.Text())
 		}
 		_ = f.Close()
 	}
-	s.LoginUser.SSHKeys = allSshKeys
+	s.LoginUser.SSHKeys = allSSHKeys
 	return nil
 }
 
@@ -208,10 +209,11 @@ type createCommand struct {
 	params     createParams
 }
 
+// InitCommand implements Command.InitCommand
 func (s *createCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 	s.params = createParams{CreateServerRequest: request.CreateServerRequest{}}
-	def := DefaultCreateParams
+	def := defaultCreateParams
 	fs.IntVar(&s.params.AvoidHost, "avoid-host", def.AvoidHost, "Use this to make sure VMs do not reside on specific host. Refers to value from host -attribute. Useful when building HA-environments.")
 	fs.IntVar(&s.params.Host, "host", def.Host, "Use this to start a VM on a specific host. Refers to value from host -attribute. Only available for private cloud hosts.")
 	fs.StringVar(&s.params.BootOrder, "boot-order", def.BootOrder, "The boot device order, disk / cdrom / network or comma separated combination.")
@@ -241,6 +243,7 @@ func (s *createCommand) InitCommand() {
 	s.AddFlags(fs)
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 
@@ -279,7 +282,7 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 			req.StorageDevices = append(req.StorageDevices, *strg)
 		}
 
-		if err := s.params.handleSshKey(); err != nil {
+		if err := s.params.handleSSHKey(); err != nil {
 			return nil, err
 		}
 
@@ -289,12 +292,12 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 
 		return ui.HandleContext{
 			RequestID:       func(in interface{}) string { return in.(*request.CreateServerRequest).Hostname },
-			ResultUUID:      getServerDetailsUuid,
-			ResultExtras:    getServerDetailsIpAddresses,
+			ResultUUID:      getServerDetailsUUID,
+			ResultExtras:    getServerDetailsIPAddresses,
 			ResultExtraName: "IP addresses",
 			InteractiveUI:   s.Config().InteractiveUI(),
 			WaitMsg:         "server starting",
-			WaitFn:          WaitForServerFn(s.serverSvc, upcloud.ServerStateStarted, s.Config().ClientTimeout()),
+			WaitFn:          waitForServer(s.serverSvc, upcloud.ServerStateStarted, s.Config().ClientTimeout()),
 			MaxActions:      5,
 			ActionMsg:       "Creating server",
 			Action: func(req interface{}) (interface{}, error) {

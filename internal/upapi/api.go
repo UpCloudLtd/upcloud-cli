@@ -14,10 +14,12 @@ import (
 
 type transport struct{}
 
+// RoundTrip implements http.RoundTripper
 func (t *transport) RoundTrip(req *http.Request) (*http.Response, error) {
 	return cleanhttp.DefaultTransport().RoundTrip(req)
 }
 
+// Service creates a new service instance
 func Service(config *config.Config) *service.Service {
 	hc := &http.Client{Transport: &transport{}}
 

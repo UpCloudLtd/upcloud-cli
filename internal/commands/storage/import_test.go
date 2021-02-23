@@ -23,7 +23,7 @@ func TestImportCommand(t *testing.T) {
 	defer os.Remove(tmpFile.Name())
 
 	var Storage1 = upcloud.Storage{
-		UUID:   Uuid1,
+		UUID:   UUID1,
 		Title:  Title1,
 		Access: "private",
 		State:  "maintenance",
@@ -41,7 +41,7 @@ func TestImportCommand(t *testing.T) {
 		},
 	}
 	var Storage2 = upcloud.Storage{
-		UUID:   Uuid2,
+		UUID:   UUID2,
 		Title:  Title2,
 		Access: "private",
 		State:  "online",

@@ -3,23 +3,24 @@ package all
 import (
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/commands/account"
-	"github.com/UpCloudLtd/cli/internal/commands/ip_address"
+	"github.com/UpCloudLtd/cli/internal/commands/ipaddress"
 	"github.com/UpCloudLtd/cli/internal/commands/network"
-	"github.com/UpCloudLtd/cli/internal/commands/network_interface"
+	"github.com/UpCloudLtd/cli/internal/commands/networkinterface"
 	"github.com/UpCloudLtd/cli/internal/commands/router"
 	"github.com/UpCloudLtd/cli/internal/commands/server"
-	"github.com/UpCloudLtd/cli/internal/commands/server_storage"
+	"github.com/UpCloudLtd/cli/internal/commands/serverstorage"
 	"github.com/UpCloudLtd/cli/internal/commands/storage"
 	"github.com/UpCloudLtd/cli/internal/config"
 	"github.com/UpCloudLtd/cli/internal/upapi"
 )
 
+// BuildCommands is the main function that sets up the commands provided by upctl.
 func BuildCommands(mainCommand commands.Command, mainConfig *config.Config) {
 	cfgFn := func() *config.Config { return config.New(mainConfig.Viper()) }
 	svc := upapi.Service(cfgFn())
 
 	// Servers
-	serverCommand := commands.BuildCommand(server.ServerCommand(), mainCommand, cfgFn())
+	serverCommand := commands.BuildCommand(server.BaseServerCommand(), mainCommand, cfgFn())
 	commands.BuildCommand(server.ListCommand(svc), serverCommand, cfgFn())
 	commands.BuildCommand(server.PlanListCommand(), serverCommand, cfgFn())
 	commands.BuildCommand(server.ShowCommand(svc, svc), serverCommand, cfgFn())
@@ -33,12 +34,12 @@ func BuildCommands(mainCommand commands.Command, mainConfig *config.Config) {
 	commands.BuildCommand(server.DeleteCommand(svc), serverCommand, cfgFn())
 
 	// Server storage operations
-	serverStorageCommand := commands.BuildCommand(server_storage.ServerStorageCommand(), serverCommand, cfgFn())
-	commands.BuildCommand(server_storage.AttachCommand(svc, svc), serverStorageCommand, cfgFn())
-	commands.BuildCommand(server_storage.DetachCommand(svc, svc), serverStorageCommand, cfgFn())
+	serverStorageCommand := commands.BuildCommand(serverstorage.BaseServerStorageCommand(), serverCommand, cfgFn())
+	commands.BuildCommand(serverstorage.AttachCommand(svc, svc), serverStorageCommand, cfgFn())
+	commands.BuildCommand(serverstorage.DetachCommand(svc, svc), serverStorageCommand, cfgFn())
 
 	// Storages
-	storageCommand := commands.BuildCommand(storage.StorageCommand(), mainCommand, cfgFn())
+	storageCommand := commands.BuildCommand(storage.BaseStorageCommand(), mainCommand, cfgFn())
 	commands.BuildCommand(storage.ListCommand(svc), storageCommand, cfgFn())
 	commands.BuildCommand(storage.CreateCommand(svc), storageCommand, cfgFn())
 	commands.BuildCommand(storage.ModifyCommand(svc), storageCommand, cfgFn())
@@ -53,15 +54,15 @@ func BuildCommands(mainCommand commands.Command, mainConfig *config.Config) {
 	commands.BuildCommand(storage.RestoreBackupCommand(svc), backupCommand, cfgFn())
 
 	// IP Addresses
-	ipAddressCommand := commands.BuildCommand(ip_address.IpAddressCommand(), mainCommand, cfgFn())
-	commands.BuildCommand(ip_address.ListCommand(svc), ipAddressCommand, cfgFn())
-	commands.BuildCommand(ip_address.ShowCommand(svc), ipAddressCommand, cfgFn())
-	commands.BuildCommand(ip_address.ModifyCommand(svc), ipAddressCommand, cfgFn())
-	commands.BuildCommand(ip_address.AssignCommand(svc, svc), ipAddressCommand, cfgFn())
-	commands.BuildCommand(ip_address.RemoveCommand(svc), ipAddressCommand, cfgFn())
+	ipAddressCommand := commands.BuildCommand(ipaddress.BaseIPAddressCommand(), mainCommand, cfgFn())
+	commands.BuildCommand(ipaddress.ListCommand(svc), ipAddressCommand, cfgFn())
+	commands.BuildCommand(ipaddress.ShowCommand(svc), ipAddressCommand, cfgFn())
+	commands.BuildCommand(ipaddress.ModifyCommand(svc), ipAddressCommand, cfgFn())
+	commands.BuildCommand(ipaddress.AssignCommand(svc, svc), ipAddressCommand, cfgFn())
+	commands.BuildCommand(ipaddress.RemoveCommand(svc), ipAddressCommand, cfgFn())
 
 	// Networks
-	networkCommand := commands.BuildCommand(network.NetworkCommand(), mainCommand, cfgFn())
+	networkCommand := commands.BuildCommand(network.BaseNetworkCommand(), mainCommand, cfgFn())
 	commands.BuildCommand(network.CreateCommand(svc), networkCommand, cfgFn())
 	commands.BuildCommand(network.ListCommand(svc), networkCommand, cfgFn())
 	commands.BuildCommand(network.ShowCommand(svc, svc), networkCommand, cfgFn())
@@ -69,13 +70,13 @@ func BuildCommands(mainCommand commands.Command, mainConfig *config.Config) {
 	commands.BuildCommand(network.DeleteCommand(svc), networkCommand, cfgFn())
 
 	// Network Interfaces
-	networkInterfaceCommand := commands.BuildCommand(network_interface.NetworkInterfaceCommand(), serverCommand, cfgFn())
-	commands.BuildCommand(network_interface.CreateCommand(svc, svc), networkInterfaceCommand, cfgFn())
-	commands.BuildCommand(network_interface.ModifyCommand(svc, svc), networkInterfaceCommand, cfgFn())
-	commands.BuildCommand(network_interface.DeleteCommand(svc, svc), networkInterfaceCommand, cfgFn())
+	networkInterfaceCommand := commands.BuildCommand(networkinterface.BaseNetworkInterfaceCommand(), serverCommand, cfgFn())
+	commands.BuildCommand(networkinterface.CreateCommand(svc, svc), networkInterfaceCommand, cfgFn())
+	commands.BuildCommand(networkinterface.ModifyCommand(svc, svc), networkInterfaceCommand, cfgFn())
+	commands.BuildCommand(networkinterface.DeleteCommand(svc, svc), networkInterfaceCommand, cfgFn())
 
 	// Routers
-	routerCommand := commands.BuildCommand(router.RouterCommand(), mainCommand, cfgFn())
+	routerCommand := commands.BuildCommand(router.BaseRouterCommand(), mainCommand, cfgFn())
 	commands.BuildCommand(router.CreateCommand(svc), routerCommand, cfgFn())
 	commands.BuildCommand(router.ListCommand(svc), routerCommand, cfgFn())
 	commands.BuildCommand(router.ShowCommand(svc), routerCommand, cfgFn())
@@ -83,7 +84,7 @@ func BuildCommands(mainCommand commands.Command, mainConfig *config.Config) {
 	commands.BuildCommand(router.DeleteCommand(svc), routerCommand, cfgFn())
 
 	// Account
-	accountCommand := commands.BuildCommand(account.AccountCommand(), mainCommand, cfgFn())
+	accountCommand := commands.BuildCommand(account.BaseAccountCommand(), mainCommand, cfgFn())
 	commands.BuildCommand(account.ShowCommand(svc), accountCommand, cfgFn())
 
 }

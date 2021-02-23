@@ -7,6 +7,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 )
 
+// DeleteCommand creates the "storage delete" command
 func DeleteCommand(service service.Storage) commands.Command {
 	return &deleteCommand{
 		BaseCommand: commands.New("delete", "Delete a storage"),
@@ -19,14 +20,16 @@ type deleteCommand struct {
 	service service.Storage
 }
 
+// InitCommand implements Command.InitCommand
 func (s *deleteCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	s.ArgCompletion(GetArgCompFn(s.service))
+	s.ArgCompletion(getStorageArgumentCompletionFunction(s.service))
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		return Request{
+		return storageRequest{
 			BuildRequest: func(uuid string) (interface{}, error) {
 				return &request.DeleteStorageRequest{UUID: uuid}, nil
 			},
@@ -40,6 +43,6 @@ func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 					return nil, s.service.DeleteStorage(req.(*request.DeleteStorageRequest))
 				},
 			},
-		}.Send(args)
+		}.send(args)
 	}
 }

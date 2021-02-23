@@ -15,6 +15,7 @@ type createCommand struct {
 	params  createParams
 }
 
+// CreateCommand creates the "router create" command
 func CreateCommand(service service.Network) commands.Command {
 	return &createCommand{
 		BaseCommand: commands.New("create", "Create a router"),
@@ -27,6 +28,7 @@ type createParams struct {
 	routers []string
 }
 
+// InitCommand implements Command.InitCommand
 func (s *createCommand) InitCommand() {
 	s.params.req = request.CreateRouterRequest{}
 	fs := &pflag.FlagSet{}
@@ -34,10 +36,11 @@ func (s *createCommand) InitCommand() {
 	s.AddFlags(fs)
 }
 
-func (s *createCommand) BuildRequest() (*request.CreateRouterRequest, error) {
+func (s *createCommand) buildRequest() (*request.CreateRouterRequest, error) {
 	return &s.params.req, nil
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 
@@ -45,14 +48,14 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 			return nil, fmt.Errorf("name is required")
 		}
 
-		req, err := s.BuildRequest()
+		req, err := s.buildRequest()
 		if err != nil {
 			return nil, err
 		}
 
 		return ui.HandleContext{
 			RequestID:     func(in interface{}) string { return in.(*request.CreateRouterRequest).Name },
-			ResultUUID:    getRouterUuid,
+			ResultUUID:    getRouterUUID,
 			MaxActions:    maxRouterActions,
 			InteractiveUI: s.Config().InteractiveUI(),
 			ActionMsg:     "Creating router",

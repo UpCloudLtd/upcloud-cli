@@ -10,6 +10,8 @@ import (
 	"strings"
 )
 
+// Parse parses a complex, querystring-type argument from in and returns all the parts found
+// eg. `--foo bar=baz,flop=flip` returns `[]string{"bar","baz","flop","flip"}`
 func Parse(in string) ([]string, error) {
 	var result []string
 	reader := csv.NewReader(strings.NewReader(in))
@@ -23,6 +25,9 @@ func Parse(in string) ([]string, error) {
 	return result, nil
 }
 
+// ToArray turns an interface{} to a slice of interface{}s.
+// If the underlying type is also a slice, the elements will be returned as the return values elements..
+// Otherwise, the input element is wrapped in a slice.
 func ToArray(in interface{}) []interface{} {
 	var elems []interface{}
 	if reflect.TypeOf(in).Kind() == reflect.Slice {
@@ -36,6 +41,10 @@ func ToArray(in interface{}) []interface{} {
 	return elems
 }
 
+// SearchResources is a convenience method to map a list of resources to uuids.
+// Any input strings that are uuids are returned as such and any other string is
+// passed on to searchFn, the results of which are passed on to getUUID which is
+// expected to return a uuid.
 func SearchResources(
 	ids []string,
 	searchFn func(id string) (interface{}, error),
@@ -43,7 +52,7 @@ func SearchResources(
 ) ([]string, error) {
 	var result []string
 	for _, id := range ids {
-		if err := validation.Uuid4(id); err == nil {
+		if err := validation.UUID4(id); err == nil {
 			result = append(result, id)
 		} else {
 			matchedResults, err := searchFn(id)
@@ -59,6 +68,7 @@ func SearchResources(
 	return result, nil
 }
 
+// StateColour is a helper mapping states to colors
 func StateColour(state string) text.Colors {
 	switch state {
 	case upcloud.ServerStateStarted:
@@ -72,6 +82,7 @@ func StateColour(state string) text.Colors {
 	}
 }
 
+// BoolFromString parses a string and returns *upcloud.Boolean
 func BoolFromString(b string) (*upcloud.Boolean, error) {
 	var result upcloud.Boolean
 	switch b {

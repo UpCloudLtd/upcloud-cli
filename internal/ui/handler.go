@@ -7,10 +7,14 @@ import (
 	"sync"
 )
 
+// Handler defines the interface for handling requests and returning output
+// TODO: is this needed? Does any other struct besides HandleContext implement this?
 type Handler interface {
 	Handle(requests []interface{}) (interface{}, error)
 }
 
+// HandleContext represents the internal state and callbacks of a particular command handler
+// TODO: is this really a ui feature?
 type HandleContext struct {
 	RequestID       func(interface{}) string
 	ResultUUID      func(interface{}) string
@@ -26,6 +30,7 @@ type HandleContext struct {
 	WaitFn          func(uuid string, waitMsg string, err error) (interface{}, error)
 }
 
+// Handle is the main method that handles (possibly asynchronous) requests and returns their output
 func (c HandleContext) Handle(requests []interface{}) (interface{}, error) {
 	var (
 		mu      sync.Mutex
@@ -42,22 +47,22 @@ func (c HandleContext) Handle(requests []interface{}) (interface{}, error) {
 			msg = fmt.Sprintf("%s %s", c.ActionMsg, c.RequestID(request))
 		}
 		e.SetMessage(msg)
-		e.Start()
+		e.StartedNow()
 
 		var details interface{}
 		var err error
 		details, err = c.Action(request)
 
-		var detailsUuid string
+		var detailsUUID string
 		if c.ResultUUID != nil && details != nil && !reflect.ValueOf(details).IsNil() {
-			detailsUuid = c.ResultUUID(details)
+			detailsUUID = c.ResultUUID(details)
 		} else if c.RequestID != nil {
-			detailsUuid = c.RequestID(request)
+			detailsUUID = c.RequestID(request)
 		}
 
 		if c.WaitFn != nil && err == nil {
 			e.SetMessage(fmt.Sprintf("%s: %s", msg, c.WaitMsg))
-			details, err = c.WaitFn(detailsUuid, c.WaitMsg, err)
+			details, err = c.WaitFn(detailsUUID, c.WaitMsg, err)
 		}
 		var extras []string
 		if c.ResultExtras != nil && details != nil && !reflect.ValueOf(details).IsNil() {
@@ -73,7 +78,7 @@ func (c HandleContext) Handle(requests []interface{}) (interface{}, error) {
 				if c.ResultPrefix != "" {
 					prefix = c.ResultPrefix
 				}
-				message := detailsUuid
+				message := detailsUUID
 				if c.ResultExtraName != "" && c.ResultExtras != nil {
 					message = fmt.Sprintf("%s (%s: %s)", message, c.ResultExtraName, strings.Join(extras, ", "))
 				}

@@ -19,6 +19,8 @@ type templatizeParams struct {
 	request.TemplatizeStorageRequest
 }
 
+// TemplatizeCommand creates the "storage templatise" command
+// TODO: figure out consistent naming, one way or the other.
 func TemplatizeCommand(service service.Storage) commands.Command {
 	return &templatizeCommand{
 		BaseCommand: commands.New("templatise", "Templatise a storage"),
@@ -26,21 +28,23 @@ func TemplatizeCommand(service service.Storage) commands.Command {
 	}
 }
 
-var DefaultTemplatizeParams = &templatizeParams{
+var defaultTemplatizeParams = &templatizeParams{
 	TemplatizeStorageRequest: request.TemplatizeStorageRequest{},
 }
 
+// InitCommand implements Command.InitCommand
 func (s *templatizeCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	s.ArgCompletion(GetArgCompFn(s.service))
+	s.ArgCompletion(getStorageArgumentCompletionFunction(s.service))
 	s.params = templatizeParams{TemplatizeStorageRequest: request.TemplatizeStorageRequest{}}
 
 	flagSet := &pflag.FlagSet{}
-	flagSet.StringVar(&s.params.Title, "title", DefaultTemplatizeParams.Title, "A short, informational description.")
+	flagSet.StringVar(&s.params.Title, "title", defaultTemplatizeParams.Title, "A short, informational description.")
 
 	s.AddFlags(flagSet)
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *templatizeCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 
@@ -48,7 +52,7 @@ func (s *templatizeCommand) MakeExecuteCommand() func(args []string) (interface{
 			return nil, fmt.Errorf("title is required")
 		}
 
-		return Request{
+		return storageRequest{
 			BuildRequest: func(uuid string) (interface{}, error) {
 				req := s.params.TemplatizeStorageRequest
 				req.UUID = uuid
@@ -57,7 +61,7 @@ func (s *templatizeCommand) MakeExecuteCommand() func(args []string) (interface{
 			Service: s.service,
 			Handler: ui.HandleContext{
 				RequestID:     func(in interface{}) string { return in.(*request.TemplatizeStorageRequest).UUID },
-				ResultUUID:    getStorageDetailsUuid,
+				ResultUUID:    getStorageDetailsUUID,
 				MaxActions:    maxStorageActions,
 				InteractiveUI: s.Config().InteractiveUI(),
 				ActionMsg:     "Templatising storage",
@@ -65,6 +69,6 @@ func (s *templatizeCommand) MakeExecuteCommand() func(args []string) (interface{
 					return s.service.TemplatizeStorage(req.(*request.TemplatizeStorageRequest))
 				},
 			},
-		}.Send(args)
+		}.send(args)
 	}
 }

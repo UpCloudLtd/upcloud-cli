@@ -17,7 +17,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/validation"
 )
 
-func StyleDataTable() table.Style {
+func styleDataTable() table.Style {
 	return table.Style{
 		Name: "DataTable",
 		Box: table.BoxStyle{
@@ -59,7 +59,7 @@ func StyleDataTable() table.Style {
 	}
 }
 
-func StyleFlagsTable() table.Style {
+func styleFlagsTable() table.Style {
 	return table.Style{
 		Name: "FlagsTable",
 		Box: table.BoxStyle{
@@ -101,14 +101,16 @@ func StyleFlagsTable() table.Style {
 	}
 }
 
+// NewDataTable returns a new output data container for tabulated data
 func NewDataTable(columnKeys ...string) *DataTable {
 	t := &DataTable{columnKeys: columnKeys}
 	t.init()
-	t.SetStyle(StyleDataTable())
+	t.setStyle(styleDataTable())
 	t.header = table.Row{}
 	return t
 }
 
+// DataTable is a container for tabulated output data
 type DataTable struct {
 	t                  *table.Table
 	header             table.Row
@@ -128,10 +130,11 @@ func (s *DataTable) init() {
 	}
 }
 
-func (s *DataTable) SetStyle(style table.Style) {
+func (s *DataTable) setStyle(style table.Style) {
 	s.t.SetStyle(style)
 }
 
+// SetHeader sets the header row for the DataTable
 func (s *DataTable) SetHeader(hdr table.Row) {
 	if hdr != nil && len(hdr) != len(s.columnKeys) {
 		panic("uneven number of columns and headers")
@@ -139,7 +142,7 @@ func (s *DataTable) SetHeader(hdr table.Row) {
 	s.header = hdr
 }
 
-// Overrides column visibility and order
+// OverrideColumnKeys overrides column visibility and order
 func (s *DataTable) OverrideColumnKeys(keys ...string) {
 	if len(keys) == 0 {
 		return
@@ -147,6 +150,7 @@ func (s *DataTable) OverrideColumnKeys(keys ...string) {
 	s.overrideColumnKeys = keys
 }
 
+// SetColumnConfig sets the configuration for a particular column, defined by key
 func (s *DataTable) SetColumnConfig(key string, config table.ColumnConfig) {
 	if _, ok := s.columnKeyPos[key]; !ok {
 		panic(fmt.Sprintf("undeclared column key %q", key))
@@ -154,6 +158,7 @@ func (s *DataTable) SetColumnConfig(key string, config table.ColumnConfig) {
 	s.columnConfig[key] = &config
 }
 
+// Render renders the DataTable
 func (s *DataTable) Render() string {
 	s.t.ResetHeaders()
 	s.t.ResetFooters()
@@ -233,19 +238,18 @@ func (s *DataTable) Render() string {
 	return s.t.Render()
 }
 
-func (s *DataTable) AppendRow(row table.Row) {
-	if len(row) != len(s.columnKeys) {
-		panic("uneven number of columns in a row vs the number of column keys")
-	}
-	s.rows = append(s.rows, row)
-}
-
-func (s *DataTable) AppendRows(rows []table.Row) {
+// Append appends new rows to the DataTable
+func (s *DataTable) Append(rows ...table.Row) {
 	for _, row := range rows {
-		s.AppendRow(row)
+		if len(row) != len(s.columnKeys) {
+			panic("uneven number of columns in a row vs the number of column keys")
+		}
+		s.rows = append(s.rows, row)
 	}
 }
 
+// TerminalHeight return the number ro rows visible in the terminal.
+// nb. does not work on windows. FIXME
 func TerminalHeight() (int, error) {
 	if runtime.GOOS == "windows" {
 		return math.MaxInt16, nil
@@ -259,6 +263,7 @@ func TerminalHeight() (int, error) {
 	return strconv.Atoi(strings.Split(string(out), " ")[0])
 }
 
+// Paginate renders the DataTable paginated
 func (s *DataTable) Paginate(writer io.Writer) error {
 	var i int
 	var rowCount int
@@ -274,6 +279,7 @@ func (s *DataTable) Paginate(writer io.Writer) error {
 		if i-len(s.rows) < height && i > 0 {
 			cmd := exec.Command("clear")
 			cmd.Stdout = os.Stdout
+			// TODO: should we handle errors from cmd.Run()?
 			cmd.Run()
 		}
 		t := NewDataTable(s.columnKeys...)
@@ -282,10 +288,10 @@ func (s *DataTable) Paginate(writer io.Writer) error {
 		for key, value := range s.columnConfig {
 			t.SetColumnConfig(key, *value)
 		}
-		t.SetStyle(*s.t.Style())
+		t.setStyle(*s.t.Style())
 
 		for rowCount < height-4 && i < len(s.rows) {
-			t.AppendRow(s.rows[i])
+			t.Append(s.rows[i])
 			rowCount++
 			i++
 		}

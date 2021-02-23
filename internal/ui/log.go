@@ -12,23 +12,25 @@ import (
 )
 
 var (
-	LiveLogDefaultColours = LiveLogColours{
+	liveLogDefaultColours = liveLogColours{
 		Pending:    text.Colors{text.FgHiBlack},
 		InProgress: text.Colors{text.FgHiBlue, text.Bold},
 		Done:       text.Colors{text.FgHiGreen},
 		Details:    text.Colors{text.FgHiBlack},
 		Time:       text.Colors{text.FgHiCyan},
 	}
-	LiveLogDefaultConfig = LiveLogConfig{
+	liveLogDefaultConfig = LiveLogConfig{
 		EntryMaxWidth:        80,
-		RenderPending:        true,
+		renderPending:        true,
 		DisableLiveRendering: !terminal.IsStdoutTerminal(),
-		Colours:              LiveLogDefaultColours,
+		Colours:              liveLogDefaultColours,
 	}
+	// LiveLogEntryErrorColours specifies the color used for errors in LiveLog
+	// TODO: remove cross-package dependency and make this private
 	LiveLogEntryErrorColours = text.FgHiRed
 )
 
-type LiveLogColours struct {
+type liveLogColours struct {
 	Pending    text.Colors
 	InProgress text.Colors
 	Done       text.Colors
@@ -36,17 +38,20 @@ type LiveLogColours struct {
 	Time       text.Colors
 }
 
+// LiveLogConfig is a configuration for rendering live logs
 type LiveLogConfig struct {
 	EntryMaxWidth        int
-	RenderPending        bool
+	renderPending        bool
 	DisableLiveRendering bool
-	Colours              LiveLogColours
+	Colours              liveLogColours
 }
 
+// NewLiveLog returns a new renderer for live logs
 func NewLiveLog(out io.Writer, style LiveLogConfig) *LiveLog {
 	return &LiveLog{out: out, config: style}
 }
 
+// LiveLog represents the internal state of a live log renderer
 type LiveLog struct {
 	mu                sync.Mutex
 	config            LiveLogConfig
@@ -59,6 +64,7 @@ type LiveLog struct {
 	isTerminal        bool
 }
 
+// AddEntries adds log entries to LiveLog
 func (s *LiveLog) AddEntries(entries ...*LogEntry) {
 	for _, e := range entries {
 		if e == nil {
@@ -89,6 +95,7 @@ func (s *LiveLog) unlockActiveEntries(locks []*sync.Mutex) {
 	}
 }
 
+// Render renders the LiveLog
 func (s *LiveLog) Render() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -148,7 +155,7 @@ func (s *LiveLog) Render() {
 	}
 
 	// Render queued
-	if s.config.RenderPending {
+	if s.config.renderPending {
 		for _, entry := range s.entriesPending {
 			if entry.started.IsZero() {
 				s.height++
@@ -200,10 +207,12 @@ func (s *LiveLog) write(str string) {
 	}
 }
 
+// NewLogEntry creates a new LogEntry with the specified message
 func NewLogEntry(msg string) *LogEntry {
 	return &LogEntry{msg: msg}
 }
 
+// LogEntry represents a single log entry in a live log
 type LogEntry struct {
 	mu            sync.Mutex
 	msg           string
@@ -213,12 +222,14 @@ type LogEntry struct {
 	done          bool
 }
 
+// SetMessage sets the message of the LogEntry
 func (s *LogEntry) SetMessage(msg string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.msg = msg
 }
 
+// SetDetails sets the details of the LogEntry
 func (s *LogEntry) SetDetails(details, prefix string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -226,12 +237,14 @@ func (s *LogEntry) SetDetails(details, prefix string) {
 	s.detailsPrefix = prefix
 }
 
-func (s *LogEntry) Start() {
+// StartedNow sets the LogEntry time to time.Now
+func (s *LogEntry) StartedNow() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.started = time.Now()
 }
 
+// MarkDone marks the LogEntry as done
 func (s *LogEntry) MarkDone() {
 	s.mu.Lock()
 	defer s.mu.Unlock()

@@ -60,12 +60,12 @@ func (s *defaultsCommand) MakeExecuteCommand() func(args []string) (interface{},
 	}
 }
 
-func (s *defaultsCommand) HandleOutput(writer io.Writer, _ interface{}) error {
-	output := config.ConfigValueOutputYaml
-	if s.Config().Top().IsSet(config.ConfigKeyOutput) && !s.Config().OutputHuman() {
+func (s *defaultsCommand) HandleOutput(io.Writer, interface{}) error {
+	output := config.ValueOutputYAML
+	if s.Config().Top().IsSet(config.KeyOutput) && !s.Config().OutputHuman() {
 		output = s.Config().Output()
 	}
-	if output == config.ConfigValueOutputJson {
+	if output == config.ValueOutputJSON {
 		return fmt.Errorf("only yaml output is supported for this command")
 	}
 
@@ -234,7 +234,7 @@ func (s *mainCommand) InitCommand() {
 
 	all.BuildCommands(s, s.Config())
 
-	s.Cobra().SetUsageTemplate(ui.CommandUsage())
+	s.Cobra().SetUsageTemplate(ui.CommandUsageTemplate())
 	s.Cobra().SetUsageFunc(ui.UsageFunc)
 }
 

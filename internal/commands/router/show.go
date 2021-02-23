@@ -13,6 +13,7 @@ import (
 	"sync"
 )
 
+// ShowCommand creates the "router show" command
 func ShowCommand(service service.Network) commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New("show", "Show current router"),
@@ -25,9 +26,10 @@ type showCommand struct {
 	service service.Network
 }
 
+// InitCommand implements Command.InitCommand
 func (s *showCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	s.ArgCompletion(GetArgCompFn(s.service))
+	s.ArgCompletion(getRouterArgCompletionFunction(s.service))
 }
 
 type routerWithNetworks struct {
@@ -35,10 +37,12 @@ type routerWithNetworks struct {
 	networks []*upcloud.Network
 }
 
+// MarshalJSON implements json.Marshaler
 func (c *routerWithNetworks) MarshalJSON() ([]byte, error) {
 	return json.Marshal(c.router)
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 		if len(args) != 1 {
@@ -75,6 +79,7 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 	}
 }
 
+// HandleOutput implements Command.HandleOutput
 func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	routerWithNetworks := out.(*routerWithNetworks)
 	r := routerWithNetworks.router
@@ -83,20 +88,20 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	l := ui.NewListLayout(ui.ListLayoutDefault)
 
 	dCommon := ui.NewDetailsView()
-	dCommon.AppendRows([]table.Row{
-		{"UUID:", ui.DefaultUuidColours.Sprint(r.UUID)},
-		{"Name:", r.Name},
-		{"Type:", r.Type},
-	})
+	dCommon.Append(
+		table.Row{"UUID:", ui.DefaultUUUIDColours.Sprint(r.UUID)},
+		table.Row{"Name:", r.Name},
+		table.Row{"Type:", r.Type},
+	)
 	l.AppendSection("Common", dCommon.Render())
 
 	if len(networks) > 0 {
 		tIPRouter := ui.NewDataTable("UUID", "Name", "Router", "Type", "Zone")
 		for _, n := range networks {
-			tIPRouter.AppendRow(table.Row{
-				ui.DefaultUuidColours.Sprint(n.UUID),
+			tIPRouter.Append(table.Row{
+				ui.DefaultUUUIDColours.Sprint(n.UUID),
 				n.Name,
-				ui.DefaultUuidColours.Sprint(n.Router),
+				ui.DefaultUUUIDColours.Sprint(n.Router),
 				n.Type,
 				n.Zone,
 			})

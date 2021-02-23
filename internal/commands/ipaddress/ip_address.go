@@ -1,4 +1,4 @@
-package ip_address
+package ipaddress
 
 import (
 	"fmt"
@@ -10,10 +10,11 @@ import (
 	"net"
 )
 
-const maxIpAddressActions = 10
+const maxIPAddressActions = 10
 const positionalArgHelp = "<Address/PTRRecord...>"
 
-func IpAddressCommand() commands.Command {
+// BaseIPAddressCommand creates the base 'ip-address' command
+func BaseIPAddressCommand() commands.Command {
 	return &ipAddressCommand{commands.New("ip-address", "Manage ip address")}
 }
 
@@ -21,6 +22,7 @@ type ipAddressCommand struct {
 	*commands.BaseCommand
 }
 
+// GetFamily returns a human-readable string (`"IPv4"` or `"IPv6"`) of the address family of the ip parsed from the string
 func GetFamily(address string) (string, error) {
 	parsed := net.ParseIP(address)
 	if parsed.To4() != nil {
@@ -44,7 +46,7 @@ func GetFamily(address string) (string, error) {
 
 var cachedIPs []upcloud.IPAddress
 
-func searchIpAddress(term string, service service.IpAddress, unique bool) ([]*upcloud.IPAddress, error) {
+func searchIPAddress(term string, service service.IpAddress, unique bool) ([]*upcloud.IPAddress, error) {
 	var result []*upcloud.IPAddress
 
 	if len(cachedIPs) == 0 {
@@ -70,14 +72,14 @@ func searchIpAddress(term string, service service.IpAddress, unique bool) ([]*up
 	return result, nil
 }
 
-func searchIpAddresses(terms []string, service service.IpAddress, unique bool) ([]string, error) {
+func searchIPAddresses(terms []string, service service.IpAddress, unique bool) ([]string, error) {
 	var result []string
 	for _, term := range terms {
 		_, err := GetFamily(term)
 		if err == nil {
 			result = append(result, term)
 		} else {
-			ip, err := searchIpAddress(term, service, unique)
+			ip, err := searchIPAddress(term, service, unique)
 			if err != nil {
 				return nil, err
 			}
@@ -89,14 +91,16 @@ func searchIpAddresses(terms []string, service service.IpAddress, unique bool) (
 	return result, nil
 }
 
-type Request struct {
+// ipAddressRequest represents an internal ip address requests.
+type ipAddressRequest struct {
 	ExactlyOne   bool
 	BuildRequest func(uuid string) interface{}
 	Service      service.IpAddress
 	ui.HandleContext
 }
 
-func (s Request) Send(args []string) (interface{}, error) {
+// send executes the ip address modification request
+func (s ipAddressRequest) send(args []string) (interface{}, error) {
 	if s.ExactlyOne && len(args) != 1 {
 		return nil, fmt.Errorf("single ip address or ptr record is required")
 	}
@@ -104,7 +108,7 @@ func (s Request) Send(args []string) (interface{}, error) {
 		return nil, fmt.Errorf("at least one ip address or ptr record is required")
 	}
 
-	servers, err := searchIpAddresses(args, s.Service, true)
+	servers, err := searchIPAddresses(args, s.Service, true)
 	if err != nil {
 		return nil, err
 	}
@@ -117,7 +121,8 @@ func (s Request) Send(args []string) (interface{}, error) {
 	return s.Handle(requests)
 }
 
-func GetArgCompFn(s service.IpAddress) func(toComplete string) ([]string, cobra.ShellCompDirective) {
+// getArgCompFn returns the bash completion gunction for an ip address
+func getArgCompFn(s service.IpAddress) func(toComplete string) ([]string, cobra.ShellCompDirective) {
 	return func(toComplete string) ([]string, cobra.ShellCompDirective) {
 		ip, err := s.GetIPAddresses()
 		if err != nil {

@@ -15,6 +15,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/ui"
 )
 
+// ListCommand creates the "storage list" command
 func ListCommand(service service.Storage) commands.Command {
 	return &listCommand{
 		BaseCommand: commands.New("list", "List current storages"),
@@ -37,6 +38,7 @@ type listCommand struct {
 	favorite       bool
 }
 
+// InitCommand implements Command.InitCommand
 func (s *listCommand) InitCommand() {
 	s.header = table.Row{"UUID", "Title", "Zone", "State", "Type", "Size", "Tier", "Created", "Access"}
 	s.columnKeys = []string{"uuid", "title", "zone", "state", "type", "size", "tier", "created", "access"}
@@ -54,15 +56,16 @@ func (s *listCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		storages, err := s.service.GetStorages(&request.GetStoragesRequest{})
-		CachedStorages = storages.Storages
+		gotStorages, err := s.service.GetStorages(&request.GetStoragesRequest{})
 		if err != nil {
 			return nil, err
 		}
+		CachedStorages = gotStorages.Storages
 		var filtered []upcloud.Storage
-		for _, v := range storages.Storages {
+		for _, v := range gotStorages.Storages {
 			if !s.public && !s.private {
 				s.private = true
 			}
@@ -90,11 +93,12 @@ func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 			}
 		}
 
-		storages.Storages = filtered
-		return storages, nil
+		gotStorages.Storages = filtered
+		return gotStorages, nil
 	}
 }
 
+// HandleOutput implements Command.HandleOutput
 func (s *listCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	storages := out.(*upcloud.Storages)
 
@@ -103,7 +107,7 @@ func (s *listCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	t.SetHeader(s.header)
 
 	t.SetColumnConfig("state", table.ColumnConfig{Transformer: func(val interface{}) string {
-		return StateColour(val.(string)).Sprint(val)
+		return storageStateColor(val.(string)).Sprint(val)
 	}})
 
 	sort.SliceStable(storages.Storages, func(i, j int) bool {
@@ -114,7 +118,7 @@ func (s *listCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	})
 
 	for _, storage := range storages.Storages {
-		t.AppendRow(table.Row{
+		t.Append(table.Row{
 			storage.UUID,
 			storage.Title,
 			storage.Zone,

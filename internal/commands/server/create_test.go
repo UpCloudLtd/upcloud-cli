@@ -16,7 +16,7 @@ import (
 func TestCreateServer(t *testing.T) {
 
 	var Storage1 = upcloud.Storage{
-		UUID:   Uuid1,
+		UUID:   UUID1,
 		Title:  Title1,
 		Access: "private",
 		State:  "maintenance",
@@ -27,7 +27,7 @@ func TestCreateServer(t *testing.T) {
 	}
 
 	var StorageDef = upcloud.Storage{
-		UUID:   Uuid2,
+		UUID:   UUID2,
 		Title:  "Debian GNU/Linux 10 (Buster)",
 		Access: "private",
 		State:  "online",
@@ -38,8 +38,8 @@ func TestCreateServer(t *testing.T) {
 	}
 
 	var Storage3 = upcloud.Storage{
-		UUID:   Uuid3,
-		Title:  Title3,
+		UUID:   UUID3,
+		Title:  Title2,
 		Access: "public",
 		State:  "online",
 		Type:   "normal",
@@ -56,7 +56,7 @@ func TestCreateServer(t *testing.T) {
 	}
 	var serverDetailsMaint = upcloud.ServerDetails{
 		Server: upcloud.Server{
-			UUID:  Uuid1,
+			UUID:  UUID1,
 			State: upcloud.ServerStateMaintenance,
 		},
 		VideoModel: "vga",

@@ -115,14 +115,14 @@ func TestSearchRouter(t *testing.T) {
 	for _, test := range []struct {
 		name    string
 		args    []string
-		request Request
+		request routerRequest
 		calls   int
 		error   string
 	}{
 		{
 			name: "no router",
 			args: []string{},
-			request: Request{
+			request: routerRequest{
 				ExactlyOne:   false,
 				BuildRequest: buildRequestFn,
 				Service:      &mss,
@@ -134,7 +134,7 @@ func TestSearchRouter(t *testing.T) {
 		{
 			name: "single router with UUID",
 			args: []string{Router2.UUID},
-			request: Request{
+			request: routerRequest{
 				ExactlyOne:   false,
 				BuildRequest: buildRequestFn,
 				Service:      &mss,
@@ -145,7 +145,7 @@ func TestSearchRouter(t *testing.T) {
 		{
 			name: "single router with Name",
 			args: []string{Router2.Name},
-			request: Request{
+			request: routerRequest{
 				ExactlyOne:   false,
 				BuildRequest: buildRequestFn,
 				Service:      &mss,
@@ -156,7 +156,7 @@ func TestSearchRouter(t *testing.T) {
 		{
 			name: "single router, exactly once",
 			args: []string{Router2.UUID},
-			request: Request{
+			request: routerRequest{
 				ExactlyOne:   true,
 				BuildRequest: buildRequestFn,
 				Service:      &mss,
@@ -167,7 +167,7 @@ func TestSearchRouter(t *testing.T) {
 		{
 			name: "multiple router",
 			args: []string{Router1.Name, Router2.Name},
-			request: Request{
+			request: routerRequest{
 				ExactlyOne:   false,
 				BuildRequest: buildRequestFn,
 				Service:      &mss,
@@ -178,7 +178,7 @@ func TestSearchRouter(t *testing.T) {
 		{
 			name: "multiple router, exactly once",
 			args: []string{Router1.UUID, Router2.UUID},
-			request: Request{
+			request: routerRequest{
 				ExactlyOne:   true,
 				BuildRequest: buildRequestFn,
 				Service:      &mss,
@@ -191,7 +191,7 @@ func TestSearchRouter(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			cachedRouters = nil
 
-			res, err := test.request.Send(test.args)
+			res, err := test.request.send(test.args)
 
 			if test.error != "" && err != nil {
 				assert.Equal(t, test.error, err.Error())

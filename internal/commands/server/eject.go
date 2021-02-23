@@ -22,9 +22,10 @@ type ejectParams struct {
 
 func (s *ejectCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetArgCompFn(s.serverSvc))
+	s.ArgCompletion(GetServerArgumentCompletionFunction(s.serverSvc))
 }
 
+// EjectCommand creates the "server eject" command
 func EjectCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
 	return &ejectCommand{
 		BaseCommand: commands.New("eject", "Eject a CD-ROM"),
@@ -33,6 +34,7 @@ func EjectCommand(serverSvc service.Server, storageSvc service.Storage) commands
 	}
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *ejectCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 		return Request{

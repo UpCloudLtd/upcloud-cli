@@ -1,4 +1,4 @@
-package ip_address
+package ipaddress
 
 import (
 	"github.com/UpCloudLtd/cli/internal/commands"
@@ -63,7 +63,7 @@ func TestAssignCommand(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			cachedIPs = nil
-			mips := MockIpAddressService{}
+			mips := MockIPAddressService{}
 			mips.On(methodName, &test.expected).Return(&ip, nil)
 			mss := server.MockServerService{}
 			mss.On("GetServers").Return(&servers, nil)

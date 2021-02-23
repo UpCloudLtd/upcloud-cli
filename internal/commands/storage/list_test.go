@@ -14,7 +14,7 @@ import (
 func TestListStorages(t *testing.T) {
 
 	var Storage1 = upcloud.Storage{
-		UUID:   Uuid1,
+		UUID:   UUID1,
 		Title:  Title1,
 		Access: "private",
 		State:  "maintenance",
@@ -24,7 +24,7 @@ func TestListStorages(t *testing.T) {
 		Tier:   "maxiops",
 	}
 	var Storage2 = upcloud.Storage{
-		UUID:   Uuid2,
+		UUID:   UUID2,
 		Title:  Title2,
 		Access: "private",
 		State:  "online",
@@ -34,7 +34,7 @@ func TestListStorages(t *testing.T) {
 		Tier:   "maxiops",
 	}
 	var Storage3 = upcloud.Storage{
-		UUID:   Uuid3,
+		UUID:   UUID3,
 		Title:  Title3,
 		Access: "public",
 		State:  "online",

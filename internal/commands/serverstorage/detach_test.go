@@ -1,4 +1,4 @@
-package server_storage
+package serverstorage
 
 import (
 	"github.com/UpCloudLtd/cli/internal/commands"

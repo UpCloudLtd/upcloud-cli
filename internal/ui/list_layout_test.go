@@ -12,7 +12,7 @@ func TestShowDetailsRender(t *testing.T) {
 	for _, testcase := range []struct {
 		name           string
 		buildViewFn    func(*ListLayout)
-		style          ListLayoutConfig
+		style          listLayoutConfig
 		expectedOutput string
 	}{
 		{
