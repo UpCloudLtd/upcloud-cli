@@ -1,4 +1,4 @@
-package server_storage
+package serverstorage
 
 import (
 	"fmt"
@@ -22,6 +22,7 @@ type attachParams struct {
 	request.AttachStorageRequest
 }
 
+// AttachCommand creates the "server storage attach" command
 func AttachCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
 	return &attachCommand{
 		BaseCommand: commands.New("attach", "Attaches a storage as a device to a server"),
@@ -30,7 +31,7 @@ func AttachCommand(serverSvc service.Server, storageSvc service.Storage) command
 	}
 }
 
-var DefaultAttachParams = &attachParams{
+var defaultAttachParams = &attachParams{
 	AttachStorageRequest: request.AttachStorageRequest{
 		Type:     "disk",
 		BootDisk: 0,
@@ -38,20 +39,22 @@ var DefaultAttachParams = &attachParams{
 	},
 }
 
+// InitCommand implements Command.InitCommand
 func (s *attachCommand) InitCommand() {
-	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(server.GetArgCompFn(s.serverSvc))
+	s.SetPositionalArgHelp(positionalArgHelp)
+	s.ArgCompletion(server.GetServerArgumentCompletionFunction(s.serverSvc))
 	s.params = attachParams{AttachStorageRequest: request.AttachStorageRequest{}}
 
 	flagSet := &pflag.FlagSet{}
-	flagSet.StringVar(&s.params.Type, "type", DefaultAttachParams.Type, "The type of the attached storage.\nAvailable: disk, cdrom")
-	flagSet.StringVar(&s.params.Address, "address", DefaultAttachParams.Address, "The address where the storage device is attached on the server. \nSpecify only the bus name (ide/scsi/virtio) to auto-select next available address from that bus.")
-	flagSet.StringVar(&s.params.StorageUUID, "storage", DefaultAttachParams.StorageUUID, "The UUID of the storage to attach.\n[Required]")
-	flagSet.IntVar(&s.params.BootDisk, "boot-disk", DefaultAttachParams.BootDisk, "If the value is 1 the storage device will be used as a boot disk, unless overridden with the server boot_order attribute.")
+	flagSet.StringVar(&s.params.Type, "type", defaultAttachParams.Type, "The type of the attached storage.\nAvailable: disk, cdrom")
+	flagSet.StringVar(&s.params.Address, "address", defaultAttachParams.Address, "The address where the storage device is attached on the server. \nSpecify only the bus name (ide/scsi/virtio) to auto-select next available address from that bus.")
+	flagSet.StringVar(&s.params.StorageUUID, "storage", defaultAttachParams.StorageUUID, "The UUID of the storage to attach.\n[Required]")
+	flagSet.IntVar(&s.params.BootDisk, "boot-disk", defaultAttachParams.BootDisk, "If the value is 1 the storage device will be used as a boot disk, unless overridden with the server boot_order attribute.")
 
 	s.AddFlags(flagSet)
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *attachCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 

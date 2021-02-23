@@ -14,7 +14,8 @@ var cachedRouters []upcloud.Router
 const maxRouterActions = 10
 const positionalArgHelp = "<UUID/Name...>"
 
-func RouterCommand() commands.Command {
+// BaseRouterCommand creates the base "router" command
+func BaseRouterCommand() commands.Command {
 	return &routerCommand{commands.New("router", "Manage router")}
 }
 
@@ -22,7 +23,9 @@ type routerCommand struct {
 	*commands.BaseCommand
 }
 
-var getRouterUuid = func(in interface{}) string { return in.(*upcloud.Router).UUID }
+func getRouterUUID(in interface{}) string {
+	return in.(*upcloud.Router).UUID
+}
 
 func searchRouter(term string, service service.Network, unique bool) ([]*upcloud.Router, error) {
 	var result []*upcloud.Router
@@ -59,14 +62,14 @@ func searchAllRouters(terms []string, service service.Network) ([]string, error)
 		func(in interface{}) string { return in.(*upcloud.Router).UUID })
 }
 
-type Request struct {
+type routerRequest struct {
 	ExactlyOne   bool
 	BuildRequest func(uuid string) interface{}
 	Service      service.Network
 	Handler      ui.Handler
 }
 
-func (s Request) Send(args []string) (interface{}, error) {
+func (s routerRequest) send(args []string) (interface{}, error) {
 	if s.ExactlyOne && len(args) != 1 {
 		return nil, fmt.Errorf("single router uuid is required")
 	}
@@ -87,7 +90,7 @@ func (s Request) Send(args []string) (interface{}, error) {
 	return s.Handler.Handle(requests)
 }
 
-func GetArgCompFn(s service.Network) func(toComplete string) ([]string, cobra.ShellCompDirective) {
+func getRouterArgCompletionFunction(s service.Network) func(toComplete string) ([]string, cobra.ShellCompDirective) {
 	return func(toComplete string) ([]string, cobra.ShellCompDirective) {
 		routers, err := s.GetRouters()
 		if err != nil {

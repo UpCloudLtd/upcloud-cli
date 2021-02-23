@@ -10,6 +10,7 @@ import (
 	"io"
 )
 
+// ListCommand creates the "router list" command
 func ListCommand(service service.Network) commands.Command {
 	return &listCommand{
 		BaseCommand: commands.New("list", "List routers"),
@@ -25,6 +26,7 @@ type listCommand struct {
 	visibleColumns []string
 }
 
+// InitCommand implements Command.InitCommand
 func (s *listCommand) InitCommand() {
 	s.header = table.Row{"UUID", "Name", "Type"}
 	s.columnKeys = []string{"uuid", "name", "type"}
@@ -34,6 +36,7 @@ func (s *listCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 		ips, err := s.service.GetRouters()
@@ -44,6 +47,7 @@ func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 	}
 }
 
+// HandleOutput implements Command.HandleOutput
 func (s *listCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	routers := out.(*upcloud.Routers)
 
@@ -52,8 +56,8 @@ func (s *listCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	t.SetHeader(s.header)
 
 	for _, r := range routers.Routers {
-		t.AppendRow(table.Row{
-			ui.DefaultUuidColours.Sprint(r.UUID),
+		t.Append(table.Row{
+			ui.DefaultUUUIDColours.Sprint(r.UUID),
 			r.Name,
 			r.Type,
 		})

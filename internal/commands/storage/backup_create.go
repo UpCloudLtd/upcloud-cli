@@ -19,6 +19,7 @@ type createBackupParams struct {
 	request.CreateBackupRequest
 }
 
+// CreateBackupCommand creates the "storage backup create" command
 func CreateBackupCommand(service service.Storage) commands.Command {
 	return &createBackupCommand{
 		BaseCommand: commands.New("create", "Create backup of a storage"),
@@ -26,21 +27,23 @@ func CreateBackupCommand(service service.Storage) commands.Command {
 	}
 }
 
-var DefaultCreateBackupParams = &createBackupParams{
+var defaultCreateBackupParams = &createBackupParams{
 	CreateBackupRequest: request.CreateBackupRequest{},
 }
 
+// InitCommand implements Command.InitCommand
 func (s *createBackupCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	s.ArgCompletion(GetArgCompFn(s.service))
+	s.ArgCompletion(getStorageArgumentCompletionFunction(s.service))
 	s.params = createBackupParams{CreateBackupRequest: request.CreateBackupRequest{}}
 
 	flagSet := &pflag.FlagSet{}
-	flagSet.StringVar(&s.params.Title, "title", DefaultCreateBackupParams.Title, "A short, informational description.\n[Required]")
+	flagSet.StringVar(&s.params.Title, "title", defaultCreateBackupParams.Title, "A short, informational description.\n[Required]")
 
 	s.AddFlags(flagSet)
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *createBackupCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 
@@ -48,7 +51,7 @@ func (s *createBackupCommand) MakeExecuteCommand() func(args []string) (interfac
 			return nil, fmt.Errorf("title is required")
 		}
 
-		return Request{
+		return storageRequest{
 			BuildRequest: func(uuid string) (interface{}, error) {
 				req := s.params.CreateBackupRequest
 				req.UUID = uuid
@@ -57,7 +60,7 @@ func (s *createBackupCommand) MakeExecuteCommand() func(args []string) (interfac
 			Service: s.service,
 			Handler: ui.HandleContext{
 				RequestID:     func(in interface{}) string { return in.(*request.CreateBackupRequest).UUID },
-				ResultUUID:    getStorageDetailsUuid,
+				ResultUUID:    getStorageDetailsUUID,
 				InteractiveUI: s.Config().InteractiveUI(),
 				MaxActions:    maxStorageActions,
 				ActionMsg:     "Creating backup of storage",
@@ -65,6 +68,6 @@ func (s *createBackupCommand) MakeExecuteCommand() func(args []string) (interfac
 					return s.service.CreateBackup(req.(*request.CreateBackupRequest))
 				},
 			},
-		}.Send(args)
+		}.send(args)
 	}
 }

@@ -1,4 +1,4 @@
-package ip_address
+package ipaddress
 
 import (
 	"github.com/UpCloudLtd/cli/internal/commands"
@@ -12,6 +12,7 @@ type removeCommand struct {
 	service service.IpAddress
 }
 
+// RemoveCommand creates the 'ip-address remove' command
 func RemoveCommand(service service.IpAddress) commands.Command {
 	return &removeCommand{
 		BaseCommand: commands.New("remove", "Removes an ip address"),
@@ -19,27 +20,29 @@ func RemoveCommand(service service.IpAddress) commands.Command {
 	}
 }
 
+// InitCommand implements Command.MakeExecuteCommand
 func (s *removeCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	s.ArgCompletion(GetArgCompFn(s.service))
+	s.ArgCompletion(getArgCompFn(s.service))
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *removeCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		return Request{
+		return ipAddressRequest{
 			BuildRequest: func(address string) interface{} {
 				return &request.ReleaseIPAddressRequest{IPAddress: address}
 			},
 			Service: s.service,
 			HandleContext: ui.HandleContext{
 				RequestID:     func(in interface{}) string { return in.(*request.ReleaseIPAddressRequest).IPAddress },
-				MaxActions:    maxIpAddressActions,
+				MaxActions:    maxIPAddressActions,
 				InteractiveUI: s.Config().InteractiveUI(),
 				ActionMsg:     "Removing IP Address",
 				Action: func(req interface{}) (interface{}, error) {
 					return nil, s.service.ReleaseIPAddress(req.(*request.ReleaseIPAddressRequest))
 				},
 			},
-		}.Send(args)
+		}.send(args)
 	}
 }

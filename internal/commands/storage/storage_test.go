@@ -84,15 +84,15 @@ const (
 	Title1 = "mock-storage-title1"
 	Title2 = "mock-storage-title2"
 	Title3 = "mock-storage-title3"
-	Uuid1  = "0127dfd6-3884-4079-a948-3a8881df1a7a"
-	Uuid2  = "012bde1d-f0e7-4bb2-9f4a-74e1f2b49c07"
-	Uuid3  = "012c61a6-b8f0-48c2-a63a-b4bf7d26a655"
-	Uuid4  = "012c61a6-er4g-mf2t-b63a-b4be4326a655"
+	UUID1  = "0127dfd6-3884-4079-a948-3a8881df1a7a"
+	UUID2  = "012bde1d-f0e7-4bb2-9f4a-74e1f2b49c07"
+	UUID3  = "012c61a6-b8f0-48c2-a63a-b4bf7d26a655"
+	UUID4  = "012c61a6-er4g-mf2t-b63a-b4be4326a655"
 )
 
 func TestSearchStorage(t *testing.T) {
 	var Storage1 = upcloud.Storage{
-		UUID:   Uuid1,
+		UUID:   UUID1,
 		Title:  Title1,
 		Access: "private",
 		State:  "maintenance",
@@ -103,7 +103,7 @@ func TestSearchStorage(t *testing.T) {
 	}
 
 	var Storage2 = upcloud.Storage{
-		UUID:   Uuid2,
+		UUID:   UUID2,
 		Title:  Title2,
 		Access: "private",
 		State:  "online",
@@ -114,7 +114,7 @@ func TestSearchStorage(t *testing.T) {
 	}
 
 	var Storage3 = upcloud.Storage{
-		UUID:   Uuid3,
+		UUID:   UUID3,
 		Title:  Title3,
 		Access: "public",
 		State:  "online",
@@ -125,7 +125,7 @@ func TestSearchStorage(t *testing.T) {
 	}
 
 	var Storage4 = upcloud.Storage{
-		UUID:   Uuid4,
+		UUID:   UUID4,
 		Title:  Title1,
 		Access: "public",
 		State:  "online",
@@ -196,7 +196,7 @@ func TestSearchStorage(t *testing.T) {
 			mss := MockStorageService{}
 			mss.On("GetStorages", mock.Anything).Return(storages, nil)
 
-			result, err := SearchAllStorages(testcase.args, &mss, testcase.unique)
+			result, err := searchAllStorages(testcase.args, &mss, testcase.unique)
 
 			if testcase.errMsg == "" {
 				assert.Nil(t, err)
@@ -226,7 +226,7 @@ func (s MockHandler) Handle(requests []interface{}) (interface{}, error) {
 
 func TestSendStorageRequest(t *testing.T) {
 	var Storage1 = upcloud.Storage{
-		UUID:   Uuid1,
+		UUID:   UUID1,
 		Title:  Title1,
 		Access: "private",
 		State:  "maintenance",
@@ -237,7 +237,7 @@ func TestSendStorageRequest(t *testing.T) {
 	}
 
 	var Storage2 = upcloud.Storage{
-		UUID:   Uuid2,
+		UUID:   UUID2,
 		Title:  Title2,
 		Access: "private",
 		State:  "online",
@@ -248,7 +248,7 @@ func TestSendStorageRequest(t *testing.T) {
 	}
 
 	var Storage3 = upcloud.Storage{
-		UUID:   Uuid3,
+		UUID:   UUID3,
 		Title:  Title3,
 		Access: "public",
 		State:  "online",
@@ -259,7 +259,7 @@ func TestSendStorageRequest(t *testing.T) {
 	}
 
 	var Storage4 = upcloud.Storage{
-		UUID:   Uuid4,
+		UUID:   UUID4,
 		Title:  Title1,
 		Access: "public",
 		State:  "online",
@@ -289,14 +289,14 @@ func TestSendStorageRequest(t *testing.T) {
 	for _, test := range []struct {
 		name    string
 		args    []string
-		request Request
+		request storageRequest
 		calls   int
 		error   string
 	}{
 		{
 			name: "no storage",
 			args: []string{},
-			request: Request{
+			request: storageRequest{
 				ExactlyOne:   false,
 				BuildRequest: buildRequestFn,
 				Service:      &mss,
@@ -308,7 +308,7 @@ func TestSendStorageRequest(t *testing.T) {
 		{
 			name: "single storage",
 			args: []string{Storage2.Title},
-			request: Request{
+			request: storageRequest{
 				ExactlyOne:   false,
 				BuildRequest: buildRequestFn,
 				Service:      &mss,
@@ -319,7 +319,7 @@ func TestSendStorageRequest(t *testing.T) {
 		{
 			name: "single storage, exactly once",
 			args: []string{Storage2.Title},
-			request: Request{
+			request: storageRequest{
 				ExactlyOne:   true,
 				BuildRequest: buildRequestFn,
 				Service:      &mss,
@@ -330,7 +330,7 @@ func TestSendStorageRequest(t *testing.T) {
 		{
 			name: "multiple storages",
 			args: []string{Storage3.Title, Storage2.UUID},
-			request: Request{
+			request: storageRequest{
 				ExactlyOne:   false,
 				BuildRequest: buildRequestFn,
 				Service:      &mss,
@@ -341,7 +341,7 @@ func TestSendStorageRequest(t *testing.T) {
 		{
 			name: "multiple storages, exactly once",
 			args: []string{Storage1.UUID, Storage2.UUID},
-			request: Request{
+			request: storageRequest{
 				ExactlyOne:   true,
 				BuildRequest: buildRequestFn,
 				Service:      &mss,
@@ -354,7 +354,7 @@ func TestSendStorageRequest(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			CachedStorages = nil
 
-			res, err := test.request.Send(test.args)
+			res, err := test.request.send(test.args)
 
 			if test.error != "" && err != nil {
 				assert.Equal(t, test.error, err.Error())

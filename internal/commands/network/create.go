@@ -3,7 +3,7 @@ package network
 import (
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/commands/ip_address"
+	"github.com/UpCloudLtd/cli/internal/commands/ipaddress"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
@@ -17,6 +17,7 @@ type createCommand struct {
 	params  createParams
 }
 
+// CreateCommand creates the 'network create' command
 func CreateCommand(service service.Network) commands.Command {
 	return &createCommand{
 		BaseCommand: commands.New("create", "Create a network"),
@@ -29,6 +30,7 @@ type createParams struct {
 	networks []string
 }
 
+// InitCommand implements Command.InitCommand
 func (s *createCommand) InitCommand() {
 	s.params.req = request.CreateNetworkRequest{}
 	fs := &pflag.FlagSet{}
@@ -50,7 +52,7 @@ func (s *createCommand) InitCommand() {
 	s.AddFlags(fs)
 }
 
-func (s *createCommand) BuildRequest() (*request.CreateNetworkRequest, error) {
+func (s *createCommand) buildRequest() (*request.CreateNetworkRequest, error) {
 	var networks []upcloud.IPNetwork
 	for _, networkStr := range s.params.networks {
 		network, err := handleNetwork(networkStr)
@@ -61,7 +63,7 @@ func (s *createCommand) BuildRequest() (*request.CreateNetworkRequest, error) {
 		if network.Address == "" {
 			return nil, fmt.Errorf("address is required for ip-network")
 		}
-		derivedFamily, err := ip_address.GetFamily(network.Address)
+		derivedFamily, err := ipaddress.GetFamily(network.Address)
 		if err != nil {
 			return nil, err
 		}
@@ -76,6 +78,7 @@ func (s *createCommand) BuildRequest() (*request.CreateNetworkRequest, error) {
 	return &s.params.req, nil
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 
@@ -89,14 +92,14 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 			return nil, fmt.Errorf("at least one IP network is required")
 		}
 
-		req, err := s.BuildRequest()
+		req, err := s.buildRequest()
 		if err != nil {
 			return nil, err
 		}
 
 		return ui.HandleContext{
 			RequestID:     func(in interface{}) string { return in.(*request.CreateNetworkRequest).Name },
-			ResultUUID:    getNetworkUuid,
+			ResultUUID:    getNetworkUUID,
 			MaxActions:    maxNetworkActions,
 			InteractiveUI: s.Config().InteractiveUI(),
 			ActionMsg:     "Creating network",

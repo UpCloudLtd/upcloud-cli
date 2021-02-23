@@ -16,7 +16,7 @@ import (
 func TestCreateServer(t *testing.T) {
 
 	var Storage1 = upcloud.Storage{
-		UUID:   Uuid1,
+		UUID:   UUID1,
 		Title:  Title1,
 		Access: "private",
 		State:  "maintenance",
@@ -27,7 +27,7 @@ func TestCreateServer(t *testing.T) {
 	}
 
 	var StorageDef = upcloud.Storage{
-		UUID:   Uuid2,
+		UUID:   UUID2,
 		Title:  "Debian GNU/Linux 10 (Buster)",
 		Access: "private",
 		State:  "online",
@@ -38,8 +38,8 @@ func TestCreateServer(t *testing.T) {
 	}
 
 	var Storage3 = upcloud.Storage{
-		UUID:   Uuid3,
-		Title:  Title3,
+		UUID:   UUID3,
+		Title:  Title2,
 		Access: "public",
 		State:  "online",
 		Type:   "normal",
@@ -56,7 +56,7 @@ func TestCreateServer(t *testing.T) {
 	}
 	var serverDetailsMaint = upcloud.ServerDetails{
 		Server: upcloud.Server{
-			UUID:  Uuid1,
+			UUID:  UUID1,
 			State: upcloud.ServerStateMaintenance,
 		},
 		VideoModel: "vga",
@@ -78,15 +78,17 @@ func TestCreateServer(t *testing.T) {
 				"--hostname", "example.com",
 				"--title", "test-server",
 				"--zone", "uk-lon1",
+				"--password-delivery", "email",
 			},
 			createServerReq: request.CreateServerRequest{
-				VideoModel: "vga",
-				TimeZone:   "UTC",
-				Plan:       "1xCPU-2GB",
-				Hostname:   "example.com",
-				Title:      "test-server",
-				Zone:       "uk-lon1",
-				LoginUser:  &request.LoginUser{CreatePassword: "yes"},
+				VideoModel:       "vga",
+				TimeZone:         "UTC",
+				Plan:             "1xCPU-2GB",
+				Hostname:         "example.com",
+				Title:            "test-server",
+				Zone:             "uk-lon1",
+				PasswordDelivery: "email",
+				LoginUser:        &request.LoginUser{CreatePassword: "yes"},
 				StorageDevices: request.CreateServerStorageDeviceSlice{request.CreateServerStorageDevice{
 					Action:  "clone",
 					Address: "",
@@ -108,13 +110,14 @@ func TestCreateServer(t *testing.T) {
 				"--os-storage-size", "100",
 			},
 			createServerReq: request.CreateServerRequest{
-				VideoModel: "vga",
-				TimeZone:   "UTC",
-				Plan:       "1xCPU-2GB",
-				Hostname:   "example.com",
-				Title:      "test-server",
-				Zone:       "uk-lon1",
-				LoginUser:  &request.LoginUser{CreatePassword: "yes"},
+				VideoModel:       "vga",
+				TimeZone:         "UTC",
+				Plan:             "1xCPU-2GB",
+				Hostname:         "example.com",
+				Title:            "test-server",
+				Zone:             "uk-lon1",
+				PasswordDelivery: "none",
+				LoginUser:        &request.LoginUser{CreatePassword: "yes"},
 				StorageDevices: request.CreateServerStorageDeviceSlice{request.CreateServerStorageDevice{
 					Action:  "clone",
 					Address: "",
@@ -188,18 +191,20 @@ func TestCreateServer(t *testing.T) {
 				"--hostname", "example.com",
 				"--title", "test-server",
 				"--zone", "uk-lon1",
+				"--password-delivery", "email",
 				"--storage", fmt.Sprintf("action=create,address=virtio,type=disk,size=20,title=new-storage"),
 				"--storage", fmt.Sprintf("action=clone,storage=%s,title=three-clone", Storage3.Title),
 				"--storage", fmt.Sprintf("action=attach,storage=%s,type=cdrom", Storage1.Title),
 			},
 			createServerReq: request.CreateServerRequest{
-				VideoModel: "vga",
-				TimeZone:   "UTC",
-				Plan:       "1xCPU-2GB",
-				Hostname:   "example.com",
-				Title:      "test-server",
-				Zone:       "uk-lon1",
-				LoginUser:  &request.LoginUser{CreatePassword: "yes"},
+				VideoModel:       "vga",
+				TimeZone:         "UTC",
+				Plan:             "1xCPU-2GB",
+				Hostname:         "example.com",
+				Title:            "test-server",
+				Zone:             "uk-lon1",
+				PasswordDelivery: "email",
+				LoginUser:        &request.LoginUser{CreatePassword: "yes"},
 				StorageDevices: request.CreateServerStorageDeviceSlice{
 					request.CreateServerStorageDevice{
 						Action:  "clone",
@@ -236,18 +241,20 @@ func TestCreateServer(t *testing.T) {
 				"--hostname", "example.com",
 				"--title", "test-server",
 				"--zone", "uk-lon1",
+				"--password-delivery", "email",
 				"--network", "family=IPv4,type=utility",
 				"--network", "family=IPv6,type=public",
 				"--network", "family=IPv6,type=private",
 			},
 			createServerReq: request.CreateServerRequest{
-				VideoModel: "vga",
-				TimeZone:   "UTC",
-				Plan:       "1xCPU-2GB",
-				Hostname:   "example.com",
-				Title:      "test-server",
-				Zone:       "uk-lon1",
-				LoginUser:  &request.LoginUser{CreatePassword: "yes"},
+				VideoModel:       "vga",
+				TimeZone:         "UTC",
+				Plan:             "1xCPU-2GB",
+				Hostname:         "example.com",
+				Title:            "test-server",
+				Zone:             "uk-lon1",
+				PasswordDelivery: "email",
+				LoginUser:        &request.LoginUser{CreatePassword: "yes"},
 				StorageDevices: request.CreateServerStorageDeviceSlice{request.CreateServerStorageDevice{
 					Action:  "clone",
 					Address: "",
@@ -282,6 +289,7 @@ func TestCreateServer(t *testing.T) {
 				"--network", "family=IPv4,type=utility",
 				"--network", "family=IPv6,type=public",
 				"--network", "family=IPv6",
+				"--password-delivery", "sms",
 			},
 			error: "network type is required",
 		},
@@ -291,7 +299,7 @@ func TestCreateServer(t *testing.T) {
 				"--title", "title",
 				"--zone", "zone",
 			},
-			error: "hostname and zone are required",
+			error: "hostname and zone are both required",
 		},
 		{
 			name: "zone is missing",
@@ -299,7 +307,7 @@ func TestCreateServer(t *testing.T) {
 				"--title", "title",
 				"--hostname", "hostname",
 			},
-			error: "hostname and zone are required",
+			error: "hostname and zone are both required",
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {

@@ -3,8 +3,8 @@ ALL_FILES=./...
 default: build
 
 build:
-	@echo 'go build'
-	@cd cmd && go build -o cli
+	@echo 'building a new upctl client'
+	@cd cmd && go build -o ../upctl
 
 test:
 	go test $(ALL_FILES)

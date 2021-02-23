@@ -47,9 +47,8 @@ func abbrevInt(raw uint, specs [5]spec) string {
 	}
 	if _, frac := math.Modf(val); frac > 0 {
 		return fmt.Sprintf("%.2f%s", val, suffix)
-	} else {
-		return fmt.Sprintf("%.0f%s", val, suffix)
 	}
+	return fmt.Sprintf("%.0f%s", val, suffix)
 }
 
 func parseAbbrevInt(s string, specs [5]spec) (uint, error) {
@@ -71,22 +70,27 @@ func parseAbbrevInt(s string, specs [5]spec) (uint, error) {
 	return 0, fmt.Errorf("invalid value %q", s)
 }
 
+// AbbrevNum returns a string with the given number abbreviated with SI formatting (eg 1000 = 1k)
 func AbbrevNum(raw uint) string {
 	return abbrevInt(raw, siMultiples)
 }
 
+// AbbrevNumBinaryPrefix returns a string with the given number abbreviated with binary formatting (eg 1024 = 1ki)
 func AbbrevNumBinaryPrefix(raw uint) string {
 	return abbrevInt(raw, binaryMultiples)
 }
 
+// FormatBytes returns a string with the given number interpreted as bytes and abbreviated with binary formatting (eg 1024 = 1KiB)
 func FormatBytes(n int) string {
 	return fmt.Sprintf("%sB", AbbrevNumBinaryPrefix(uint(n)))
 }
 
+// ParseAbbrevNum parses a string formatted to an uint in SI unit style. (eg. "1k" = 1000)
 func ParseAbbrevNum(s string) (uint, error) {
 	return parseAbbrevInt(s, siMultiples)
 }
 
+// ParseAbbrevNumBinaryPrefix parses a string formatted to an uint in binary units. (eg. "1Ki" = 1000)
 func ParseAbbrevNumBinaryPrefix(s string) (uint, error) {
 	return parseAbbrevInt(s, binaryMultiples)
 }

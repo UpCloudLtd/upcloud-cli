@@ -10,6 +10,8 @@ import (
 
 const truncatedSuffix = "..."
 
+// TruncateText truncates s to maxLen and adds a suffix ("...") if the string was truncated.
+// nb. maxLen will include the suffix so maxLen is respected in all cases
 func TruncateText(s string, maxLen int) string {
 	if text.RuneCount(s) > maxLen {
 		s = text.Trim(s, maxLen-len(truncatedSuffix))
@@ -18,6 +20,7 @@ func TruncateText(s string, maxLen int) string {
 	return s
 }
 
+// IndentText indents s with prefix. if repeatedPrefixAsSpaces is true, only the first indented line will get the prefix.
 func IndentText(s, prefix string, repeatedPrefixAsSpaces bool) string {
 	b := []byte(s)
 	r := make([]byte, 0, len(b))
@@ -41,6 +44,7 @@ func IndentText(s, prefix string, repeatedPrefixAsSpaces bool) string {
 	return string(r)
 }
 
+// FormatTime returns a time.Time in RFC3339, adding information on how long ago it was if the time was under 8 hours ago.
 func FormatTime(tv time.Time) string {
 	if tv.IsZero() {
 		return ""

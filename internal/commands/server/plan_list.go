@@ -14,6 +14,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/upapi"
 )
 
+// PlanListCommand creates the "server plans" command
 func PlanListCommand() commands.Command {
 	return &planListCommand{
 		BaseCommand: commands.New("plans", "List Server Plans"),
@@ -27,6 +28,7 @@ type planListCommand struct {
 	visibleColumns []string
 }
 
+// InitCommand implements Command.InitCommand
 func (s *planListCommand) InitCommand() {
 	s.header = table.Row{"Name", "Cores", "Memory (MiB)", "Storage (GiB)", "Storage tier", "Traffic out / month (MiB)"}
 	s.columnKeys = []string{"name", "cores", "memory", "storage", "storage_tier", "traffic"}
@@ -36,6 +38,7 @@ func (s *planListCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *planListCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 		service := upapi.Service(s.Config())
@@ -47,6 +50,7 @@ func (s *planListCommand) MakeExecuteCommand() func(args []string) (interface{},
 	}
 }
 
+// HandleOutput implements Command.HandleOutput
 func (s *planListCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	plans := out.(*upcloud.Plans)
 	t := ui.NewDataTable(s.columnKeys...)
@@ -61,7 +65,7 @@ func (s *planListCommand) HandleOutput(writer io.Writer, out interface{}) error 
 	})
 
 	for _, plan := range plans.Plans {
-		t.AppendRow(table.Row{
+		t.Append(table.Row{
 			plan.Name,
 			fmt.Sprintf("%d", plan.CoreNumber),
 			fmt.Sprintf("%d", plan.MemoryAmount),

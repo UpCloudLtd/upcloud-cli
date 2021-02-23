@@ -1,14 +1,15 @@
-package network_interface
+package networkinterface
 
 import (
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/commands/ip_address"
+	"github.com/UpCloudLtd/cli/internal/commands/ipaddress"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 )
 
 const maxNetworkInterfaceActions = 10
 
-func NetworkInterfaceCommand() commands.Command {
+// BaseNetworkInterfaceCommand creates the "network-interface" command
+func BaseNetworkInterfaceCommand() commands.Command {
 	return &networkInterfaceCommand{commands.New("network-interface", "Manage network interface")}
 }
 
@@ -16,10 +17,10 @@ type networkInterfaceCommand struct {
 	*commands.BaseCommand
 }
 
-func handleIpAddress(ipStrings []string) ([]request.CreateNetworkInterfaceIPAddress, error) {
+func handleIPAddress(ipStrings []string) ([]request.CreateNetworkInterfaceIPAddress, error) {
 	var ipAddresses []request.CreateNetworkInterfaceIPAddress
 	for _, ipAddrStr := range ipStrings {
-		t, err := ip_address.GetFamily(ipAddrStr)
+		t, err := ipaddress.GetFamily(ipAddrStr)
 		if err != nil {
 			return nil, err
 		}

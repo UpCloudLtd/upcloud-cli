@@ -12,6 +12,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/ui"
 )
 
+// StartCommand creates the "server start" command
 func StartCommand(service service.Server) commands.Command {
 	return &startCommand{
 		BaseCommand: commands.New("start", "Start a server"),
@@ -30,22 +31,24 @@ type startParams struct {
 	timeout int
 }
 
-var DefaultStartParams = &startParams{
+var defaultStartParams = &startParams{
 	StartServerRequest: request.StartServerRequest{},
 	timeout:            120,
 }
 
+// InitCommand implements Command.InitCommand
 func (s *startCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetArgCompFn(s.service))
+	s.ArgCompletion(GetServerArgumentCompletionFunction(s.service))
 
 	flags := &pflag.FlagSet{}
-	flags.IntVar(&s.params.AvoidHost, "avoid-host", DefaultStartParams.AvoidHost, "Avoid specific host when starting a server")
-	flags.IntVar(&s.params.Host, "host", DefaultStartParams.Host, "Start server on a specific host. Note that this is generally available for private clouds only")
-	flags.IntVar(&s.params.timeout, "timeout", DefaultStartParams.timeout, "Stop timeout in seconds\nAvailable: 1-600")
+	flags.IntVar(&s.params.AvoidHost, "avoid-host", defaultStartParams.AvoidHost, "Avoid specific host when starting a server")
+	flags.IntVar(&s.params.Host, "host", defaultStartParams.Host, "Start server on a specific host. Note that this is generally available for private clouds only")
+	flags.IntVar(&s.params.timeout, "timeout", defaultStartParams.timeout, "Stop timeout in seconds\nAvailable: 1-600")
 	s.AddFlags(flags)
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *startCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 
@@ -67,7 +70,7 @@ func (s *startCommand) MakeExecuteCommand() func(args []string) (interface{}, er
 				InteractiveUI: s.Config().InteractiveUI(),
 				MaxActions:    maxServerActions,
 				WaitMsg:       "starting server",
-				WaitFn:        WaitForServerFn(s.service, upcloud.ServerStateStarted, s.Config().ClientTimeout()),
+				WaitFn:        waitForServer(s.service, upcloud.ServerStateStarted, s.Config().ClientTimeout()),
 				ActionMsg:     "Starting",
 				Action: func(req interface{}) (interface{}, error) {
 					return s.service.StartServer(req.(*request.StartServerRequest))

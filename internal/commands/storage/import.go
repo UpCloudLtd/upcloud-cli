@@ -20,6 +20,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/ui"
 )
 
+// ImportCommand creates the "storage import" command
 func ImportCommand(service service.Storage) commands.Command {
 	return &importCommand{
 		BaseCommand: commands.New("import", "Import a storage from external or local source"),
@@ -27,7 +28,7 @@ func ImportCommand(service service.Storage) commands.Command {
 	}
 }
 
-var DefaultImportParams = &importParams{
+var defaultImportParams = &importParams{
 	CreateStorageImportRequest: request.CreateStorageImportRequest{},
 	createStorage:              newCreateParams(),
 	wait:                       true,
@@ -44,7 +45,7 @@ type importParams struct {
 	request.CreateStorageImportRequest
 	createStorage             createParams
 	sourceLocation            string
-	existingStorageUuidOrName string
+	existingStorageUUIDOrName string
 	wait                      bool
 
 	sourceFile      *os.File
@@ -53,8 +54,8 @@ type importParams struct {
 }
 
 func (s *importParams) processParams(srv service.Storage) error {
-	if s.existingStorageUuidOrName != "" {
-		storage, err := searchStorage(&CachedStorages, srv, s.existingStorageUuidOrName, true)
+	if s.existingStorageUUIDOrName != "" {
+		storage, err := searchStorage(&CachedStorages, srv, s.existingStorageUUIDOrName, true)
 		if err != nil {
 			return err
 		}
@@ -66,8 +67,8 @@ func (s *importParams) processParams(srv service.Storage) error {
 	}
 	// Infer source type from source location
 	if s.Source == "" {
-		url, err := url.Parse(s.sourceLocation)
-		if err != nil || url.Scheme == "" || url.Scheme == "file" {
+		parsedURL, err := url.Parse(s.sourceLocation)
+		if err != nil || parsedURL.Scheme == "" || parsedURL.Scheme == "file" {
 			s.Source = upcloud.StorageImportSourceDirectUpload
 		} else {
 			s.Source = upcloud.StorageImportSourceHTTPImport
@@ -95,13 +96,13 @@ func (s *importParams) processParams(srv service.Storage) error {
 		if s.existingStorage != nil && float64(s.existingStorage.Size) < float64(stat.Size()/1024/1024/1024) {
 			return fmt.Errorf("the existing storage is too small for the file")
 		}
-		if s.existingStorage == nil && s.createStorage.Size != DefaultCreateParams.Size &&
+		if s.existingStorage == nil && s.createStorage.Size != defaultCreateParams.Size &&
 			float64(s.createStorage.Size) < float64(stat.Size()/1024/1024/1024) {
 			return fmt.Errorf("the requested storage size is too small for the file")
 		}
 		// Infer created storage size from the file if default size is used
-		if s.existingStorage == nil && s.createStorage.Size == DefaultCreateParams.Size &&
-			float64(stat.Size()/1024/1024/1024) > float64(DefaultCreateParams.Size) {
+		if s.existingStorage == nil && s.createStorage.Size == defaultCreateParams.Size &&
+			float64(stat.Size()/1024/1024/1024) > float64(defaultCreateParams.Size) {
 			s.createStorage.Size = int(math.Ceil(float64(stat.Size() / 1024 / 1024 / 1024)))
 		}
 	}
@@ -115,7 +116,7 @@ func (s *importParams) processParams(srv service.Storage) error {
 	return nil
 }
 
-func (s *importParams) Close() {
+func (s *importParams) close() {
 	if s.sourceFile != nil {
 		_ = s.sourceFile.Close()
 	}
@@ -126,13 +127,13 @@ type readerCounter struct {
 	read   int64
 }
 
-func (s *readerCounter) Read(p []byte) (n int, err error) {
+func (s *readerCounter) readCounting(p []byte) (n int, err error) {
 	n, err = s.source.Read(p)
 	atomic.AddInt64(&s.read, int64(n))
 	return
 }
 
-func (s *readerCounter) Counter() int {
+func (s *readerCounter) counter() int {
 	return int(atomic.LoadInt64(&s.read))
 }
 
@@ -148,21 +149,23 @@ func importFlags(fs *pflag.FlagSet, dst, def *importParams) {
 	fs.StringVar(&dst.Source, "source", def.Source, fmt.Sprintf("Source type. Available: %s,%s",
 		upcloud.StorageImportSourceHTTPImport,
 		upcloud.StorageImportSourceDirectUpload))
-	fs.StringVar(&dst.existingStorageUuidOrName, "storage", def.existingStorageUuidOrName, "Import to an existing storage. Storage must be large enough and must be undetached "+"or the server where the storage is attached must be in shutdown state.")
+	fs.StringVar(&dst.existingStorageUUIDOrName, "storage", def.existingStorageUUIDOrName, "Import to an existing storage. Storage must be large enough and must be undetached "+"or the server where the storage is attached must be in shutdown state.")
 	fs.BoolVar(&dst.wait, "wait", def.wait, fmt.Sprintf("Wait until the import finishes. Implied if source is set to %s",
 		upcloud.StorageImportSourceDirectUpload))
-	createFlags(fs, &dst.createStorage, DefaultCreateParams)
+	createFlags(fs, &dst.createStorage, defaultCreateParams)
 }
 
+// InitCommand implements Command.InitCommand
 func (s *importCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	s.ArgCompletion(GetArgCompFn(s.service))
+	s.ArgCompletion(getStorageArgumentCompletionFunction(s.service))
 	s.flagSet = &pflag.FlagSet{}
 	s.importParams = newImportParams()
-	importFlags(s.flagSet, &s.importParams, DefaultImportParams)
+	importFlags(s.flagSet, &s.importParams, defaultImportParams)
 	s.AddFlags(s.flagSet)
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *importCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 
@@ -190,7 +193,7 @@ func (s *importCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 		handlerCreateStorage := func(idx int, e *ui.LogEntry) {
 			msg := fmt.Sprintf("Creating storage %q", s.importParams.createStorage.Title)
 			e.SetMessage(msg)
-			e.Start()
+			e.StartedNow()
 			details, err := s.service.CreateStorage(&s.importParams.createStorage.CreateStorageRequest)
 			if err != nil {
 				e.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed", msg))
@@ -220,7 +223,7 @@ func (s *importCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 		handlerImport := func(idx int, e *ui.LogEntry) {
 			msg := "Importing to storage"
 			e.SetMessage(msg)
-			e.Start()
+			e.StartedNow()
 			var err error
 			// Import from local file
 			if s.importParams.sourceFile != nil {
@@ -243,7 +246,7 @@ func (s *importCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 						wait = false
 					default:
 					}
-					if read := reader.Counter(); read > 0 {
+					if read := reader.counter(); read > 0 {
 						e.SetMessage(fmt.Sprintf("%s: uploaded %.2f%% (%sbps)",
 							msg,
 							float64(read)/float64(s.importParams.sourceFileSize)*100,

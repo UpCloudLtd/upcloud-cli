@@ -14,7 +14,8 @@ import (
 const maxNetworkActions = 10
 const positionalArgHelp = "<UUID/Name...>"
 
-func NetworkCommand() commands.Command {
+// BaseNetworkCommand creates the base "network" command
+func BaseNetworkCommand() commands.Command {
 	return &networkCommand{commands.New("network", "Manage network")}
 }
 
@@ -22,8 +23,11 @@ type networkCommand struct {
 	*commands.BaseCommand
 }
 
-var getNetworkUuid = func(in interface{}) string { return in.(*upcloud.Network).UUID }
+func getNetworkUUID(in interface{}) string {
+	return in.(*upcloud.Network).UUID
+}
 
+// SearchUniqueNetwork returns exactly one network with name or uuid matching *term*
 func SearchUniqueNetwork(term string, service service.Network) (*upcloud.Network, error) {
 	result, err := SearchNetwork(term, service, true)
 	if err != nil {
@@ -37,6 +41,8 @@ func SearchUniqueNetwork(term string, service service.Network) (*upcloud.Network
 
 var cachedNetworks []upcloud.Network
 
+// SearchNetwork returns all networks whose name or uuid matches term.
+// It will get the available networks from service once and cache the results on future calls
 func SearchNetwork(term string, service service.Network, unique bool) ([]*upcloud.Network, error) {
 	var result []*upcloud.Network
 
@@ -73,14 +79,14 @@ func searchAllNetworks(terms []string, service service.Network, unique bool) ([]
 		func(in interface{}) string { return in.(*upcloud.Network).UUID })
 }
 
-type Request struct {
+type networkRequest struct {
 	ExactlyOne    bool
 	BuildRequest  func(uuid string) interface{}
 	Service       service.Network
 	HandleContext ui.HandleContext
 }
 
-func (s Request) Send(args []string) (interface{}, error) {
+func (s networkRequest) send(args []string) (interface{}, error) {
 	if s.ExactlyOne && len(args) != 1 {
 		return nil, fmt.Errorf("single network uuid or name is required")
 	}
@@ -101,7 +107,7 @@ func (s Request) Send(args []string) (interface{}, error) {
 	return s.HandleContext.Handle(requests)
 }
 
-func GetArgCompFn(s service.Network) func(toComplete string) ([]string, cobra.ShellCompDirective) {
+func getArgCompFn(s service.Network) func(toComplete string) ([]string, cobra.ShellCompDirective) {
 	return func(toComplete string) ([]string, cobra.ShellCompDirective) {
 		networks, err := s.GetNetworks()
 		if err != nil {
@@ -140,11 +146,12 @@ func handleNetwork(in string) (*upcloud.IPNetwork, error) {
 	}
 
 	if dhcp != "" {
-		if dhcp == "false" {
-			result.DHCP = upcloud.FromBool(false)
-		} else if dhcp == "true" {
+		switch dhcp {
+		case "true":
 			result.DHCP = upcloud.FromBool(true)
-		} else {
+		case "false":
+			result.DHCP = upcloud.FromBool(false)
+		default:
 			return nil, fmt.Errorf("%s is an invalid value for dhcp, it can be true of false", dhcp)
 		}
 	}

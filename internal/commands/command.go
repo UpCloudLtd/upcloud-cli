@@ -17,6 +17,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// New returns a BaseCommand that implements Command. It is used as a base to create custom commands from.
 func New(name, usage string) *BaseCommand {
 	return &BaseCommand{
 		name:  name,
@@ -24,6 +25,7 @@ func New(name, usage string) *BaseCommand {
 	}
 }
 
+// Command defines the common functionality for all commands
 type Command interface {
 	SetConfig(config *config.Config)
 	SetParent(Command)
@@ -45,6 +47,7 @@ type Command interface {
 	CobraCommand
 }
 
+// CobraCommand is an interface for commands that can refer back to their base cobra.Command
 type CobraCommand interface {
 	Cobra() *cobra.Command
 }
@@ -54,10 +57,13 @@ type namespace interface {
 }
 
 const (
+	// ConfigLoadContextHelp is passed to command ConfigLoader to specify help has been requested
 	ConfigLoadContextHelp = iota
+	// ConfigLoadContextRun is passed to command ConfigLoader to specify regular running mode
 	ConfigLoadContextRun
 )
 
+// BuildCommand sets up a Command with the specified config and adds it to Cobra
 func BuildCommand(child, parent Command, config *config.Config) Command {
 	child.SetParent(parent)
 	child.SetConfig(config)
@@ -98,9 +104,8 @@ func BuildCommand(child, parent Command, config *config.Config) Command {
 			}
 			if !config.OutputHuman() {
 				return handleOutput(response, config.Output())
-			} else {
-				return child.HandleOutput(os.Stdout, response)
 			}
+			return child.HandleOutput(os.Stdout, response)
 		}
 	}
 	if cCmd := child.MakePreExecuteCommand(); cCmd != nil && child.Cobra().PreRunE == nil {
@@ -143,6 +148,7 @@ func BuildCommand(child, parent Command, config *config.Config) Command {
 	return child
 }
 
+// BaseCommand is the base type for all commands, implementing Command
 type BaseCommand struct {
 	cobra            *cobra.Command
 	name             string
@@ -153,14 +159,17 @@ type BaseCommand struct {
 	configLoader     func(config *config.Config, loadContext int)
 }
 
+// Name returns the name of the command
 func (s *BaseCommand) Name() string {
 	return s.name
 }
 
+// SetConfig sets the configuration used
 func (s *BaseCommand) SetConfig(config *config.Config) {
 	s.config = config
 }
 
+// SetChild sets command as the child of this command
 func (s *BaseCommand) SetChild(command Command) {
 	if command == nil {
 		return
@@ -178,6 +187,7 @@ func (s *BaseCommand) SetChild(command Command) {
 	}
 }
 
+// DeleteChild removes command from the children of this command
 func (s *BaseCommand) DeleteChild(command Command) {
 	if command.Parent() == s {
 		command.SetParent(nil)
@@ -185,6 +195,7 @@ func (s *BaseCommand) DeleteChild(command Command) {
 	delete(s.childrenPos, command)
 }
 
+// Children returns a list of all the child commands of this command (eg. including the children of children)
 func (s *BaseCommand) Children() []Command {
 	var (
 		r      []Command
@@ -203,6 +214,7 @@ func (s *BaseCommand) Children() []Command {
 	return r
 }
 
+// SetParent sets the parent of this command to given command
 func (s *BaseCommand) SetParent(command Command) {
 	if s.parent != nil {
 		s.DeleteChild(command)
@@ -213,32 +225,42 @@ func (s *BaseCommand) SetParent(command Command) {
 	}
 }
 
+// Parent returns the parent of the command
 func (s *BaseCommand) Parent() Command {
 	return s.parent
 }
 
+// SetFlags parses the given flags
 func (s *BaseCommand) SetFlags(flags []string) error {
 	return s.Cobra().Flags().Parse(flags)
 }
 
+// InitCommand can be overriden to handle flag registration.
 // A hook to handle flag registration.
 // The config values are not available during this hook. Register a cobra hook to use them. You can set defaults though.
 func (s *BaseCommand) InitCommand() {
 }
 
+// MakeExecuteCommand should be overwritten by the actual command implementations
+// The function returned is ran during the 'regular' execute phase and the returned value is
+// returned to the user, formatted as requested.
 func (s *BaseCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return nil
 }
 
+// MakePreExecuteCommand should be overwritten by the actual command implementations
+// The function returned is ran before the 'regular' execute phase.
 func (s *BaseCommand) MakePreExecuteCommand() func(args []string) error {
 	return nil
 }
 
+// MakePersistentPreExecuteCommand should be overwritten by the actual command implementations
+// The function returned is ran before PreExecuteCommand().
 func (s *BaseCommand) MakePersistentPreExecuteCommand() func(args []string) error {
 	return nil
 }
 
-// Returns the namespace of this command from the chain of parent commands
+// Namespace returns the namespace of this command from the chain of parent commands
 // The format is cmdRoot.child1.child2.childN
 // No namespace is returned for the root command (parent == nil)
 func (s *BaseCommand) Namespace() string {
@@ -263,27 +285,31 @@ func (s *BaseCommand) Namespace() string {
 	return sb.String()
 }
 
+// Cobra returns the underlying *cobra.Command
 func (s *BaseCommand) Cobra() *cobra.Command {
 	return s.cobra
 }
 
 // Config //
 
+// Config implements Command.Config, returning the *config.Config of the command
 func (s *BaseCommand) Config() *config.Config {
 	return s.config
 }
 
+// SetConfigLoader implements Command.SetConfigLoader, setting internal config loader
 func (s *BaseCommand) SetConfigLoader(fn func(config *config.Config, loadContext int)) {
 	s.configLoader = fn
 }
 
+// ConfigLoader implements Command.ConfigLoader, returning the specified ConfigLoader
 func (s *BaseCommand) ConfigLoader() func(config *config.Config, loadContext int) {
 	return s.configLoader
 }
 
 // Flags //
 
-// Adds a flagset to the command and binds config value into it with namespace
+// AddFlags adds a flagset to the command and binds config value into it with namespace
 func (s *BaseCommand) AddFlags(flags *pflag.FlagSet) {
 	if flags == nil {
 		panic("Nil flagset")
@@ -294,7 +320,7 @@ func (s *BaseCommand) AddFlags(flags *pflag.FlagSet) {
 	s.config.ConfigBindFlagSet(flags)
 }
 
-// Adds a persistent flagset to the command and binds config value into it with namespace
+// AddPersistentFlags adds a persistent flagset to the command and binds config value into it with namespace
 func (s *BaseCommand) AddPersistentFlags(flags *pflag.FlagSet) {
 	if flags == nil {
 		panic("Nil flagset")
@@ -305,12 +331,15 @@ func (s *BaseCommand) AddPersistentFlags(flags *pflag.FlagSet) {
 	s.config.ConfigBindFlagSet(flags)
 }
 
+// AddVisibleColumnsFlag is a convenience method to set a common flag '--columns' to commands
 func (s *BaseCommand) AddVisibleColumnsFlag(flags *pflag.FlagSet, dstPtr *[]string, available, defaults []string) {
 	flags.StringSliceVarP(dstPtr, "columns", "c", defaults,
 		fmt.Sprintf("Reorder or show additional columns in human readable output.\nAvailable: %s",
 			strings.Join(available, ",")))
 }
 
+// SetPositionalArgHelp is a convenience method to set the help text for positional arguments.
+// if help is an empty string, uses just the name of the command.
 func (s *BaseCommand) SetPositionalArgHelp(help string) {
 	if help == "" {
 		s.cobra.Use = s.name
@@ -320,6 +349,8 @@ func (s *BaseCommand) SetPositionalArgHelp(help string) {
 }
 
 // Error handling //
+
+// HandleError is used to handle errors from the main command
 func (s *BaseCommand) HandleError(err error) {
 	isTerminal := isatty.IsTerminal(os.Stdout.Fd())
 	switch s.Config().GetString("output") {
@@ -328,15 +359,15 @@ func (s *BaseCommand) HandleError(err error) {
 		if isTerminal {
 			enc.SetIndent("", "    ")
 		}
-		if ucApiErr, ok := err.(*upcloud.Error); ok {
-			_ = enc.Encode(ucApiErr)
+		if ucAPIErr, ok := err.(*upcloud.Error); ok {
+			_ = enc.Encode(ucAPIErr)
 			break
 		}
 		_ = enc.Encode(map[string]interface{}{"error": fmt.Sprintf("%v", err)})
 	case "yaml":
-		if ucApiErr, ok := err.(*upcloud.Error); ok {
+		if ucAPIErr, ok := err.(*upcloud.Error); ok {
 			tmpMap := make(map[string]interface{})
-			if b, err := json.Marshal(ucApiErr); err == nil {
+			if b, err := json.Marshal(ucAPIErr); err == nil {
 				if err := json.Unmarshal(b, &tmpMap); err == nil {
 					_ = yaml.NewEncoder(os.Stdout).Encode(tmpMap)
 					break
@@ -350,7 +381,10 @@ func (s *BaseCommand) HandleError(err error) {
 }
 
 // Output handling //
-func (s *BaseCommand) HandleOutput(writer io.Writer, out interface{}) error {
+
+// HandleOutput should be overwritten by the actual command implementations
+// It is expected to write output, given in out, to writer
+func (s *BaseCommand) HandleOutput(io.Writer, interface{}) error {
 	return nil
 }
 
@@ -376,12 +410,15 @@ func handleOutput(out interface{}, format string) error {
 }
 
 // Completion //
+
+// ArgCompletion is a convenience method to set upctl-specific completion function to the underlying cobra.Command
 func (s *BaseCommand) ArgCompletion(fn func(toComplete string) ([]string, cobra.ShellCompDirective)) {
 	s.Cobra().ValidArgsFunction = func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return fn(toComplete)
 	}
 }
 
+// MatchStringPrefix returns a list of string in vals which have a prefix as specified in key. Quotes are removed from key and output strings are escaped according to completion rules
 func MatchStringPrefix(vals []string, key string, caseSensitive bool) []string {
 	var r []string
 	key = strings.TrimPrefix(key, `"`)
@@ -398,6 +435,8 @@ func MatchStringPrefix(vals []string, key string, caseSensitive bool) []string {
 	return r
 }
 
+// CompletionEscape escapes a string according to completion rules (?)
+// in effect, this means that the string will be quoted with double quotes if it contains a space or parentheses.
 func CompletionEscape(s string) string {
 	if strings.ContainsAny(s, ` ()`) {
 		return fmt.Sprintf(`"%s"`, s)

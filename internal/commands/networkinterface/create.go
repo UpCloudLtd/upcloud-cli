@@ -1,4 +1,4 @@
-package network_interface
+package networkinterface
 
 import (
 	"fmt"
@@ -20,6 +20,7 @@ type createCommand struct {
 	params     createParams
 }
 
+// CreateCommand creates the "network-interface create" command
 func CreateCommand(serverSvc service.Server, networkSvc service.Network) commands.Command {
 	return &createCommand{
 		BaseCommand: commands.New("create", "Create a network interface"),
@@ -44,6 +45,7 @@ var def = createParams{
 	family: upcloud.IPAddressFamilyIPv4,
 }
 
+// InitCommand implements Command.InitCommand
 func (s *createCommand) InitCommand() {
 	s.params.req = request.CreateNetworkInterfaceRequest{}
 	fs := &pflag.FlagSet{}
@@ -58,20 +60,19 @@ func (s *createCommand) InitCommand() {
 	s.AddFlags(fs)
 }
 
-func (s *createCommand) BuildRequest() (*request.CreateNetworkInterfaceRequest, error) {
+func (s *createCommand) buildRequest() (*request.CreateNetworkInterfaceRequest, error) {
 	if s.params.network == "" {
 		s.params.req.IPAddresses = request.CreateNetworkInterfaceIPAddressSlice{{Family: s.params.family}}
 	} else {
 
 		if len(s.params.ipAddresses) == 0 {
 			return nil, fmt.Errorf("ip-address is required")
-		} else {
-			ipAddresses, err := handleIpAddress(s.params.ipAddresses)
-			if err != nil {
-				return nil, err
-			}
-			s.params.req.IPAddresses = ipAddresses
 		}
+		ipAddresses, err := handleIPAddress(s.params.ipAddresses)
+		if err != nil {
+			return nil, err
+		}
+		s.params.req.IPAddresses = ipAddresses
 
 		nw, err := network.SearchUniqueNetwork(s.params.network, s.networkSvc)
 		if err != nil {
@@ -85,10 +86,11 @@ func (s *createCommand) BuildRequest() (*request.CreateNetworkInterfaceRequest, 
 	return &s.params.req, nil
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 
-		req, err := s.BuildRequest()
+		req, err := s.buildRequest()
 		if err != nil {
 			return nil, err
 		}

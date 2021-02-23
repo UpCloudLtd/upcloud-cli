@@ -1,4 +1,4 @@
-package ip_address
+package ipaddress
 
 import (
 	"fmt"
@@ -10,6 +10,7 @@ import (
 	"io"
 )
 
+// ShowCommand creates the 'ip-address show' command
 func ShowCommand(service service.IpAddress) commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New("show", "Show current ip address"),
@@ -22,17 +23,19 @@ type showCommand struct {
 	service service.IpAddress
 }
 
+// InitCommand implements Command.InitCommand
 func (s *showCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	s.ArgCompletion(GetArgCompFn(s.service))
+	s.ArgCompletion(getArgCompFn(s.service))
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 		if len(args) != 1 {
 			return nil, fmt.Errorf("one ip address or PTR Record is required")
 		}
-		ip, err := searchIpAddress(args[0], s.service, true)
+		ip, err := searchIPAddress(args[0], s.service, true)
 		if err != nil {
 			return nil, err
 		}
@@ -40,6 +43,7 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 	}
 }
 
+// HandleOutput implements Command.HandleOutput
 func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	ip := out.(*upcloud.IPAddress)
 
@@ -47,17 +51,17 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	l := ui.NewListLayout(layout)
 	{
 		dCommon := ui.NewDetailsView()
-		dCommon.AppendRows([]table.Row{
-			{"Address:", ui.DefaultAddressColours.Sprint(ip.Address)},
-			{"Access:", ip.Access},
-			{"Family:", ip.Family},
-			{"Part of Plan:", ui.FormatBool(ip.PartOfPlan.Bool())},
-			{"PTR Record:", ip.PTRRecord},
-			{"Server UUID:", ui.DefaultUuidColours.Sprint(ip.ServerUUID)},
-			{"MAC:", ip.MAC},
-			{"Floating:", ui.FormatBool(ip.Floating.Bool())},
-			{"Zone:", ip.Zone},
-		})
+		dCommon.Append(
+			table.Row{"Address:", ui.DefaultAddressColours.Sprint(ip.Address)},
+			table.Row{"Access:", ip.Access},
+			table.Row{"Family:", ip.Family},
+			table.Row{"Part of Plan:", ui.FormatBool(ip.PartOfPlan.Bool())},
+			table.Row{"PTR Record:", ip.PTRRecord},
+			table.Row{"Server UUID:", ui.DefaultUUUIDColours.Sprint(ip.ServerUUID)},
+			table.Row{"MAC:", ip.MAC},
+			table.Row{"Floating:", ui.FormatBool(ip.Floating.Bool())},
+			table.Row{"Zone:", ip.Zone},
+		)
 		l.AppendSection("", dCommon.Render())
 	}
 	_, _ = fmt.Fprintln(writer, l.Render())

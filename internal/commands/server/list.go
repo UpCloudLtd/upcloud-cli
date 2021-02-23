@@ -15,6 +15,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/upapi"
 )
 
+// ListCommand creates the "server list" command
 func ListCommand(service service.Server) commands.Command {
 	return &listCommand{
 		BaseCommand: commands.New("list", "List current servers"),
@@ -30,6 +31,7 @@ type listCommand struct {
 	visibleColumns []string
 }
 
+// InitCommand implements Command.InitCommand
 func (s *listCommand) InitCommand() {
 	s.header = table.Row{"UUID", "Hostname", "Plan", "Zone", "State", "Tags", "Title", "Licence"}
 	s.columnKeys = []string{"uuid", "hostname", "plan", "zone", "state", "tags", "title", "licence"}
@@ -39,10 +41,11 @@ func (s *listCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		service := upapi.Service(s.Config())
-		servers, err := service.GetServers()
+		svc := upapi.Service(s.Config())
+		servers, err := svc.GetServers()
 		if err != nil {
 			return nil, err
 		}
@@ -50,6 +53,7 @@ func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 	}
 }
 
+// HandleOutput implements Command.HandleOutput
 func (s *listCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	servers := out.(*upcloud.Servers)
 	t := ui.NewDataTable(s.columnKeys...)
@@ -66,7 +70,7 @@ func (s *listCommand) HandleOutput(writer io.Writer, out interface{}) error {
 			memory := server.MemoryAmount / 1024
 			plan = fmt.Sprintf("Custom (%dxCPU, %dGB)", server.CoreNumber, memory)
 		}
-		t.AppendRow(table.Row{
+		t.Append(table.Row{
 			server.UUID,
 			server.Hostname,
 			plan,

@@ -20,7 +20,7 @@ var defaultListStyle = list.Style{
 	Name:             "ListDefault",
 }
 
-type ListLayoutConfig struct {
+type listLayoutConfig struct {
 	MarginLeft    bool
 	MarginTop     bool
 	MarginBottom  bool
@@ -29,7 +29,8 @@ type ListLayoutConfig struct {
 	NoteSeparator bool
 }
 
-var ListLayoutDefault = ListLayoutConfig{
+// ListLayoutDefault defines the default config used for rendering lists
+var ListLayoutDefault = listLayoutConfig{
 	MarginLeft:    true,
 	MarginTop:     true,
 	MarginBottom:  false,
@@ -38,7 +39,8 @@ var ListLayoutDefault = ListLayoutConfig{
 	NoteSeparator: true,
 }
 
-var ListLayoutNestedTable = ListLayoutConfig{
+// ListLayoutNestedTable defines the configuration used for rendering nested tables
+var ListLayoutNestedTable = listLayoutConfig{
 	MarginLeft:    false,
 	MarginTop:     false,
 	MarginBottom:  false,
@@ -47,12 +49,14 @@ var ListLayoutNestedTable = ListLayoutConfig{
 	NoteSeparator: true,
 }
 
+// ListLayout is a renderer of list data
 type ListLayout struct {
 	l     list.Writer
-	style ListLayoutConfig
+	style listLayoutConfig
 }
 
-func NewListLayout(style ListLayoutConfig) *ListLayout {
+// NewListLayout returns a a new list data renderer
+func NewListLayout(style listLayoutConfig) *ListLayout {
 	l := list.NewWriter()
 	l.SetStyle(defaultListStyle)
 
@@ -62,15 +66,19 @@ func NewListLayout(style ListLayoutConfig) *ListLayout {
 	}
 }
 
-func WrapWithListLayout(text string, style ListLayoutConfig) *ListLayout {
+// WrapWithListLayout returns a list data renderer wrapping given text
+func WrapWithListLayout(text string, style listLayoutConfig) *ListLayout {
 	l := NewListLayout(style)
 	l.appendSection("", "", []string{text})
 	return l
 }
 
+// AppendSectionWithNote appends a section with a note to a list
 func (s *ListLayout) AppendSectionWithNote(title, sectionBody, note string) {
 	s.appendSection(title, note, []string{sectionBody})
 }
+
+// AppendSection appends a section to a list
 func (s *ListLayout) AppendSection(title string, sectionBody ...string) {
 	s.appendSection(title, "", sectionBody)
 }
@@ -108,19 +116,19 @@ func (s *ListLayout) appendSection(title, note string, sectionBody []string) {
 	}
 }
 
+// Render renders the ListLayout as configured
 func (s *ListLayout) Render() string {
 	if s.style.MarginLeft {
 		return s.l.Render()
-	} else {
-		return s.removePadLeft()
 	}
+	return s.renderWithoutLeftPadding()
 }
 
 func (s *ListLayout) appendLine() {
 	s.l.AppendItem("")
 }
 
-func (s *ListLayout) removePadLeft() string {
+func (s *ListLayout) renderWithoutLeftPadding() string {
 	// removing the padding from the defaultListStyle caused problems with multi-line items
 	// removing the left padding manually with regex
 	return regexp.MustCompile("(?m)^ {2}").ReplaceAllString(s.l.Render(), "")

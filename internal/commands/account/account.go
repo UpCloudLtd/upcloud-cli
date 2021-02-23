@@ -4,7 +4,8 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands"
 )
 
-func AccountCommand() commands.Command {
+// BaseAccountCommand creates the base 'account' command
+func BaseAccountCommand() commands.Command {
 	return &accountCommand{commands.New("account", "Manage account")}
 }
 

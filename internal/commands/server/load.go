@@ -21,6 +21,7 @@ type loadParams struct {
 	request.LoadCDROMRequest
 }
 
+// LoadCommand creates the "server load" command
 func LoadCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
 	return &loadCommand{
 		BaseCommand: commands.New("load", "Load a CD-ROM"),
@@ -29,21 +30,23 @@ func LoadCommand(serverSvc service.Server, storageSvc service.Storage) commands.
 	}
 }
 
-var DefaultLoadParams = &loadParams{
+var defaultLoadParams = &loadParams{
 	LoadCDROMRequest: request.LoadCDROMRequest{},
 }
 
+// InitCommand implements Command.InitCommand
 func (s *loadCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetArgCompFn(s.serverSvc))
+	s.ArgCompletion(GetServerArgumentCompletionFunction(s.serverSvc))
 	s.params = loadParams{LoadCDROMRequest: request.LoadCDROMRequest{}}
 
 	flagSet := &pflag.FlagSet{}
-	flagSet.StringVar(&s.params.StorageUUID, "storage", DefaultLoadParams.StorageUUID, "The UUID of the storage to be loaded in the CD-ROM device.\n[Required]")
+	flagSet.StringVar(&s.params.StorageUUID, "storage", defaultLoadParams.StorageUUID, "The UUID of the storage to be loaded in the CD-ROM device.\n[Required]")
 
 	s.AddFlags(flagSet)
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *loadCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 

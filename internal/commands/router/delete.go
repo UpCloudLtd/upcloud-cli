@@ -12,6 +12,7 @@ type deleteCommand struct {
 	service service.Network
 }
 
+// DeleteCommand creates the "delete router" command
 func DeleteCommand(service service.Network) commands.Command {
 	return &deleteCommand{
 		BaseCommand: commands.New("delete", "Delete a router"),
@@ -19,14 +20,16 @@ func DeleteCommand(service service.Network) commands.Command {
 	}
 }
 
+// InitCommand implements Command.InitCommand
 func (s *deleteCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	s.ArgCompletion(GetArgCompFn(s.service))
+	s.ArgCompletion(getRouterArgCompletionFunction(s.service))
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		return Request{
+		return routerRequest{
 			BuildRequest: func(uuid string) interface{} {
 				return &request.DeleteRouterRequest{UUID: uuid}
 			},
@@ -40,6 +43,6 @@ func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 					return nil, s.service.DeleteRouter(req.(*request.DeleteRouterRequest))
 				},
 			},
-		}.Send(args)
+		}.send(args)
 	}
 }

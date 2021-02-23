@@ -1,4 +1,4 @@
-package network_interface
+package networkinterface
 
 import (
 	"github.com/UpCloudLtd/cli/internal/commands"

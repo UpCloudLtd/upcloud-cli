@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/pflag"
 )
 
+// ModifyCommand creates the "server modify" command
 func ModifyCommand(service service.Server) commands.Command {
 	return &modifyCommand{
 		BaseCommand: commands.New("modify", "Modifies the configuration of an existing server"),
@@ -28,33 +29,35 @@ type modifyParams struct {
 	metadata            string
 }
 
-var DefaultModifyParams = modifyParams{
+var defaultModifyParams = modifyParams{
 	ModifyServerRequest: request.ModifyServerRequest{},
 }
 
+// InitCommand implements Command.InitCommand
 func (s *modifyCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetArgCompFn(s.service))
+	s.ArgCompletion(GetServerArgumentCompletionFunction(s.service))
 	s.params = modifyParams{ModifyServerRequest: request.ModifyServerRequest{}}
 	flags := &pflag.FlagSet{}
-	flags.StringVar(&s.params.BootOrder, "boot-order", DefaultModifyParams.BootOrder, "The boot device order.")
-	flags.IntVar(&s.params.CoreNumber, "cores", DefaultModifyParams.CoreNumber, "Number of cores")
-	flags.StringVar(&s.params.Hostname, "hostname", DefaultModifyParams.Hostname, "Hostname")
-	flags.StringVar(&s.params.Firewall, "firewall", DefaultModifyParams.Firewall, "Enables or disables firewall on the server. You can manage firewall rules with the firewall command\nAvailable: true, false")
-	flags.IntVar(&s.params.MemoryAmount, "memory", DefaultModifyParams.MemoryAmount, "Memory amount in MiB")
-	flags.StringVar(&s.params.metadata, "metadata", DefaultModifyParams.metadata, "Enable metadata service")
-	flags.StringVar(&s.params.Plan, "plan", DefaultModifyParams.Plan, "Server plan to use. Set this to custom to use custom core/memory amounts.")
-	flags.StringVar(&s.params.SimpleBackup, "simple-backup", DefaultModifyParams.SimpleBackup, "Simple backup rule. Format (HHMM,{dailies,weeklies,monthlies}).\nExample: 2300,dailies")
-	flags.StringVar(&s.params.Title, "title", DefaultModifyParams.Title, "Visible name")
-	flags.StringVar(&s.params.TimeZone, "time-zone", DefaultModifyParams.TimeZone, "Time zone to set the RTC to")
-	flags.StringVar(&s.params.VideoModel, "video-model", DefaultModifyParams.VideoModel, "Video interface model of the server.\nAvailable: vga,cirrus")
-	flags.StringVar(&s.params.remoteAccessEnabled, "remote-access-enabled", DefaultModifyParams.remoteAccessEnabled, "Enables or disables the remote access\nAvailable: true, false")
-	flags.StringVar(&s.params.RemoteAccessType, "remote-access-type", DefaultModifyParams.RemoteAccessType, "The remote access type")
-	flags.StringVar(&s.params.RemoteAccessPassword, "remote-access-password", DefaultModifyParams.RemoteAccessPassword, "The remote access password")
+	flags.StringVar(&s.params.BootOrder, "boot-order", defaultModifyParams.BootOrder, "The boot device order.")
+	flags.IntVar(&s.params.CoreNumber, "cores", defaultModifyParams.CoreNumber, "Number of cores")
+	flags.StringVar(&s.params.Hostname, "hostname", defaultModifyParams.Hostname, "Hostname")
+	flags.StringVar(&s.params.Firewall, "firewall", defaultModifyParams.Firewall, "Enables or disables firewall on the server. You can manage firewall rules with the firewall command\nAvailable: true, false")
+	flags.IntVar(&s.params.MemoryAmount, "memory", defaultModifyParams.MemoryAmount, "Memory amount in MiB")
+	flags.StringVar(&s.params.metadata, "metadata", defaultModifyParams.metadata, "Enable metadata service")
+	flags.StringVar(&s.params.Plan, "plan", defaultModifyParams.Plan, "Server plan to use. Set this to custom to use custom core/memory amounts.")
+	flags.StringVar(&s.params.SimpleBackup, "simple-backup", defaultModifyParams.SimpleBackup, "Simple backup rule. Format (HHMM,{dailies,weeklies,monthlies}).\nExample: 2300,dailies")
+	flags.StringVar(&s.params.Title, "title", defaultModifyParams.Title, "Visible name")
+	flags.StringVar(&s.params.TimeZone, "time-zone", defaultModifyParams.TimeZone, "Time zone to set the RTC to")
+	flags.StringVar(&s.params.VideoModel, "video-model", defaultModifyParams.VideoModel, "Video interface model of the server.\nAvailable: vga,cirrus")
+	flags.StringVar(&s.params.remoteAccessEnabled, "remote-access-enabled", defaultModifyParams.remoteAccessEnabled, "Enables or disables the remote access\nAvailable: true, false")
+	flags.StringVar(&s.params.RemoteAccessType, "remote-access-type", defaultModifyParams.RemoteAccessType, "The remote access type")
+	flags.StringVar(&s.params.RemoteAccessPassword, "remote-access-password", defaultModifyParams.RemoteAccessPassword, "The remote access password")
 
 	s.AddFlags(flags)
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 
@@ -86,7 +89,7 @@ func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 			Service: s.service,
 			Handler: ui.HandleContext{
 				RequestID:     func(in interface{}) string { return in.(*request.ModifyServerRequest).UUID },
-				ResultUUID:    getServerDetailsUuid,
+				ResultUUID:    getServerDetailsUUID,
 				InteractiveUI: s.Config().InteractiveUI(),
 				MaxActions:    maxServerActions,
 				ActionMsg:     "Modifying server",

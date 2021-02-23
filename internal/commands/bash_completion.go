@@ -68,6 +68,7 @@ const goCustomCompletion = `__%[1]s_handle_go_custom_completion()
     fi
 }`
 
+// CustomBashCompletionFunc returns a bash completion function used by cobras bash completion generator
 func CustomBashCompletionFunc(name string) string {
 	return fmt.Sprintf(goCustomCompletion, name,
 		cobra.ShellCompNoDescRequestCmd,

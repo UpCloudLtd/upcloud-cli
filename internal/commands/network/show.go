@@ -13,6 +13,7 @@ import (
 	"strings"
 )
 
+// ShowCommand creates the "network show" command
 func ShowCommand(networkSvc service.Network, serverSvc service.Server) commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New("show", "Show current network"),
@@ -29,7 +30,7 @@ type showCommand struct {
 
 func (s *showCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	s.ArgCompletion(GetArgCompFn(s.networkSvc))
+	s.ArgCompletion(getArgCompFn(s.networkSvc))
 }
 
 type networkWithServers struct {
@@ -72,19 +73,19 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	l := ui.NewListLayout(ui.ListLayoutDefault)
 
 	dCommon := ui.NewDetailsView()
-	dCommon.AppendRows([]table.Row{
-		{"UUID:", ui.DefaultUuidColours.Sprint(n.UUID)},
-		{"Name:", n.Name},
-		{"Router:", n.Router},
-		{"Type:", n.Type},
-		{"Zone:", n.Zone},
-	})
+	dCommon.Append(
+		table.Row{"UUID:", ui.DefaultUUUIDColours.Sprint(n.UUID)},
+		table.Row{"Name:", n.Name},
+		table.Row{"Router:", n.Router},
+		table.Row{"Type:", n.Type},
+		table.Row{"Zone:", n.Zone},
+	)
 	l.AppendSection("Common", dCommon.Render())
 
 	if len(n.IPNetworks) > 0 {
 		tIPNetwork := ui.NewDataTable("Address", "Family", "DHCP", "DHCP Def Router", "DHCP DNS")
 		for _, nip := range n.IPNetworks {
-			tIPNetwork.AppendRow(table.Row{
+			tIPNetwork.Append(table.Row{
 				ui.DefaultAddressColours.Sprint(nip.Address),
 				nip.Family,
 				ui.FormatBool(nip.DHCP.Bool()),
@@ -101,8 +102,8 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 		tServers := ui.NewDataTable("UUID", "Title", "Hostname", "State")
 
 		for _, s := range servers {
-			tServers.AppendRow(table.Row{
-				ui.DefaultUuidColours.Sprint(s.UUID),
+			tServers.Append(table.Row{
+				ui.DefaultUUUIDColours.Sprint(s.UUID),
 				s.Title,
 				s.Hostname,
 				commands.StateColour(s.State).Sprint(s.State),

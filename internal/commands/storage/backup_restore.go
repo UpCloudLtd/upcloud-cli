@@ -17,6 +17,7 @@ type restoreBackupParams struct {
 	request.RestoreBackupRequest
 }
 
+// RestoreBackupCommand creates the "storage backup restore" command
 func RestoreBackupCommand(service service.Storage) commands.Command {
 	return &restoreBackupCommand{
 		BaseCommand: commands.New("restore", "Restore backup of a storage"),
@@ -24,14 +25,16 @@ func RestoreBackupCommand(service service.Storage) commands.Command {
 	}
 }
 
+// InitCommand implements Command.InitCommand
 func (s *restoreBackupCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	s.ArgCompletion(GetArgCompFn(s.service))
+	s.ArgCompletion(getStorageArgumentCompletionFunction(s.service))
 }
 
+// MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *restoreBackupCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		return Request{
+		return storageRequest{
 			BuildRequest: func(uuid string) (interface{}, error) {
 				req := s.params.RestoreBackupRequest
 				req.UUID = uuid
@@ -46,6 +49,6 @@ func (s *restoreBackupCommand) MakeExecuteCommand() func(args []string) (interfa
 					return nil, s.service.RestoreBackup(req.(*request.RestoreBackupRequest))
 				},
 			},
-		}.Send(args)
+		}.send(args)
 	}
 }
