@@ -4,7 +4,7 @@ repos:
   hooks:
     - id: go-fmt
     # - id: go-vet
-    - id: go-lint  # Should be enabled later
+    - id: go-lint
     - id: go-critic
     - id: go-unit-tests
     - id: go-build
