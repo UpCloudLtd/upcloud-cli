@@ -56,6 +56,30 @@ func TestCreateCommand(t *testing.T) {
 			},
 		},
 		{
+			name: "ip-family unsupported for private network",
+			args: []string{
+				"--network", network.Name,
+				"--family", "IPv6",
+			},
+			error: "Currently only IPv4 is supported in private networks",
+		},
+		{
+			name: "set ip-family for public network",
+			args: []string{
+				"--family", "IPv6",
+				"--type", "public",
+			},
+			req: request.CreateNetworkInterfaceRequest{
+				ServerUUID:        s.UUID,
+				Bootable:          upcloud.FromBool(false),
+				SourceIPFiltering: upcloud.FromBool(false),
+				IPAddresses: request.CreateNetworkInterfaceIPAddressSlice{
+					{Family: upcloud.IPAddressFamilyIPv6},
+				},
+				Type: upcloud.NetworkTypePublic,
+			},
+		},
+		{
 			name: "invalid ip-address",
 			args: []string{
 				"--network", network.Name,

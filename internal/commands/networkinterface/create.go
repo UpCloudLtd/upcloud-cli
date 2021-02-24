@@ -69,7 +69,7 @@ func (s *createCommand) buildRequest() (*request.CreateNetworkInterfaceRequest, 
 			var ipAddresses []request.CreateNetworkInterfaceIPAddress
 			ipFamily := upcloud.IPAddressFamilyIPv4
 			// Currently only IPv4 is supported in private networks
-			if s.params.family != "IPv4" && s.params.req.Type != "private" {
+			if s.params.family != "IPv4" && s.params.req.Type == "private" {
 				return nil, fmt.Errorf("Currently only IPv4 is supported in private networks")
 			}
 			if s.params.family != "" {
