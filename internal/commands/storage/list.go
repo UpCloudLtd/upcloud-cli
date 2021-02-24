@@ -30,6 +30,7 @@ type listCommand struct {
 	columnKeys     []string
 	visibleColumns []string
 	all            bool
+	private        bool
 	public         bool
 	normal         bool
 	backup         bool
@@ -45,7 +46,8 @@ func (s *listCommand) InitCommand() {
 	s.visibleColumns = []string{"uuid", "title", "zone", "state", "type", "size", "tier", "created"}
 	flags := &pflag.FlagSet{}
 	s.AddVisibleColumnsFlag(flags, &s.visibleColumns, s.columnKeys, s.visibleColumns)
-	flags.BoolVar(&s.all, "all", false, "List all storages (default: only private)")
+	flags.BoolVar(&s.all, "all", false, "List all storages")
+	flags.BoolVar(&s.private, "private", true, "List private storages (default)")
 	flags.BoolVar(&s.public, "public", false, "List public storages")
 
 	flags.BoolVar(&s.normal, "normal", false, "Filters for normal storages")
@@ -71,7 +73,11 @@ func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 				continue
 			}
 
-			if !s.public && v.Access == upcloud.StorageAccessPublic {
+			if s.public {
+				s.private = false
+			}
+
+			if s.private && v.Access == upcloud.StorageAccessPublic {
 				continue
 			}
 			if s.public && v.Access == upcloud.StorageAccessPrivate {
