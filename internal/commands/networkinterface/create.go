@@ -2,6 +2,8 @@ package networkinterface
 
 import (
 	"fmt"
+	"strconv"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/commands/network"
 	"github.com/UpCloudLtd/cli/internal/commands/server"
@@ -10,7 +12,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
-	"strconv"
 )
 
 type createCommand struct {
@@ -64,15 +65,28 @@ func (s *createCommand) buildRequest() (*request.CreateNetworkInterfaceRequest, 
 	if s.params.network == "" {
 		s.params.req.IPAddresses = request.CreateNetworkInterfaceIPAddressSlice{{Family: s.params.family}}
 	} else {
-
 		if len(s.params.ipAddresses) == 0 {
-			return nil, fmt.Errorf("ip-address is required")
+			var ipAddresses []request.CreateNetworkInterfaceIPAddress
+			ipFamily := upcloud.IPAddressFamilyIPv4
+			// Currently only IPv4 is supported in private networks
+			if s.params.family != "IPv4" && s.params.req.Type == "private" {
+				return nil, fmt.Errorf("Currently only IPv4 is supported in private networks")
+			}
+			if s.params.family != "" {
+				ipFamily = s.params.family
+			}
+			ip := request.CreateNetworkInterfaceIPAddress{
+				Family: ipFamily,
+			}
+			ipAddresses = append(ipAddresses, ip)
+			s.params.req.IPAddresses = ipAddresses
+		} else {
+			ipAddresses, err := handleIPAddress(s.params.ipAddresses)
+			if err != nil {
+				return nil, err
+			}
+			s.params.req.IPAddresses = ipAddresses
 		}
-		ipAddresses, err := handleIPAddress(s.params.ipAddresses)
-		if err != nil {
-			return nil, err
-		}
-		s.params.req.IPAddresses = ipAddresses
 
 		nw, err := network.SearchUniqueNetwork(s.params.network, s.networkSvc)
 		if err != nil {
