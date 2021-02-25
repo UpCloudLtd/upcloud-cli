@@ -29,8 +29,9 @@ type listCommand struct {
 	header         table.Row
 	columnKeys     []string
 	visibleColumns []string
-	public         bool
+	all            bool
 	private        bool
+	public         bool
 	normal         bool
 	backup         bool
 	cdrom          bool
@@ -45,8 +46,9 @@ func (s *listCommand) InitCommand() {
 	s.visibleColumns = []string{"uuid", "title", "zone", "state", "type", "size", "tier", "created"}
 	flags := &pflag.FlagSet{}
 	s.AddVisibleColumnsFlag(flags, &s.visibleColumns, s.columnKeys, s.visibleColumns)
+	flags.BoolVar(&s.all, "all", false, "List all storages")
+	flags.BoolVar(&s.private, "private", true, "List private storages (default)")
 	flags.BoolVar(&s.public, "public", false, "List public storages")
-	flags.BoolVar(&s.private, "private", false, "List private storages")
 
 	flags.BoolVar(&s.normal, "normal", false, "Filters for normal storages")
 	flags.BoolVar(&s.backup, "backup", false, "Filters for backup storages")
@@ -66,13 +68,19 @@ func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 		CachedStorages = gotStorages.Storages
 		var filtered []upcloud.Storage
 		for _, v := range gotStorages.Storages {
-			if !s.public && !s.private {
-				s.private = true
-			}
-			if s.private && !s.public && v.Access == upcloud.StorageAccessPublic {
+			if s.all {
+				filtered = append(filtered, v)
 				continue
 			}
-			if s.public && !s.private && v.Access == upcloud.StorageAccessPrivate {
+
+			if s.public {
+				s.private = false
+			}
+
+			if s.private && v.Access == upcloud.StorageAccessPublic {
+				continue
+			}
+			if s.public && v.Access == upcloud.StorageAccessPrivate {
 				continue
 			}
 			if !s.normal && !s.backup && !s.cdrom && !s.template {
