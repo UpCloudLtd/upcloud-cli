@@ -175,10 +175,10 @@ type mainCommand struct {
 	*commands.BaseCommand
 }
 
-func (s *mainCommand) initConfig(outputErrors bool) {
+func (s *mainCommand) initConfig() error {
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	if err != nil && outputErrors {
-		_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
+	if err != nil {
+		return err
 	}
 	s.Config().Viper().SetEnvPrefix(envPrefix)
 	s.Config().Viper().SetEnvKeyReplacer(strings.NewReplacer("-", "_", ".", "_"))
@@ -199,10 +199,12 @@ func (s *mainCommand) initConfig(outputErrors bool) {
 	s.Config().Viper().AddConfigPath(".")
 	s.Config().Viper().AddConfigPath("$HOME")
 
-	if err := s.Config().Viper().ReadInConfig(); err != nil && outputErrors {
-		_, _ = fmt.Fprintf(os.Stderr, "Warning: config file load error: %v\n", err)
+	if err := s.Config().Viper().ReadInConfig(); err != nil {
+		return err
 	}
 	s.Config().Viper().Set("config", s.Config().Viper().ConfigFileUsed())
+	return nil
+
 }
 
 func (s *mainCommand) InitCommand() {
@@ -216,8 +218,8 @@ func (s *mainCommand) InitCommand() {
 	flags.Duration("client-timeout", 300*time.Second, "Timeout for requests")
 	s.AddPersistentFlags(flags)
 
-	s.SetConfigLoader(func(config *config.Config, loadContext int) {
-		s.initConfig(loadContext == commands.ConfigLoadContextHelp)
+	s.SetConfigLoader(func(config *config.Config) error {
+		return s.initConfig()
 	})
 
 	commands.BuildCommand(
@@ -229,7 +231,10 @@ func (s *mainCommand) InitCommand() {
 		s, config.New(mainConfig.Viper()))
 
 	if loader := s.ConfigLoader(); loader != nil {
-		loader(s.Config(), commands.ConfigLoadContextRun)
+		if err := loader(s.Config()); err != nil {
+			return
+		}
+
 	}
 
 	all.BuildCommands(s, s.Config())

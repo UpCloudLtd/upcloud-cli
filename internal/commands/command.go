@@ -39,8 +39,8 @@ type Command interface {
 	MakeExecuteCommand() func(args []string) (interface{}, error)
 	MakePreExecuteCommand() func(args []string) error
 	MakePersistentPreExecuteCommand() func(args []string) error
-	SetConfigLoader(func(config *config.Config, loadContext int))
-	ConfigLoader() func(config *config.Config, loadContext int)
+	SetConfigLoader(func(config *config.Config) error)
+	ConfigLoader() func(config *config.Config) error
 	Config() *config.Config
 	HandleOutput(writer io.Writer, out interface{}) error
 	HandleError(err error)
@@ -55,13 +55,6 @@ type CobraCommand interface {
 type namespace interface {
 	Namespace() string
 }
-
-const (
-	// ConfigLoadContextHelp is passed to command ConfigLoader to specify help has been requested
-	ConfigLoadContextHelp = iota
-	// ConfigLoadContextRun is passed to command ConfigLoader to specify regular running mode
-	ConfigLoadContextRun
-)
 
 // BuildCommand sets up a Command with the specified config and adds it to Cobra
 func BuildCommand(child, parent Command, config *config.Config) Command {
@@ -96,7 +89,9 @@ func BuildCommand(child, parent Command, config *config.Config) Command {
 	if cCmd := child.MakeExecuteCommand(); cCmd != nil && child.Cobra().RunE == nil {
 		child.Cobra().RunE = func(_ *cobra.Command, args []string) error {
 			if loader := child.ConfigLoader(); loader != nil {
-				loader(config, ConfigLoadContextRun)
+				if err := loader(config); err != nil {
+					return fmt.Errorf("Config load: %v", err)
+				}
 			}
 			response, err := cCmd(args)
 			if err != nil {
@@ -111,7 +106,9 @@ func BuildCommand(child, parent Command, config *config.Config) Command {
 	if cCmd := child.MakePreExecuteCommand(); cCmd != nil && child.Cobra().PreRunE == nil {
 		child.Cobra().PreRunE = func(_ *cobra.Command, args []string) error {
 			if loader := child.ConfigLoader(); loader != nil {
-				loader(config, ConfigLoadContextRun)
+				if err := loader(config); err != nil {
+					return fmt.Errorf("Config load: %v", err)
+				}
 			}
 			return cCmd(args)
 		}
@@ -119,7 +116,9 @@ func BuildCommand(child, parent Command, config *config.Config) Command {
 	if cCmd := child.MakePersistentPreExecuteCommand(); cCmd != nil && child.Cobra().PersistentPreRunE == nil {
 		child.Cobra().PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
 			if loader := child.ConfigLoader(); loader != nil {
-				loader(config, ConfigLoadContextRun)
+				if err := loader(config); err != nil {
+					return fmt.Errorf("Config load: %v", err)
+				}
 			}
 			return cCmd(args)
 		}
@@ -128,7 +127,7 @@ func BuildCommand(child, parent Command, config *config.Config) Command {
 	curHelp := child.Cobra().HelpFunc()
 	child.Cobra().SetHelpFunc(func(cCmd *cobra.Command, args []string) {
 		if loader := child.ConfigLoader(); loader != nil {
-			loader(config, ConfigLoadContextHelp)
+			loader(config)
 		}
 		for cmd := child; cmd != nil; cmd = cmd.Parent() {
 			for _, v := range cmd.Config().BoundFlags() {
@@ -156,7 +155,7 @@ type BaseCommand struct {
 	childrenPos      map[Command]int
 	nextChildSortPos int
 	config           *config.Config
-	configLoader     func(config *config.Config, loadContext int)
+	configLoader     func(config *config.Config) error
 }
 
 // Name returns the name of the command
@@ -298,12 +297,12 @@ func (s *BaseCommand) Config() *config.Config {
 }
 
 // SetConfigLoader implements Command.SetConfigLoader, setting internal config loader
-func (s *BaseCommand) SetConfigLoader(fn func(config *config.Config, loadContext int)) {
+func (s *BaseCommand) SetConfigLoader(fn func(config *config.Config) error) {
 	s.configLoader = fn
 }
 
 // ConfigLoader implements Command.ConfigLoader, returning the specified ConfigLoader
-func (s *BaseCommand) ConfigLoader() func(config *config.Config, loadContext int) {
+func (s *BaseCommand) ConfigLoader() func(config *config.Config) error {
 	return s.configLoader
 }
 
