@@ -234,7 +234,6 @@ func (s *mainCommand) InitCommand() {
 		if err := loader(s.Config()); err != nil {
 			return
 		}
-
 	}
 
 	all.BuildCommands(s, s.Config())
