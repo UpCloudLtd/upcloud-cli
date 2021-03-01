@@ -42,9 +42,10 @@ func TestDeleteCommand(t *testing.T) {
 			mns.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{n}}, nil)
 
 			c := commands.BuildCommand(DeleteCommand(&mns), nil, config.New(viper.New()))
-			c.SetFlags(test.flags)
+			err := c.SetFlags(test.flags)
+			assert.NoError(t, err)
 
-			_, err := c.MakeExecuteCommand()(test.args)
+			_, err = c.MakeExecuteCommand()(test.args)
 
 			if test.error != "" {
 				assert.Errorf(t, err, test.error)

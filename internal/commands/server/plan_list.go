@@ -58,10 +58,10 @@ func (s *planListCommand) HandleOutput(writer io.Writer, out interface{}) error 
 	t.OverrideColumnKeys(s.visibleColumns...)
 
 	sort.SliceStable(plans.Plans, func(i, j int) bool {
-		return plans.Plans[i].MemoryAmount < plans.Plans[j].MemoryAmount == true
+		return plans.Plans[i].MemoryAmount < plans.Plans[j].MemoryAmount
 	})
 	sort.SliceStable(plans.Plans, func(i, j int) bool {
-		return plans.Plans[i].CoreNumber < plans.Plans[j].CoreNumber == true
+		return plans.Plans[i].CoreNumber < plans.Plans[j].CoreNumber
 	})
 
 	for _, plan := range plans.Plans {

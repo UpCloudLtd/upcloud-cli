@@ -38,7 +38,7 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	account := out.(*upcloud.Account)
 
-	var credits = "0"
+	var credits string
 
 	if account.Credits == 0.0 {
 		credits = "Denied"

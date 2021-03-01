@@ -98,9 +98,10 @@ func TestImportCommand(t *testing.T) {
 			mss.On("CreateStorage", mock.Anything).Return(&StorageDetails1, nil)
 
 			ic := commands.BuildCommand(ImportCommand(&mss), nil, config.New(viper.New()))
-			ic.SetFlags(test.args)
+			err := ic.SetFlags(test.args)
+			assert.NoError(t, err)
 
-			_, err := ic.MakeExecuteCommand()(test.args)
+			_, err = ic.MakeExecuteCommand()(test.args)
 
 			if test.error != "" {
 				assert.Errorf(t, err, test.error)

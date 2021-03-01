@@ -117,7 +117,9 @@ func TestListStorages(t *testing.T) {
 			mss.On("GetStorages", mock.Anything).Return(&storages, nil)
 
 			lc := commands.BuildCommand(ListCommand(&mss), nil, config.New(viper.New()))
-			lc.SetFlags(testcase.args)
+			err := lc.SetFlags(testcase.args)
+			assert.NoError(t, err)
+
 			res, err := lc.MakeExecuteCommand()([]string{})
 			result := res.(*upcloud.Storages)
 			testcase.testFn(*result, err)

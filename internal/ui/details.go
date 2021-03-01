@@ -125,9 +125,7 @@ func (s *DetailsView) SetRowTransformer(fn func(row table.Row) table.Row) {
 
 // Append appends new rows to the DetailsView
 func (s *DetailsView) Append(rows ...table.Row) {
-	for _, row := range rows {
-		s.rows = append(s.rows, row)
-	}
+	s.rows = append(s.rows, rows...)
 }
 
 // SetHeaderWidth sets the width of the header rendered

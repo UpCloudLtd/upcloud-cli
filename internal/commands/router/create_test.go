@@ -37,9 +37,10 @@ func TestCreateCommand(t *testing.T) {
 			mrs.On(methodName, &test.req).Return(&router, nil)
 
 			c := commands.BuildCommand(CreateCommand(&mrs), nil, config.New(viper.New()))
-			c.SetFlags(test.args)
+			err := c.SetFlags(test.args)
+			assert.NoError(t, err)
 
-			_, err := c.MakeExecuteCommand()([]string{})
+			_, err = c.MakeExecuteCommand()([]string{})
 
 			if test.error != "" {
 				assert.Errorf(t, err, test.error)

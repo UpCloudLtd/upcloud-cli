@@ -55,9 +55,10 @@ func TestDeleteCommand(t *testing.T) {
 			mss := server.MockServerService{}
 			mss.On("GetServers").Return(&servers, nil)
 			c := commands.BuildCommand(DeleteCommand(&mns, &mss), nil, config.New(viper.New()))
-			c.SetFlags(test.flags)
+			err := c.SetFlags(test.flags)
+			assert.NoError(t, err)
 
-			_, err := c.MakeExecuteCommand()(test.args)
+			_, err = c.MakeExecuteCommand()(test.args)
 
 			if test.error != "" {
 				assert.Errorf(t, err, test.error)

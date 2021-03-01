@@ -6,6 +6,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
 	"time"
@@ -79,9 +80,11 @@ func TestStartCommand(t *testing.T) {
 			mServerService.On(methodName, &test.startReq).Return(&details, nil)
 
 			c := commands.BuildCommand(StartCommand(&mServerService), nil, config.New(viper.New()))
-			c.SetFlags(test.args)
+			err := c.SetFlags(test.args)
+			assert.NoError(t, err)
 
-			c.MakeExecuteCommand()([]string{Server1.UUID})
+			_, err = c.MakeExecuteCommand()([]string{Server1.UUID})
+			assert.NoError(t, err)
 
 			mServerService.AssertNumberOfCalls(t, methodName, 1)
 		})

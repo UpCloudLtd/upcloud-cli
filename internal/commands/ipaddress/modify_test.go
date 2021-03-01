@@ -59,9 +59,10 @@ func TestModifyCommand(t *testing.T) {
 			mips.On("GetIPAddresses").Return(&upcloud.IPAddresses{IPAddresses: []upcloud.IPAddress{ip}}, nil)
 
 			c := commands.BuildCommand(ModifyCommand(&mips), nil, config.New(viper.New()))
-			c.SetFlags(test.flags)
+			err := c.SetFlags(test.flags)
+			assert.NoError(t, err)
 
-			_, err := c.MakeExecuteCommand()(test.args)
+			_, err = c.MakeExecuteCommand()(test.args)
 
 			if err != nil {
 				assert.Equal(t, test.error, err.Error())

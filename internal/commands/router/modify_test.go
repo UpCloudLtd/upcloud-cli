@@ -40,9 +40,10 @@ func TestModifyCommand(t *testing.T) {
 			mrs.On("GetRouters", mock.Anything).Return(&upcloud.Routers{Routers: []upcloud.Router{router}}, nil)
 
 			c := commands.BuildCommand(ModifyCommand(&mrs), nil, config.New(viper.New()))
-			c.SetFlags(test.args)
+			err := c.SetFlags(test.args)
+			assert.NoError(t, err)
 
-			_, err := c.MakeExecuteCommand()([]string{router.Name})
+			_, err = c.MakeExecuteCommand()([]string{router.Name})
 
 			if test.error != "" {
 				assert.Errorf(t, err, test.error)

@@ -59,7 +59,8 @@ func TestDeleteServerCommand(t *testing.T) {
 			mss.On("GetServers", mock.Anything).Return(servers, nil)
 
 			tc := commands.BuildCommand(DeleteCommand(&mss), nil, config.New(viper.New()))
-			tc.SetFlags(test.args)
+			err := tc.SetFlags(test.args)
+			assert.NoError(t, err)
 
 			results, err := tc.MakeExecuteCommand()([]string{Server1.UUID})
 			for _, result := range results.([]interface{}) {

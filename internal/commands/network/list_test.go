@@ -75,7 +75,8 @@ func TestListCommand(t *testing.T) {
 		mns.On("GetNetworksInZone", &request.GetNetworksInZoneRequest{Zone: "uk-lon1"}).Return(&upcloud.Networks{Networks: []upcloud.Network{Network3, Network4}}, nil)
 
 		c := commands.BuildCommand(ListCommand(&mns), nil, config.New(viper.New()))
-		c.SetFlags(test.flags)
+		err := c.SetFlags(test.flags)
+		assert.NoError(t, err)
 
 		res, err := c.MakeExecuteCommand()([]string{})
 

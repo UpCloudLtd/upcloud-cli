@@ -58,10 +58,8 @@ type LiveLog struct {
 	entriesPending    []*LogEntry
 	entriesInProgress []*LogEntry
 	entriesDone       []*LogEntry
-	renderingStarted  bool
 	height            int
 	out               io.Writer
-	isTerminal        bool
 }
 
 // AddEntries adds log entries to LiveLog
@@ -178,7 +176,7 @@ func (s *LiveLog) renderEntry(entry *LogEntry) {
 		colours = s.config.Colours.InProgress
 	}
 	if !entry.started.IsZero() {
-		dur := time.Now().Sub(entry.started)
+		dur := time.Since(entry.started)
 		durStr = fmt.Sprintf("%dm%ds",
 			dur/time.Minute,
 			dur%time.Minute/time.Second)

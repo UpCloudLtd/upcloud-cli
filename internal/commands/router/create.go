@@ -24,8 +24,7 @@ func CreateCommand(service service.Network) commands.Command {
 }
 
 type createParams struct {
-	req     request.CreateRouterRequest
-	routers []string
+	req request.CreateRouterRequest
 }
 
 // InitCommand implements Command.InitCommand

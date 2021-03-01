@@ -93,9 +93,10 @@ func TestCreateCommand(t *testing.T) {
 			mns := MockNetworkService{}
 			mns.On(methodName, &test.expected).Return(&upcloud.Network{}, nil)
 			c := commands.BuildCommand(CreateCommand(&mns), nil, config.New(viper.New()))
-			c.SetFlags(test.args)
+			err := c.SetFlags(test.args)
+			assert.NoError(t, err)
 
-			_, err := c.MakeExecuteCommand()(test.args)
+			_, err = c.MakeExecuteCommand()(test.args)
 
 			if err != nil {
 				assert.Equal(t, test.error, err.Error())
