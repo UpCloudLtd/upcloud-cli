@@ -75,5 +75,6 @@ func (s *planListCommand) HandleOutput(writer io.Writer, out interface{}) error 
 		})
 	}
 
-	return t.Paginate(writer)
+	_, _ = fmt.Fprintln(writer, t.Render())
+	return nil
 }

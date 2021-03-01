@@ -81,5 +81,6 @@ func (s *listCommand) HandleOutput(writer io.Writer, out interface{}) error {
 			server.License})
 	}
 
-	return t.Paginate(writer)
+	_, _ = fmt.Fprintln(writer, t.Render())
+	return nil
 }
