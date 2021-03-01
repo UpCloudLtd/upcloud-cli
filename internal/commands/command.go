@@ -126,9 +126,6 @@ func BuildCommand(child, parent Command, config *config.Config) Command {
 
 	curHelp := child.Cobra().HelpFunc()
 	child.Cobra().SetHelpFunc(func(cCmd *cobra.Command, args []string) {
-		if loader := child.ConfigLoader(); loader != nil {
-			loader(config)
-		}
 		for cmd := child; cmd != nil; cmd = cmd.Parent() {
 			for _, v := range cmd.Config().BoundFlags() {
 				if !cmd.Config().IsSet(v.Name) {
