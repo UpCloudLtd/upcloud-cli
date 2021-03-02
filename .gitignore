@@ -4,8 +4,11 @@
 *.dll
 *.so
 *.dylib
-cli
 upctl
+bin/
+
+# Config files
+.upctl
 
 # Test binary, built with `go test -c`
 *.test
