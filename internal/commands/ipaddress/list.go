@@ -1,6 +1,7 @@
 package ipaddress
 
 import (
+	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
@@ -68,5 +69,6 @@ func (s *listCommand) HandleOutput(writer io.Writer, out interface{}) error {
 			ip.Zone})
 	}
 
-	return t.Paginate(writer)
+	_, _ = fmt.Fprintln(writer, t.Render())
+	return nil
 }

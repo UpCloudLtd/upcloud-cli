@@ -2,13 +2,7 @@ package ui
 
 import (
 	"fmt"
-	"io"
 	"math"
-	"os"
-	"os/exec"
-	"runtime"
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/jedib0t/go-pretty/v6/table"
@@ -246,65 +240,4 @@ func (s *DataTable) Append(rows ...table.Row) {
 		}
 		s.rows = append(s.rows, row)
 	}
-}
-
-// TerminalHeight return the number ro rows visible in the terminal.
-// nb. does not work on windows. FIXME
-func TerminalHeight() (int, error) {
-	if runtime.GOOS == "windows" {
-		return math.MaxInt16, nil
-	}
-	cmd := exec.Command("stty", "size")
-	cmd.Stdin = os.Stdin
-	out, err := cmd.Output()
-	if err != nil {
-		return 0, err
-	}
-	return strconv.Atoi(strings.Split(string(out), " ")[0])
-}
-
-// Paginate renders the DataTable paginated
-func (s *DataTable) Paginate(writer io.Writer) error {
-	var i int
-	var rowCount int
-	b := make([]byte, 1)
-
-	fmt.Fprintln(writer)
-	for i < len(s.rows) {
-		height, err := TerminalHeight()
-		if err != nil {
-			return err
-		}
-
-		if i-len(s.rows) < height && i > 0 {
-			cmd := exec.Command("clear")
-			cmd.Stdout = os.Stdout
-			// TODO: should we handle errors from cmd.Run()?
-			cmd.Run()
-		}
-		t := NewDataTable(s.columnKeys...)
-		t.OverrideColumnKeys(s.overrideColumnKeys...)
-		t.SetHeader(s.header)
-		for key, value := range s.columnConfig {
-			t.SetColumnConfig(key, *value)
-		}
-		t.setStyle(*s.t.Style())
-
-		for rowCount < height-4 && i < len(s.rows) {
-			t.Append(s.rows[i])
-			rowCount++
-			i++
-		}
-
-		fmt.Fprintln(writer, t.Render())
-
-		if i < len(s.rows) {
-			fmt.Println("Press Enter for next page...")
-			os.Stdin.Read(b)
-			rowCount = 0
-			continue
-		}
-	}
-	fmt.Fprintln(writer)
-	return nil
 }
