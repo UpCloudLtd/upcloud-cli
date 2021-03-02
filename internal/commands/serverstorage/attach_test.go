@@ -112,9 +112,10 @@ func TestAttachStorageCommand(t *testing.T) {
 			mStorageService.On("GetStorages", mock.Anything).Return(storages, nil)
 
 			cc := commands.BuildCommand(AttachCommand(&mServerService, &mStorageService), nil, config.New(viper.New()))
-			cc.SetFlags(test.args)
+			err := cc.SetFlags(test.args)
+			assert.NoError(t, err)
 
-			_, err := cc.MakeExecuteCommand()([]string{Server1.UUID})
+			_, err = cc.MakeExecuteCommand()([]string{Server1.UUID})
 
 			if test.error != "" {
 				assert.Equal(t, test.error, err.Error())

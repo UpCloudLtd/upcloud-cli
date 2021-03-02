@@ -83,9 +83,10 @@ func TestModifyCommand(t *testing.T) {
 			mns.On(methodName, &test.expected).Return(&upcloud.Network{}, nil)
 			mns.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{n}}, nil)
 			c := commands.BuildCommand(ModifyCommand(&mns), nil, config.New(viper.New()))
-			c.SetFlags(test.flags)
+			err := c.SetFlags(test.flags)
+			assert.NoError(t, err)
 
-			_, err := c.MakeExecuteCommand()([]string{n.Name})
+			_, err = c.MakeExecuteCommand()([]string{n.Name})
 
 			if err != nil {
 				assert.Equal(t, test.error, err.Error())

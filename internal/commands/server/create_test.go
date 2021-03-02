@@ -192,7 +192,7 @@ func TestCreateServer(t *testing.T) {
 				"--title", "test-server",
 				"--zone", "uk-lon1",
 				"--password-delivery", "email",
-				"--storage", fmt.Sprintf("action=create,address=virtio,type=disk,size=20,title=new-storage"),
+				"--storage", "action=create,address=virtio,type=disk,size=20,title=new-storage",
 				"--storage", fmt.Sprintf("action=clone,storage=%s,title=three-clone", Storage3.Title),
 				"--storage", fmt.Sprintf("action=attach,storage=%s,type=cdrom", Storage1.Title),
 			},
@@ -322,9 +322,10 @@ func TestCreateServer(t *testing.T) {
 			mStorageService.On("GetStorages", mock.Anything).Return(storages, nil)
 
 			cc := commands.BuildCommand(CreateCommand(&mServerService, &mStorageService), nil, config.New(viper.New()))
-			cc.SetFlags(test.args)
+			err := cc.SetFlags(test.args)
+			assert.NoError(t, err)
 
-			_, err := cc.MakeExecuteCommand()([]string{})
+			_, err = cc.MakeExecuteCommand()([]string{})
 
 			if test.error != "" {
 				assert.Equal(t, test.error, err.Error())

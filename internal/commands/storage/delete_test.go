@@ -43,9 +43,10 @@ func TestDeleteStorageCommand(t *testing.T) {
 			mss.On("GetStorages", mock.Anything).Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage2}}, nil)
 
 			tc := commands.BuildCommand(DeleteCommand(&mss), nil, config.New(viper.New()))
-			tc.SetFlags(test.args)
+			err := tc.SetFlags(test.args)
+			assert.NoError(t, err)
 
-			_, err := tc.MakeExecuteCommand()([]string{Storage2.UUID})
+			_, err = tc.MakeExecuteCommand()([]string{Storage2.UUID})
 			assert.Nil(t, err)
 
 			mss.AssertNumberOfCalls(t, methodName, test.methodCalls)

@@ -5,7 +5,6 @@ import (
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
-	"github.com/spf13/pflag"
 )
 
 type ejectCommand struct {
@@ -13,7 +12,6 @@ type ejectCommand struct {
 	serverSvc  service.Server
 	storageSvc service.Storage
 	params     ejectParams
-	flagSet    *pflag.FlagSet
 }
 
 type ejectParams struct {

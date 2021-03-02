@@ -62,9 +62,10 @@ func TestTemplatizeCommand(t *testing.T) {
 			mss.On(methodName, &test.expected).Return(&details, nil)
 
 			tc := commands.BuildCommand(TemplatizeCommand(&mss), nil, config.New(viper.New()))
-			tc.SetFlags(test.args)
+			err := tc.SetFlags(test.args)
+			assert.NoError(t, err)
 
-			_, err := tc.MakeExecuteCommand()([]string{Storage2.UUID})
+			_, err = tc.MakeExecuteCommand()([]string{Storage2.UUID})
 			if test.error != "" {
 				assert.Errorf(t, err, "title is required")
 			} else {

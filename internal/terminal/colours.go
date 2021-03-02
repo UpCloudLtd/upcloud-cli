@@ -20,7 +20,7 @@ func init() {
 func ForceColours(v bool) {
 	forceColours = &v
 	text.EnableColors()
-	if v == false {
+	if !v {
 		text.DisableColors()
 	}
 }

@@ -37,7 +37,6 @@ type listCommand struct {
 	backup         bool
 	cdrom          bool
 	template       bool
-	favorite       bool
 }
 
 // InitCommand implements Command.InitCommand

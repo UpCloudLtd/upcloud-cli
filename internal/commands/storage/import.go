@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"io"
-	"math"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -103,7 +102,7 @@ func (s *importParams) processParams(srv service.Storage) error {
 		// Infer created storage size from the file if default size is used
 		if s.existingStorage == nil && s.createStorage.Size == defaultCreateParams.Size &&
 			float64(stat.Size()/1024/1024/1024) > float64(defaultCreateParams.Size) {
-			s.createStorage.Size = int(math.Ceil(float64(stat.Size() / 1024 / 1024 / 1024)))
+			s.createStorage.Size = int(float64(stat.Size() / 1024 / 1024 / 1024))
 		}
 	}
 	if s.Source == upcloud.StorageImportSourceHTTPImport {
@@ -116,21 +115,9 @@ func (s *importParams) processParams(srv service.Storage) error {
 	return nil
 }
 
-func (s *importParams) close() {
-	if s.sourceFile != nil {
-		_ = s.sourceFile.Close()
-	}
-}
-
 type readerCounter struct {
 	source io.Reader
 	read   int64
-}
-
-func (s *readerCounter) readCounting(p []byte) (n int, err error) {
-	n, err = s.source.Read(p)
-	atomic.AddInt64(&s.read, int64(n))
-	return
 }
 
 func (s *readerCounter) counter() int {
@@ -291,10 +278,6 @@ func (s *importCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 						case details.State == upcloud.StorageImportStateCompleted:
 							e.SetMessage(fmt.Sprintf("%s: done", msg))
 							goto end
-						}
-						if importErr != nil {
-						}
-						if details.ErrorCode != "" {
 						}
 						if read := details.ReadBytes; read > 0 {
 							if details.ClientContentLength > 0 {

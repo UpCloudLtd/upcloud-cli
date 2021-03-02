@@ -70,9 +70,10 @@ func TestDetachCommand(t *testing.T) {
 			mStorageService.On(methodName, &test.detachReq).Return(&details, nil)
 
 			tc := commands.BuildCommand(DetachCommand(&mServerService, &mStorageService), nil, config.New(viper.New()))
-			tc.SetFlags(test.args)
+			err := tc.SetFlags(test.args)
+			assert.NoError(t, err)
 
-			_, err := tc.MakeExecuteCommand()([]string{Server1.UUID})
+			_, err = tc.MakeExecuteCommand()([]string{Server1.UUID})
 
 			if test.error != "" {
 				assert.Equal(t, test.error, err.Error())

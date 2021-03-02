@@ -1,14 +1,16 @@
 package server
 
 import (
+	"testing"
+	"time"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
-	"time"
 )
 
 func TestRestartCommand(t *testing.T) {
@@ -83,9 +85,11 @@ func TestRestartCommand(t *testing.T) {
 			mServerService.On(methodName, &test.restartReq).Return(&details, nil)
 
 			c := commands.BuildCommand(RestartCommand(&mServerService), nil, config.New(viper.New()))
-			c.SetFlags(test.args)
+			err := c.SetFlags(test.args)
+			assert.NoError(t, err)
 
-			c.MakeExecuteCommand()([]string{Server1.UUID})
+			_, err = c.MakeExecuteCommand()([]string{Server1.UUID})
+			assert.NoError(t, err)
 
 			mServerService.AssertNumberOfCalls(t, methodName, 1)
 		})

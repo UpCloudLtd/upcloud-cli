@@ -70,9 +70,10 @@ func TestModifyCommand(t *testing.T) {
 			mss := server.MockServerService{}
 			mss.On("GetServers").Return(&servers, nil)
 			c := commands.BuildCommand(ModifyCommand(&mns, &mss), nil, config.New(viper.New()))
-			c.SetFlags(test.args)
+			err := c.SetFlags(test.args)
+			assert.NoError(t, err)
 
-			_, err := c.MakeExecuteCommand()([]string{s.UUID})
+			_, err = c.MakeExecuteCommand()([]string{s.UUID})
 
 			if test.error != "" {
 				assert.Errorf(t, err, test.error)

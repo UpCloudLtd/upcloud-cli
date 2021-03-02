@@ -6,6 +6,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
 )
@@ -102,10 +103,11 @@ func TestModifyCommand(t *testing.T) {
 			mss.On(methodName, &test.modifyCall).Return(&details, nil)
 			mss.On("GetServers", mock.Anything).Return(servers, nil)
 			mc := commands.BuildCommand(ModifyCommand(&mss), nil, config.New(viper.New()))
-			mc.SetFlags(test.args)
+			err := mc.SetFlags(test.args)
+			assert.NoError(t, err)
 
-			mc.MakeExecuteCommand()([]string{test.server.UUID})
-
+			_, err = mc.MakeExecuteCommand()([]string{test.server.UUID})
+			assert.NoError(t, err)
 			mss.AssertNumberOfCalls(t, methodName, 1)
 		})
 	}

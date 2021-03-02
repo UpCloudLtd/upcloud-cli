@@ -69,9 +69,10 @@ func TestAssignCommand(t *testing.T) {
 			mss.On("GetServers").Return(&servers, nil)
 
 			c := commands.BuildCommand(AssignCommand(&mss, &mips), nil, config.New(viper.New()))
-			c.SetFlags(test.flags)
+			err := c.SetFlags(test.flags)
+			assert.NoError(t, err)
 
-			_, err := c.MakeExecuteCommand()([]string{})
+			_, err = c.MakeExecuteCommand()([]string{})
 
 			if err != nil {
 				assert.Equal(t, test.error, err.Error())

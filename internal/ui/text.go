@@ -49,7 +49,7 @@ func FormatTime(tv time.Time) string {
 	if tv.IsZero() {
 		return ""
 	}
-	dur := time.Now().Sub(tv)
+	dur := time.Since(tv)
 	if dur.Hours() < 8 {
 		return fmt.Sprintf("%s (%dh%dm%ds ago)",
 			tv.Format(time.RFC3339),

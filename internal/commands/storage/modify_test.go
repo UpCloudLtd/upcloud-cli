@@ -88,9 +88,10 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 			mss.On("GetStorageDetails", &request.GetStorageDetailsRequest{UUID: Storage1.UUID}).Return(&StorageDetails1, nil)
 
 			tc := commands.BuildCommand(ModifyCommand(&mss), nil, config.New(viper.New()))
-			tc.SetFlags(test1.args)
+			err := tc.SetFlags(test1.args)
+			assert.NoError(t, err)
 
-			_, err := tc.MakeExecuteCommand()([]string{test1.storage.UUID})
+			_, err = tc.MakeExecuteCommand()([]string{test1.storage.UUID})
 
 			if test1.error != "" {
 				assert.Equal(t, test1.error, err.Error())
@@ -133,9 +134,10 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 			mss.On("GetStorageDetails", &request.GetStorageDetailsRequest{UUID: Storage1.UUID}).Return(&StorageDetails1, nil)
 
 			tc := commands.BuildCommand(ModifyCommand(&mss), nil, config.New(viper.New()))
-			tc.SetFlags(test2.args)
+			err := tc.SetFlags(test2.args)
+			assert.NoError(t, err)
 
-			_, err := tc.MakeExecuteCommand()([]string{test2.storage.UUID})
+			_, err = tc.MakeExecuteCommand()([]string{test2.storage.UUID})
 
 			if test2.error != "" {
 				assert.Equal(t, test2.error, err.Error())
@@ -195,9 +197,10 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 			mss.On("GetStorageDetails", &request.GetStorageDetailsRequest{UUID: Storage2.UUID}).Return(&StorageDetails2, nil)
 
 			tc := commands.BuildCommand(ModifyCommand(&mss), nil, config.New(viper.New()))
-			tc.SetFlags(test3.args)
+			err := tc.SetFlags(test3.args)
+			assert.NoError(t, err)
 
-			_, err := tc.MakeExecuteCommand()([]string{test3.storage.UUID})
+			_, err = tc.MakeExecuteCommand()([]string{test3.storage.UUID})
 
 			if test3.error != "" {
 				assert.Equal(t, test3.error, err.Error())

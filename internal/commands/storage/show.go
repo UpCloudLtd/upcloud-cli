@@ -27,9 +27,8 @@ func ShowCommand(serverSvc service.Server, storageSvc service.Storage) commands.
 
 type showCommand struct {
 	*commands.BaseCommand
-	serverSvc     service.Server
-	storageSvc    service.Storage
-	storageImport *upcloud.StorageImportDetails
+	serverSvc  service.Server
+	storageSvc service.Storage
 }
 
 type commandResponseHolder struct {
