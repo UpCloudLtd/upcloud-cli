@@ -31,32 +31,29 @@ var defaultCreateParams = request.CreateFirewallRuleRequest{
 
 type createParams struct {
 	request.CreateFirewallRuleRequest
-	position int
 }
 
 // InitCommand implements Command.InitCommand
 func (s *createCommand) InitCommand() {
 	flagSet := &pflag.FlagSet{}
 
-	// s.params = createParams{firewallSvc.CreateFirewallRuleRequest: request.CreateFirewallRuleRequest{}}
-
 	def := defaultCreateParams
 
-	flagSet.StringVar(&s.params.Direction, "direction", def.FirewallRule.Direction, "")
-	flagSet.StringVar(&s.params.Action, "action", def.FirewallRule.Action, "")
-	flagSet.StringVar(&s.params.Family, "family", def.FirewallRule.Family, "")
-	flagSet.IntVar(&s.params.Position, "position", def.Position, "")
-	flagSet.StringVar(&s.params.Protocol, "protocol", def.Protocol, "")
-	flagSet.StringVar(&s.params.ICMPType, "icmp_type", def.ICMPType, "")
-	flagSet.StringVar(&s.params.DestinationAddressStart, "destination-address-start", def.DestinationAddressStart, "")
-	flagSet.StringVar(&s.params.DestinationAddressEnd, "destination-address-end", def.DestinationAddressEnd, "")
-	flagSet.StringVar(&s.params.DestinationPortStart, "destination-port-start", def.DestinationPortStart, "")
-	flagSet.StringVar(&s.params.DestinationPortEnd, "destination-port-end", def.DestinationPortEnd, "")
-	flagSet.StringVar(&s.params.SourceAddressStart, "source-address-start", def.SourceAddressStart, "")
-	flagSet.StringVar(&s.params.SourceAddressEnd, "source-address-end", def.SourceAddressEnd, "")
-	flagSet.StringVar(&s.params.SourcePortStart, "source-port-start", def.SourcePortStart, "")
-	flagSet.StringVar(&s.params.SourcePortEnd, "source-port-end", def.SourcePortEnd, "")
-	flagSet.StringVar(&s.params.Comment, "comment", def.Comment, "")
+	flagSet.StringVar(&s.params.Direction, "direction", def.FirewallRule.Direction, "in / out")
+	flagSet.StringVar(&s.params.Action, "action", def.FirewallRule.Action, "accept / drop")
+	flagSet.StringVar(&s.params.Family, "family", def.FirewallRule.Family, "IPv4 / IPv6")
+	flagSet.IntVar(&s.params.Position, "position", def.Position, "1-1000")
+	flagSet.StringVar(&s.params.Protocol, "protocol", def.Protocol, "tcp / udp / icmp")
+	flagSet.StringVar(&s.params.ICMPType, "icmp_type", def.ICMPType, "0-255")
+	flagSet.StringVar(&s.params.DestinationAddressStart, "destination-address-start", def.DestinationAddressStart, "Valid IP address")
+	flagSet.StringVar(&s.params.DestinationAddressEnd, "destination-address-end", def.DestinationAddressEnd, "Valid IP address")
+	flagSet.StringVar(&s.params.DestinationPortStart, "destination-port-start", def.DestinationPortStart, "1-65535")
+	flagSet.StringVar(&s.params.DestinationPortEnd, "destination-port-end", def.DestinationPortEnd, "1-65535")
+	flagSet.StringVar(&s.params.SourceAddressStart, "source-address-start", def.SourceAddressStart, "Valid IP address")
+	flagSet.StringVar(&s.params.SourceAddressEnd, "source-address-end", def.SourceAddressEnd, "Valid IP address")
+	flagSet.StringVar(&s.params.SourcePortStart, "source-port-start", def.SourcePortStart, "1-65535")
+	flagSet.StringVar(&s.params.SourcePortEnd, "source-port-end", def.SourcePortEnd, "1-65535")
+	flagSet.StringVar(&s.params.Comment, "comment", def.Comment, "0-250 characters")
 
 	s.AddFlags(flagSet)
 }
@@ -78,7 +75,7 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 		}
 
 		if s.params.Family != "IPv4" && s.params.Family != "IPv6" {
-			return nil, fmt.Errorf("Invalid Family. Use 'IPv4' or 'IPv6'.")
+			return nil, fmt.Errorf("Invalid Family. 'IPv4' / 'IPv6'.")
 		}
 
 		if s.params.DestinationAddressStart == "" && s.params.DestinationAddressEnd != "" {
