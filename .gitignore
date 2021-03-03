@@ -10,6 +10,9 @@ bin/
 # Config files
 .upctl
 
+# pkgbuild
+PKGBUILD
+
 # Test binary, built with `go test -c`
 *.test
 
