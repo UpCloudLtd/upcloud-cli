@@ -20,7 +20,7 @@ type createCommand struct {
 
 func CreateCommand(serverSvc service.Server, firewallSvc service.Firewall) commands.Command {
 	return &createCommand{
-		BaseCommand: commands.New("create", "Create firewall rule for server"),
+		BaseCommand: commands.New("create", "Creates a new firewall rule."),
 		serverSvc:   serverSvc,
 		firewallSvc: firewallSvc,
 	}

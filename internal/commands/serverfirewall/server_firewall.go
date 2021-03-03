@@ -10,7 +10,7 @@ const (
 )
 
 func BaseServerFirewallCommand() commands.Command {
-	return &serverFirewallCommand{commands.New("firewall", "Manage server firewall")}
+	return &serverFirewallCommand{commands.New("firewall", "Manage server firewall rules.")}
 }
 
 type serverFirewallCommand struct {

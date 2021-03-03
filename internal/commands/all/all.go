@@ -42,7 +42,7 @@ func BuildCommands(mainCommand commands.Command, mainConfig *config.Config) {
 	// Server firewall operations
 	serverFirewallCommand := commands.BuildCommand(serverfirewall.BaseServerFirewallCommand(), serverCommand, cfgFn())
 	commands.BuildCommand(serverfirewall.CreateCommand(svc, svc), serverFirewallCommand, cfgFn())
-	// commands.BuildCommand(serverfirewall.RemoveCommand(svc, svc), serverFirewallCommand, cfgFn())
+	commands.BuildCommand(serverfirewall.DeleteCommand(svc, svc), serverFirewallCommand, cfgFn())
 
 	// Storages
 	storageCommand := commands.BuildCommand(storage.BaseStorageCommand(), mainCommand, cfgFn())
