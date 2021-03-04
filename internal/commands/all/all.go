@@ -8,9 +8,9 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands/networkinterface"
 	"github.com/UpCloudLtd/cli/internal/commands/router"
 	"github.com/UpCloudLtd/cli/internal/commands/server"
+	"github.com/UpCloudLtd/cli/internal/commands/serverfirewall"
 	"github.com/UpCloudLtd/cli/internal/commands/serverstorage"
 	"github.com/UpCloudLtd/cli/internal/commands/storage"
-	"github.com/UpCloudLtd/cli/internal/commands/serverfirewall"
 	"github.com/UpCloudLtd/cli/internal/config"
 	"github.com/UpCloudLtd/cli/internal/upapi"
 )

@@ -178,7 +178,6 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 		l.AppendSection("Firewall Rules:", ui.WrapWithListLayout(tFw.Render(), ui.ListLayoutNestedTable).Render())
 	}
 
-
 	// Firewall status
 	fwEnabled := srv.Firewall == "on"
 	{
@@ -191,6 +190,3 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	return nil
 
 }
-
-
-

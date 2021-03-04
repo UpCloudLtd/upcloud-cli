@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/spf13/cobra"
 )
 
 const (
-	maxFirewallActions  = 10
-	PositionalArgHelp = "/server/<UUID/firewall_rule>"
+	maxFirewallActions = 10
+	PositionalArgHelp  = "/server/<UUID/firewall_rule>"
 )
 
 // CachedServers stores a cached list of servers fetched from the service
@@ -93,4 +93,3 @@ func GetServerArgumentCompletionFunction(s service.Server) func(toComplete strin
 		return commands.MatchStringPrefix(vals, toComplete, true), cobra.ShellCompDirectiveNoFileComp
 	}
 }
-

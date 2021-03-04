@@ -17,7 +17,6 @@ type createCommand struct {
 	params      createParams
 }
 
-
 func CreateCommand(serverSvc service.Server, firewallSvc service.Firewall) commands.Command {
 	return &createCommand{
 		BaseCommand: commands.New("create", "Creates a new firewall rule."),
@@ -26,8 +25,7 @@ func CreateCommand(serverSvc service.Server, firewallSvc service.Firewall) comma
 	}
 }
 
-var defaultCreateParams = request.CreateFirewallRuleRequest{
-}
+var defaultCreateParams = request.CreateFirewallRuleRequest{}
 
 type createParams struct {
 	request.CreateFirewallRuleRequest
@@ -57,7 +55,7 @@ func (s *createCommand) InitCommand() {
 
 	s.AddFlags(flagSet)
 }
-	
+
 // MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {

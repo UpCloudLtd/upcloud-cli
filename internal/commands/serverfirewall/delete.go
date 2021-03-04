@@ -12,21 +12,20 @@ import (
 
 type deleteCommand struct {
 	*commands.BaseCommand
-	serverSvc  service.Server
+	serverSvc   service.Server
 	firewallSvc service.Firewall
-	params     deleteParams
+	params      deleteParams
 }
 
 func DeleteCommand(serverSvc service.Server, firewallSvc service.Firewall) commands.Command {
 	return &deleteCommand{
 		BaseCommand: commands.New("delete", "Removes a firewall rule from a server. Firewall rules must be removed individually. The positions of remaining firewall rules will be adjusted after a rule is removed."),
 		serverSvc:   serverSvc,
-		firewallSvc:  firewallSvc,
+		firewallSvc: firewallSvc,
 	}
 }
 
-var defaultRemoveParams = request.DeleteFirewallRuleRequest{
-}
+var defaultRemoveParams = request.DeleteFirewallRuleRequest{}
 
 type deleteParams struct {
 	request.DeleteFirewallRuleRequest
@@ -72,4 +71,3 @@ func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 		}.Send(args)
 	}
 }
-
