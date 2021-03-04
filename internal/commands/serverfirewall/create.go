@@ -118,7 +118,7 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 			ExactlyOne: true,
 			Handler: ui.HandleContext{
 				InteractiveUI: s.Config().InteractiveUI(),
-				MaxActions:    10,
+				MaxActions:    maxFirewallActions,
 				MessageFn: func(in interface{}) string {
 					req := in.(*request.CreateFirewallRuleRequest)
 					return fmt.Sprintf("Creating firewall rule for server %q", req.ServerUUID)

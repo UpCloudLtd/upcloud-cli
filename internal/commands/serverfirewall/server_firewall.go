@@ -10,7 +10,6 @@ import (
 )
 
 const (
-	maxFirewallActions = 10
 	PositionalArgHelp  = "/server/<UUID/firewall_rule>"
 )
 

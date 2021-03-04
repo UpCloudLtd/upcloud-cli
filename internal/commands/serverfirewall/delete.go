@@ -63,7 +63,7 @@ func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 					return fmt.Sprintf("Remove firewall rule at position %d from server %q", s.params.Position, req.ServerUUID)
 				},
 				InteractiveUI: s.Config().InteractiveUI(),
-				MaxActions:    10,
+				MaxActions:    maxFirewallActions,
 				Action: func(req interface{}) (interface{}, error) {
 					return nil, s.firewallSvc.DeleteFirewallRule(req.(*request.DeleteFirewallRuleRequest))
 				},
