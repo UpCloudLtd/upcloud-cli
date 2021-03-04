@@ -80,7 +80,7 @@ func searchServer(serversPtr *[]upcloud.Server, service service.Server, uuidOrHo
 	return matched, nil
 }
 
-func searchAllServers(terms []string, service service.Server, unique bool) ([]string, error) {
+func SearchAllServers(terms []string, service service.Server, unique bool) ([]string, error) {
 	return commands.SearchResources(
 		terms,
 		func(term string) (interface{}, error) {
@@ -147,7 +147,7 @@ func (s Request) Send(args []string) (interface{}, error) {
 		return nil, fmt.Errorf("at least one server uuid is required")
 	}
 
-	servers, err := searchAllServers(args, s.Service, true)
+	servers, err := SearchAllServers(args, s.Service, true)
 	if err != nil {
 		return nil, err
 	}

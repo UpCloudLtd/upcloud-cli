@@ -9,6 +9,8 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/UpCloudLtd/cli/internal/commands/server"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
@@ -44,7 +46,7 @@ func (c *commandResponseHolder) MarshalJSON() ([]byte, error) {
 // InitCommand implements Command.InitCommand
 func (s *showCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetServerArgumentCompletionFunction(s.serverSvc))
+	s.ArgCompletion(server.GetServerArgumentCompletionFunction(s.serverSvc))
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand
@@ -54,7 +56,7 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 		if len(args) != 1 {
 			return nil, fmt.Errorf("one server hostname, title or uuid is required")
 		}
-		serverUUIDs, err := searchAllServers(args, s.serverSvc, true)
+		serverUUIDs, err := server.SearchAllServers(args, s.serverSvc, true)
 		if err != nil {
 			return nil, err
 		}
