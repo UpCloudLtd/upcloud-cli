@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	PositionalArgHelp  = "/server/<UUID/firewall_rule>"
+	PositionalArgHelp = "/server/<UUID/firewall_rule>"
 )
 
 // CachedServers stores a cached list of servers fetched from the service
