@@ -47,6 +47,10 @@ func (s *deleteCommand) InitCommand() {
 func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
 
+		if s.params.Position == 0 {
+			return nil, fmt.Errorf("Position is required.")
+		}
+
 		return server.Request{
 			BuildRequest: func(uuid string) interface{} {
 				req := s.params.DeleteFirewallRuleRequest
@@ -57,7 +61,7 @@ func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 			Handler: ui.HandleContext{
 				MessageFn: func(in interface{}) string {
 					req := in.(*request.DeleteFirewallRuleRequest)
-					return fmt.Sprintf("Remove firewall rule at position %q from server %q", s.params.Position, req.ServerUUID)
+					return fmt.Sprintf("Remove firewall rule at position %d from server %q", s.params.Position, req.ServerUUID)
 				},
 				InteractiveUI: s.Config().InteractiveUI(),
 				MaxActions:    10,

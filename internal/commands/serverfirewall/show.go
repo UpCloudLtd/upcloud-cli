@@ -19,7 +19,7 @@ import (
 
 func ShowCommand(serverSvc service.Server, firewallSvc service.Firewall) commands.Command {
 	return &showCommand{
-		BaseCommand: commands.New("show", "Show server details"),
+		BaseCommand: commands.New("show", "Show server details."),
 		serverSvc:   serverSvc,
 		firewallSvc: firewallSvc,
 	}
@@ -96,97 +96,95 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 		}
 		return ui.DefaultBooleanColoursFalse.Sprint("no")
 	}
-/*	rowTransformer := func(row table.Row) table.Row {
-		if v, ok := row[len(row)-1].(upcloud.Boolean); ok {
-			row[len(row)-1] = formatBool(v.Bool())
-		}
-		return rowA
-	}*/
 
 	l := ui.NewListLayout(ui.ListLayoutDefault)
 
-	// Network details
 	{
 		dNetwork := ui.NewDetailsView()
 		dNetwork.SetRowSpacing(true)
-		fwEnabled := srv.Firewall == "on"
-		dNetwork.Append(table.Row{"Firewall", formatBool(fwEnabled)})
-		if fwEnabled {
-			formatMatch := func(start, stop, portStart, portStop string) string {
-				var sb strings.Builder
-				ipStart := net.ParseIP(start)
-				ipStop := net.ParseIP(stop)
+		formatMatch := func(start, stop, portStart, portStop string) string {
+			var sb strings.Builder
+			ipStart := net.ParseIP(start)
+			ipStop := net.ParseIP(stop)
+			if ipStart != nil {
+				if ipStart.Equal(ipStop) {
+					sb.WriteString(ui.DefaultAddressColours.Sprint(ipStart))
+				} else {
+					sb.WriteString(ui.DefaultAddressColours.Sprintf("%s →\n%s", ipStart, ipStop))
+				}
+			}
+			if portStart != "" {
 				if ipStart != nil {
-					if ipStart.Equal(ipStop) {
-						sb.WriteString(ui.DefaultAddressColours.Sprint(ipStart))
-					} else {
-						sb.WriteString(ui.DefaultAddressColours.Sprintf("%s →\n%s", ipStart, ipStop))
-					}
+					sb.WriteString("\n")
 				}
-				if portStart != "" {
-					if ipStart != nil {
-						sb.WriteString("\n")
-					}
-					if portStart == portStop {
-						sb.WriteString(fmt.Sprintf("port: %s", portStart))
-					} else {
-						sb.WriteString(fmt.Sprintf("port: %s → %s", portStart, portStop))
-					}
+				if portStart == portStop {
+					sb.WriteString(fmt.Sprintf("port: %s", portStart))
+				} else {
+					sb.WriteString(fmt.Sprintf("port: %s → %s", portStart, portStop))
 				}
-				return sb.String()
 			}
-			formatProto := func(family, proto, icmptype string) string {
-				var sb strings.Builder
-				sb.WriteString(family)
-				if proto == "" {
-					return sb.String()
-				}
-				sb.WriteString(fmt.Sprintf("/%s", proto))
-				if icmptype == "" {
-					return sb.String()
-				}
-				sb.WriteString(fmt.Sprintf("/%s", icmptype))
-				return sb.String()
-			}
-			tFw := ui.NewDataTable(
-				"#",
-				"Action",
-				"Source",
-				"Destination",
-				"Dir",
-				"Proto",
-			)
-			tFw.SetColumnConfig("Source", table.ColumnConfig{WidthMax: 27})
-			tFw.SetColumnConfig("Destination", table.ColumnConfig{WidthMax: 27})
-
-			for _, rule := range firewallRules.FirewallRules {
-				actColour := text.FgHiGreen
-				if rule.Action == "drop" {
-					actColour = text.FgHiRed
-				}
-				tFw.Append(table.Row{
-					rule.Position,
-					actColour.Sprint(rule.Action),
-					formatMatch(
-						rule.SourceAddressStart,
-						rule.SourceAddressEnd,
-						rule.SourcePortStart,
-						rule.SourcePortEnd),
-					formatMatch(
-						rule.DestinationAddressStart,
-						rule.DestinationAddressEnd,
-						rule.DestinationPortStart,
-						rule.DestinationPortEnd),
-					rule.Direction,
-					formatProto(
-						rule.Family,
-						rule.Protocol,
-						rule.ICMPType),
-				})
-			}
-
-			l.AppendSection("Firewall Rules:", ui.WrapWithListLayout(tFw.Render(), ui.ListLayoutNestedTable).Render())
+			return sb.String()
 		}
+		formatProto := func(family, proto, icmptype string) string {
+			var sb strings.Builder
+			sb.WriteString(family)
+			if proto == "" {
+				return sb.String()
+			}
+			sb.WriteString(fmt.Sprintf("/%s", proto))
+			if icmptype == "" {
+				return sb.String()
+			}
+			sb.WriteString(fmt.Sprintf("/%s", icmptype))
+			return sb.String()
+		}
+		tFw := ui.NewDataTable(
+			"#",
+			"Action",
+			"Source",
+			"Destination",
+			"Dir",
+			"Proto",
+		)
+		tFw.SetColumnConfig("Source", table.ColumnConfig{WidthMax: 27})
+		tFw.SetColumnConfig("Destination", table.ColumnConfig{WidthMax: 27})
+
+		for _, rule := range firewallRules.FirewallRules {
+			actColour := text.FgHiGreen
+			if rule.Action == "drop" {
+				actColour = text.FgHiRed
+			}
+			tFw.Append(table.Row{
+				rule.Position,
+				actColour.Sprint(rule.Action),
+				formatMatch(
+					rule.SourceAddressStart,
+					rule.SourceAddressEnd,
+					rule.SourcePortStart,
+					rule.SourcePortEnd),
+				formatMatch(
+					rule.DestinationAddressStart,
+					rule.DestinationAddressEnd,
+					rule.DestinationPortStart,
+					rule.DestinationPortEnd),
+				rule.Direction,
+				formatProto(
+					rule.Family,
+					rule.Protocol,
+					rule.ICMPType),
+			})
+		}
+
+		l.AppendSection("Firewall Rules:", ui.WrapWithListLayout(tFw.Render(), ui.ListLayoutNestedTable).Render())
+	}
+
+
+	// Firewall status
+	fwEnabled := srv.Firewall == "on"
+	{
+		dRemote := ui.NewDetailsView()
+		dRemote.Append(table.Row{"Enabled:", formatBool(fwEnabled)})
+		l.AppendSection(dRemote.Render())
 	}
 
 	_, _ = fmt.Fprintln(writer, l.Render())
