@@ -2,17 +2,18 @@
 
 [![UpCloud upctl test](https://github.com/UpCloudLtd/upctl/actions/workflows/test.yml/badge.svg)](https://github.com/UpCloudLtd/upctl/actions/workflows/test.yml)
 
-UpCloud command line client is created to give our users more choices how to control their resources. Contributions from the community are welcomed!
+upctl is a command line client for UpCloud. It allows you to control your resources from the command line or any compatible interface. Contributions from the community are welcomed!
 
-* Check Github issues or create more issues
-* Improve documentation
+* Check Github issues
+  * or create new issue
+* Any improvement ideas for Documentation are more than welcome
+  * Please create a PR for any additions or corrections
+* The Cli uses [upcloud-go-api](https://github.com/UpCloudLtd/upcloud-go-api) as it's base api
 * Built on [Cobra](https://cobra.dev)
 
 ## Quick Start
 
 ``` bash
-make build
-
 go run cmd/upctl.go
 ```
 
@@ -28,21 +29,22 @@ password: pass
 ### Create server
 
 ``` bash
-upctl server create --hostname test-server.io --zone es-mad1
+go run cmd/upctl.go server create --hostname test-server.io --zone es-mad1 --ssh-keys id_rsa.pub
 ```
 
-You will have to specify a method for authentication by
+> NOTE: You will have to specify a method for authentication by
+>
+> * ssh-keys `--ssh-keys id_rsa.pub`
+> * or password delivery `--password-delivery email`
+>
+> Or maybe you have a non-default OS, that you have created. `--os your-custom-img`. Then you won't need to define authentication, since it's expected to have an authentication method.
 
-* password delivery `--password-delivery email`
-* or ssh-keys `--ssh-keys id_rsa.pub`
-* Or maybe you have a non-default OS, that you have created. `--os your-custom-img`
-
-Server title is by default the hostname. To set a different title, add `--title "Test server"`
+Server title defaults to hostname. To set a different title, add `--title "Test server"`
 
 ### Create storage
 
 ``` bash
-upctl storage create --size 25 --title test-storage --zone es-mad1
+go run cmd/upctl.go storage create --size 25 --title test-storage --zone es-mad1
 ```
 
 Note: Storage size is in GB.
@@ -50,7 +52,7 @@ Note: Storage size is in GB.
 ### Attach storage to server
 
 ``` bash
-upctl server storage attach <SERVER-UUID> --storage <STORAGE-UUID> 
+go run cmd/upctl.go server storage attach <SERVER-UUID> --storage <STORAGE-UUID> 
 ```
 
 ## Development
