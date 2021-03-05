@@ -2,7 +2,7 @@
 
 [![UpCloud upctl test](https://github.com/UpCloudLtd/upctl/actions/workflows/test.yml/badge.svg)](https://github.com/UpCloudLtd/upctl/actions/workflows/test.yml)
 
-UpCloud command line client is created to give our users more control for their environments, contributions from the community are welcomed!
+UpCloud command line client is created to give our users more choices how to control their resources. Contributions from the community are welcomed!
 
 * Check Github issues or create more issues
 * Improve documentation
@@ -27,11 +27,21 @@ password: pass
 
 ### Create server
 
-`upctl server create --hostname test-server.io --zone fi-hel2`
+```
+upctl server create --hostname test-server.io --zone es-mad1
+```
 
 You will have to specify a method for authentication by password delivery `--password-delivery email` or ssh-keys `--ssh-keys id_rsa.pub`. Or maybe you have a non-default OS, that you have created. `--os your-custom-img`
 
 Server title is by default the hostname. To set a different title, add `--title "Test server"`
+
+### Create storage
+
+```
+upctl storage create --size 25 --title test-storage --zone es-mad1
+```
+
+Note: Storage size is in GB.
 
 ## Development
 
