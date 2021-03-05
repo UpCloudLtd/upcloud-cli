@@ -1,7 +1,14 @@
-# cli
-UpCloud command line client
+# UpCloud command line client - upctl
 
-## Usage
+[![UpCloud upctl test](https://github.com/UpCloudLtd/upctl/actions/workflows/test.yml/badge.svg)](https://github.com/UpCloudLtd/upctl/actions/workflows/test.yml)
+
+UpCloud command line client is created to give our users more control for their environments, contributions from the community are welcomed!
+
+* Check Github issues or create more issues
+* Improve documentation
+* Built on [Cobra](https://cobra.dev)
+
+## Quick Start
 
 ```
 make build
