@@ -28,6 +28,7 @@ export GO111MODULE=on
 build: fmt | $(BIN_DIR) ; $(info $(M) building executable for the current target…) @ ## Build program binary for current os/arch
 	$Q $(GO) build \
 		-tags release \
+		-ldflags '-X $(MODULE)/internal/config.Version=$(VERSION) -X $(MODULE)/internal/config.BuildDate=$(DATE)' \
 		-o $(BIN_DIR)/$(BIN) cmd/$(CLI)/main.go
 
 .PHONY: build-all
@@ -37,18 +38,21 @@ build-all: build-linux build-darwin build-windows ## Build all targets
 build-linux: $(BIN_DIR) ; $(info $(M) building executable for Linux x86_64…) @ ## Build program binary for linux x86_64
 	$Q GOOS=linux GOARCH=amd64 $(GO) build \
 		-tags release \
+		-ldflags '-X $(MODULE)/internal/config.Version=$(VERSION) -X $(MODULE)/internal/config.BuildDate=$(DATE)' \
 		-o $(BIN_DIR)/$(BIN_LINUX) cmd/$(CLI)/main.go
 
 .PHONY: build-darwin
 build-darwin: $(BIN_DIR) ; $(info $(M) building executable for Darwin x86_64…) @ ## Build program binary for darwin x86_64
 	$Q GOOS=darwin GOARCH=amd64 $(GO) build \
 		-tags release \
+		-ldflags '-X $(MODULE)/internal/config.Version=$(VERSION) -X $(MODULE)/internal/config.BuildDate=$(DATE)' \
 		-o $(BIN_DIR)/$(BIN_DARWIN) cmd/$(CLI)/main.go
 
 .PHONY: build-windows
 build-windows: $(BIN_DIR) ; $(info $(M) building executable for Windows x86_64…) @ ## Build program binary for windows x86_64
 	$Q GOOS=windows GOARCH=amd64 $(GO) build \
 		-tags release \
+		-ldflags '-X $(MODULE)/internal/config.Version=$(VERSION) -X $(MODULE)/internal/config.BuildDate=$(DATE)' \
 		-o $(BIN_DIR)/$(BIN_WINDOWS) cmd/$(CLI)/main.go
 
 
