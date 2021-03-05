@@ -43,6 +43,12 @@ upctl storage create --size 25 --title test-storage --zone es-mad1
 
 Note: Storage size is in GB.
 
+### Attach storage to server
+
+```
+upctl server storage attach <SERVER-UUID> --storage <STORAGE-UUID> 
+```
+
 ## Development
 
 Besides Golang, you'll need pre-commit and some other tools. Please [install pre-commit](https://pre-commit.com/#install) on your own machine, and then run the following commands within the repository folder:
