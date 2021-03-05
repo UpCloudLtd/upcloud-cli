@@ -29,6 +29,8 @@ password: pass
 
 `upctl server create --hostname test-server.io --zone fi-hel2`
 
+You will have to specify a method for authentication by password delivery `--password-delivery email` or ssh-keys `--ssh-keys id_rsa.pub`. Or maybe you have a non-default OS, that you have created. `--os your-custom-img`
+
 Server title is by default the hostname. To set a different title, add `--title "Test server"`
 
 ## Development
