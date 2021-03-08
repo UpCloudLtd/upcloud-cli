@@ -7,6 +7,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
+	"github.com/m7shapan/cidr"
 	"github.com/spf13/pflag"
 )
 
@@ -25,10 +26,14 @@ func CreateCommand(serverSvc service.Server, firewallSvc service.Firewall) comma
 	}
 }
 
-var defaultCreateParams = request.CreateFirewallRuleRequest{}
+var (
+	defaultCreateParams = request.CreateFirewallRuleRequest{}
+)
 
 type createParams struct {
 	request.CreateFirewallRuleRequest
+	DestIPBlock string
+	SrcIPBlock  string
 }
 
 // InitCommand implements Command.InitCommand
@@ -42,13 +47,11 @@ func (s *createCommand) InitCommand() {
 	flagSet.StringVar(&s.params.Family, "family", def.FirewallRule.Family, "IPv4 / IPv6")
 	flagSet.IntVar(&s.params.Position, "position", def.Position, "1-1000")
 	flagSet.StringVar(&s.params.Protocol, "protocol", def.Protocol, "tcp / udp / icmp")
-	flagSet.StringVar(&s.params.ICMPType, "icmp_type", def.ICMPType, "0-255")
-	flagSet.StringVar(&s.params.DestinationAddressStart, "destination-address-start", def.DestinationAddressStart, "Valid IP address")
-	flagSet.StringVar(&s.params.DestinationAddressEnd, "destination-address-end", def.DestinationAddressEnd, "Valid IP address")
+	flagSet.StringVar(&s.params.ICMPType, "icmp-type", def.ICMPType, "0-255")
+	flagSet.StringVar(&s.params.DestIPBlock, "dest-ipaddress-block", "", "Valid IP address")
 	flagSet.StringVar(&s.params.DestinationPortStart, "destination-port-start", def.DestinationPortStart, "1-65535")
 	flagSet.StringVar(&s.params.DestinationPortEnd, "destination-port-end", def.DestinationPortEnd, "1-65535")
-	flagSet.StringVar(&s.params.SourceAddressStart, "source-address-start", def.SourceAddressStart, "Valid IP address")
-	flagSet.StringVar(&s.params.SourceAddressEnd, "source-address-end", def.SourceAddressEnd, "Valid IP address")
+	flagSet.StringVar(&s.params.SrcIPBlock, "src-ipaddress-block", "", "Valid IP address")
 	flagSet.StringVar(&s.params.SourcePortStart, "source-port-start", def.SourcePortStart, "1-65535")
 	flagSet.StringVar(&s.params.SourcePortEnd, "source-port-end", def.SourcePortEnd, "1-65535")
 	flagSet.StringVar(&s.params.Comment, "comment", def.Comment, "0-250 characters")
@@ -76,13 +79,12 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 			return nil, fmt.Errorf("Invalid Family. 'IPv4' / 'IPv6'.")
 		}
 
-		if s.params.DestinationAddressStart == "" && s.params.DestinationAddressEnd != "" {
-			return nil, fmt.Errorf("destination-address-start is required if destination-address-end is set")
+		NetDst, err := cidr.ParseCIDR(s.params.DestIPBlock)
+		if err != nil {
+			return nil, fmt.Errorf("dest-ipaddress-block parse error: %s", err)
 		}
-
-		if s.params.DestinationAddressEnd == "" && s.params.DestinationAddressStart != "" {
-			return nil, fmt.Errorf("destination-addressEnd is required if destination-addressStart is set")
-		}
+		s.params.DestinationAddressStart = NetDst.FirstIP.String()
+		s.params.DestinationAddressEnd = NetDst.LastIP.String()
 
 		if s.params.DestinationPortStart == "" && s.params.DestinationPortEnd != "" {
 			return nil, fmt.Errorf("destination-port-start is required if destination-port-end is set")
@@ -92,13 +94,12 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 			return nil, fmt.Errorf("destination-port-end is required if destination-port-start is set")
 		}
 
-		if s.params.SourceAddressStart == "" && s.params.SourceAddressEnd != "" {
-			return nil, fmt.Errorf("source-address-start is required if source-address-end is set")
+		NetSrc, err := cidr.ParseCIDR(s.params.SrcIPBlock)
+		if err != nil {
+			return nil, fmt.Errorf("src-ipaddress-block parse error: %s", err)
 		}
-
-		if s.params.SourceAddressEnd == "" && s.params.SourceAddressStart != "" {
-			return nil, fmt.Errorf("source-address-end is required if source-address-start is set")
-		}
+		s.params.SourceAddressStart = NetSrc.FirstIP.String()
+		s.params.SourceAddressEnd = NetSrc.LastIP.String()
 
 		if s.params.SourcePortStart == "" && s.params.SourcePortEnd != "" {
 			return nil, fmt.Errorf("source-port-start is required if source-port-end is set")
