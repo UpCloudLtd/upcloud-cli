@@ -1,6 +1,6 @@
 #/usr/bin/env bash
 
-# Maintainer: UpCloud Team <contact at upcloud dot com>
+# Maintainer: UpCloud Team <hello at upcloud dot com>
 # vim:set ts=2 sw=2
 
 if [ "$#" -ne 1 ]; then

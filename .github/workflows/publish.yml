@@ -57,7 +57,7 @@ jobs:
           asset_name: upctl-${{ steps.git.outputs.tag_version }}-darwin-amd64
           asset_content_type: application/x-binary
 
-      - name: Upload Darwin release executable
+      - name: Upload Windows release executable
         uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
