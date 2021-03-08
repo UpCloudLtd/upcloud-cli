@@ -14,7 +14,7 @@ the community are welcome!
 
 ## Quick Start
 
-Create .upctl (yaml) config file with a user credentials.
+Create .upctl (yaml) config file with user credentials.
 
 ``` yaml
 username: user
@@ -67,7 +67,7 @@ upctl server storage attach <SERVER-UUID> --storage <STORAGE-UUID>
 
 ## Development
 
-You need a Golang version 11+ installed on you developpement machine.
+You need a Golang version 1.11+ installed on you development machine.
 Use `make` to build and test the CLI. Makefile help can be found:
 ```
 $ make help

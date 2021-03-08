@@ -15,7 +15,7 @@ cat > PKGBUILD <<EOF
 pkgname=upctl
 pkgver=${PKG_VERSION}
 pkgrel=1
-pkgdesc="UpCloud CLI."
+pkgdesc="upctl - a CLI tool for managing UpCloud services."
 arch=('x86_64')
 url="https://upcloud.com"
 license=('Apache')
