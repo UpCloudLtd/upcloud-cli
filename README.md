@@ -13,10 +13,6 @@ upctl is a command line client for UpCloud. It allows you to control your resour
 
 ## Quick Start
 
-``` bash
-go run cmd/upctl.go
-```
-
 Create .upctl (yaml) config file for user details.
 
 ``` yaml
@@ -24,12 +20,25 @@ username: user
 password: pass
 ```
 
+You can use upctl with go:
+
+``` bash
+go run cmd/upctl.go --help
+```
+
+Or build a binary of the tool
+
+``` bash
+make build
+./upctl --help
+```
+
 ## Examples
 
 ### Create server
 
 ``` bash
-go run cmd/upctl.go server create --hostname test-server.io --zone es-mad1 --ssh-keys id_rsa.pub
+./upctl server create --hostname test-server.io --zone es-mad1 --ssh-keys id_rsa.pub
 ```
 
 > NOTE: You will have to specify a method for authentication by
@@ -44,7 +53,7 @@ Server title defaults to hostname. To set a different title, add `--title "Test 
 ### Create storage
 
 ``` bash
-go run cmd/upctl.go storage create --size 25 --title test-storage --zone es-mad1
+./upctl storage create --size 25 --title test-storage --zone es-mad1
 ```
 
 Note: Storage size is in GB.
@@ -52,7 +61,7 @@ Note: Storage size is in GB.
 ### Attach storage to server
 
 ``` bash
-go run cmd/upctl.go server storage attach <SERVER-UUID> --storage <STORAGE-UUID> 
+./upctl server storage attach <SERVER-UUID> --storage <STORAGE-UUID> 
 ```
 
 ## Development
