@@ -230,12 +230,6 @@ func (s *mainCommand) InitCommand() {
 		&defaultsCommand{commands.New("defaults", "Generate defaults")},
 		s, config.New(mainConfig.Viper()))
 
-	if loader := s.ConfigLoader(); loader != nil {
-		if err := loader(s.Config()); err != nil {
-			return
-		}
-	}
-
 	all.BuildCommands(s, s.Config())
 
 	s.Cobra().SetUsageTemplate(ui.CommandUsageTemplate())
