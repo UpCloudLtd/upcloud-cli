@@ -2,18 +2,18 @@
 
 [![UpCloud upctl test](https://github.com/UpCloudLtd/upctl/actions/workflows/test.yml/badge.svg)](https://github.com/UpCloudLtd/upctl/actions/workflows/test.yml)
 
-upctl is a command line client for UpCloud. It allows you to control your resources from the command line or any compatible interface. Contributions from the community are welcomed!
+upctl is a command line client for UpCloud. It allows you to control your resources from the command line or any compatible interface. Contributions from the community are welcome!
 
-* Check Github issues
-  * or create new issue
+* Check GitHub issues
+  * or create a new issue
 * Any improvement ideas for Documentation are more than welcome
   * Please create a PR for any additions or corrections
-* The Cli uses [upcloud-go-api](https://github.com/UpCloudLtd/upcloud-go-api) as it's base api
+* The Cli uses [upcloud-go-api](https://github.com/UpCloudLtd/upcloud-go-api)
 * Built on [Cobra](https://cobra.dev)
 
 ## Quick Start
 
-Create .upctl (yaml) config file for user details.
+Create .upctl (yaml) config file for user details to project root directory.
 
 ``` yaml
 username: user
@@ -46,7 +46,7 @@ make build
 > * ssh-keys `--ssh-keys id_rsa.pub`
 > * or password delivery `--password-delivery email`
 >
-> Or maybe you have a non-default OS, that you have created. `--os your-custom-img`. Then you won't need to define authentication, since it's expected to have an authentication method.
+> Note: If you have a custom default operating system template, these cannot be used. Use `--os your-custom-img` to specify your template; it's expected you have the correct authentication already set up in your custom method. 
 
 Server title defaults to hostname. To set a different title, add `--title "Test server"`
 
