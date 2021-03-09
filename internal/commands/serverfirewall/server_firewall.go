@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	PositionalArgHelp = "/server/<UUID/firewall_rule>"
+	PositionalArgHelp = "<server/UUID/firewall_rule>"
 )
 
 func BaseServerFirewallCommand() commands.Command {
