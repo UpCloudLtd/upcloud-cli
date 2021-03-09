@@ -1,0 +1,96 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - 'v*.*'
+
+jobs:
+  publish_release:
+    name: Release
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: true
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build
+        run: make build-all
+
+      - name: Test
+        run: make test
+      - name: Get tag version
+        id: git
+        run: echo "::set-output name=tag_version::$(make version)"
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1.1.4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.git.outputs.tag_version }}
+          release_name: Release ${{ steps.git.outputs.tag_version }}
+          draft: 'false'
+          prerelease: 'false'
+
+      - name: Upload Linux release executable
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./bin/upctl-${{ steps.git.outputs.tag_version }}-linux-amd64
+          asset_name: upctl-${{ steps.git.outputs.tag_version }}-linux-amd64
+          asset_content_type: application/x-binary
+
+      - name: Upload Darwin release executable
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./bin/upctl-${{ steps.git.outputs.tag_version }}-darwin-amd64
+          asset_name: upctl-${{ steps.git.outputs.tag_version }}-darwin-amd64
+          asset_content_type: application/x-binary
+
+      - name: Upload Windows release executable
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./bin/upctl-${{ steps.git.outputs.tag_version }}-windows-amd64.exe
+          asset_name: upctl-${{ steps.git.outputs.tag_version }}-windows-amd64.exe
+          asset_content_type: application/x-dosexec
+
+      - name: Generate SHA256 file
+        run: ./scripts/generate_sha256_file.sh
+
+      - name: Upload SHA256SUMS file
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./bin/SHA256SUMS
+          asset_name: SHA256SUMS
+          asset_content_type: text/plain
+
+      - name: Generate AUR PKGBUILD
+        run: ./scripts/generate_aur_pkgbuild.sh ${{ steps.git.outputs.tag_version }}
+
+      - name: Publish AUR package
+        uses: KSXGitHub/github-actions-deploy-aur@v2.2.3
+        with:
+          pkgname: upctl
+          pkgbuild: PKGBUILD
+          commit_username: ${{ secrets.AUR_USERNAME }}
+          commit_email: ${{ secrets.AUR_EMAIL }}
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: Release ${{ steps.git.outputs.tag_version }}
+          force_push: true
+

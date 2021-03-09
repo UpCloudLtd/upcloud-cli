@@ -6,6 +6,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"time"
 
@@ -47,6 +48,19 @@ func (s *completionCommand) MakeExecuteCommand() func(args []string) (interface{
 		}
 
 		return nil, fmt.Errorf("completion for %s is not supported", shellName)
+	}
+}
+
+type versionCommand struct {
+	*commands.BaseCommand
+}
+
+func (s *versionCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
+	return func(args []string) (interface{}, error) {
+		return fmt.Printf(
+			"Upctl %v\n\tBuild date: %v\n\tBuilt with: %v",
+			config.Version, config.BuildDate, runtime.Version(),
+		)
 	}
 }
 
@@ -229,6 +243,11 @@ func (s *mainCommand) InitCommand() {
 	commands.BuildCommand(
 		&defaultsCommand{commands.New("defaults", "Generate defaults")},
 		s, config.New(mainConfig.Viper()))
+
+	commands.BuildCommand(
+		&versionCommand{commands.New("version", "Display software version")},
+		s, config.New(mainConfig.Viper()),
+	)
 
 	all.BuildCommands(s, s.Config())
 

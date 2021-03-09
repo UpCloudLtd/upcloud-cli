@@ -1,8 +1,9 @@
-# UpCloud command line client - upctl
+# Upctl
 
+`upctl` is a command line client for UpCloud. It allows you to control your
+resources from the command line or any compatible interface. Contributions from
+the community are welcome!
 [![UpCloud upctl test](https://github.com/UpCloudLtd/upctl/actions/workflows/test.yml/badge.svg)](https://github.com/UpCloudLtd/upctl/actions/workflows/test.yml)
-
-upctl is a command line client for UpCloud. It allows you to control your resources from the command line or any compatible interface. Contributions from the community are welcome!
 
 * Check GitHub issues
   * or create a new issue
@@ -13,7 +14,7 @@ upctl is a command line client for UpCloud. It allows you to control your resour
 
 ## Quick Start
 
-Create .upctl (yaml) config file for user details to project root directory.
+Create .upctl (yaml) config file with user credentials.
 
 ``` yaml
 username: user
@@ -23,14 +24,14 @@ password: pass
 You can use upctl with go:
 
 ``` bash
-go run cmd/upctl.go --help
+go run cmd/upctl/main.go --help
 ```
 
-Or build a binary of the tool
+Or build the binary with:
 
 ``` bash
 make build
-./upctl --help
+./bin/upctl --help
 ```
 
 ## Examples
@@ -38,7 +39,7 @@ make build
 ### Create server
 
 ``` bash
-./upctl server create --hostname test-server.io --zone es-mad1 --ssh-keys id_rsa.pub
+upctl server create --hostname test-server.io --zone es-mad1 --ssh-keys id_rsa.pub
 ```
 
 > NOTE: You will have to specify a method for authentication by
@@ -53,7 +54,7 @@ Server title defaults to hostname. To set a different title, add `--title "Test 
 ### Create storage
 
 ``` bash
-./upctl storage create --size 25 --title test-storage --zone es-mad1
+upctl storage create --size 25 --title test-storage --zone es-mad1
 ```
 
 Note: Storage size is in GB.
@@ -61,15 +62,21 @@ Note: Storage size is in GB.
 ### Attach storage to server
 
 ``` bash
-./upctl server storage attach <SERVER-UUID> --storage <STORAGE-UUID> 
+upctl server storage attach <SERVER-UUID> --storage <STORAGE-UUID> 
 ```
 
 ## Development
 
-Besides Golang, you'll need pre-commit and some other tools. Please [install pre-commit](https://pre-commit.com/#install) on your own machine, and then run the following commands within the repository folder:
-
-``` bash
-go get -u golang.org/x/lint/golint
-go get -u github.com/go-critic/go-critic/cmd/gocritic
-pre-commit install
+You need a Golang version 1.11+ installed on you development machine.
+Use `make` to build and test the CLI. Makefile help can be found:
+```
+$ make help
+build             Build program binary for current os/arch
+build-all         Build all targets
+build-linux       Build program binary for linux x86_64
+build-darwin      Build program binary for darwin x86_64
+build-windows     Build program binary for windows x86_64
+test              Run tests
+fmt               Run gofmt on all source files
+clean             Cleanup everything
 ```

@@ -23,6 +23,13 @@ const (
 	ValueOutputJSON = "json"
 )
 
+var (
+	// Version contains the current version.
+	Version = "dev"
+	// BuildDate contains a string with the build date.
+	BuildDate = "unknown"
+)
+
 // New returns a new instance of Config bound to the given viper instance
 func New(viper *viper.Viper) *Config {
 	return &Config{viper: viper}

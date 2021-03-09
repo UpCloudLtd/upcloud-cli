@@ -1,23 +1,84 @@
-ALL_FILES=./...
+# UpCloud CLI Makefile
 
-default: build
+GO       = go
+CLI      = upctl
+MODULE   = $(shell env GO111MODULE=on $(GO) list -m)
+DATE    ?= $(shell date +%FT%T%z)
+VERSION ?= $(shell git describe --tags --always --dirty --match=v* 2> /dev/null || \
+			cat $(CURDIR)/.version 2> /dev/null || echo v0)
+PKGS     = $(or $(PKG),$(shell env GO111MODULE=on $(GO) list ./...))
+TESTPKGS = $(shell env GO111MODULE=on $(GO) list -f \
+			'{{ if or .TestGoFiles .XTestGoFiles }}{{ .ImportPath }}{{ end }}' \
+			$(PKGS))
 
-build:
-	@echo 'building a new upctl client'
-	@cd cmd && go build -o ../upctl
+BIN_DIR         = $(CURDIR)/bin
+BIN             = $(CLI)
+BIN_LINUX       = $(BIN)-$(VERSION)-linux-amd64
+BIN_DARWIN      = $(BIN)-$(VERSION)-darwin-amd64
+BIN_WINDOWS     = $(BIN)-$(VERSION)-windows-amd64.exe
 
-test:
-	go test $(ALL_FILES)
 
-fmt:
-	go fmt $(ALL_FILES)
+V = 0
+Q = $(if $(filter 1,$V),,@)
 
-fmtcheck:
-	@sh -c "'$(CURDIR)/scripts/gofmtcheck.sh'"
+export GO111MODULE=on
 
-vet:
-	go vet $(ALL_FILES)
+.PHONY: build
+build: fmt | $(BIN_DIR) ; $(info building executable for the current target…) @ ## Build program binary for current os/arch
+	$Q $(GO) build \
+		-tags release \
+		-ldflags '-X $(MODULE)/internal/config.Version=$(VERSION) -X $(MODULE)/internal/config.BuildDate=$(DATE)' \
+		-o $(BIN_DIR)/$(BIN) cmd/$(CLI)/main.go
 
-all: build test fmt vet
+.PHONY: build-all
+build-all: build-linux build-darwin build-windows ## Build all targets
 
-.PHONY: build test fmt fmtcheck vet
+.PHONY: build-linux
+build-linux: $(BIN_DIR) ; $(info building executable for Linux x86_64…) @ ## Build program binary for linux x86_64
+	$Q GOOS=linux GOARCH=amd64 $(GO) build \
+		-tags release \
+		-ldflags '-X $(MODULE)/internal/config.Version=$(VERSION) -X $(MODULE)/internal/config.BuildDate=$(DATE)' \
+		-o $(BIN_DIR)/$(BIN_LINUX) cmd/$(CLI)/main.go
+
+.PHONY: build-darwin
+build-darwin: $(BIN_DIR) ; $(info building executable for Darwin x86_64…) @ ## Build program binary for darwin x86_64
+	$Q GOOS=darwin GOARCH=amd64 $(GO) build \
+		-tags release \
+		-ldflags '-X $(MODULE)/internal/config.Version=$(VERSION) -X $(MODULE)/internal/config.BuildDate=$(DATE)' \
+		-o $(BIN_DIR)/$(BIN_DARWIN) cmd/$(CLI)/main.go
+
+.PHONY: build-windows
+build-windows: $(BIN_DIR) ; $(info building executable for Windows x86_64…) @ ## Build program binary for windows x86_64
+	$Q GOOS=windows GOARCH=amd64 $(GO) build \
+		-tags release \
+		-ldflags '-X $(MODULE)/internal/config.Version=$(VERSION) -X $(MODULE)/internal/config.BuildDate=$(DATE)' \
+		-o $(BIN_DIR)/$(BIN_WINDOWS) cmd/$(CLI)/main.go
+
+
+# Tests
+
+.PHONY: test
+test: fmt; $(info running $(NAME:%=% )tests…) @ ## Run tests
+	$Q $(GO) test $(TESTPKGS)
+
+.PHONY: fmt
+fmt: ; $(info running gofmt…) @ ## Run gofmt on all source files
+	$Q $(GO) fmt $(PKGS)
+
+# Misc
+
+$(BIN_DIR):
+	@mkdir -p $@
+
+.PHONY: clean
+clean: ; $(info cleaning…)	@ ## Cleanup everything
+	@rm -rf $(BIN)
+
+.PHONY: help
+help:
+	@grep -hE '^[ a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
+		awk 'BEGIN {FS = ":.*?## "}; {printf "%-20s %s\n", $$1, $$2}'
+
+.PHONY: version
+version:
+	@echo $(VERSION)
