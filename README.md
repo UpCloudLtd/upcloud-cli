@@ -2,25 +2,28 @@
 
 [![UpCloud upctl test](https://github.com/UpCloudLtd/upctl/actions/workflows/test.yml/badge.svg)](https://github.com/UpCloudLtd/upctl/actions/workflows/test.yml)
 
-`upctl` provides a command-line interface to UpCloud services. It allows you to control your resources from the command line or any compatible interface.
+`upctl` provides a command-line interface to UpCloud services. It allows you
+to control your resources from the command line or any compatible interface.
 
 * upctl uses [upcloud-go-api](https://github.com/UpCloudLtd/upcloud-go-api)
 * Built on [Cobra](https://cobra.dev)
 
 ## Quick Start
 
-Download the appropriate binary from the [Releases](https://github.com/UpCloudLtd/upcloud-cli/releases) page.
+Download the appropriate binary from the
+[Releases](https://github.com/UpCloudLtd/upcloud-cli/releases) page.
 
-Create a `.upctl` (yaml) config file with user credentials into your home directory or the current directory.
+Create a `.upctl` (yaml) config file with user credentials into your home
+directory or the current directory.
 
-``` yaml
+```yaml
 username: upcloud_username
 password: upcloud_password
 ```
 
 Run the command!
 
-``` bash
+```bash
 upctl -h
 ```
 
@@ -28,7 +31,7 @@ upctl -h
 
 ### Create server
 
-``` bash
+```bash
 upctl server create --hostname test-server.io --zone es-mad1 --ssh-keys id_rsa.pub
 ```
 
@@ -43,7 +46,7 @@ Server title defaults to hostname. To set a different title, add `--title "Test 
 
 ### Create storage
 
-``` bash
+```bash
 upctl storage create --size 25 --title test-storage --zone es-mad1
 ```
 
@@ -51,7 +54,7 @@ Note: Storage size is in GB.
 
 ### Attach storage to server
 
-``` bash
+```bash
 upctl server storage attach <SERVER-UUID> --storage <STORAGE-UUID> 
 ```
 
@@ -61,7 +64,7 @@ Requires Golang version 1.11+.
 
 ### with go get
 
-``` bash
+```bash
 go get github.com/UpCloudLtd/upcloud-cli
 ```
 
@@ -71,13 +74,13 @@ Clone the repo at https://github.com/UpCloudLtd/upcloud-cli.
 
 You can use upctl with go:
 
-``` bash
+```bash
 go run cmd/upctl/main.go --help
 ```
 
 Build the binary with:
 
-``` bash
+```bash
 make build
 ./bin/upctl --help
 ```
@@ -95,6 +98,7 @@ Contributions from the community are welcome!
 
 You need a Golang version 1.11+ installed on you development machine.
 Use `make` to build and test the CLI. Makefile help can be found:
+
 ```
 $ make help
 build             Build program binary for current os/arch
