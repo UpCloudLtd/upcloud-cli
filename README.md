@@ -1,9 +1,10 @@
-# Upctl
+# UpCloud command line client - upctl
+
+[![UpCloud upctl test](https://github.com/UpCloudLtd/upctl/actions/workflows/test.yml/badge.svg)](https://github.com/UpCloudLtd/upctl/actions/workflows/test.yml)
 
 `upctl` is a command line client for UpCloud. It allows you to control your
 resources from the command line or any compatible interface. Contributions from
 the community are welcome!
-[![UpCloud upctl test](https://github.com/UpCloudLtd/upctl/actions/workflows/test.yml/badge.svg)](https://github.com/UpCloudLtd/upctl/actions/workflows/test.yml)
 
 * Check GitHub issues
   * or create a new issue
