@@ -249,10 +249,16 @@ func (s *mainCommand) InitCommand() {
 		s, config.New(mainConfig.Viper()),
 	)
 
+	//XXX: should be moved when build commands is reworked
+	if loader := s.ConfigLoader(); loader != nil {
+		_ = loader(s.Config())
+	}
+
 	all.BuildCommands(s, s.Config())
 
 	s.Cobra().SetUsageTemplate(ui.CommandUsageTemplate())
 	s.Cobra().SetUsageFunc(ui.UsageFunc)
+
 }
 
 func (s *mainCommand) MakePersistentPreExecuteCommand() func(args []string) error {
