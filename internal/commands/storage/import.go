@@ -120,6 +120,13 @@ type readerCounter struct {
 	read   int64
 }
 
+// Read implements io.Reader
+func (s *readerCounter) Read(p []byte) (n int, err error) {
+	n, err = s.source.Read(p)
+	atomic.AddInt64(&s.read, int64(n))
+	return
+}
+
 func (s *readerCounter) counter() int {
 	return int(atomic.LoadInt64(&s.read))
 }
