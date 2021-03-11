@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -202,8 +201,8 @@ func (s *mainCommand) initConfig() error {
 
 	if configFile := s.Config().GetString("config"); configFile != "" {
 		s.Config().Viper().SetConfigFile(configFile)
-		s.Config().Viper().SetConfigName(path.Base(configFile))
-		configDir := path.Dir(configFile)
+		s.Config().Viper().SetConfigName(filepath.Base(configFile))
+		configDir := filepath.Dir(configFile)
 		if configDir != "." && configDir != dir {
 			viper.AddConfigPath(configDir)
 		}
