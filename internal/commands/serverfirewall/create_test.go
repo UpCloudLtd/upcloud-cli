@@ -36,10 +36,10 @@ func TestCreateFirewallRuleCommand(t *testing.T) {
 	}
 
 	for _, test := range []struct {
-		name       string
-		args       []string
+		name        string
+		args        []string
 		expectedReq request.CreateFirewallRuleRequest
-		error      string
+		error       string
 	}{
 		{
 			name:  "Empty info",
@@ -56,11 +56,11 @@ func TestCreateFirewallRuleCommand(t *testing.T) {
 			},
 			expectedReq: request.CreateFirewallRuleRequest{
 				FirewallRule: upcloud.FirewallRule{
-					Direction:   "in",
-					Action:      "accept",
-					Family:      "IPv6",
+					Direction: "in",
+					Action:    "accept",
+					Family:    "IPv6",
 				},
-				ServerUUID:  Server1.UUID,
+				ServerUUID: Server1.UUID,
 			},
 		},
 	} {
