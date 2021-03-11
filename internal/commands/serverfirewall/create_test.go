@@ -1,4 +1,4 @@
-package serverfirewall
+package serverfirewall_test
 
 import (
 	"github.com/UpCloudLtd/cli/internal/commands"
@@ -13,18 +13,7 @@ import (
 	"testing"
 )
 
-func TestAttachStorageCommand(t *testing.T) {
-	methodName := "CreateFirewallRule"
-
-	var Rule1 = upcloud.FirewallRule{
-		Action:               upcloud.FirewallRule.FirewallRuleActionAccept,
-		Comment:              "Allow HTTP from anywhere",
-		DestinationPortStart: "80",
-		DestinationPortEnd:   "80",
-		Direction:            upcloud.FirewallRule.FirewallRuleDirectionIn,
-		Family:               upcloud.FirewallRule.IPAddressFamilyIPv4,
-		Position:             1,
-	}
+func TestCreateFirewallRuleCommand(t *testing.T) {
 
 	var Server1 = upcloud.Server{
 		CoreNumber:   1,
@@ -46,25 +35,16 @@ func TestAttachStorageCommand(t *testing.T) {
 		},
 	}
 
-	var serverDetails = upcloud.ServerDetails{
-		Server: upcloud.Server{
-			UUID:  UUID1,
-			State: upcloud.ServerStateStarted,
-		},
-		VideoModel: "vga",
-		Firewall:   "off",
-	}
-
 	for _, test := range []struct {
 		name       string
 		args       []string
-		createruleReq request.CreateFirewallRuleRequest
+		expectedReq request.CreateFirewallRuleRequest
 		error      string
 	}{
 		{
 			name:  "Empty info",
 			args:  []string{},
-			error: "Info is required",
+			error: "Direction is required.",
 		},
 		{
 			name: "FirewallRule, accept incoming IPv6",
@@ -73,6 +53,14 @@ func TestAttachStorageCommand(t *testing.T) {
 				"--direction", "in",
 				"--action", "accept",
 				"--family", "IPv6",
+			},
+			expectedReq: request.CreateFirewallRuleRequest{
+				FirewallRule: upcloud.FirewallRule{
+					Direction:   "in",
+					Action:      "accept",
+					Family:      "IPv6",
+				},
+				ServerUUID:  Server1.UUID,
 			},
 		},
 	} {
@@ -84,15 +72,13 @@ func TestAttachStorageCommand(t *testing.T) {
 
 			mFirewallRuleService := MockFirewallRuleService{}
 
-			cc := commands.BuildCommand(CreateCommand(&mServerService, &mFirewallRuleService), nil, config.New(viper.New()))
+			cc := commands.BuildCommand(serverfirewall.CreateCommand(&mServerService, &mFirewallRuleService), nil, config.New(viper.New()))
 			cc.SetFlags(test.args)
 
 			_, err := cc.MakeExecuteCommand()([]string{Server1.UUID})
 
 			if test.error != "" {
 				assert.Equal(t, test.error, err.Error())
-			} else {
-				mFirewallRuleService.AssertNumberOfCalls(t, methodName, 1)
 			}
 		})
 	}
