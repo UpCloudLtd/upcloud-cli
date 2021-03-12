@@ -97,14 +97,14 @@ func (s *Config) BoundFlags() []*pflag.Flag {
 // ConfigBindFlagSet sets the config flag set and binds them to the viper instance
 func (s *Config) ConfigBindFlagSet(flags *pflag.FlagSet) {
 	if flags == nil {
-		panic("Nil flagset")
+		return
 	}
 	if s.flagSet == nil {
 		s.flagSet = &pflag.FlagSet{}
 	}
 	flags.VisitAll(func(flag *pflag.Flag) {
 		if s.flagSet.Lookup(flag.Name) != nil {
-			panic(fmt.Sprintf("key %s already bound", flag.Name))
+			return
 		}
 		_ = s.viper.BindPFlag(s.prependNs(flag.Name), flag)
 		s.flagSet.AddFlag(flag)
