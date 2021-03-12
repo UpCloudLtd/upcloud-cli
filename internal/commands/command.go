@@ -3,6 +3,7 @@ package commands
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/UpCloudLtd/cli/internal/output"
 	"io"
 	"os"
 	"sort"
@@ -47,6 +48,16 @@ type Command interface {
 	CobraCommand
 }
 
+// CommandExecutor is the signature for new style commands being executed and returning output.Command
+type CommandExecutor func(args []string) (output.Command, error)
+
+// NewCommand is a new container for commands, currently still including the old interface until we can deprecate it
+type NewCommand interface {
+	MakeExecutor() CommandExecutor
+	NewParent() NewCommand
+	Command
+}
+
 // CobraCommand is an interface for commands that can refer back to their base cobra.Command
 type CobraCommand interface {
 	Cobra() *cobra.Command
@@ -86,7 +97,15 @@ func BuildCommand(child, parent Command, config *config.Config) Command {
 		return nil
 	}
 
-	if cCmd := child.MakeExecuteCommand(); cCmd != nil && child.Cobra().RunE == nil {
+	if nc, ok := child.(NewCommand); ok {
+		child.Cobra().RunE = func(cmd *cobra.Command, args []string) error {
+			commandOutput, err := nc.MakeExecutor()(args)
+			if err != nil {
+				return err
+			}
+			return handleCommandOutput(config, commandOutput, err)
+		}
+	} else if cCmd := child.MakeExecuteCommand(); cCmd != nil && child.Cobra().RunE == nil {
 		child.Cobra().RunE = func(_ *cobra.Command, args []string) error {
 			if loader := child.ConfigLoader(); loader != nil {
 				if err := loader(config); err != nil {
@@ -103,6 +122,7 @@ func BuildCommand(child, parent Command, config *config.Config) Command {
 			return child.HandleOutput(os.Stdout, response)
 		}
 	}
+
 	if cCmd := child.MakePreExecuteCommand(); cCmd != nil && child.Cobra().PreRunE == nil {
 		child.Cobra().PreRunE = func(_ *cobra.Command, args []string) error {
 			if loader := child.ConfigLoader(); loader != nil {
@@ -142,6 +162,32 @@ func BuildCommand(child, parent Command, config *config.Config) Command {
 		parent.Cobra().AddCommand(child.Cobra())
 	}
 	return child
+}
+
+func handleCommandOutput(cfg *config.Config, output output.Command, err error) error {
+	var bytes []byte
+	switch {
+	case cfg.OutputHuman():
+		bytes, err = output.MarshalHuman()
+		if err != nil {
+			return err
+		}
+	case cfg.Top().IsSet(config.KeyOutput) && cfg.Output() == config.ValueOutputJSON:
+		bytes, err = output.MarshalJSON()
+		if err != nil {
+			return err
+		}
+	case cfg.Top().IsSet(config.KeyOutput) && cfg.Output() == config.ValueOutputYAML:
+		marshaled, err := output.MarshalYAML()
+		if err != nil {
+			return err
+		}
+		bytes = []byte(string(marshaled))
+	}
+	if _, err := os.Stdout.Write(bytes); err != nil {
+		return err
+	}
+	return nil
 }
 
 // BaseCommand is the base type for all commands, implementing Command
