@@ -2,7 +2,11 @@ package account
 
 import (
 	"bytes"
+	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/config"
+	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -10,12 +14,7 @@ import (
 type MockAccountService struct{}
 
 func (m *MockAccountService) GetAccount() (*upcloud.Account, error) {
-	return nil, nil
-}
-
-func TestShowCommand(t *testing.T) {
-
-	account := upcloud.Account{
+	return &upcloud.Account{
 		Credits:  42,
 		UserName: "opencredo",
 		ResourceLimits: upcloud.ResourceLimits{
@@ -28,7 +27,10 @@ func TestShowCommand(t *testing.T) {
 			StorageHDD:          10240,
 			StorageSSD:          10240,
 		},
-	}
+	}, nil
+}
+
+func TestShowCommand(t *testing.T) {
 
 	expected := `  
   Username: opencredo 
@@ -45,10 +47,15 @@ func TestShowCommand(t *testing.T) {
     Storage SSD:            10240 
 `
 
-	buf := new(bytes.Buffer)
-	command := ShowCommand(&MockAccountService{})
-	err := command.HandleOutput(buf, &account)
+	cfg := config.New(viper.New())
+	cfg.Viper().Set(config.KeyOutput, config.ValueOutputHuman)
 
-	assert.Nil(t, err)
+	command := commands.BuildCommand(ShowCommand(&MockAccountService{}), nil, cfg)
+	out, err := command.(commands.NewCommand).MakeExecutor()([]string{})
+	assert.NoError(t, err)
+
+	buf := bytes.NewBuffer(nil)
+	err = output.Render(buf, cfg, out)
+	assert.NoError(t, err)
 	assert.Equal(t, expected, buf.String())
 }

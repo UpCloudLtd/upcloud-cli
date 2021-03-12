@@ -25,6 +25,8 @@ func Render(writer io.Writer, cfg *config.Config, commandOutput Command) (err er
 			return err
 		}
 	}
+	// TODO: remove this, a bit ugly but for some reason otherwise we dont get the tailing newline
+	bytes = append(bytes, '\n')
 	if _, err := writer.Write(bytes); err != nil {
 		return err
 	}
