@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2021-03-12
+### Fixed
+- Load config files from the correct place on Windows
+- Fix storage import failing on readerCounter not implementing io.Reader 
+
 ## [0.1.0] - 2021-03-10
 
 ### Added
@@ -14,3 +19,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v0.1.0
+[0.1.1]: https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v0.1.1
