@@ -89,10 +89,11 @@ make build
 
 Current release process:
 
+* Update CHANGELOG.md
 * Tag a commit with the version you want to release e.g. `v1.2.3`
 * Push the tag & commit to GitHub
-  * GitHub actions will automatically set the version based on the tag, build the project, and upload binaries & SHA sum to GitHub releases
-* [Create a new release in GitHub](https://github.com/UpCloudLtd/upcloud-cli/releases) with the correct changelog
+  * GitHub actions will automatically set the version based on the tag, create a GitHub release, build the project, and upload binaries & SHA sum to the GitHub release
+* [Edit the new release in GitHub](https://github.com/UpCloudLtd/upcloud-cli/releases) and add the changelog for this release
 * Done!
 
 ## Contributing
