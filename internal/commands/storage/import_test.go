@@ -9,10 +9,16 @@ import (
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"io"
 	"io/ioutil"
 	"os"
 	"testing"
 )
+
+func TestReaderCounterInterface(t *testing.T) {
+	rc := &readerCounter{}
+	var _ io.Reader = rc
+}
 
 func TestImportCommand(t *testing.T) {
 	tmpFile, err := ioutil.TempFile(os.TempDir(), "pre-")
