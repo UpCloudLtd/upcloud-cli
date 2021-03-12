@@ -150,13 +150,15 @@ func importFlags(fs *pflag.FlagSet, dst, def *importParams) {
 }
 
 // InitCommand implements Command.InitCommand
-func (s *importCommand) InitCommand() {
+func (s *importCommand) InitCommand() error {
 	s.SetPositionalArgHelp(positionalArgHelp)
 	s.ArgCompletion(getStorageArgumentCompletionFunction(s.service))
 	s.flagSet = &pflag.FlagSet{}
 	s.importParams = newImportParams()
 	importFlags(s.flagSet, &s.importParams, defaultImportParams)
 	s.AddFlags(s.flagSet)
+
+	return nil
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand

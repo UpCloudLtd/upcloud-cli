@@ -33,7 +33,7 @@ var defaultTemplatizeParams = &templatizeParams{
 }
 
 // InitCommand implements Command.InitCommand
-func (s *templatizeCommand) InitCommand() {
+func (s *templatizeCommand) InitCommand() error {
 	s.SetPositionalArgHelp(positionalArgHelp)
 	s.ArgCompletion(getStorageArgumentCompletionFunction(s.service))
 	s.params = templatizeParams{TemplatizeStorageRequest: request.TemplatizeStorageRequest{}}
@@ -42,6 +42,8 @@ func (s *templatizeCommand) InitCommand() {
 	flagSet.StringVar(&s.params.Title, "title", defaultTemplatizeParams.Title, "A short, informational description.")
 
 	s.AddFlags(flagSet)
+
+	return nil
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand

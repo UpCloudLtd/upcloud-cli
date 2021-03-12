@@ -31,7 +31,7 @@ type createParams struct {
 }
 
 // InitCommand implements Command.InitCommand
-func (s *createCommand) InitCommand() {
+func (s *createCommand) InitCommand() error {
 	s.params.req = request.CreateNetworkRequest{}
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.params.req.Name, "name", s.params.req.Name, "Names the network.[Required]")
@@ -50,6 +50,8 @@ func (s *createCommand) InitCommand() {
 		"	--ip-network address=94.43.112.143/32,dhcp-dns=<value>\n\n"+
 		"[Required]")
 	s.AddFlags(fs)
+
+	return nil
 }
 
 func (s *createCommand) buildRequest() (*request.CreateNetworkRequest, error) {

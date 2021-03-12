@@ -24,12 +24,14 @@ type deleteCommand struct {
 }
 
 // InitCommand implements Command.InitCommand
-func (s *deleteCommand) InitCommand() {
+func (s *deleteCommand) InitCommand() error {
 	s.SetPositionalArgHelp(PositionalArgHelp)
 	s.ArgCompletion(GetServerArgumentCompletionFunction(s.service))
 	flags := &pflag.FlagSet{}
 	flags.BoolVar(&s.deleteStorages, "delete-storages", false, "Delete storages that are attached to the server.")
 	s.AddFlags(flags)
+
+	return nil
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand

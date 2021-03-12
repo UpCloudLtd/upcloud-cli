@@ -32,20 +32,21 @@ type listCommand struct {
 }
 
 // InitCommand implements Command.InitCommand
-func (s *listCommand) InitCommand() {
+func (s *listCommand) InitCommand() error {
 	s.header = table.Row{"UUID", "Hostname", "Plan", "Zone", "State", "Tags", "Title", "Licence"}
 	s.columnKeys = []string{"uuid", "hostname", "plan", "zone", "state", "tags", "title", "licence"}
 	s.visibleColumns = []string{"uuid", "hostname", "plan", "zone", "state"}
 	flags := &pflag.FlagSet{}
 	s.AddVisibleColumnsFlag(flags, &s.visibleColumns, s.columnKeys, s.visibleColumns)
 	s.AddFlags(flags)
+
+	return nil
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		svc := upapi.Service(s.Config())
-		servers, err := svc.GetServers()
+		servers, err := upapi.APIClient.GetServers()
 		if err != nil {
 			return nil, err
 		}

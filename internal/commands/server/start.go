@@ -37,7 +37,7 @@ var defaultStartParams = &startParams{
 }
 
 // InitCommand implements Command.InitCommand
-func (s *startCommand) InitCommand() {
+func (s *startCommand) InitCommand() error {
 	s.SetPositionalArgHelp(PositionalArgHelp)
 	s.ArgCompletion(GetServerArgumentCompletionFunction(s.service))
 
@@ -46,6 +46,8 @@ func (s *startCommand) InitCommand() {
 	flags.IntVar(&s.params.Host, "host", defaultStartParams.Host, "Start server on a specific host. Note that this is generally available for private clouds only")
 	flags.IntVar(&s.params.timeout, "timeout", defaultStartParams.timeout, "Stop timeout in seconds\nAvailable: 1-600")
 	s.AddFlags(flags)
+
+	return nil
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand

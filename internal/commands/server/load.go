@@ -35,7 +35,7 @@ var defaultLoadParams = &loadParams{
 }
 
 // InitCommand implements Command.InitCommand
-func (s *loadCommand) InitCommand() {
+func (s *loadCommand) InitCommand() error {
 	s.SetPositionalArgHelp(PositionalArgHelp)
 	s.ArgCompletion(GetServerArgumentCompletionFunction(s.serverSvc))
 	s.params = loadParams{LoadCDROMRequest: request.LoadCDROMRequest{}}
@@ -44,6 +44,8 @@ func (s *loadCommand) InitCommand() {
 	flagSet.StringVar(&s.params.StorageUUID, "storage", defaultLoadParams.StorageUUID, "The UUID of the storage to be loaded in the CD-ROM device.\n[Required]")
 
 	s.AddFlags(flagSet)
+
+	return nil
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand

@@ -43,9 +43,11 @@ func (c *commandResponseHolder) MarshalJSON() ([]byte, error) {
 }
 
 // InitCommand implements Command.InitCommand
-func (s *showCommand) InitCommand() {
+func (s *showCommand) InitCommand() error {
 	s.SetPositionalArgHelp(PositionalArgHelp)
 	s.ArgCompletion(GetServerArgumentCompletionFunction(s.serverSvc))
+
+	return nil
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand

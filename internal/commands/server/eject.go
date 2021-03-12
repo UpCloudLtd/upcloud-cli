@@ -18,9 +18,11 @@ type ejectParams struct {
 	request.EjectCDROMRequest
 }
 
-func (s *ejectCommand) InitCommand() {
+func (s *ejectCommand) InitCommand() error {
 	s.SetPositionalArgHelp(PositionalArgHelp)
 	s.ArgCompletion(GetServerArgumentCompletionFunction(s.serverSvc))
+
+	return nil
 }
 
 // EjectCommand creates the "server eject" command

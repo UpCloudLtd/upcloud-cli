@@ -34,7 +34,7 @@ var defaultModifyParams = modifyParams{
 }
 
 // InitCommand implements Command.InitCommand
-func (s *modifyCommand) InitCommand() {
+func (s *modifyCommand) InitCommand() error {
 	s.SetPositionalArgHelp(PositionalArgHelp)
 	s.ArgCompletion(GetServerArgumentCompletionFunction(s.service))
 	s.params = modifyParams{ModifyServerRequest: request.ModifyServerRequest{}}
@@ -55,6 +55,8 @@ func (s *modifyCommand) InitCommand() {
 	flags.StringVar(&s.params.RemoteAccessPassword, "remote-access-password", defaultModifyParams.RemoteAccessPassword, "The remote access password")
 
 	s.AddFlags(flags)
+
+	return nil
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand

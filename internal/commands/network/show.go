@@ -28,9 +28,11 @@ type showCommand struct {
 	serverSvc  service.Server
 }
 
-func (s *showCommand) InitCommand() {
+func (s *showCommand) InitCommand() error {
 	s.SetPositionalArgHelp(positionalArgHelp)
 	s.ArgCompletion(getArgCompFn(s.networkSvc))
+
+	return nil
 }
 
 type networkWithServers struct {

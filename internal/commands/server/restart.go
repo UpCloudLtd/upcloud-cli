@@ -39,7 +39,7 @@ var defaultRestartParams = &restartParams{
 }
 
 // InitCommand implements Command.InitCommand
-func (s *restartCommand) InitCommand() {
+func (s *restartCommand) InitCommand() error {
 	s.SetPositionalArgHelp(PositionalArgHelp)
 	s.ArgCompletion(GetServerArgumentCompletionFunction(s.service))
 
@@ -52,6 +52,8 @@ func (s *restartCommand) InitCommand() {
 	flags.IntVar(&s.params.Host, "host", defaultRestartParams.Host, "Use this to restart the VM on a specific host. Refers to value from host attribute. Only available for private cloud hosts")
 
 	s.AddFlags(flags)
+
+	return nil
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand

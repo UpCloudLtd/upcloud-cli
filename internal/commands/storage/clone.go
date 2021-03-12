@@ -35,7 +35,7 @@ var defaultCloneParams = &cloneParams{
 }
 
 // InitCommand implements Command.InitCommand
-func (s *cloneCommand) InitCommand() {
+func (s *cloneCommand) InitCommand() error {
 	s.SetPositionalArgHelp(positionalArgHelp)
 	s.ArgCompletion(getStorageArgumentCompletionFunction(s.service))
 	s.params = cloneParams{CloneStorageRequest: request.CloneStorageRequest{}}
@@ -46,6 +46,8 @@ func (s *cloneCommand) InitCommand() {
 	flagSet.StringVar(&s.params.Zone, "zone", defaultCloneParams.Zone, "The zone in which the storage will be created, e.g. fi-hel1.\n[Required]")
 
 	s.AddFlags(flagSet)
+
+	return nil
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand

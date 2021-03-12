@@ -39,7 +39,7 @@ var defaultStopParams = &stopParams{
 }
 
 // InitCommand implements Command.InitCommand
-func (s *stopCommand) InitCommand() {
+func (s *stopCommand) InitCommand() error {
 	s.SetPositionalArgHelp(PositionalArgHelp)
 	s.ArgCompletion(GetServerArgumentCompletionFunction(s.service))
 
@@ -47,6 +47,8 @@ func (s *stopCommand) InitCommand() {
 	flags.StringVar(&s.params.StopType, "type", defaultStopParams.StopType, "The type of stop operation. Soft waits for the OS to shut down cleanly while hard forcibly shuts down a server.\nAvailable: soft, hard")
 	flags.IntVar(&s.params.timeout, "timeout", defaultStartParams.timeout, "Stop timeout in seconds\nAvailable: 1-600")
 	s.AddFlags(flags)
+
+	return nil
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand

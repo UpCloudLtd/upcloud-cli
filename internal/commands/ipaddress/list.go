@@ -28,13 +28,15 @@ type listCommand struct {
 }
 
 // InitCommand implements Command.MakeExecuteCommand
-func (s *listCommand) InitCommand() {
+func (s *listCommand) InitCommand() error {
 	s.header = table.Row{"Address", "Access", "Family", "Part of Plan", "PTR Record", "Server", "MAC", "Floating", "Zone"}
 	s.columnKeys = []string{"address", "access", "family", "partofplan", "ptrrecord", "server", "mac", "floating", "zone"}
 	s.visibleColumns = []string{"address", "access", "family", "partofplan", "ptrrecord", "server", "mac", "floating", "zone"}
 	flags := &pflag.FlagSet{}
 	s.AddVisibleColumnsFlag(flags, &s.visibleColumns, s.columnKeys, s.visibleColumns)
 	s.AddFlags(flags)
+
+	return nil
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand

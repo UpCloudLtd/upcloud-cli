@@ -31,7 +31,7 @@ type listCommand struct {
 }
 
 // InitCommand implements Command.InitCommand
-func (s *listCommand) InitCommand() {
+func (s *listCommand) InitCommand() error {
 	s.header = table.Row{"UUID", "Name", "Router", "Type", "Zone"}
 	s.columnKeys = []string{"uuid", "name", "router", "type", "zone"}
 	s.visibleColumns = []string{"uuid", "name", "router", "type", "zone"}
@@ -40,6 +40,8 @@ func (s *listCommand) InitCommand() {
 	flags.StringVar(&s.networkType, "type", "", "Filters for given type")
 	s.AddVisibleColumnsFlag(flags, &s.visibleColumns, s.columnKeys, s.visibleColumns)
 	s.AddFlags(flags)
+
+	return nil
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand

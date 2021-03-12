@@ -23,13 +23,15 @@ func ModifyCommand(service service.IpAddress) commands.Command {
 }
 
 // InitCommand implements Command.InitCommand
-func (s *modifyCommand) InitCommand() {
+func (s *modifyCommand) InitCommand() error {
 	s.SetPositionalArgHelp(positionalArgHelp)
 	s.ArgCompletion(getArgCompFn(s.service))
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.req.MAC, "mac", "", "MAC address of server interface to attach floating IP to.")
 	fs.StringVar(&s.req.PTRRecord, "ptr-record", "", "A fully qualified domain name.")
 	s.AddFlags(fs)
+
+	return nil
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand

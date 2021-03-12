@@ -35,7 +35,7 @@ var defaultDetachParams = &detachParams{
 }
 
 // InitCommand implements Command.InitCommand
-func (s *detachCommand) InitCommand() {
+func (s *detachCommand) InitCommand() error {
 	s.SetPositionalArgHelp(positionalArgHelp)
 	s.ArgCompletion(server.GetServerArgumentCompletionFunction(s.serverSvc))
 	s.params = detachParams{DetachStorageRequest: request.DetachStorageRequest{}}
@@ -44,6 +44,8 @@ func (s *detachCommand) InitCommand() {
 	flagSet.StringVar(&s.params.Address, "address", defaultDetachParams.Address, "Detach the storage attached to this address.\n[Required]")
 
 	s.AddFlags(flagSet)
+
+	return nil
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand

@@ -24,9 +24,11 @@ type showCommand struct {
 }
 
 // InitCommand implements Command.InitCommand
-func (s *showCommand) InitCommand() {
+func (s *showCommand) InitCommand() error {
 	s.SetPositionalArgHelp(positionalArgHelp)
 	s.ArgCompletion(getArgCompFn(s.service))
+
+	return nil
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand

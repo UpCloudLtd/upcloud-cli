@@ -40,7 +40,7 @@ type listCommand struct {
 }
 
 // InitCommand implements Command.InitCommand
-func (s *listCommand) InitCommand() {
+func (s *listCommand) InitCommand() error {
 	s.header = table.Row{"UUID", "Title", "Zone", "State", "Type", "Size", "Tier", "Created", "Access"}
 	s.columnKeys = []string{"uuid", "title", "zone", "state", "type", "size", "tier", "created", "access"}
 	s.visibleColumns = []string{"uuid", "title", "zone", "state", "type", "size", "tier", "created"}
@@ -56,6 +56,8 @@ func (s *listCommand) InitCommand() {
 	flags.BoolVar(&s.template, "template", false, "Filters for template storages")
 
 	s.AddFlags(flags)
+
+	return nil
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand

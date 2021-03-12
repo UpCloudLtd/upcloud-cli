@@ -21,9 +21,11 @@ func RemoveCommand(service service.IpAddress) commands.Command {
 }
 
 // InitCommand implements Command.MakeExecuteCommand
-func (s *removeCommand) InitCommand() {
+func (s *removeCommand) InitCommand() error {
 	s.SetPositionalArgHelp(positionalArgHelp)
 	s.ArgCompletion(getArgCompFn(s.service))
+
+	return nil
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand

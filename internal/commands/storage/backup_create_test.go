@@ -58,7 +58,7 @@ func TestCreateBackupCommand(t *testing.T) {
 			mss.On("GetStorages", &request.GetStoragesRequest{}).Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2}}, nil)
 			mss.On(methodName, mock.Anything).Return(&details, nil)
 
-			tc := commands.BuildCommand(CreateBackupCommand(&mss), nil, config.New(viper.New()))
+			tc, err := commands.BuildCommand(CreateBackupCommand(&mss), nil, config.New(viper.New()))
 			err := tc.SetFlags(test.args)
 			assert.NoError(t, err)
 

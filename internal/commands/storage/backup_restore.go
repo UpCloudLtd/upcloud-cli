@@ -26,9 +26,11 @@ func RestoreBackupCommand(service service.Storage) commands.Command {
 }
 
 // InitCommand implements Command.InitCommand
-func (s *restoreBackupCommand) InitCommand() {
+func (s *restoreBackupCommand) InitCommand() error {
 	s.SetPositionalArgHelp(positionalArgHelp)
 	s.ArgCompletion(getStorageArgumentCompletionFunction(s.service))
+
+	return nil
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand

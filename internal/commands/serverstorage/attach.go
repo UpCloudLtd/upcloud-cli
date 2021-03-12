@@ -40,7 +40,7 @@ var defaultAttachParams = &attachParams{
 }
 
 // InitCommand implements Command.InitCommand
-func (s *attachCommand) InitCommand() {
+func (s *attachCommand) InitCommand() error {
 	s.SetPositionalArgHelp(positionalArgHelp)
 	s.ArgCompletion(server.GetServerArgumentCompletionFunction(s.serverSvc))
 	s.params = attachParams{AttachStorageRequest: request.AttachStorageRequest{}}
@@ -52,6 +52,8 @@ func (s *attachCommand) InitCommand() {
 	flagSet.IntVar(&s.params.BootDisk, "boot-disk", defaultAttachParams.BootDisk, "If the value is 1 the storage device will be used as a boot disk, unless overridden with the server boot_order attribute.")
 
 	s.AddFlags(flagSet)
+
+	return nil
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand

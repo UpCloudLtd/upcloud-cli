@@ -32,7 +32,7 @@ var defaultCreateBackupParams = &createBackupParams{
 }
 
 // InitCommand implements Command.InitCommand
-func (s *createBackupCommand) InitCommand() {
+func (s *createBackupCommand) InitCommand() error {
 	s.SetPositionalArgHelp(positionalArgHelp)
 	s.ArgCompletion(getStorageArgumentCompletionFunction(s.service))
 	s.params = createBackupParams{CreateBackupRequest: request.CreateBackupRequest{}}
@@ -41,6 +41,8 @@ func (s *createBackupCommand) InitCommand() {
 	flagSet.StringVar(&s.params.Title, "title", defaultCreateBackupParams.Title, "A short, informational description.\n[Required]")
 
 	s.AddFlags(flagSet)
+
+	return nil
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand

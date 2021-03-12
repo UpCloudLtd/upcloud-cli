@@ -21,9 +21,11 @@ func DeleteCommand(service service.Network) commands.Command {
 }
 
 // InitCommand implements Command.InitCommand
-func (s *deleteCommand) InitCommand() {
+func (s *deleteCommand) InitCommand() error {
 	s.SetPositionalArgHelp(positionalArgHelp)
 	s.ArgCompletion(getArgCompFn(s.service))
+
+	return nil
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand

@@ -21,9 +21,11 @@ type deleteCommand struct {
 }
 
 // InitCommand implements Command.InitCommand
-func (s *deleteCommand) InitCommand() {
+func (s *deleteCommand) InitCommand() error {
 	s.SetPositionalArgHelp(positionalArgHelp)
 	s.ArgCompletion(getStorageArgumentCompletionFunction(s.service))
+
+	return nil
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand

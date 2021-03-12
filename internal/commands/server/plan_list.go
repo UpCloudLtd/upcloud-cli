@@ -29,20 +29,21 @@ type planListCommand struct {
 }
 
 // InitCommand implements Command.InitCommand
-func (s *planListCommand) InitCommand() {
+func (s *planListCommand) InitCommand() error {
 	s.header = table.Row{"Name", "Cores", "Memory (MiB)", "Storage (GiB)", "Storage tier", "Traffic out / month (MiB)"}
 	s.columnKeys = []string{"name", "cores", "memory", "storage", "storage_tier", "traffic"}
 	s.visibleColumns = []string{"name", "cores", "memory", "storage", "storage_tier", "traffic"}
 	flags := &pflag.FlagSet{}
 	s.AddVisibleColumnsFlag(flags, &s.visibleColumns, s.columnKeys, s.visibleColumns)
 	s.AddFlags(flags)
+
+	return nil
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *planListCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		service := upapi.Service(s.Config())
-		plans, err := service.GetPlans()
+		plans, err := upapi.APIClient.GetPlans()
 		if err != nil {
 			return nil, err
 		}

@@ -42,7 +42,7 @@ func ModifyCommand(service service.Storage) commands.Command {
 }
 
 // InitCommand implements Command.InitCommand
-func (s *modifyCommand) InitCommand() {
+func (s *modifyCommand) InitCommand() error {
 	s.SetPositionalArgHelp(positionalArgHelp)
 	s.ArgCompletion(getStorageArgumentCompletionFunction(s.service))
 	s.params = modifyParams{ModifyStorageRequest: request.ModifyStorageRequest{}}
@@ -55,6 +55,8 @@ func (s *modifyCommand) InitCommand() {
 	flagSet.IntVar(&s.params.backupRetention, "backup-retention", 0, "How long to store the backups in days. The accepted range is 1-1095")
 
 	s.AddFlags(flagSet)
+
+	return nil
 }
 
 func setBackupFields(storageUUID string, p modifyParams, service service.Storage, req *request.ModifyStorageRequest) error {

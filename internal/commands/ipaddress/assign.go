@@ -34,7 +34,7 @@ var defCreateParams = request.AssignIPAddressRequest{
 }
 
 // InitCommand implements Command.InitCommand
-func (s *assignCommand) InitCommand() {
+func (s *assignCommand) InitCommand() error {
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.req.Access, "access", defCreateParams.Access, "Is address for utility or public network.")
 	fs.StringVar(&s.req.Family, "family", defCreateParams.Family, "The address family of new IP address.")
@@ -43,6 +43,8 @@ func (s *assignCommand) InitCommand() {
 	fs.StringVar(&s.req.Zone, "zone", defCreateParams.Zone, "Zone of address, required when assigning a detached floating IP address.")
 	fs.BoolVar(&s.floating, "floating", false, "Whether the address to be assigned is a floating one.")
 	s.AddFlags(fs)
+
+	return nil
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand

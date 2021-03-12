@@ -26,7 +26,7 @@ func ModifyCommand(service service.Network) commands.Command {
 }
 
 // InitCommand implements Command.InitCommand
-func (s *modifyCommand) InitCommand() {
+func (s *modifyCommand) InitCommand() error {
 	s.SetPositionalArgHelp(positionalArgHelp)
 	s.ArgCompletion(getArgCompFn(s.service))
 	fs := &pflag.FlagSet{}
@@ -43,6 +43,8 @@ func (s *modifyCommand) InitCommand() {
 		"	--ip-network dhcp-dns=<value1>,family=IPv4 \n\n"+
 		" --ip-network 'dhcp=true,\"dhcp-dns=<value1>,<value2>\",family=IPv6'")
 	s.AddFlags(fs)
+
+	return nil
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand

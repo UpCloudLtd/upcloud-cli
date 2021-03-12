@@ -210,7 +210,7 @@ type createCommand struct {
 }
 
 // InitCommand implements Command.InitCommand
-func (s *createCommand) InitCommand() {
+func (s *createCommand) InitCommand() error {
 	fs := &pflag.FlagSet{}
 	s.params = createParams{CreateServerRequest: request.CreateServerRequest{}}
 	def := defaultCreateParams
@@ -241,6 +241,8 @@ func (s *createCommand) InitCommand() {
 	fs.StringVar(&s.params.RemoteAccessType, "remote-access-type", def.RemoteAccessType, "The remote access type.")
 	fs.StringVar(&s.params.RemoteAccessPassword, "remote-access-password", def.RemoteAccessPassword, "The remote access password.")
 	s.AddFlags(fs)
+
+	return nil
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand

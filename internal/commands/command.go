@@ -3,9 +3,9 @@ package commands
 import (
 	"encoding/json"
 	"fmt"
-	"io"
+	// "io"
 	"os"
-	"sort"
+	// "sort"
 	"strings"
 
 	"github.com/UpCloudLtd/cli/internal/config"
@@ -14,217 +14,218 @@ import (
 	"github.com/mattn/go-isatty"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
 	"gopkg.in/yaml.v2"
 )
+
+func GenerateCmdList(cmds ...*BaseCommand) []*BaseCommand {
+	var c = []*BaseCommand{}
+	for _, cmd := range cmds {
+		c = append(c, cmd)
+	}
+
+	return c
+}
 
 // New returns a BaseCommand that implements Command. It is used as a base to create custom commands from.
 func New(name, usage string) *BaseCommand {
 	return &BaseCommand{
-		name:  name,
-		cobra: &cobra.Command{Use: name, Short: usage},
+		Cmd: &cobra.Command{Use: name, Short: usage},
 	}
 }
 
 // Command defines the common functionality for all commands
-type Command interface {
-	SetConfig(config *config.Config)
-	SetParent(Command)
-	SetChild(command Command)
-	SetFlags(flags []string) error
-	DeleteChild(command Command)
-	Children() []Command
-	Parent() Command
-	Name() string
-	InitCommand()
-	MakeExecuteCommand() func(args []string) (interface{}, error)
-	MakePreExecuteCommand() func(args []string) error
-	MakePersistentPreExecuteCommand() func(args []string) error
-	SetConfigLoader(func(config *config.Config) error)
-	ConfigLoader() func(config *config.Config) error
-	Config() *config.Config
-	HandleOutput(writer io.Writer, out interface{}) error
-	HandleError(err error)
-	CobraCommand
-}
+// BaseCommand is the base type for all commands, implementing Command
+type BaseCommand struct {
+	// Name is the command name
+	Name string
 
-// CobraCommand is an interface for commands that can refer back to their base cobra.Command
-type CobraCommand interface {
-	Cobra() *cobra.Command
-}
+	// Aliases is an array of aliases that can be used instead of the first word in Use.
+	Aliases []string
 
-type namespace interface {
-	Namespace() string
+	// Short is the short description shown in the 'help' output.
+	Short string
+
+	// Long is the long message shown in the 'help <this-command>' output.
+	Long string
+
+	Cmd              *cobra.Command
+	Viper            *viper.Viper
+	Parent           *BaseCommand
+	Cfg              *config.Config
+	Run              RunCmd
+	PreRun           PreRunCmd
+	PersistentPreRun PersistentPreRunCmd
+	// HandleOutput     HandleOutputCmd
+	// HandleError      HandleErrorCmd
+}
+type RunCmd func(conf *config.Config, args interface{}) (i interface{}, e error)
+type PreRunCmd func(args []string) error
+type PersistentPreRunCmd func(args []string) error
+
+// type HandleOutputCmd func(writer io.Writer, out interface{}) error
+type HandleErrorCmd func(err error)
+
+func runCmd(conf *config.Config, cmd *BaseCommand) func(*cobra.Command, []string) error {
+	return func(cobraCmd *cobra.Command, args []string) error {
+		if cmd.Run == nil {
+			return nil
+		}
+
+		res, err := cmd.Run(conf, args)
+		if err != nil {
+			return err
+		}
+
+		return handleOutput(res, conf.Output())
+	}
 }
 
 // BuildCommand sets up a Command with the specified config and adds it to Cobra
-func BuildCommand(child, parent Command, config *config.Config) Command {
-	child.SetParent(parent)
-	child.SetConfig(config)
-	child.Cobra().Flags().SortFlags = false
-	if parent != nil {
-		child.SetConfigLoader(parent.ConfigLoader())
-	}
-	if nsCmd, ok := child.(namespace); ok {
-		config.SetNamespace(nsCmd.Namespace())
-	}
-	child.InitCommand()
-	// Apply values set from viper
-	child.Cobra().PreRunE = func(cmd *cobra.Command, args []string) error {
-		for cmd := child; cmd != nil; cmd = cmd.Parent() {
-			for _, v := range cmd.Config().BoundFlags() {
-				if !cmd.Config().IsSet(v.Name) {
-					continue
-				}
-				if v.Changed {
-					continue
-				}
-				if err := v.Value.Set(cmd.Config().GetString(v.Name)); err != nil {
-					return err
-				}
-			}
-		}
-		return nil
+func BuildCommand(conf *config.Config, cmd *BaseCommand) *cobra.Command {
+	cobraCmd := &cobra.Command{
+		Use:   cmd.Name,
+		Short: cmd.Short,
+		Long:  cmd.Long,
 	}
 
-	if cCmd := child.MakeExecuteCommand(); cCmd != nil && child.Cobra().RunE == nil {
-		child.Cobra().RunE = func(_ *cobra.Command, args []string) error {
-			if loader := child.ConfigLoader(); loader != nil {
-				if err := loader(config); err != nil {
-					return fmt.Errorf("Config load: %v", err)
-				}
-			}
-			response, err := cCmd(args)
-			if err != nil {
-				return err
-			}
-			if !config.OutputHuman() {
-				return handleOutput(response, config.Output())
-			}
-			return child.HandleOutput(os.Stdout, response)
-		}
-	}
-	if cCmd := child.MakePreExecuteCommand(); cCmd != nil && child.Cobra().PreRunE == nil {
-		child.Cobra().PreRunE = func(_ *cobra.Command, args []string) error {
-			if loader := child.ConfigLoader(); loader != nil {
-				if err := loader(config); err != nil {
-					return fmt.Errorf("Config load: %v", err)
-				}
-			}
-			return cCmd(args)
-		}
-	}
-	if cCmd := child.MakePersistentPreExecuteCommand(); cCmd != nil && child.Cobra().PersistentPreRunE == nil {
-		child.Cobra().PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
-			if loader := child.ConfigLoader(); loader != nil {
-				if err := loader(config); err != nil {
-					return fmt.Errorf("Config load: %v", err)
-				}
-			}
-			return cCmd(args)
-		}
-	}
+	// Config
+	cobraCmd.Flags().SortFlags = false
 
-	curHelp := child.Cobra().HelpFunc()
-	child.Cobra().SetHelpFunc(func(cCmd *cobra.Command, args []string) {
-		for cmd := child; cmd != nil; cmd = cmd.Parent() {
-			for _, v := range cmd.Config().BoundFlags() {
-				if !cmd.Config().IsSet(v.Name) {
-					continue
-				}
-				v.DefValue = cmd.Config().GetString(v.Name)
-			}
-		}
-		curHelp(cCmd, args)
-	})
+	cobraCmd.RunE = runCmd(conf, cmd)
 
-	// Need to set child command in the end as otherwise HelpFunc() returns the parent's helpfunc
-	if parent != nil {
-		parent.Cobra().AddCommand(child.Cobra())
-	}
-	return child
+	// // Apply values set from viper
+
+	// child.Cmd.PreRunE = func(cmd *cobra.Command, args []string) error {
+	// 	for cmd := child; cmd != nil; cmd = cmd.Parent {
+	// 		for _, v := range cmd.Config().BoundFlags() {
+	// 			if !cmd.Config().IsSet(v.Name) {
+	// 				continue
+	// 			}
+	// 			if v.Changed {
+	// 				continue
+	// 			}
+	// 			if err := v.Value.Set(cmd.Config().GetString(v.Name)); err != nil {
+	// 				return err
+	// 			}
+	// 		}
+	// 	}
+	// 	return nil
+	// }
+
+	// if cCmd := child.MakePreExecuteCommand(); cCmd != nil && child.Cobra().PreRunE == nil {
+	// 	child.Cobra().PreRunE = func(_ *cobra.Command, args []string) error {
+	// 		if loader := child.ConfigLoader(); loader != nil {
+	// 			if err := loader(config); err != nil {
+	// 				return fmt.Errorf("Config load: %v", err)
+	// 			}
+	// 		}
+	// 		return cCmd(args)
+	// 	}
+	// }
+	// if cCmd := child.MakePersistentPreExecuteCommand(); cCmd != nil && child.Cobra().PersistentPreRunE == nil {
+	// 	child.Cobra().PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
+	// 		if loader := child.ConfigLoader(); loader != nil {
+	// 			if err := loader(config); err != nil {
+	// 				return fmt.Errorf("Config load: %v", err)
+	// 			}
+	// 		}
+	// 		return cCmd(args)
+	// 	}
+	// }
+
+	// curHelp := child.Cobra().HelpFunc()
+	// child.Cmd.SetHelpFunc(func(cCmd *cobra.Command, args []string) {
+	// 	for cmd := child; cmd != nil; cmd = cmd.Parent {
+	// 		for _, v := range cmd.Config().BoundFlags() {
+	// 			if !cmd.Config().IsSet(v.Name) {
+	// 				continue
+	// 			}
+	// 			v.DefValue = cmd.Config().GetString(v.Name)
+	// 		}
+	// 	}
+	// 	curHelp(cCmd, args)
+	// })
+
+	return cobraCmd
 }
 
 // BaseCommand is the base type for all commands, implementing Command
-type BaseCommand struct {
-	cobra            *cobra.Command
-	name             string
-	parent           Command
-	childrenPos      map[Command]int
-	nextChildSortPos int
-	config           *config.Config
-	configLoader     func(config *config.Config) error
-}
+// type BaseCommand struct {
+// 	Cmd              *cobra.Command
+// 	name             string
+// 	parent           Command
+// 	childrenPos      map[Command]int
+// 	nextChildSortPos int
+// 	Cfg              *config.Config
+// 	configLoader     func(config *config.Config) error
+// }
 
-// Name returns the name of the command
-func (s *BaseCommand) Name() string {
-	return s.name
-}
+// // Name returns the name of the command
+// func (s *BaseCommand) Name() string {
+// 	return s.name
+// }
 
-// SetConfig sets the configuration used
-func (s *BaseCommand) SetConfig(config *config.Config) {
-	s.config = config
-}
+// // SetChild sets command as the child of this command
+// func (s *BaseCommand) SetChild(command Command) {
+// 	if command == nil {
+// 		return
+// 	}
+// 	if _, alreadyChild := s.childrenPos[command]; alreadyChild {
+// 		return
+// 	}
+// 	if s.childrenPos == nil {
+// 		s.childrenPos = make(map[Command]int)
+// 	}
+// 	s.childrenPos[command] = s.nextChildSortPos
+// 	s.nextChildSortPos++
+// 	if command.Parent() != s {
+// 		command.SetParent(s)
+// 	}
+// }
 
-// SetChild sets command as the child of this command
-func (s *BaseCommand) SetChild(command Command) {
-	if command == nil {
-		return
-	}
-	if _, alreadyChild := s.childrenPos[command]; alreadyChild {
-		return
-	}
-	if s.childrenPos == nil {
-		s.childrenPos = make(map[Command]int)
-	}
-	s.childrenPos[command] = s.nextChildSortPos
-	s.nextChildSortPos++
-	if command.Parent() != s {
-		command.SetParent(s)
-	}
-}
+// // DeleteChild removes command from the children of this command
+// func (s *BaseCommand) DeleteChild(command Command) {
+// 	if command.Parent() == s {
+// 		command.SetParent(nil)
+// 	}
+// 	delete(s.childrenPos, command)
+// }
 
-// DeleteChild removes command from the children of this command
-func (s *BaseCommand) DeleteChild(command Command) {
-	if command.Parent() == s {
-		command.SetParent(nil)
-	}
-	delete(s.childrenPos, command)
-}
+// // Children returns a list of all the child commands of this command (eg. including the children of children)
+// func (s *BaseCommand) Children() []Command {
+// 	var (
+// 		r      []Command
+// 		sorted []Command
+// 	)
+// 	for child := range s.childrenPos {
+// 		sorted = append(sorted, child)
+// 	}
+// 	sort.Slice(sorted, func(i, j int) bool {
+// 		return s.childrenPos[sorted[i]] < s.childrenPos[sorted[j]]
+// 	})
+// 	for _, child := range sorted {
+// 		r = append(r, child)
+// 		r = append(r, child.Children()...)
+// 	}
+// 	return r
+// }
 
-// Children returns a list of all the child commands of this command (eg. including the children of children)
-func (s *BaseCommand) Children() []Command {
-	var (
-		r      []Command
-		sorted []Command
-	)
-	for child := range s.childrenPos {
-		sorted = append(sorted, child)
-	}
-	sort.Slice(sorted, func(i, j int) bool {
-		return s.childrenPos[sorted[i]] < s.childrenPos[sorted[j]]
-	})
-	for _, child := range sorted {
-		r = append(r, child)
-		r = append(r, child.Children()...)
-	}
-	return r
-}
+// // SetParent sets the parent of this command to given command
+// func (s *BaseCommand) SetParent(command Command) {
+// 	if s.parent != nil {
+// 		s.DeleteChild(command)
+// 	}
+// 	s.parent = command
+// 	if s.parent != nil {
+// 		s.parent.SetChild(s)
+// 	}
+// }
 
-// SetParent sets the parent of this command to given command
-func (s *BaseCommand) SetParent(command Command) {
-	if s.parent != nil {
-		s.DeleteChild(command)
-	}
-	s.parent = command
-	if s.parent != nil {
-		s.parent.SetChild(s)
-	}
-}
-
-// Parent returns the parent of the command
-func (s *BaseCommand) Parent() Command {
-	return s.parent
-}
+// // Parent returns the parent of the command
+// func (s *BaseCommand) Parent() Command {
+// 	return s.parent
+// }
 
 // SetFlags parses the given flags
 func (s *BaseCommand) SetFlags(flags []string) error {
@@ -234,7 +235,8 @@ func (s *BaseCommand) SetFlags(flags []string) error {
 // InitCommand can be overriden to handle flag registration.
 // A hook to handle flag registration.
 // The config values are not available during this hook. Register a cobra hook to use them. You can set defaults though.
-func (s *BaseCommand) InitCommand() {
+func (s *BaseCommand) InitCommand() error {
+	return nil
 }
 
 // MakeExecuteCommand should be overwritten by the actual command implementations
@@ -256,76 +258,76 @@ func (s *BaseCommand) MakePersistentPreExecuteCommand() func(args []string) erro
 	return nil
 }
 
-// Namespace returns the namespace of this command from the chain of parent commands
-// The format is cmdRoot.child1.child2.childN
-// No namespace is returned for the root command (parent == nil)
-func (s *BaseCommand) Namespace() string {
-	var (
-		sb    strings.Builder
-		names []string
-	)
-	for c := s.parent; c != nil; c = c.Parent() {
-		// Skip root command name in namespace
-		if c.Parent() == nil {
-			continue
-		}
-		names = append(names, c.Name())
-	}
-	for i := len(names) - 1; i >= 0; i-- {
-		sb.WriteString(names[i])
-		sb.WriteString(".")
-	}
-	if s.parent != nil {
-		sb.WriteString(s.Name())
-	}
-	return sb.String()
-}
+// // Namespace returns the namespace of this command from the chain of parent commands
+// // The format is cmdRoot.child1.child2.childN
+// // No namespace is returned for the root command (parent == nil)
+// func (s *BaseCommand) Namespace() string {
+// 	var (
+// 		sb    strings.Builder
+// 		names []string
+// 	)
+// 	for c := s.parent; c != nil; c = c.Parent() {
+// 		// Skip root command name in namespace
+// 		if c.Parent() == nil {
+// 			continue
+// 		}
+// 		names = append(names, c.Name())
+// 	}
+// 	for i := len(names) - 1; i >= 0; i-- {
+// 		sb.WriteString(names[i])
+// 		sb.WriteString(".")
+// 	}
+// 	if s.parent != nil {
+// 		sb.WriteString(s.Name())
+// 	}
+// 	return sb.String()
+// }
 
 // Cobra returns the underlying *cobra.Command
 func (s *BaseCommand) Cobra() *cobra.Command {
-	return s.cobra
+	return s.Cmd
 }
 
 // Config //
 
 // Config implements Command.Config, returning the *config.Config of the command
 func (s *BaseCommand) Config() *config.Config {
-	return s.config
+	return s.Cfg
 }
 
-// SetConfigLoader implements Command.SetConfigLoader, setting internal config loader
-func (s *BaseCommand) SetConfigLoader(fn func(config *config.Config) error) {
-	s.configLoader = fn
-}
+// // SetConfigLoader implements Command.SetConfigLoader, setting internal config loader
+// func (s *BaseCommand) SetConfigLoader(fn func(config *config.Config) error) {
+// 	s.configLoader = fn
+// }
 
-// ConfigLoader implements Command.ConfigLoader, returning the specified ConfigLoader
-func (s *BaseCommand) ConfigLoader() func(config *config.Config) error {
-	return s.configLoader
-}
+// // ConfigLoader implements Command.ConfigLoader, returning the specified ConfigLoader
+// func (s *BaseCommand) ConfigLoader() func(config *config.Config) error {
+// 	return s.configLoader
+// }
 
 // Flags //
 
-// AddFlags adds a flagset to the command and binds config value into it with namespace
-func (s *BaseCommand) AddFlags(flags *pflag.FlagSet) {
-	if flags == nil {
-		panic("Nil flagset")
-	}
-	flags.VisitAll(func(flag *pflag.Flag) {
-		s.Cobra().Flags().AddFlag(flag)
-	})
-	s.config.ConfigBindFlagSet(flags)
-}
+// // AddFlags adds a flagset to the command and binds config value into it with namespace
+// func (s *BaseCommand) AddFlags(flags *pflag.FlagSet) {
+// 	if flags == nil {
+// 		panic("Nil flagset")
+// 	}
+// 	flags.VisitAll(func(flag *pflag.Flag) {
+// 		s.Cobra().Flags().AddFlag(flag)
+// 	})
+// 	s.Cfg.ConfigBindFlagSet(flags)
+// }
 
-// AddPersistentFlags adds a persistent flagset to the command and binds config value into it with namespace
-func (s *BaseCommand) AddPersistentFlags(flags *pflag.FlagSet) {
-	if flags == nil {
-		panic("Nil flagset")
-	}
-	flags.VisitAll(func(flag *pflag.Flag) {
-		s.Cobra().PersistentFlags().AddFlag(flag)
-	})
-	s.config.ConfigBindFlagSet(flags)
-}
+// // AddPersistentFlags adds a persistent flagset to the command and binds config value into it with namespace
+// func (s *BaseCommand) AddPersistentFlags(flags *pflag.FlagSet) {
+// 	if flags == nil {
+// 		panic("Nil flagset")
+// 	}
+// 	flags.VisitAll(func(flag *pflag.Flag) {
+// 		s.Cmd.PersistentFlags().AddFlag(flag)
+// 	})
+// 	s.Cfg.ConfigBindFlagSet(flags)
+// }
 
 // AddVisibleColumnsFlag is a convenience method to set a common flag '--columns' to commands
 func (s *BaseCommand) AddVisibleColumnsFlag(flags *pflag.FlagSet, dstPtr *[]string, available, defaults []string) {
@@ -338,10 +340,9 @@ func (s *BaseCommand) AddVisibleColumnsFlag(flags *pflag.FlagSet, dstPtr *[]stri
 // if help is an empty string, uses just the name of the command.
 func (s *BaseCommand) SetPositionalArgHelp(help string) {
 	if help == "" {
-		s.cobra.Use = s.name
 		return
 	}
-	s.cobra.Use = fmt.Sprintf("%s %s", s.name, help)
+	s.Cmd.Use = fmt.Sprintf("%s %s", s.Cmd.Use, help)
 }
 
 // Error handling //
@@ -377,12 +378,6 @@ func (s *BaseCommand) HandleError(err error) {
 }
 
 // Output handling //
-
-// HandleOutput should be overwritten by the actual command implementations
-// It is expected to write output, given in out, to writer
-func (s *BaseCommand) HandleOutput(io.Writer, interface{}) error {
-	return nil
-}
 
 func handleOutput(out interface{}, format string) error {
 	isTerminal := isatty.IsTerminal(os.Stdout.Fd())

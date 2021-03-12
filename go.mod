@@ -4,6 +4,7 @@ go 1.13
 
 require (
 	github.com/UpCloudLtd/upcloud-go-api v0.0.0-20201130170350-7fc02444127a
+	github.com/adrg/xdg v0.3.2 // indirect
 	github.com/ghodss/yaml v1.0.0
 	github.com/hashicorp/go-cleanhttp v0.5.1
 	github.com/jedib0t/go-pretty/v6 v6.0.5

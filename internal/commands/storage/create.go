@@ -72,11 +72,13 @@ func createFlags(fs *pflag.FlagSet, dst, def *createParams) {
 }
 
 // InitCommand implements Command.InitCommand
-func (s *createCommand) InitCommand() {
+func (s *createCommand) InitCommand() error {
 	s.flagSet = &pflag.FlagSet{}
 	s.params = newCreateParams()
 	createFlags(s.flagSet, &s.params, defaultCreateParams)
 	s.AddFlags(s.flagSet)
+
+	return nil
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand
