@@ -40,7 +40,7 @@ upctl server create --hostname test-server.io --zone es-mad1 --ssh-keys id_rsa.p
 > * ssh-keys `--ssh-keys id_rsa.pub`
 > * or password delivery `--password-delivery email`
 >
-> Note: If you have a custom default operating system template, these cannot be used. Use `--os your-custom-img` to specify your template; it's expected you have the correct authentication already set up in your custom method. 
+> Note: If you have a custom default operating system template, these cannot be used. Use `--os your-custom-img` to specify your template; it's expected you have the correct authentication already set up in your custom method.
 
 Server title defaults to hostname. To set a different title, add `--title "Test server"`
 
@@ -55,10 +55,10 @@ Note: Storage size is in GB.
 ### Attach storage to server
 
 ```bash
-upctl server storage attach <SERVER-UUID> --storage <STORAGE-UUID> 
+upctl server storage attach <SERVER-UUID> --storage <STORAGE-UUID>
 ```
 
-## Usage with go 
+## Usage with go
 
 Requires Golang version 1.11+.
 
@@ -84,6 +84,16 @@ Build the binary with:
 make build
 ./bin/upctl --help
 ```
+
+## Releasing
+
+Current release process:
+
+* Tag a commit with the version you want to release e.g. `v1.2.3`
+* Push the tag & commit to GitHub
+  * GitHub actions will automatically set the version based on the tag, build the project, and upload binaries & SHA sum to GitHub releases
+* [Create a new release in GitHub](https://github.com/UpCloudLtd/upcloud-cli/releases) with the correct changelog
+* Done!
 
 ## Contributing
 
