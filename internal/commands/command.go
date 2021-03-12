@@ -103,7 +103,7 @@ func BuildCommand(child, parent Command, config *config.Config) Command {
 			if err != nil {
 				return err
 			}
-			return handleCommandOutput(config, commandOutput, err)
+			return output.Render(os.Stdout, config, commandOutput)
 		}
 	} else if cCmd := child.MakeExecuteCommand(); cCmd != nil && child.Cobra().RunE == nil {
 		child.Cobra().RunE = func(_ *cobra.Command, args []string) error {
@@ -162,32 +162,6 @@ func BuildCommand(child, parent Command, config *config.Config) Command {
 		parent.Cobra().AddCommand(child.Cobra())
 	}
 	return child
-}
-
-func handleCommandOutput(cfg *config.Config, output output.Command, err error) error {
-	var bytes []byte
-	switch {
-	case cfg.OutputHuman():
-		bytes, err = output.MarshalHuman()
-		if err != nil {
-			return err
-		}
-	case cfg.Top().IsSet(config.KeyOutput) && cfg.Output() == config.ValueOutputJSON:
-		bytes, err = output.MarshalJSON()
-		if err != nil {
-			return err
-		}
-	case cfg.Top().IsSet(config.KeyOutput) && cfg.Output() == config.ValueOutputYAML:
-		marshaled, err := output.MarshalYAML()
-		if err != nil {
-			return err
-		}
-		bytes = []byte(string(marshaled))
-	}
-	if _, err := os.Stdout.Write(bytes); err != nil {
-		return err
-	}
-	return nil
 }
 
 // BaseCommand is the base type for all commands, implementing Command
