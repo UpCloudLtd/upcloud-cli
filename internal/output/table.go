@@ -15,12 +15,19 @@ import (
 // TableRow represents a single row of data in a table
 type TableRow []interface{}
 
+// TableColumn defines how a particular column is rendered
+type TableColumn struct {
+	Header string
+	Key    string
+	Hidden bool
+	config *table.ColumnConfig
+}
+
 // Table represents command output rendered as a table
 type Table struct {
-	Headers []string
-	Keys    []string
-	Visible []string
-	Rows    []TableRow
+	Columns    []TableColumn
+	Rows       []TableRow
+	HideHeader bool
 }
 
 func (s Table) asListOfMaps() []map[string]interface{} {
@@ -28,7 +35,7 @@ func (s Table) asListOfMaps() []map[string]interface{} {
 	for _, row := range s.Rows {
 		jrow := map[string]interface{}{}
 		for i := range row {
-			jrow[s.Keys[i]] = row[i]
+			jrow[s.Columns[i].Key] = row[i]
 		}
 		jmap = append(jmap, jrow)
 	}
@@ -50,13 +57,12 @@ func (s Table) MarshalHuman() ([]byte, error) {
 	t := &table.Table{}
 	columnKeyPos := make(map[string]int)
 	columnConfig := make(map[string]*table.ColumnConfig)
-	for pos, key := range s.Keys {
-		columnKeyPos[key] = pos
+	for pos, column := range s.Columns {
+		columnKeyPos[column.Key] = pos
 	}
 	t.ResetHeaders()
 	t.ResetFooters()
 	t.ResetRows()
-	columnKeys := s.Keys
 	/*
 		// TODO: reimplement this if/when necessary
 		if len(s.overrideColumnKeys) > 0 {
@@ -64,20 +70,20 @@ func (s Table) MarshalHuman() ([]byte, error) {
 		}
 	*/
 	var header table.Row
-	for _, key := range columnKeys {
-		pos, ok := columnKeyPos[key]
+	for _, column := range s.Columns {
+		pos, ok := columnKeyPos[column.Key]
 		if !ok {
 			continue
 		}
-		if len(header) == 0 && s.Headers != nil {
-			header = append(header, key)
-		} else if s.Headers != nil {
-			header = append(header, s.Headers[pos])
+		if len(header) == 0 && column.Header == "" {
+			header = append(header, column.Key)
+		} else {
+			header = append(header, column.Header)
 		}
-		cfg, ok := columnConfig[key]
-		if !ok {
+		cfg := column.config
+		if cfg == nil {
 			cfg = &table.ColumnConfig{}
-			columnConfig[key] = cfg
+			column.config = cfg
 		}
 		cfg.Number = pos + 1
 		if len(s.Rows) > 0 {
@@ -118,11 +124,11 @@ func (s Table) MarshalHuman() ([]byte, error) {
 	t.SetColumnConfigs(columnConfigs)
 	for _, row := range s.Rows {
 		var arow table.Row
-		for _, key := range columnKeys {
-			if _, ok := columnKeyPos[key]; !ok {
+		for _, column := range s.Columns {
+			if _, ok := columnKeyPos[column.Key]; !ok {
 				continue
 			}
-			arow = append(arow, row[columnKeyPos[key]])
+			arow = append(arow, row[columnKeyPos[column.Key]])
 		}
 		if len(arow) > 0 {
 			t.AppendRow(arow)

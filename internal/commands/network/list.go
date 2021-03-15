@@ -64,10 +64,14 @@ func (s *listCommand) MakeExecutor() commands.CommandExecutor {
 			})
 		}
 		return output.Table{
-			Headers: []string{"UUID", "Name", "Router", "Type", "Zone"},
-			Keys:    []string{"uuid", "name", "router", "type", "zone"},
-			Visible: s.visibleColumns,
-			Rows:    rows,
+			Columns: []output.TableColumn{
+				{Key: "uuid", Header: "UUID"},
+				{Key: "name", Header: "Name"},
+				{Key: "router", Header: "Router"},
+				{Key: "type", Header: "Type"},
+				{Key: "zone", Header: "Zone"},
+			},
+			Rows: rows,
 		}, nil
 	}
 }
@@ -78,9 +82,6 @@ func (s *listCommand) NewParent() commands.NewCommand {
 
 // InitCommand implements Command.InitCommand
 func (s *listCommand) InitCommand() {
-	s.header = table.Row{"UUID", "Name", "Router", "Type", "Zone"}
-	s.columnKeys = []string{"uuid", "name", "router", "type", "zone"}
-	s.visibleColumns = []string{"uuid", "name", "router", "type", "zone"}
 	flags := &pflag.FlagSet{}
 	flags.StringVar(&s.zone, "zone", "", "Filters for given zone")
 	flags.StringVar(&s.networkType, "type", "", "Filters for given type")
