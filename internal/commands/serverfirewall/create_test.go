@@ -1,7 +1,6 @@
 package serverfirewall_test
 
 import (
-	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/commands/server"
 	"github.com/UpCloudLtd/cli/internal/commands/serverfirewall"
@@ -76,7 +75,7 @@ func TestCreateFirewallRuleCommand(t *testing.T) {
 			cc := commands.BuildCommand(serverfirewall.CreateCommand(&mServerService, &mFirewallRuleService), nil, config.New(viper.New()))
 			err1 := cc.SetFlags(test.args)
 			if err1 != nil {
-				fmt.Sprintf("%s", err1)
+				panic(err1)
 			}
 
 			_, err := cc.MakeExecuteCommand()([]string{Server1.UUID})
