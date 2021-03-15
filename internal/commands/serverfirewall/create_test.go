@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
+	"fmt"
 )
 
 func TestCreateFirewallRuleCommand(t *testing.T) {
@@ -73,7 +74,10 @@ func TestCreateFirewallRuleCommand(t *testing.T) {
 			mFirewallRuleService := MockFirewallRuleService{}
 
 			cc := commands.BuildCommand(serverfirewall.CreateCommand(&mServerService, &mFirewallRuleService), nil, config.New(viper.New()))
-			cc.SetFlags(test.args)
+			err1 := cc.SetFlags(test.args)
+			if err1 != nil {
+  				fmt.Sprintf("%s", err1)
+			}
 
 			_, err := cc.MakeExecuteCommand()([]string{Server1.UUID})
 
