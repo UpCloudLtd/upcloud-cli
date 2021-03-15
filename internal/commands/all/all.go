@@ -8,6 +8,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands/networkinterface"
 	"github.com/UpCloudLtd/cli/internal/commands/router"
 	"github.com/UpCloudLtd/cli/internal/commands/server"
+	"github.com/UpCloudLtd/cli/internal/commands/serverfirewall"
 	"github.com/UpCloudLtd/cli/internal/commands/serverstorage"
 	"github.com/UpCloudLtd/cli/internal/commands/storage"
 	"github.com/UpCloudLtd/cli/internal/config"
@@ -37,6 +38,12 @@ func BuildCommands(mainCommand commands.Command, mainConfig *config.Config) {
 	serverStorageCommand := commands.BuildCommand(serverstorage.BaseServerStorageCommand(), serverCommand, cfgFn())
 	commands.BuildCommand(serverstorage.AttachCommand(svc, svc), serverStorageCommand, cfgFn())
 	commands.BuildCommand(serverstorage.DetachCommand(svc, svc), serverStorageCommand, cfgFn())
+
+	// Server firewall operations
+	serverFirewallCommand := commands.BuildCommand(serverfirewall.BaseServerFirewallCommand(), serverCommand, cfgFn())
+	commands.BuildCommand(serverfirewall.CreateCommand(svc, svc), serverFirewallCommand, cfgFn())
+	commands.BuildCommand(serverfirewall.DeleteCommand(svc, svc), serverFirewallCommand, cfgFn())
+	commands.BuildCommand(serverfirewall.ShowCommand(svc, svc), serverFirewallCommand, cfgFn())
 
 	// Storages
 	storageCommand := commands.BuildCommand(storage.BaseStorageCommand(), mainCommand, cfgFn())
