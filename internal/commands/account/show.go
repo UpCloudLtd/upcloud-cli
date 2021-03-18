@@ -3,6 +3,7 @@ package account
 import (
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/mapper"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"math"
@@ -16,6 +17,14 @@ func ShowCommand(service service.Account) commands.NewCommand {
 	}
 }
 
+func (s *showCommand) MaximumExecutions() int {
+	return 1
+}
+
+func (s *showCommand) ArgumentMapper() (mapper.Argument, error) {
+	return nil, nil
+}
+
 type showCommand struct {
 	*commands.BaseCommand
 	service service.Account
@@ -25,7 +34,7 @@ func (s *showCommand) NewParent() commands.NewCommand {
 	return s.Parent().(commands.NewCommand)
 }
 
-func (s *showCommand) Execute(exec commands.Executor, args []string) (output.Command, error) {
+func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Command, error) {
 	account, err := s.service.GetAccount()
 	if err != nil {
 		return nil, err

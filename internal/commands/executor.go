@@ -1,36 +1,43 @@
 package commands
 
-import "github.com/UpCloudLtd/cli/internal/config"
+import (
+	"github.com/UpCloudLtd/cli/internal/config"
+	"github.com/UpCloudLtd/cli/internal/ui"
+	"os"
+)
 
 // Executor represents the execution context for commands
 type Executor interface {
-	Log(args ...interface{})
-	Logf(format string, args ...interface{})
-	WaitFor(func() error)
+	NewLogEntry(s string) *ui.LogEntry
+	Update()
+}
+
+type executeResult struct {
+	Job    int
+	Result interface{}
+	Error  error
 }
 
 type executorImpl struct {
-	Config *config.Config
+	Config  *config.Config
+	LiveLog *ui.LiveLog
 }
 
-// Log implements Executor
-func (e *executorImpl) Log(args ...interface{}) {
-	panic("implement me")
+func (e *executorImpl) NewLogEntry(message string) *ui.LogEntry {
+	entry := ui.NewLogEntry(message)
+	e.LiveLog.AddEntries(entry)
+	return entry
 }
 
-// Logf implements Executor
-func (e *executorImpl) Logf(format string, args ...interface{}) {
-	panic("implement me")
-}
-
-// WaitFor implements Executor
-func (e *executorImpl) WaitFor(f func() error) {
-	panic("implement me")
+// Update implements Executor
+func (e *executorImpl) Update() {
+	e.LiveLog.Render()
 }
 
 // NewExecutor creates the default Executor
 func NewExecutor(c *config.Config) Executor {
 	return &executorImpl{
-		Config: c,
+		Config:  c,
+		LiveLog: ui.NewLiveLog(os.Stderr, ui.LiveLogDefaultConfig),
 	}
 }

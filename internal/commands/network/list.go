@@ -2,6 +2,7 @@ package network
 
 import (
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/mapper"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
@@ -28,6 +29,14 @@ type listCommand struct {
 	networkType    string
 }
 
+func (s *listCommand) MaximumExecutions() int {
+	return 1
+}
+
+func (s *listCommand) ArgumentMapper() (mapper.Argument, error) {
+	return nil, nil
+}
+
 // InitCommand implements Command.InitCommand
 func (s *listCommand) InitCommand() {
 	flags := &pflag.FlagSet{}
@@ -38,7 +47,7 @@ func (s *listCommand) InitCommand() {
 }
 
 // Execute implements command.NewCommand
-func (s *listCommand) Execute(exec commands.Executor, args []string) (output.Command, error) {
+func (s *listCommand) Execute(exec commands.Executor, arg string) (output.Command, error) {
 	var networks *upcloud.Networks
 	var err error
 	if s.zone != "" {
