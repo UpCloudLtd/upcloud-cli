@@ -13,7 +13,7 @@ type Marshaled struct {
 
 // MarshalJSON implements json.Marshaler and output.Command
 func (d Marshaled) MarshalJSON() ([]byte, error) {
-	return json.Marshal(d.Value)
+	return json.MarshalIndent(d.Value, "", "  ")
 }
 
 // MarshalYAML implements output.Command, it marshals the value and returns the YAML as []byte

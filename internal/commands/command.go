@@ -134,7 +134,9 @@ func BuildCommand(child, parent Command, config *config.Config) Command {
 						break waitForResults
 					}
 				case <-renderTicker.C:
-					executor.Update()
+					if config.InteractiveUI() {
+						executor.Update()
+					}
 				}
 			}
 			executor.Update()
