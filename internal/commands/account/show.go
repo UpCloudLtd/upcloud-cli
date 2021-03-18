@@ -25,31 +25,29 @@ func (s *showCommand) NewParent() commands.NewCommand {
 	return s.Parent().(commands.NewCommand)
 }
 
-func (s *showCommand) MakeExecutor() commands.CommandExecutor {
-	return func(args []string) (output.Command, error) {
-		account, err := s.service.GetAccount()
-		if err != nil {
-			return nil, err
-		}
-		return output.Details{
-			Sections: []output.DetailSection{
-				{"", []output.DetailRow{
-					{"Username:", account.UserName},
-					{"Credits:", formatCredits(account.Credits)},
-				}},
-				{"Resource Limits:", []output.DetailRow{
-					{"Cores:", account.ResourceLimits.Cores},
-					{"Detached Floating IPs:", account.ResourceLimits.DetachedFloatingIps},
-					{"Memory:", account.ResourceLimits.Memory},
-					{"Networks:", account.ResourceLimits.Networks},
-					{"Public IPv4:", account.ResourceLimits.PublicIPv4},
-					{"Public IPv6:", account.ResourceLimits.PublicIPv6},
-					{"Storage HDD:", account.ResourceLimits.StorageHDD},
-					{"Storage SSD:", account.ResourceLimits.StorageSSD},
-				}},
-			},
-		}, nil
+func (s *showCommand) Execute(exec commands.Executor, args []string) (output.Command, error) {
+	account, err := s.service.GetAccount()
+	if err != nil {
+		return nil, err
 	}
+	return output.Details{
+		Sections: []output.DetailSection{
+			{"", []output.DetailRow{
+				{"Username:", account.UserName},
+				{"Credits:", formatCredits(account.Credits)},
+			}},
+			{"Resource Limits:", []output.DetailRow{
+				{"Cores:", account.ResourceLimits.Cores},
+				{"Detached Floating IPs:", account.ResourceLimits.DetachedFloatingIps},
+				{"Memory:", account.ResourceLimits.Memory},
+				{"Networks:", account.ResourceLimits.Networks},
+				{"Public IPv4:", account.ResourceLimits.PublicIPv4},
+				{"Public IPv6:", account.ResourceLimits.PublicIPv6},
+				{"Storage HDD:", account.ResourceLimits.StorageHDD},
+				{"Storage SSD:", account.ResourceLimits.StorageSSD},
+			}},
+		},
+	}, nil
 }
 
 func formatCredits(credits float64) string {

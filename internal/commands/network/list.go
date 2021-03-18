@@ -28,58 +28,6 @@ type listCommand struct {
 	networkType    string
 }
 
-func (s *listCommand) MakeExecutor() commands.CommandExecutor {
-	return func(args []string) (output.Command, error) {
-
-		var networks *upcloud.Networks
-		var err error
-		if s.zone != "" {
-			networks, err = s.service.GetNetworksInZone(&request.GetNetworksInZoneRequest{Zone: s.zone})
-		} else {
-			networks, err = s.service.GetNetworks()
-		}
-		if err != nil {
-			return nil, err
-		}
-
-		if s.networkType != "" {
-			var filtered []upcloud.Network
-			for _, n := range networks.Networks {
-				if n.Type == s.networkType {
-					filtered = append(filtered, n)
-				}
-			}
-			networks = &upcloud.Networks{Networks: filtered}
-		}
-		var rows []output.TableRow
-		for _, n := range networks.Networks {
-			rows = append(rows, output.TableRow{
-				// TODO: reimplement
-				// ui.DefaultUUUIDColours.Sprint(n.UUID),
-				n.UUID,
-				n.Name,
-				n.Router,
-				n.Type,
-				n.Zone,
-			})
-		}
-		return output.Table{
-			Columns: []output.TableColumn{
-				{Key: "uuid", Header: "UUID"},
-				{Key: "name", Header: "Name"},
-				{Key: "router", Header: "Router"},
-				{Key: "type", Header: "Type"},
-				{Key: "zone", Header: "Zone"},
-			},
-			Rows: rows,
-		}, nil
-	}
-}
-
-func (s *listCommand) NewParent() commands.NewCommand {
-	return s.Parent().(commands.NewCommand)
-}
-
 // InitCommand implements Command.InitCommand
 func (s *listCommand) InitCommand() {
 	flags := &pflag.FlagSet{}
@@ -89,31 +37,53 @@ func (s *listCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
-// MakeExecuteCommand implements Command.MakeExecuteCommand
-func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
+// Execute implements command.NewCommand
+func (s *listCommand) Execute(exec commands.Executor, args []string) (output.Command, error) {
+	var networks *upcloud.Networks
+	var err error
+	if s.zone != "" {
+		networks, err = s.service.GetNetworksInZone(&request.GetNetworksInZoneRequest{Zone: s.zone})
+	} else {
+		networks, err = s.service.GetNetworks()
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	if s.networkType != "" {
 		var filtered []upcloud.Network
-
-		var networks *upcloud.Networks
-		var err error
-		if s.zone != "" {
-			networks, err = s.service.GetNetworksInZone(&request.GetNetworksInZoneRequest{Zone: s.zone})
-		} else {
-			networks, err = s.service.GetNetworks()
-		}
-		if err != nil {
-			return nil, err
-		}
-
-		if s.networkType == "" {
-			return networks, nil
-		}
-
 		for _, n := range networks.Networks {
 			if n.Type == s.networkType {
 				filtered = append(filtered, n)
 			}
 		}
-		return &upcloud.Networks{Networks: filtered}, nil
+		networks = &upcloud.Networks{Networks: filtered}
 	}
+	var rows []output.TableRow
+	for _, n := range networks.Networks {
+		rows = append(rows, output.TableRow{
+			// TODO: reimplement
+			// ui.DefaultUUUIDColours.Sprint(n.UUID),
+			n.UUID,
+			n.Name,
+			n.Router,
+			n.Type,
+			n.Zone,
+		})
+	}
+	return output.Table{
+		Columns: []output.TableColumn{
+			{Key: "uuid", Header: "UUID"},
+			{Key: "name", Header: "Name"},
+			{Key: "router", Header: "Router"},
+			{Key: "type", Header: "Type"},
+			{Key: "zone", Header: "Zone"},
+		},
+		Rows: rows,
+	}, nil
+}
+
+// NewParent implements command.NewCommand
+func (s *listCommand) NewParent() commands.NewCommand {
+	return s.Parent().(commands.NewCommand)
 }

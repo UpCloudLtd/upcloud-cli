@@ -3,6 +3,7 @@ package network
 import (
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
+	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
@@ -74,13 +75,35 @@ func TestListCommand(t *testing.T) {
 		mns.On("GetNetworksInZone", &request.GetNetworksInZoneRequest{Zone: "fi-hel1"}).Return(&upcloud.Networks{Networks: []upcloud.Network{Network1, Network2}}, nil)
 		mns.On("GetNetworksInZone", &request.GetNetworksInZoneRequest{Zone: "uk-lon1"}).Return(&upcloud.Networks{Networks: []upcloud.Network{Network3, Network4}}, nil)
 
-		c := commands.BuildCommand(ListCommand(&mns), nil, config.New(viper.New()))
+		cfg := config.New(viper.New())
+		c := commands.BuildCommand(ListCommand(&mns), nil, cfg)
 		err := c.SetFlags(test.flags)
 		assert.NoError(t, err)
 
-		res, err := c.MakeExecuteCommand()([]string{})
+		res, err := c.(commands.NewCommand).Execute(commands.NewExecutor(cfg), []string{})
 
 		assert.Nil(t, err)
-		assert.Equal(t, &upcloud.Networks{Networks: test.expected}, res)
+		assert.Equal(t, createTable(test.expected), res)
+	}
+}
+
+func createTable(networks []upcloud.Network) output.Table {
+	rows := []output.TableRow{}
+	for _, network := range networks {
+		rows = append(rows,
+			output.TableRow{network.UUID, network.Name, network.Router, network.Type, network.Zone},
+		)
+	}
+
+	return output.Table{
+		HideHeader: false,
+		Columns: []output.TableColumn{
+			output.TableColumn{Header: "UUID", Key: "uuid", Hidden: false},
+			output.TableColumn{Header: "Name", Key: "name", Hidden: false},
+			output.TableColumn{Header: "Router", Key: "router", Hidden: false},
+			output.TableColumn{Header: "Type", Key: "type", Hidden: false},
+			output.TableColumn{Header: "Zone", Key: "zone", Hidden: false},
+		},
+		Rows: rows,
 	}
 }

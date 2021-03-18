@@ -51,7 +51,7 @@ func TestShowCommand(t *testing.T) {
 	cfg.Viper().Set(config.KeyOutput, config.ValueOutputHuman)
 
 	command := commands.BuildCommand(ShowCommand(&MockAccountService{}), nil, cfg)
-	out, err := command.(commands.NewCommand).MakeExecutor()([]string{})
+	out, err := command.(commands.NewCommand).Execute(commands.NewExecutor(cfg), []string{})
 	assert.NoError(t, err)
 
 	buf := bytes.NewBuffer(nil)

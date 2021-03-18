@@ -48,12 +48,9 @@ type Command interface {
 	CobraCommand
 }
 
-// CommandExecutor is the signature for new style commands being executed and returning output.Command
-type CommandExecutor func(args []string) (output.Command, error)
-
 // NewCommand is a new container for commands, currently still including the old interface until we can deprecate it
 type NewCommand interface {
-	MakeExecutor() CommandExecutor
+	Execute(exec Executor, args []string) (output.Command, error)
 	NewParent() NewCommand
 	Command
 }
@@ -99,7 +96,7 @@ func BuildCommand(child, parent Command, config *config.Config) Command {
 
 	if nc, ok := child.(NewCommand); ok {
 		child.Cobra().RunE = func(cmd *cobra.Command, args []string) error {
-			commandOutput, err := nc.MakeExecutor()(args)
+			commandOutput, err := nc.Execute(NewExecutor(config), args)
 			if err != nil {
 				return err
 			}
