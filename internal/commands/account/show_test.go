@@ -2,15 +2,24 @@ package account
 
 import (
 	"bytes"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/config"
+
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+	"github.com/spf13/viper"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
-type MockAccountService struct{}
+type MockAccountService struct {
+	mock.Mock
+}
 
 func (m *MockAccountService) GetAccount() (*upcloud.Account, error) {
-	return nil, nil
+	args := m.Called()
+	return args[0].(*upcloud.Account), args.Error(1)
 }
 
 func TestShowCommand(t *testing.T) {
@@ -46,9 +55,18 @@ func TestShowCommand(t *testing.T) {
 `
 
 	buf := new(bytes.Buffer)
-	command := ShowCommand(&MockAccountService{})
-	err := command.HandleOutput(buf, &account)
+	svc := &MockAccountService{}
+	testCmd := ShowCommand(svc)
+	cmd := commands.BuildCommand(testCmd, nil, config.New(viper.New()))
+
+	svc.On("GetAccount").Return(&account, nil)
+
+	rawData, err := cmd.MakeExecuteCommand()([]string{})
+	assert.Nil(t, err)
+
+	err = testCmd.HandleOutput(buf, rawData)
 
 	assert.Nil(t, err)
+	svc.AssertNumberOfCalls(t, "GetAccount", 1)
 	assert.Equal(t, expected, buf.String())
 }
