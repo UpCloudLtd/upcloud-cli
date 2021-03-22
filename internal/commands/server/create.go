@@ -17,11 +17,9 @@ import (
 )
 
 // CreateCommand creates the "server create" command
-func CreateCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
+func CreateCommand() commands.Command {
 	return &createCommand{
 		BaseCommand: commands.New("create", "Create a server"),
-		serverSvc:   serverSvc,
-		storageSvc:  storageSvc,
 	}
 }
 
@@ -204,9 +202,7 @@ func (s *createParams) handleSSHKey() error {
 
 type createCommand struct {
 	*commands.BaseCommand
-	serverSvc  service.Server
-	storageSvc service.Storage
-	params     createParams
+	params createParams
 }
 
 // InitCommand implements Command.InitCommand
@@ -271,7 +267,10 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 			s.params.Plan = "custom" // Valid for all custom plans.
 		}
 
-		if err := s.params.processParams(s.storageSvc); err != nil {
+		serverSvc := s.Config().Service.(service.Server)
+		storageSvc := s.Config().Service.(service.Storage)
+
+		if err := s.params.processParams(storageSvc); err != nil {
 			return nil, err
 		}
 
@@ -287,7 +286,7 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 		}
 
 		for _, strg := range s.params.storages {
-			strg, err := s.params.handleStorage(strg, s.storageSvc)
+			strg, err := s.params.handleStorage(strg, storageSvc)
 			if err != nil {
 				return nil, err
 			}
@@ -309,11 +308,11 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 			ResultExtraName: "IP addresses",
 			InteractiveUI:   s.Config().InteractiveUI(),
 			WaitMsg:         "server starting",
-			WaitFn:          waitForServer(s.serverSvc, upcloud.ServerStateStarted, s.Config().ClientTimeout()),
+			WaitFn:          waitForServer(serverSvc, upcloud.ServerStateStarted, s.Config().ClientTimeout()),
 			MaxActions:      5,
 			ActionMsg:       "Creating server",
 			Action: func(req interface{}) (interface{}, error) {
-				return s.serverSvc.CreateServer(req.(*request.CreateServerRequest))
+				return serverSvc.CreateServer(req.(*request.CreateServerRequest))
 			},
 		}.Handle(commands.ToArray(&req))
 	}

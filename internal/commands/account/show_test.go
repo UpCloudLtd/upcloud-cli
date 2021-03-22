@@ -55,11 +55,14 @@ func TestShowCommand(t *testing.T) {
 `
 
 	buf := new(bytes.Buffer)
-	svc := &MockAccountService{}
-	testCmd := ShowCommand(svc)
-	cmd := commands.BuildCommand(testCmd, nil, config.New(viper.New()))
+	conf := config.New(viper.New())
+	testCmd := ShowCommand()
+	mService := new(MockAccountService)
 
-	svc.On("GetAccount").Return(&account, nil)
+	mService.On("GetAccount").Return(&account, nil)
+	conf.Service = mService
+
+	cmd := commands.BuildCommand(testCmd, nil, conf)
 
 	rawData, err := cmd.MakeExecuteCommand()([]string{})
 	assert.Nil(t, err)
@@ -67,6 +70,6 @@ func TestShowCommand(t *testing.T) {
 	err = testCmd.HandleOutput(buf, rawData)
 
 	assert.Nil(t, err)
-	svc.AssertNumberOfCalls(t, "GetAccount", 1)
+	mService.AssertNumberOfCalls(t, "GetAccount", 1)
 	assert.Equal(t, expected, buf.String())
 }

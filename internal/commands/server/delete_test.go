@@ -14,8 +14,8 @@ import (
 )
 
 func TestDeleteServerCommand(t *testing.T) {
-	deleteServer := "DeleteServer"
-	deleteServerAndStorages := "DeleteServerAndStorages"
+	deleteServerMethod := "DeleteServer"
+	deleteServerAndStoragesMethod := "DeleteServerAndStorages"
 
 	var Server1 = upcloud.Server{
 		CoreNumber:   1,
@@ -56,24 +56,28 @@ func TestDeleteServerCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mService := smock.MockService{}
-			mService.On(deleteServer, mock.Anything).Return(nil, nil)
-			mService.On(deleteServerAndStorages, mock.Anything).Return(nil, nil)
+			conf := config.New(viper.New())
+			testCmd := DeleteCommand()
+			mService := new(smock.MockService)
+
+			conf.Service = mService
+			mService.On(deleteServerMethod, mock.Anything).Return(nil, nil)
+			mService.On(deleteServerAndStoragesMethod, mock.Anything).Return(nil, nil)
 			mService.On("GetServers", mock.Anything).Return(servers, nil)
 
-			tc := commands.BuildCommand(DeleteCommand(&mService), nil, config.New(viper.New()))
-			err := tc.SetFlags(test.args)
+			c := commands.BuildCommand(testCmd, nil, conf)
+			err := c.SetFlags(test.args)
 			assert.NoError(t, err)
 
-			results, err := tc.MakeExecuteCommand()([]string{Server1.UUID})
+			results, err := c.MakeExecuteCommand()([]string{Server1.UUID})
 			for _, result := range results.([]interface{}) {
 				assert.Nil(t, result)
 			}
 
 			assert.Nil(t, err)
 
-			mService.AssertNumberOfCalls(t, deleteServer, test.deleteServCalls)
-			mService.AssertNumberOfCalls(t, deleteServerAndStorages, test.deleteServStorageCalls)
+			mService.AssertNumberOfCalls(t, deleteServerMethod, test.deleteServCalls)
+			mService.AssertNumberOfCalls(t, deleteServerAndStoragesMethod, test.deleteServStorageCalls)
 		})
 	}
 }

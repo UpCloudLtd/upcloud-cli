@@ -12,9 +12,7 @@ import (
 
 type loadCommand struct {
 	*commands.BaseCommand
-	serverSvc  service.Server
-	storageSvc service.Storage
-	params     loadParams
+	params loadParams
 }
 
 type loadParams struct {
@@ -22,11 +20,9 @@ type loadParams struct {
 }
 
 // LoadCommand creates the "server load" command
-func LoadCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
+func LoadCommand() commands.Command {
 	return &loadCommand{
 		BaseCommand: commands.New("load", "Load a CD-ROM into the server"),
-		serverSvc:   serverSvc,
-		storageSvc:  storageSvc,
 	}
 }
 
@@ -37,7 +33,7 @@ var defaultLoadParams = &loadParams{
 // InitCommand implements Command.InitCommand
 func (s *loadCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetServerArgumentCompletionFunction(s.serverSvc))
+	s.ArgCompletion(GetServerArgumentCompletionFunction(s.Config().Service.(service.Server)))
 	s.params = loadParams{LoadCDROMRequest: request.LoadCDROMRequest{}}
 
 	flagSet := &pflag.FlagSet{}
@@ -54,7 +50,9 @@ func (s *loadCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 			return nil, fmt.Errorf("storage is required")
 		}
 
-		strg, err := storage.SearchSingleStorage(s.params.StorageUUID, s.storageSvc)
+		serverSvc := s.Config().Service.(service.Server)
+		storageSvc := s.Config().Service.(service.Storage)
+		strg, err := storage.SearchSingleStorage(s.params.StorageUUID, storageSvc)
 		if err != nil {
 			return nil, err
 		}
@@ -66,7 +64,7 @@ func (s *loadCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 				req.ServerUUID = uuid
 				return &req
 			},
-			Service:    s.serverSvc,
+			Service:    serverSvc,
 			ExactlyOne: true,
 			Handler: ui.HandleContext{
 				MessageFn: func(in interface{}) string {
@@ -75,7 +73,7 @@ func (s *loadCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 				},
 				MaxActions: maxServerActions,
 				Action: func(req interface{}) (interface{}, error) {
-					return s.storageSvc.LoadCDROM(req.(*request.LoadCDROMRequest))
+					return storageSvc.LoadCDROM(req.(*request.LoadCDROMRequest))
 				},
 			},
 		}.Send(args)

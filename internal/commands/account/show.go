@@ -2,31 +2,32 @@ package account
 
 import (
 	"fmt"
+	"io"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/ui"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/jedib0t/go-pretty/v6/table"
-	"io"
 )
 
 // ShowCommand creates the 'account show' command
-func ShowCommand(service service.Account) commands.Command {
+func ShowCommand() commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New("show", "Show account"),
-		service:     service,
 	}
 }
 
 type showCommand struct {
 	*commands.BaseCommand
-	service service.Account
 }
 
 // MakeExecuteCommand implements command.MakeExecuteCommand
 func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		account, err := s.service.GetAccount()
+		svc := s.Config().Service.(service.Account)
+		account, err := svc.GetAccount()
 		if err != nil {
 			return nil, err
 		}

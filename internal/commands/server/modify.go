@@ -10,17 +10,15 @@ import (
 )
 
 // ModifyCommand creates the "server modify" command
-func ModifyCommand(service service.Server) commands.Command {
+func ModifyCommand() commands.Command {
 	return &modifyCommand{
 		BaseCommand: commands.New("modify", "Modifies the configuration of an existing server"),
-		service:     service,
 	}
 }
 
 type modifyCommand struct {
 	*commands.BaseCommand
-	service service.Server
-	params  modifyParams
+	params modifyParams
 }
 
 type modifyParams struct {
@@ -36,7 +34,7 @@ var defaultModifyParams = modifyParams{
 // InitCommand implements Command.InitCommand
 func (s *modifyCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetServerArgumentCompletionFunction(s.service))
+	s.ArgCompletion(GetServerArgumentCompletionFunction(s.Config().Service.(service.Server)))
 	s.params = modifyParams{ModifyServerRequest: request.ModifyServerRequest{}}
 	flags := &pflag.FlagSet{}
 	flags.StringVar(&s.params.BootOrder, "boot-order", defaultModifyParams.BootOrder, "The boot device order.")
@@ -71,6 +69,8 @@ func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 		if err := metadata.UnmarshalJSON([]byte(s.params.metadata)); err != nil {
 			return nil, err
 		}
+
+		svc := s.Config().Service.(service.Server)
 		s.params.Metadata = *metadata
 
 		switch s.params.Firewall {
@@ -90,7 +90,7 @@ func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 				req.UUID = uuid
 				return &req
 			},
-			Service: s.service,
+			Service: svc,
 			Handler: ui.HandleContext{
 				RequestID:     func(in interface{}) string { return in.(*request.ModifyServerRequest).UUID },
 				ResultUUID:    getServerDetailsUUID,
@@ -98,7 +98,7 @@ func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 				MaxActions:    maxServerActions,
 				ActionMsg:     "Modifying server",
 				Action: func(req interface{}) (interface{}, error) {
-					return s.service.ModifyServer(req.(*request.ModifyServerRequest))
+					return svc.ModifyServer(req.(*request.ModifyServerRequest))
 				},
 			},
 		}.Send(args)

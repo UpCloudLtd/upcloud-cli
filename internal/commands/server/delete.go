@@ -10,23 +10,21 @@ import (
 )
 
 // DeleteCommand creates the "server delete" command
-func DeleteCommand(service service.Server) commands.Command {
+func DeleteCommand() commands.Command {
 	return &deleteCommand{
 		BaseCommand: commands.New("delete", "Delete a server"),
-		service:     service,
 	}
 }
 
 type deleteCommand struct {
 	*commands.BaseCommand
-	service        service.Server
 	deleteStorages bool
 }
 
 // InitCommand implements Command.InitCommand
 func (s *deleteCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetServerArgumentCompletionFunction(s.service))
+	s.ArgCompletion(GetServerArgumentCompletionFunction(s.Config().Service.(service.Server)))
 	flags := &pflag.FlagSet{}
 	flags.BoolVar(&s.deleteStorages, "delete-storages", false, "Delete storages that are attached to the server.")
 	s.AddFlags(flags)
@@ -35,15 +33,16 @@ func (s *deleteCommand) InitCommand() {
 // MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
+		svc := s.Config().Service.(service.Server)
 
 		var action = func(uuid interface{}) (interface{}, error) {
 			var err error
 			if s.deleteStorages {
-				err = s.service.DeleteServerAndStorages(&request.DeleteServerAndStoragesRequest{
+				err = svc.DeleteServerAndStorages(&request.DeleteServerAndStoragesRequest{
 					UUID: uuid.(string),
 				})
 			} else {
-				err = s.service.DeleteServer(&request.DeleteServerRequest{
+				err = svc.DeleteServer(&request.DeleteServerRequest{
 					UUID: uuid.(string),
 				})
 			}
@@ -52,7 +51,7 @@ func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 
 		return Request{
 			BuildRequest: func(uuid string) interface{} { return uuid },
-			Service:      s.service,
+			Service:      svc,
 			Handler: ui.HandleContext{
 				RequestID:     func(in interface{}) string { return in.(string) },
 				InteractiveUI: s.Config().InteractiveUI(),

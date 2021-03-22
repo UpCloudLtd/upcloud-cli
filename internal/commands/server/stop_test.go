@@ -46,14 +46,14 @@ func TestStopCommand(t *testing.T) {
 	dur10, _ := time.ParseDuration("10s")
 
 	for _, test := range []struct {
-		name     string
-		args     []string
-		startReq request.StopServerRequest
+		name    string
+		args    []string
+		stopReq request.StopServerRequest
 	}{
 		{
 			name: "use default values",
 			args: []string{},
-			startReq: request.StopServerRequest{
+			stopReq: request.StopServerRequest{
 				UUID:     Server1.UUID,
 				Timeout:  dur120,
 				StopType: upcloud.StopTypeSoft,
@@ -65,7 +65,7 @@ func TestStopCommand(t *testing.T) {
 				"--timeout", "10",
 				"--type", "hard",
 			},
-			startReq: request.StopServerRequest{
+			stopReq: request.StopServerRequest{
 				UUID:     Server1.UUID,
 				Timeout:  dur10,
 				StopType: upcloud.StopTypeHard,
@@ -73,13 +73,17 @@ func TestStopCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mService := smock.MockService{}
+			CachedServers = nil
+			conf := config.New(viper.New())
+			testCmd := StopCommand()
+			mService := new(smock.MockService)
 
+			conf.Service = mService
 			mService.On("GetServers", mock.Anything).Return(servers, nil)
 			mService.On("GetServerDetails", &request.GetServerDetailsRequest{UUID: Server1.UUID}).Return(&details2, nil)
-			mService.On(targetMethod, &test.startReq).Return(&details, nil)
+			mService.On(targetMethod, &test.stopReq).Return(&details, nil)
 
-			c := commands.BuildCommand(StopCommand(&mService), nil, config.New(viper.New()))
+			c := commands.BuildCommand(testCmd, nil, conf)
 			err := c.SetFlags(test.args)
 			assert.NoError(t, err)
 

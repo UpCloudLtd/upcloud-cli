@@ -75,12 +75,17 @@ func TestStartCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mService := smock.MockService{}
+			CachedServers = nil
+			conf := config.New(viper.New())
+			testCmd := StartCommand()
+			mService := new(smock.MockService)
+
+			conf.Service = mService
 			mService.On("GetServers", mock.Anything).Return(servers, nil)
 			mService.On("GetServerDetails", &request.GetServerDetailsRequest{UUID: Server1.UUID}).Return(&details2, nil)
 			mService.On(targetMethod, &test.startReq).Return(&details, nil)
 
-			c := commands.BuildCommand(StartCommand(&mService), nil, config.New(viper.New()))
+			c := commands.BuildCommand(testCmd, nil, conf)
 			err := c.SetFlags(test.args)
 			assert.NoError(t, err)
 

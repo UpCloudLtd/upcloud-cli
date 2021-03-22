@@ -9,9 +9,7 @@ import (
 
 type ejectCommand struct {
 	*commands.BaseCommand
-	serverSvc  service.Server
-	storageSvc service.Storage
-	params     ejectParams
+	params ejectParams
 }
 
 type ejectParams struct {
@@ -20,34 +18,35 @@ type ejectParams struct {
 
 func (s *ejectCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetServerArgumentCompletionFunction(s.serverSvc))
+	s.ArgCompletion(GetServerArgumentCompletionFunction(s.Config().Service.(service.Server)))
 }
 
 // EjectCommand creates the "server eject" command
-func EjectCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
+func EjectCommand() commands.Command {
 	return &ejectCommand{
 		BaseCommand: commands.New("eject", "Eject a CD-ROM from the server"),
-		serverSvc:   serverSvc,
-		storageSvc:  storageSvc,
 	}
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *ejectCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
+		serverSvc := s.Config().Service.(service.Server)
+		storageSvc := s.Config().Service.(service.Storage)
+
 		return Request{
 			BuildRequest: func(uuid string) interface{} {
 				req := s.params.EjectCDROMRequest
 				req.ServerUUID = uuid
 				return &req
 			},
-			Service: s.serverSvc,
+			Service: serverSvc,
 			Handler: ui.HandleContext{
 				RequestID:  func(in interface{}) string { return in.(*request.EjectCDROMRequest).ServerUUID },
 				MaxActions: maxServerActions,
 				ActionMsg:  "Ejecting CD-ROM of server",
 				Action: func(req interface{}) (interface{}, error) {
-					return s.storageSvc.EjectCDROM(req.(*request.EjectCDROMRequest))
+					return storageSvc.EjectCDROM(req.(*request.EjectCDROMRequest))
 				},
 			},
 		}.Send(args)

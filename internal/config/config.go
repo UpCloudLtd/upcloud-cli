@@ -40,6 +40,7 @@ type Config struct {
 	viper   *viper.Viper
 	ns      string
 	flagSet *pflag.FlagSet
+	Service interface{}
 }
 
 // Viper returns a reference to the viper instance

@@ -77,16 +77,22 @@ func TestLoadCDROMCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mService := smock.MockService{}
+			conf := config.New(viper.New())
+			testCmd := LoadCommand()
+			mService := new(smock.MockService)
+
+			CachedServers = nil
+			conf.Service = mService
+
 			mService.On("GetServers", mock.Anything).Return(servers, nil)
 			mService.On("GetStorages", mock.Anything).Return(storages, nil)
 			mService.On(targetMethod, &test.loadReq).Return(&details, nil)
 
-			cc := commands.BuildCommand(LoadCommand(&mService, &mService), nil, config.New(viper.New()))
-			err := cc.SetFlags(test.args)
+			c := commands.BuildCommand(testCmd, nil, conf)
+			err := c.SetFlags(test.args)
 			assert.NoError(t, err)
 
-			_, err = cc.MakeExecuteCommand()([]string{Server1.UUID})
+			_, err = c.MakeExecuteCommand()([]string{Server1.UUID})
 
 			if test.error != "" {
 				assert.Equal(t, test.error, err.Error())

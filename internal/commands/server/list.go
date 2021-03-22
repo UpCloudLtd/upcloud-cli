@@ -5,27 +5,24 @@ import (
 	"io"
 	"strings"
 
+	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/ui"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/pflag"
-
-	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/ui"
-	"github.com/UpCloudLtd/cli/internal/upapi"
 )
 
 // ListCommand creates the "server list" command
-func ListCommand(service service.Server) commands.Command {
+func ListCommand() commands.Command {
 	return &listCommand{
 		BaseCommand: commands.New("list", "List current servers"),
-		service:     service,
 	}
 }
 
 type listCommand struct {
 	*commands.BaseCommand
-	service        service.Server
 	header         table.Row
 	columnKeys     []string
 	visibleColumns []string
@@ -44,7 +41,7 @@ func (s *listCommand) InitCommand() {
 // MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		svc := upapi.Service(s.Config())
+		svc := s.Config().Service.(service.Server)
 		servers, err := svc.GetServers()
 		if err != nil {
 			return nil, err

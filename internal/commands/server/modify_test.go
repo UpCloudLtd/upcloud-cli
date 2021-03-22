@@ -101,14 +101,19 @@ func TestModifyCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mService := smock.MockService{}
+			conf := config.New(viper.New())
+			testCmd := ModifyCommand()
+			mService := new(smock.MockService)
+
+			CachedServers = nil
+			conf.Service = mService
 			mService.On(targetMethod, &test.modifyCall).Return(&details, nil)
 			mService.On("GetServers", mock.Anything).Return(servers, nil)
-			mc := commands.BuildCommand(ModifyCommand(&mService), nil, config.New(viper.New()))
-			err := mc.SetFlags(test.args)
+			c := commands.BuildCommand(testCmd, nil, conf)
+			err := c.SetFlags(test.args)
 			assert.NoError(t, err)
 
-			_, err = mc.MakeExecuteCommand()([]string{test.server.UUID})
+			_, err = c.MakeExecuteCommand()([]string{test.server.UUID})
 			assert.NoError(t, err)
 			mService.AssertNumberOfCalls(t, targetMethod, 1)
 		})

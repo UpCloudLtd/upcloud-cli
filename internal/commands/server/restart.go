@@ -12,17 +12,15 @@ import (
 )
 
 // RestartCommand creates the "server restart" command
-func RestartCommand(service service.Server) commands.Command {
+func RestartCommand() commands.Command {
 	return &restartCommand{
 		BaseCommand: commands.New("restart", "Restart a server"),
-		service:     service,
 	}
 }
 
 type restartCommand struct {
 	*commands.BaseCommand
-	service service.Server
-	params  restartParams
+	params restartParams
 }
 
 type restartParams struct {
@@ -41,7 +39,7 @@ var defaultRestartParams = &restartParams{
 // InitCommand implements Command.InitCommand
 func (s *restartCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetServerArgumentCompletionFunction(s.service))
+	s.ArgCompletion(GetServerArgumentCompletionFunction(s.Config().Service.(service.Server)))
 
 	s.params = restartParams{RestartServerRequest: request.RestartServerRequest{}}
 	flags := &pflag.FlagSet{}
@@ -62,7 +60,9 @@ func (s *restartCommand) MakeExecuteCommand() func(args []string) (interface{}, 
 		if err != nil {
 			return nil, err
 		}
+
 		s.params.Timeout = timeout
+		svc := s.Config().Service.(service.Server)
 
 		return Request{
 			BuildRequest: func(uuid string) interface{} {
@@ -70,16 +70,16 @@ func (s *restartCommand) MakeExecuteCommand() func(args []string) (interface{}, 
 				req.UUID = uuid
 				return &req
 			},
-			Service: s.service,
+			Service: svc,
 			Handler: ui.HandleContext{
 				RequestID:     func(in interface{}) string { return in.(*request.RestartServerRequest).UUID },
 				InteractiveUI: s.Config().InteractiveUI(),
 				WaitMsg:       "restart request sent",
-				WaitFn:        waitForServer(s.service, upcloud.ServerStateStarted, s.Config().ClientTimeout()),
+				WaitFn:        waitForServer(svc, upcloud.ServerStateStarted, s.Config().ClientTimeout()),
 				MaxActions:    maxServerActions,
 				ActionMsg:     "Restarting",
 				Action: func(req interface{}) (interface{}, error) {
-					return s.service.RestartServer(req.(*request.RestartServerRequest))
+					return svc.RestartServer(req.(*request.RestartServerRequest))
 				},
 			},
 		}.Send(args)

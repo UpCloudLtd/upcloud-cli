@@ -13,17 +13,15 @@ import (
 )
 
 // StopCommand creates the "server stop" command
-func StopCommand(service service.Server) commands.Command {
+func StopCommand() commands.Command {
 	return &stopCommand{
 		BaseCommand: commands.New("stop", "Stop a server"),
-		service:     service,
 	}
 }
 
 type stopCommand struct {
 	*commands.BaseCommand
-	service service.Server
-	params  stopParams
+	params stopParams
 }
 
 type stopParams struct {
@@ -41,7 +39,7 @@ var defaultStopParams = &stopParams{
 // InitCommand implements Command.InitCommand
 func (s *stopCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetServerArgumentCompletionFunction(s.service))
+	s.ArgCompletion(GetServerArgumentCompletionFunction(s.Config().Service.(service.Server)))
 
 	flags := &pflag.FlagSet{}
 	flags.StringVar(&s.params.StopType, "type", defaultStopParams.StopType, "The type of stop operation. Available: soft, hard")
@@ -57,7 +55,9 @@ func (s *stopCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 		if err != nil {
 			return nil, err
 		}
+
 		s.params.Timeout = timeout
+		svc := s.Config().Service.(service.Server)
 
 		return Request{
 			BuildRequest: func(uuid string) interface{} {
@@ -65,16 +65,16 @@ func (s *stopCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 				req.UUID = uuid
 				return &req
 			},
-			Service: s.service,
+			Service: svc,
 			Handler: ui.HandleContext{
 				RequestID:     func(in interface{}) string { return in.(*request.StopServerRequest).UUID },
 				InteractiveUI: s.Config().InteractiveUI(),
 				WaitMsg:       "shutdown request sent",
-				WaitFn:        waitForServer(s.service, upcloud.ServerStateStopped, s.Config().ClientTimeout()),
+				WaitFn:        waitForServer(svc, upcloud.ServerStateStopped, s.Config().ClientTimeout()),
 				MaxActions:    maxServerActions,
 				ActionMsg:     "Stopping",
 				Action: func(req interface{}) (interface{}, error) {
-					return s.service.StopServer(req.(*request.StopServerRequest))
+					return svc.StopServer(req.(*request.StopServerRequest))
 				},
 			},
 		}.Send(args)

@@ -80,13 +80,16 @@ func TestRestartCommand(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			CachedServers = nil
+			conf := config.New(viper.New())
+			testCmd := RestartCommand()
+			mService := new(smock.MockService)
 
-			mService := smock.MockService{}
+			conf.Service = mService
 			mService.On("GetServers", mock.Anything).Return(servers, nil)
 			mService.On("GetServerDetails", &request.GetServerDetailsRequest{UUID: Server1.UUID}).Return(&details2, nil)
 			mService.On(targetMethod, &test.restartReq).Return(&details, nil)
 
-			c := commands.BuildCommand(RestartCommand(&mService), nil, config.New(viper.New()))
+			c := commands.BuildCommand(testCmd, nil, conf)
 			err := c.SetFlags(test.args)
 			assert.NoError(t, err)
 

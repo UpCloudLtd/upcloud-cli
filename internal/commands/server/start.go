@@ -13,17 +13,15 @@ import (
 )
 
 // StartCommand creates the "server start" command
-func StartCommand(service service.Server) commands.Command {
+func StartCommand() commands.Command {
 	return &startCommand{
 		BaseCommand: commands.New("start", "Start a server"),
-		service:     service,
 	}
 }
 
 type startCommand struct {
 	*commands.BaseCommand
-	service service.Server
-	params  startParams
+	params startParams
 }
 
 type startParams struct {
@@ -39,7 +37,7 @@ var defaultStartParams = &startParams{
 // InitCommand implements Command.InitCommand
 func (s *startCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetServerArgumentCompletionFunction(s.service))
+	s.ArgCompletion(GetServerArgumentCompletionFunction(s.Config().Service.(service.Server)))
 
 	flags := &pflag.FlagSet{}
 	flags.IntVar(&s.params.AvoidHost, "avoid-host", defaultStartParams.AvoidHost, "Avoid specific host when starting a server.")
@@ -56,7 +54,9 @@ func (s *startCommand) MakeExecuteCommand() func(args []string) (interface{}, er
 		if err != nil {
 			return nil, err
 		}
+
 		s.params.Timeout = timeout
+		svc := s.Config().Service.(service.Server)
 
 		return Request{
 			BuildRequest: func(uuid string) interface{} {
@@ -64,16 +64,16 @@ func (s *startCommand) MakeExecuteCommand() func(args []string) (interface{}, er
 				req.UUID = uuid
 				return &req
 			},
-			Service: s.service,
+			Service: svc,
 			Handler: ui.HandleContext{
 				RequestID:     func(in interface{}) string { return in.(*request.StartServerRequest).UUID },
 				InteractiveUI: s.Config().InteractiveUI(),
 				MaxActions:    maxServerActions,
 				WaitMsg:       "starting server",
-				WaitFn:        waitForServer(s.service, upcloud.ServerStateStarted, s.Config().ClientTimeout()),
+				WaitFn:        waitForServer(svc, upcloud.ServerStateStarted, s.Config().ClientTimeout()),
 				ActionMsg:     "Starting",
 				Action: func(req interface{}) (interface{}, error) {
-					return s.service.StartServer(req.(*request.StartServerRequest))
+					return svc.StartServer(req.(*request.StartServerRequest))
 				},
 			},
 		}.Send(args)

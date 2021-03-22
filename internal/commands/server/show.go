@@ -3,7 +3,6 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"io"
 	"net"
 	"strings"
@@ -11,25 +10,23 @@ import (
 
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/ui"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
 )
 
 // ShowCommand creates the "server show" command
-func ShowCommand(serverSvc service.Server, firewallSvc service.Firewall) commands.Command {
+func ShowCommand() commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New("show", "Show server details"),
-		serverSvc:   serverSvc,
-		firewallSvc: firewallSvc,
 	}
 }
 
 type showCommand struct {
 	*commands.BaseCommand
-	serverSvc   service.Server
-	firewallSvc service.Firewall
 }
 
 type commandResponseHolder struct {
@@ -45,7 +42,7 @@ func (c *commandResponseHolder) MarshalJSON() ([]byte, error) {
 // InitCommand implements Command.InitCommand
 func (s *showCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetServerArgumentCompletionFunction(s.serverSvc))
+	s.ArgCompletion(GetServerArgumentCompletionFunction(s.Config().Service.(service.Server)))
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand
@@ -55,7 +52,9 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 		if len(args) != 1 {
 			return nil, fmt.Errorf("one server hostname, title or uuid is required")
 		}
-		serverUUIDs, err := SearchAllServers(args, s.serverSvc, true)
+		serverSvc := s.Config().Service.(service.Server)
+		firewallSvc := s.Config().Service.(service.Firewall)
+		serverUUIDs, err := SearchAllServers(args, serverSvc, true)
 		if err != nil {
 			return nil, err
 		}
@@ -71,9 +70,9 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 		var firewallRules *upcloud.FirewallRules
 		go func() {
 			defer wg.Done()
-			firewallRules, fwRuleErr = s.firewallSvc.GetFirewallRules(&request.GetFirewallRulesRequest{ServerUUID: serverUUID})
+			firewallRules, fwRuleErr = firewallSvc.GetFirewallRules(&request.GetFirewallRulesRequest{ServerUUID: serverUUID})
 		}()
-		serverDetails, err := s.serverSvc.GetServerDetails(&request.GetServerDetailsRequest{UUID: serverUUID})
+		serverDetails, err := serverSvc.GetServerDetails(&request.GetServerDetailsRequest{UUID: serverUUID})
 		if err != nil {
 			return nil, err
 		}

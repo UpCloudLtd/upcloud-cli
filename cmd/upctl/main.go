@@ -248,11 +248,6 @@ func (s *mainCommand) InitCommand() {
 		s, config.New(mainConfig.Viper()),
 	)
 
-	//XXX: should be moved when build commands is reworked
-	if loader := s.ConfigLoader(); loader != nil {
-		_ = loader(s.Config())
-	}
-
 	all.BuildCommands(s, s.Config())
 
 	s.Cobra().SetUsageTemplate(ui.CommandUsageTemplate())
@@ -260,7 +255,7 @@ func (s *mainCommand) InitCommand() {
 
 }
 
-func (s *mainCommand) MakePersistentPreExecuteCommand() func(args []string) error {
+func (s *mainCommand) MakePreExecuteCommand() func(args []string) error {
 	return func(args []string) error {
 		if err := validation.Value(s.Config().GetString("output"), "json", "yaml", "human"); err != nil {
 			return fmt.Errorf("invalid output: %v", err)

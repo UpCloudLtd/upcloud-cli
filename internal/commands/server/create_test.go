@@ -314,19 +314,28 @@ func TestCreateServer(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
+			conf := config.New(viper.New())
+			testCmd := CreateCommand()
+			mService := new(smock.MockService)
+
 			CachedServers = nil
 			storage.CachedStorages = nil
-
-			mService := smock.MockService{}
+			conf.Service = mService
 			mService.On("CreateServer", &test.createServerReq).Return(&serverDetailsMaint, nil)
-			mService.On("GetServerDetails", &request.GetServerDetailsRequest{UUID: serverDetailsMaint.UUID}).Return(&serverDetailsStarted, nil)
+			mService.On(
+				"GetServerDetails",
+				&request.GetServerDetailsRequest{
+					UUID: serverDetailsMaint.UUID,
+				},
+			).Return(&serverDetailsStarted, nil)
+
 			mService.On("GetStorages", mock.Anything).Return(storages, nil)
 
-			cc := commands.BuildCommand(CreateCommand(&mService, &mService), nil, config.New(viper.New()))
-			err := cc.SetFlags(test.args)
+			c := commands.BuildCommand(testCmd, nil, conf)
+			err := c.SetFlags(test.args)
 			assert.NoError(t, err)
 
-			_, err = cc.MakeExecuteCommand()([]string{})
+			_, err = c.MakeExecuteCommand()([]string{})
 
 			if test.error != "" {
 				assert.Equal(t, test.error, err.Error())

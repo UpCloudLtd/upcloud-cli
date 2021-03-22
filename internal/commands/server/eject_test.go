@@ -54,15 +54,21 @@ func TestEjectCDROMCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mService := smock.MockService{}
+			conf := config.New(viper.New())
+			testCmd := EjectCommand()
+			mService := new(smock.MockService)
+
+			CachedServers = nil
+			// storage.CachedStorages = nil
+			conf.Service = mService
 			mService.On("GetServers", mock.Anything).Return(servers, nil)
 			mService.On(targetMethod, &test.ejectReq).Return(&details, nil)
 
-			tc := commands.BuildCommand(EjectCommand(&mService, &mService), nil, config.New(viper.New()))
-			err := tc.SetFlags(test.args)
+			c := commands.BuildCommand(testCmd, nil, conf)
+			err := c.SetFlags(test.args)
 			assert.NoError(t, err)
 
-			_, err = tc.MakeExecuteCommand()([]string{Server1.UUID})
+			_, err = c.MakeExecuteCommand()([]string{Server1.UUID})
 
 			assert.Nil(t, err)
 			mService.AssertNumberOfCalls(t, targetMethod, 1)

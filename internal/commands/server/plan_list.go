@@ -5,13 +5,13 @@ import (
 	"io"
 	"sort"
 
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/jedib0t/go-pretty/v6/table"
-	"github.com/spf13/pflag"
-
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/ui"
-	"github.com/UpCloudLtd/cli/internal/upapi"
+
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
+	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/spf13/pflag"
 )
 
 // PlanListCommand creates the "server plans" command
@@ -41,8 +41,8 @@ func (s *planListCommand) InitCommand() {
 // MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *planListCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		service := upapi.Service(s.Config())
-		plans, err := service.GetPlans()
+		svc := s.Config().Service.(service.Plans)
+		plans, err := svc.GetPlans()
 		if err != nil {
 			return nil, err
 		}

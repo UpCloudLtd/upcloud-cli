@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"testing"
 
-	smock "github.com/UpCloudLtd/cli/internal/mock"
-
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/stretchr/testify/assert"
@@ -184,9 +182,11 @@ func TestServerHumanOutput(t *testing.T) {
 `
 
 	buf := new(bytes.Buffer)
-	mService := smock.MockService{}
-	command := ShowCommand(&mService, &mService)
-	err := command.HandleOutput(buf, &commandResponseHolder{s, firewallRules})
+	testCmd := ShowCommand()
+	// conf := config.New(viper.New())
+	// mService := new(smock.MockService)
+
+	err := testCmd.HandleOutput(buf, &commandResponseHolder{s, firewallRules})
 
 	assert.Nil(t, err)
 	assert.Equal(t, expected, buf.String())

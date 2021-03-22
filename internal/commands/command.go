@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/UpCloudLtd/cli/internal/config"
+	"github.com/UpCloudLtd/cli/internal/upapi"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	gyaml "github.com/ghodss/yaml"
 	"github.com/mattn/go-isatty"
@@ -67,9 +68,30 @@ func BuildCommand(child, parent Command, config *config.Config) Command {
 	if nsCmd, ok := child.(namespace); ok {
 		config.SetNamespace(nsCmd.Namespace())
 	}
-	child.InitCommand()
-	// Apply values set from viper
-	child.Cobra().PreRunE = func(cmd *cobra.Command, args []string) error {
+
+	// XXX: remove and use a proper way to conf root CMD
+	if parent == nil {
+		child.InitCommand()
+	}
+
+	//PreRun
+	child.Cobra().PreRunE = func(_ *cobra.Command, args []string) error {
+		// Load config
+		if loader := child.ConfigLoader(); loader != nil {
+			if err := loader(config); err != nil {
+				return fmt.Errorf("Config load: %v", err)
+			}
+		}
+
+		// Setup SDK client
+		if err := upapi.SetupService(child.Config()); err != nil {
+			return err
+		}
+
+		// Init flags
+		child.InitCommand()
+
+		// Apply values set from viper if any
 		for cmd := child; cmd != nil; cmd = cmd.Parent() {
 			for _, v := range cmd.Config().BoundFlags() {
 				if !cmd.Config().IsSet(v.Name) {
@@ -83,16 +105,18 @@ func BuildCommand(child, parent Command, config *config.Config) Command {
 				}
 			}
 		}
+
+		// Exec preRun fun if any
+		if preRunCmd := child.MakePreExecuteCommand(); preRunCmd != nil {
+			return preRunCmd(args)
+		}
+
 		return nil
 	}
 
+	//Run
 	if cCmd := child.MakeExecuteCommand(); cCmd != nil && child.Cobra().RunE == nil {
 		child.Cobra().RunE = func(_ *cobra.Command, args []string) error {
-			if loader := child.ConfigLoader(); loader != nil {
-				if err := loader(config); err != nil {
-					return fmt.Errorf("Config load: %v", err)
-				}
-			}
 			response, err := cCmd(args)
 			if err != nil {
 				return err
@@ -101,26 +125,6 @@ func BuildCommand(child, parent Command, config *config.Config) Command {
 				return handleOutput(response, config.Output())
 			}
 			return child.HandleOutput(os.Stdout, response)
-		}
-	}
-	if cCmd := child.MakePreExecuteCommand(); cCmd != nil && child.Cobra().PreRunE == nil {
-		child.Cobra().PreRunE = func(_ *cobra.Command, args []string) error {
-			if loader := child.ConfigLoader(); loader != nil {
-				if err := loader(config); err != nil {
-					return fmt.Errorf("Config load: %v", err)
-				}
-			}
-			return cCmd(args)
-		}
-	}
-	if cCmd := child.MakePersistentPreExecuteCommand(); cCmd != nil && child.Cobra().PersistentPreRunE == nil {
-		child.Cobra().PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
-			if loader := child.ConfigLoader(); loader != nil {
-				if err := loader(config); err != nil {
-					return fmt.Errorf("Config load: %v", err)
-				}
-			}
-			return cCmd(args)
 		}
 	}
 
