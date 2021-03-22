@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path/filepath"
 	"runtime"
 	"strings"
 	"time"
 
+	"github.com/adrg/xdg"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
@@ -189,33 +189,32 @@ type mainCommand struct {
 }
 
 func (s *mainCommand) initConfig() error {
-	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	if err != nil {
-		return err
-	}
-	s.Config().Viper().SetEnvPrefix(envPrefix)
-	s.Config().Viper().SetEnvKeyReplacer(strings.NewReplacer("-", "_", ".", "_"))
-	s.Config().Viper().AutomaticEnv()
-	s.Config().Viper().SetConfigName(".upctl")
-	s.Config().Viper().SetConfigType("yaml")
+	v := s.Config().Viper()
 
-	if configFile := s.Config().GetString("config"); configFile != "" {
-		s.Config().Viper().SetConfigFile(configFile)
-		s.Config().Viper().SetConfigName(filepath.Base(configFile))
-		configDir := filepath.Dir(configFile)
-		if configDir != "." && configDir != dir {
-			viper.AddConfigPath(configDir)
+	v.SetEnvPrefix(envPrefix)
+	v.SetEnvKeyReplacer(strings.NewReplacer("-", "_", ".", "_"))
+	v.AutomaticEnv()
+	v.SetConfigName("upctl")
+	v.SetConfigType("yaml")
+
+	configFile := s.Config().Top().GetString("config")
+	if configFile != "" {
+		v.SetConfigFile(configFile)
+	} else {
+		// Support XDG default config home dir and common config dirs
+		v.AddConfigPath(xdg.ConfigHome)
+		v.AddConfigPath("$HOME/.config") // for MacOS as XDG config is not common
+	}
+
+	// Attempt to read the config file, ignoring only config file not found errors
+	if err := v.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			return err
 		}
 	}
 
-	s.Config().Viper().AddConfigPath(dir)
-	s.Config().Viper().AddConfigPath(".")
-	s.Config().Viper().AddConfigPath("$HOME")
+	v.Set("config", v.ConfigFileUsed())
 
-	if err := s.Config().Viper().ReadInConfig(); err != nil {
-		return err
-	}
-	s.Config().Viper().Set("config", s.Config().Viper().ConfigFileUsed())
 	return nil
 
 }
@@ -224,6 +223,7 @@ func (s *mainCommand) InitCommand() {
 	s.Cobra().SilenceErrors = true
 	s.Cobra().SilenceUsage = true
 	s.Cobra().BashCompletionFunction = commands.CustomBashCompletionFunc(s.Name())
+
 	flags := &pflag.FlagSet{}
 	flags.String("config", "", "Config file")
 	flags.String("output", "human", "Output format (supported: json, yaml and human")
