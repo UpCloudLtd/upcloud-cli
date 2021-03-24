@@ -226,7 +226,7 @@ func (s *createCommand) InitCommand() {
 	fs.StringVar(&s.params.os, "os", def.os, "Server OS to use (will be the first storage device). Set to empty to fully customise the storages.")
 	fs.IntVar(&s.params.osStorageSize, "os-storage-size", def.osStorageSize, "OS storage size in GiB. This is only applicable if `os` is also set. Zero value makes the disk equal to the minimum size of the template.")
 	fs.StringVar(&s.params.Zone, "zone", def.Zone, "Zone where to create the server")
-	fs.StringVar(&s.params.PasswordDelivery, "password-delivery", def.PasswordDelivery, "If password login is enable set a way how password is delivered.\nAvailable: email,sms")
+	fs.StringVar(&s.params.PasswordDelivery, "password-delivery", def.PasswordDelivery, "Defines how password is delivered, if password login is enabled.\nAvailable: email,sms")
 	fs.StringVar(&s.params.SimpleBackup, "simple-backup", def.SimpleBackup, "Simple backup rule. Format (HHMM,{dailies,weeklies,monthlies}).\nExample: 2300,dailies")
 	fs.StringVar(&s.params.TimeZone, "time-zone", def.TimeZone, "Time zone to set the RTC to")
 	fs.StringVar(&s.params.VideoModel, "video-model", def.VideoModel, "Video interface model of the server.\nAvailable: vga,cirrus")
@@ -248,11 +248,11 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 	return func(args []string) (interface{}, error) {
 
 		if s.params.Hostname == "" || s.params.Zone == "" {
-			return nil, fmt.Errorf("hostname and zone are both required")
+			return nil, fmt.Errorf("hostname, zone and some password delivery method are required")
 		}
 
 		if s.params.os == defaultCreateParams.os && s.params.PasswordDelivery == "none" && s.params.sshKeys == nil {
-			return nil, fmt.Errorf("password-delivery, ssh-keys or non-default OS must be specified")
+			return nil, fmt.Errorf("a password-delivery method, ssh-keys or a custom image must be specified")
 		}
 
 		if s.params.Title == "" {

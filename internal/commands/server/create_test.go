@@ -299,7 +299,7 @@ func TestCreateServer(t *testing.T) {
 				"--title", "title",
 				"--zone", "zone",
 			},
-			error: "hostname and zone are both required",
+			error: "hostname, zone and some password delivery method are required",
 		},
 		{
 			name: "zone is missing",
@@ -307,7 +307,7 @@ func TestCreateServer(t *testing.T) {
 				"--title", "title",
 				"--hostname", "hostname",
 			},
-			error: "hostname and zone are both required",
+			error: "hostname, zone and some password delivery method are required",
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
