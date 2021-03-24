@@ -62,9 +62,9 @@ type createCommand struct {
 }
 
 func createFlags(fs *pflag.FlagSet, dst, def *createParams) {
-	fs.StringVar(&dst.Title, "title", def.Title, "Storage title.\n[Required]")
+	fs.StringVar(&dst.Title, "title", def.Title, "Storage title.")
 	fs.IntVar(&dst.Size, "size", def.Size, "Size of the storage in GiB.")
-	fs.StringVar(&dst.Zone, "zone", def.Zone, "The zone to create the storage on.\n[Required]")
+	fs.StringVar(&dst.Zone, "zone", def.Zone, "The zone to create the storage on.")
 	fs.StringVar(&dst.Tier, "tier", def.Tier, "Storage tier.")
 	fs.StringVar(&dst.backupTime, "backup-time", def.backupTime, "The time when to create a backup in HH:MM. Empty value means no backups.")
 	fs.StringVar(&dst.BackupRule.Interval, "backup-interval", def.BackupRule.Interval, "The interval of the backup.\nAvailable: daily,mon,tue,wed,thu,fri,sat,sun")
