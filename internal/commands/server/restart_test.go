@@ -6,6 +6,8 @@ import (
 
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
@@ -14,7 +16,7 @@ import (
 )
 
 func TestRestartCommand(t *testing.T) {
-	methodName := "RestartServer"
+	targetMethod := "RestartServer"
 
 	var Server1 = upcloud.Server{
 		State: "started",
@@ -79,19 +81,19 @@ func TestRestartCommand(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			CachedServers = nil
 
-			mServerService := MockServerService{}
-			mServerService.On("GetServers", mock.Anything).Return(servers, nil)
-			mServerService.On("GetServerDetails", &request.GetServerDetailsRequest{UUID: Server1.UUID}).Return(&details2, nil)
-			mServerService.On(methodName, &test.restartReq).Return(&details, nil)
+			mService := smock.MockService{}
+			mService.On("GetServers", mock.Anything).Return(servers, nil)
+			mService.On("GetServerDetails", &request.GetServerDetailsRequest{UUID: Server1.UUID}).Return(&details2, nil)
+			mService.On(targetMethod, &test.restartReq).Return(&details, nil)
 
-			c := commands.BuildCommand(RestartCommand(&mServerService), nil, config.New(viper.New()))
+			c := commands.BuildCommand(RestartCommand(&mService), nil, config.New(viper.New()))
 			err := c.SetFlags(test.args)
 			assert.NoError(t, err)
 
 			_, err = c.MakeExecuteCommand()([]string{Server1.UUID})
 			assert.NoError(t, err)
 
-			mServerService.AssertNumberOfCalls(t, methodName, 1)
+			mService.AssertNumberOfCalls(t, targetMethod, 1)
 		})
 	}
 }

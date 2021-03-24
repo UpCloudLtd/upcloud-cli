@@ -1,18 +1,20 @@
 package networkinterface
 
 import (
+	"testing"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/commands/server"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestDeleteCommand(t *testing.T) {
-	methodName := "DeleteNetworkInterface"
+	targetMethod := "DeleteNetworkInterface"
 
 	s := upcloud.Server{UUID: "97fbd082-30b0-11eb-adc1-0242ac120002", Title: "test-server"}
 	servers := upcloud.Servers{Servers: []upcloud.Server{s}}
@@ -48,13 +50,11 @@ func TestDeleteCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			server.CachedServers = nil
-			mns := MockNetworkService{}
-			mns.On(methodName, &test.req).Return(nil)
+			mService := smock.MockService{}
+			mService.On(targetMethod, &test.req).Return(nil)
 
-			mss := server.MockServerService{}
-			mss.On("GetServers").Return(&servers, nil)
-			c := commands.BuildCommand(DeleteCommand(&mns, &mss), nil, config.New(viper.New()))
+			mService.On("GetServers").Return(&servers, nil)
+			c := commands.BuildCommand(DeleteCommand(&mService, &mService), nil, config.New(viper.New()))
 			err := c.SetFlags(test.flags)
 			assert.NoError(t, err)
 
@@ -63,7 +63,7 @@ func TestDeleteCommand(t *testing.T) {
 			if test.error != "" {
 				assert.Errorf(t, err, test.error)
 			} else {
-				mns.AssertNumberOfCalls(t, methodName, 1)
+				mService.AssertNumberOfCalls(t, targetMethod, 1)
 			}
 		})
 	}

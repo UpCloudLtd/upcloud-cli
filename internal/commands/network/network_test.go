@@ -1,78 +1,14 @@
 package network
 
 import (
+	"testing"
+
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
 )
-
-type MockNetworkService struct {
-	mock.Mock
-}
-
-func (m *MockNetworkService) GetNetworks() (*upcloud.Networks, error) {
-	args := m.Called()
-	return args[0].(*upcloud.Networks), args.Error(1)
-}
-func (m *MockNetworkService) GetNetworksInZone(r *request.GetNetworksInZoneRequest) (*upcloud.Networks, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.Networks), args.Error(1)
-}
-func (m *MockNetworkService) CreateNetwork(r *request.CreateNetworkRequest) (*upcloud.Network, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.Network), args.Error(1)
-}
-func (m *MockNetworkService) GetNetworkDetails(r *request.GetNetworkDetailsRequest) (*upcloud.Network, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.Network), args.Error(1)
-}
-func (m *MockNetworkService) ModifyNetwork(r *request.ModifyNetworkRequest) (*upcloud.Network, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.Network), args.Error(1)
-}
-func (m *MockNetworkService) GetServerNetworks(r *request.GetServerNetworksRequest) (*upcloud.Networking, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.Networking), args.Error(1)
-}
-func (m *MockNetworkService) CreateNetworkInterface(r *request.CreateNetworkInterfaceRequest) (*upcloud.Interface, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.Interface), args.Error(1)
-}
-func (m *MockNetworkService) ModifyNetworkInterface(r *request.ModifyNetworkInterfaceRequest) (*upcloud.Interface, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.Interface), args.Error(1)
-}
-func (m *MockNetworkService) DeleteNetwork(r *request.DeleteNetworkRequest) error {
-	args := m.Called(r)
-	return args.Error(0)
-}
-func (m *MockNetworkService) DeleteNetworkInterface(r *request.DeleteNetworkInterfaceRequest) error {
-	args := m.Called(r)
-	return args.Error(0)
-}
-
-func (m *MockNetworkService) GetRouters() (*upcloud.Routers, error) {
-	args := m.Called()
-	return args[0].(*upcloud.Routers), args.Error(1)
-}
-func (m *MockNetworkService) GetRouterDetails(r *request.GetRouterDetailsRequest) (*upcloud.Router, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.Router), args.Error(1)
-}
-func (m *MockNetworkService) CreateRouter(r *request.CreateRouterRequest) (*upcloud.Router, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.Router), args.Error(1)
-}
-func (m *MockNetworkService) ModifyRouter(r *request.ModifyRouterRequest) (*upcloud.Router, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.Router), args.Error(1)
-}
-func (m *MockNetworkService) DeleteRouter(r *request.DeleteRouterRequest) error {
-	args := m.Called(r)
-	return args.Error(0)
-}
 
 func TestSearchAllNetworks(t *testing.T) {
 
@@ -148,10 +84,10 @@ func TestSearchAllNetworks(t *testing.T) {
 	} {
 		t.Run(testcase.name, func(t *testing.T) {
 			cachedNetworks = nil
-			mns := MockNetworkService{}
-			mns.On("GetNetworks", mock.Anything).Return(networks, nil)
+			mService := smock.MockService{}
+			mService.On("GetNetworks", mock.Anything).Return(networks, nil)
 
-			result, err := searchAllNetworks(testcase.args, &mns, testcase.unique)
+			result, err := searchAllNetworks(testcase.args, &mService, testcase.unique)
 
 			if testcase.errMsg == "" {
 				assert.Nil(t, err)
@@ -160,7 +96,7 @@ func TestSearchAllNetworks(t *testing.T) {
 				assert.Nil(t, result)
 				assert.EqualError(t, err, testcase.errMsg)
 			}
-			mns.AssertNumberOfCalls(t, "GetNetworks", testcase.backendCalls)
+			mService.AssertNumberOfCalls(t, "GetNetworks", testcase.backendCalls)
 		})
 	}
 }
@@ -217,10 +153,10 @@ func TestSearchSUniqueNetwork(t *testing.T) {
 	} {
 		t.Run(testcase.name, func(t *testing.T) {
 			cachedNetworks = nil
-			mns := MockNetworkService{}
-			mns.On("GetNetworks", mock.Anything).Return(networks, nil)
+			mService := smock.MockService{}
+			mService.On("GetNetworks", mock.Anything).Return(networks, nil)
 
-			result, err := SearchUniqueNetwork(testcase.args, &mns)
+			result, err := SearchUniqueNetwork(testcase.args, &mService)
 
 			if testcase.errMsg == "" {
 				assert.Nil(t, err)
@@ -229,7 +165,7 @@ func TestSearchSUniqueNetwork(t *testing.T) {
 				assert.Nil(t, result)
 				assert.EqualError(t, err, testcase.errMsg)
 			}
-			mns.AssertNumberOfCalls(t, "GetNetworks", testcase.backendCalls)
+			mService.AssertNumberOfCalls(t, "GetNetworks", testcase.backendCalls)
 		})
 	}
 }

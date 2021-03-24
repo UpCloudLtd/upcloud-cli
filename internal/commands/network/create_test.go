@@ -1,17 +1,20 @@
 package network
 
 import (
+	"testing"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestCreateCommand(t *testing.T) {
-	methodName := "CreateNetwork"
+	targetMethod := "CreateNetwork"
 
 	n := upcloud.Network{
 		UUID:   "9abccbe8-8d47-40dd-a5af-c6598f38b11b",
@@ -90,9 +93,9 @@ func TestCreateCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mns := MockNetworkService{}
-			mns.On(methodName, &test.expected).Return(&upcloud.Network{}, nil)
-			c := commands.BuildCommand(CreateCommand(&mns), nil, config.New(viper.New()))
+			mService := smock.MockService{}
+			mService.On(targetMethod, &test.expected).Return(&upcloud.Network{}, nil)
+			c := commands.BuildCommand(CreateCommand(&mService), nil, config.New(viper.New()))
 			err := c.SetFlags(test.args)
 			assert.NoError(t, err)
 
@@ -101,7 +104,7 @@ func TestCreateCommand(t *testing.T) {
 			if err != nil {
 				assert.Equal(t, test.error, err.Error())
 			} else {
-				mns.AssertNumberOfCalls(t, methodName, 1)
+				mService.AssertNumberOfCalls(t, targetMethod, 1)
 			}
 		})
 	}

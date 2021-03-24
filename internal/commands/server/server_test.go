@@ -2,108 +2,14 @@ package server
 
 import (
 	"fmt"
+	"testing"
+
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
 )
-
-type MockStorageService struct {
-	mock.Mock
-}
-
-func (m *MockStorageService) GetStorages(r *request.GetStoragesRequest) (*upcloud.Storages, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.Storages), args.Error(1)
-}
-func (m *MockStorageService) GetStorageDetails(r *request.GetStorageDetailsRequest) (*upcloud.StorageDetails, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.StorageDetails), args.Error(1)
-}
-func (m *MockStorageService) CreateStorage(r *request.CreateStorageRequest) (*upcloud.StorageDetails, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.StorageDetails), args.Error(1)
-}
-func (m *MockStorageService) ModifyStorage(r *request.ModifyStorageRequest) (*upcloud.StorageDetails, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.StorageDetails), args.Error(1)
-}
-func (m *MockStorageService) AttachStorage(r *request.AttachStorageRequest) (*upcloud.ServerDetails, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.ServerDetails), args.Error(1)
-}
-func (m *MockStorageService) DetachStorage(r *request.DetachStorageRequest) (*upcloud.ServerDetails, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.ServerDetails), args.Error(1)
-}
-func (m *MockStorageService) CloneStorage(r *request.CloneStorageRequest) (*upcloud.StorageDetails, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.StorageDetails), args.Error(1)
-}
-func (m *MockStorageService) TemplatizeStorage(r *request.TemplatizeStorageRequest) (*upcloud.StorageDetails, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.StorageDetails), args.Error(1)
-}
-func (m *MockStorageService) WaitForStorageState(r *request.WaitForStorageStateRequest) (*upcloud.StorageDetails, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.StorageDetails), args.Error(1)
-}
-func (m *MockStorageService) LoadCDROM(r *request.LoadCDROMRequest) (*upcloud.ServerDetails, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.ServerDetails), args.Error(1)
-}
-func (m *MockStorageService) EjectCDROM(r *request.EjectCDROMRequest) (*upcloud.ServerDetails, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.ServerDetails), args.Error(1)
-}
-func (m *MockStorageService) CreateBackup(r *request.CreateBackupRequest) (*upcloud.StorageDetails, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.StorageDetails), args.Error(1)
-}
-func (m *MockStorageService) RestoreBackup(r *request.RestoreBackupRequest) error {
-	return m.Called(r).Error(0)
-}
-func (m *MockStorageService) CreateStorageImport(r *request.CreateStorageImportRequest) (*upcloud.StorageImportDetails, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.StorageImportDetails), args.Error(1)
-}
-func (m *MockStorageService) GetStorageImportDetails(r *request.GetStorageImportDetailsRequest) (*upcloud.StorageImportDetails, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.StorageImportDetails), args.Error(1)
-}
-func (m *MockStorageService) WaitForStorageImportCompletion(r *request.WaitForStorageImportCompletionRequest) (*upcloud.StorageImportDetails, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.StorageImportDetails), args.Error(1)
-}
-func (m *MockStorageService) DeleteStorage(r *request.DeleteStorageRequest) error {
-	return m.Called(r).Error(0)
-}
-
-type MockFirewallService struct {
-	mock.Mock
-}
-
-func (m *MockFirewallService) GetFirewallRules(r *request.GetFirewallRulesRequest) (*upcloud.FirewallRules, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.FirewallRules), args.Error(1)
-}
-func (m *MockFirewallService) GetFirewallRuleDetails(r *request.GetFirewallRuleDetailsRequest) (*upcloud.FirewallRule, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.FirewallRule), args.Error(1)
-}
-func (m *MockFirewallService) CreateFirewallRule(r *request.CreateFirewallRuleRequest) (*upcloud.FirewallRule, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.FirewallRule), args.Error(1)
-}
-func (m *MockFirewallService) CreateFirewallRules(r *request.CreateFirewallRulesRequest) error {
-	args := m.Called(r)
-	return args.Error(0)
-}
-func (m *MockFirewallService) DeleteFirewallRule(r *request.DeleteFirewallRuleRequest) error {
-	args := m.Called(r)
-	return args.Error(0)
-}
 
 var (
 	Title1 = "mock-storage-title1"
@@ -271,10 +177,10 @@ func TestSearchServer(t *testing.T) {
 	} {
 		t.Run(testcase.name, func(t *testing.T) {
 			CachedServers = []upcloud.Server{}
-			mss := new(MockServerService)
-			mss.On("GetServers", mock.Anything).Return(servers, nil)
+			mService := smock.MockService{}
+			mService.On("GetServers", mock.Anything).Return(servers, nil)
 
-			result, err := SearchAllServers(testcase.args, mss, testcase.unique)
+			result, err := SearchAllServers(testcase.args, &mService, testcase.unique)
 
 			if testcase.errMsg == "" {
 				assert.Nil(t, err)
@@ -283,7 +189,7 @@ func TestSearchServer(t *testing.T) {
 				assert.Nil(t, result)
 				assert.EqualError(t, err, testcase.errMsg)
 			}
-			mss.AssertNumberOfCalls(t, "GetServers", testcase.backendCalls)
+			mService.AssertNumberOfCalls(t, "GetServers", testcase.backendCalls)
 		})
 	}
 }
@@ -383,10 +289,10 @@ func TestSendServerRequest(t *testing.T) {
 		},
 	}
 
-	mss := MockServerService{}
+	mService := smock.MockService{}
 
 	getServers := "GetServers"
-	mss.On(getServers, mock.Anything).Return(servers, nil)
+	mService.On(getServers, mock.Anything).Return(servers, nil)
 
 	buildRequestFn := func(uuid string) interface{} {
 		return mockRequest
@@ -405,7 +311,7 @@ func TestSendServerRequest(t *testing.T) {
 			request: Request{
 				ExactlyOne:   false,
 				BuildRequest: buildRequestFn,
-				Service:      &mss,
+				Service:      &mService,
 				Handler:      MockHandler{},
 			},
 			calls: 0,
@@ -417,7 +323,7 @@ func TestSendServerRequest(t *testing.T) {
 			request: Request{
 				ExactlyOne:   false,
 				BuildRequest: buildRequestFn,
-				Service:      &mss,
+				Service:      &mService,
 				Handler:      MockHandler{},
 			},
 			calls: 1,
@@ -428,7 +334,7 @@ func TestSendServerRequest(t *testing.T) {
 			request: Request{
 				ExactlyOne:   true,
 				BuildRequest: buildRequestFn,
-				Service:      &mss,
+				Service:      &mService,
 				Handler:      MockHandler{},
 			},
 			calls: 1,
@@ -439,7 +345,7 @@ func TestSendServerRequest(t *testing.T) {
 			request: Request{
 				ExactlyOne:   false,
 				BuildRequest: buildRequestFn,
-				Service:      &mss,
+				Service:      &mService,
 				Handler:      MockHandler{},
 			},
 			calls: 1,
@@ -450,7 +356,7 @@ func TestSendServerRequest(t *testing.T) {
 			request: Request{
 				ExactlyOne:   true,
 				BuildRequest: buildRequestFn,
-				Service:      &mss,
+				Service:      &mService,
 				Handler:      MockHandler{},
 			},
 			error: "single server uuid is required",
@@ -470,8 +376,8 @@ func TestSendServerRequest(t *testing.T) {
 				assert.Equal(t, mockResponse, res)
 			}
 
-			mss.AssertNumberOfCalls(t, getServers, test.calls)
-			mss.Calls = nil
+			mService.AssertNumberOfCalls(t, getServers, test.calls)
+			mService.Calls = nil
 		})
 	}
 }

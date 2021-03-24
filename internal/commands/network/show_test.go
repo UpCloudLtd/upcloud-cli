@@ -2,13 +2,15 @@ package network
 
 import (
 	"bytes"
+	"testing"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/commands/server"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestShowCommand(t *testing.T) {
@@ -100,12 +102,11 @@ func TestShowCommand(t *testing.T) {
 `
 
 	cachedNetworks = nil
-	mns := MockNetworkService{}
-	mns.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{network}}, nil)
-	mss := server.MockServerService{}
-	mss.On("GetServers").Return(&upcloud.Servers{Servers: servers}, nil)
+	mService := smock.MockService{}
+	mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{network}}, nil)
+	mService.On("GetServers").Return(&upcloud.Servers{Servers: servers}, nil)
 
-	command := commands.BuildCommand(ShowCommand(&mns, &mss), nil, config.New(viper.New()))
+	command := commands.BuildCommand(ShowCommand(&mService, &mService), nil, config.New(viper.New()))
 	res, err := command.MakeExecuteCommand()([]string{network.UUID})
 
 	assert.Nil(t, err)

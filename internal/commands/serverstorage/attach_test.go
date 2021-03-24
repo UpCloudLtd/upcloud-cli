@@ -1,20 +1,21 @@
 package serverstorage
 
 import (
+	"testing"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/commands/server"
-	"github.com/UpCloudLtd/cli/internal/commands/storage"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
 )
 
 func TestAttachStorageCommand(t *testing.T) {
-	methodName := "AttachStorage"
+	targetMethod := "AttachStorage"
 
 	var Storage1 = upcloud.Storage{
 		UUID:   UUID1,
@@ -101,17 +102,13 @@ func TestAttachStorageCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			server.CachedServers = nil
-			storage.CachedStorages = nil
+			mService := smock.MockService{}
+			mService.On("GetServers", mock.Anything).Return(servers, nil)
 
-			mServerService := server.MockServerService{}
-			mServerService.On("GetServers", mock.Anything).Return(servers, nil)
+			mService.On(targetMethod, &test.attacheReq).Return(&serverDetails, nil)
+			mService.On("GetStorages", mock.Anything).Return(storages, nil)
 
-			mStorageService := MockStorageService{}
-			mStorageService.On(methodName, &test.attacheReq).Return(&serverDetails, nil)
-			mStorageService.On("GetStorages", mock.Anything).Return(storages, nil)
-
-			cc := commands.BuildCommand(AttachCommand(&mServerService, &mStorageService), nil, config.New(viper.New()))
+			cc := commands.BuildCommand(AttachCommand(&mService, &mService), nil, config.New(viper.New()))
 			err := cc.SetFlags(test.args)
 			assert.NoError(t, err)
 
@@ -120,7 +117,7 @@ func TestAttachStorageCommand(t *testing.T) {
 			if test.error != "" {
 				assert.Equal(t, test.error, err.Error())
 			} else {
-				mStorageService.AssertNumberOfCalls(t, methodName, 1)
+				mService.AssertNumberOfCalls(t, targetMethod, 1)
 			}
 		})
 	}

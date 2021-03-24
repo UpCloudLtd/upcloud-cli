@@ -2,92 +2,24 @@ package storage
 
 import (
 	"fmt"
+	"testing"
+
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
 )
 
-type MockStorageService struct {
-	mock.Mock
-}
-
-func (m *MockStorageService) GetStorages(r *request.GetStoragesRequest) (*upcloud.Storages, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.Storages), args.Error(1)
-}
-func (m *MockStorageService) GetStorageDetails(r *request.GetStorageDetailsRequest) (*upcloud.StorageDetails, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.StorageDetails), args.Error(1)
-}
-func (m *MockStorageService) CreateStorage(r *request.CreateStorageRequest) (*upcloud.StorageDetails, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.StorageDetails), args.Error(1)
-}
-func (m *MockStorageService) ModifyStorage(r *request.ModifyStorageRequest) (*upcloud.StorageDetails, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.StorageDetails), args.Error(1)
-}
-func (m *MockStorageService) AttachStorage(r *request.AttachStorageRequest) (*upcloud.ServerDetails, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.ServerDetails), args.Error(1)
-}
-func (m *MockStorageService) DetachStorage(r *request.DetachStorageRequest) (*upcloud.ServerDetails, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.ServerDetails), args.Error(1)
-}
-func (m *MockStorageService) CloneStorage(r *request.CloneStorageRequest) (*upcloud.StorageDetails, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.StorageDetails), args.Error(1)
-}
-func (m *MockStorageService) TemplatizeStorage(r *request.TemplatizeStorageRequest) (*upcloud.StorageDetails, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.StorageDetails), args.Error(1)
-}
-func (m *MockStorageService) WaitForStorageState(r *request.WaitForStorageStateRequest) (*upcloud.StorageDetails, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.StorageDetails), args.Error(1)
-}
-func (m *MockStorageService) LoadCDROM(r *request.LoadCDROMRequest) (*upcloud.ServerDetails, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.ServerDetails), args.Error(1)
-}
-func (m *MockStorageService) EjectCDROM(r *request.EjectCDROMRequest) (*upcloud.ServerDetails, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.ServerDetails), args.Error(1)
-}
-func (m *MockStorageService) CreateBackup(r *request.CreateBackupRequest) (*upcloud.StorageDetails, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.StorageDetails), args.Error(1)
-}
-func (m *MockStorageService) RestoreBackup(r *request.RestoreBackupRequest) error {
-	return m.Called(r).Error(0)
-}
-func (m *MockStorageService) CreateStorageImport(r *request.CreateStorageImportRequest) (*upcloud.StorageImportDetails, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.StorageImportDetails), args.Error(1)
-}
-func (m *MockStorageService) GetStorageImportDetails(r *request.GetStorageImportDetailsRequest) (*upcloud.StorageImportDetails, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.StorageImportDetails), args.Error(1)
-}
-func (m *MockStorageService) WaitForStorageImportCompletion(r *request.WaitForStorageImportCompletionRequest) (*upcloud.StorageImportDetails, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.StorageImportDetails), args.Error(1)
-}
-func (m *MockStorageService) DeleteStorage(r *request.DeleteStorageRequest) error {
-	return m.Called(r).Error(0)
-}
-
 const (
-	Title1 = "mock-storage-title1"
-	Title2 = "mock-storage-title2"
-	Title3 = "mock-storage-title3"
-	UUID1  = "0127dfd6-3884-4079-a948-3a8881df1a7a"
-	UUID2  = "012bde1d-f0e7-4bb2-9f4a-74e1f2b49c07"
-	UUID3  = "012c61a6-b8f0-48c2-a63a-b4bf7d26a655"
-	UUID4  = "012c61a6-er4g-mf2t-b63a-b4be4326a655"
+	targetMethod = "GetStorages"
+	Title1       = "mock-storage-title1"
+	Title2       = "mock-storage-title2"
+	Title3       = "mock-storage-title3"
+	UUID1        = "0127dfd6-3884-4079-a948-3a8881df1a7a"
+	UUID2        = "012bde1d-f0e7-4bb2-9f4a-74e1f2b49c07"
+	UUID3        = "012c61a6-b8f0-48c2-a63a-b4bf7d26a655"
+	UUID4        = "012c61a6-er4g-mf2t-b63a-b4be4326a655"
 )
 
 func TestSearchStorage(t *testing.T) {
@@ -193,10 +125,11 @@ func TestSearchStorage(t *testing.T) {
 	} {
 		t.Run(testcase.name, func(t *testing.T) {
 			CachedStorages = nil
-			mss := MockStorageService{}
-			mss.On("GetStorages", mock.Anything).Return(storages, nil)
 
-			result, err := searchAllStorages(testcase.args, &mss, testcase.unique)
+			mService := smock.MockService{}
+			mService.On(targetMethod, mock.Anything).Return(storages, nil)
+
+			result, err := searchAllStorages(testcase.args, &mService, testcase.unique)
 
 			if testcase.errMsg == "" {
 				assert.Nil(t, err)
@@ -205,7 +138,7 @@ func TestSearchStorage(t *testing.T) {
 				assert.Nil(t, result)
 				assert.EqualError(t, err, testcase.errMsg)
 			}
-			mss.AssertNumberOfCalls(t, "GetStorages", testcase.backendCalls)
+			mService.AssertNumberOfCalls(t, targetMethod, testcase.backendCalls)
 		})
 	}
 }
@@ -225,6 +158,8 @@ func (s MockHandler) Handle(requests []interface{}) (interface{}, error) {
 }
 
 func TestSendStorageRequest(t *testing.T) {
+	mService := smock.MockService{}
+
 	var Storage1 = upcloud.Storage{
 		UUID:   UUID1,
 		Title:  Title1,
@@ -277,10 +212,8 @@ func TestSendStorageRequest(t *testing.T) {
 			Storage4,
 		},
 	}
-	mss := MockStorageService{}
 
-	getStorages := "GetStorages"
-	mss.On(getStorages, mock.Anything).Return(storages, nil)
+	mService.On(targetMethod, mock.Anything).Return(storages, nil)
 
 	buildRequestFn := func(storage string) (interface{}, error) {
 		return mockRequest, nil
@@ -299,7 +232,7 @@ func TestSendStorageRequest(t *testing.T) {
 			request: storageRequest{
 				ExactlyOne:   false,
 				BuildRequest: buildRequestFn,
-				Service:      &mss,
+				Service:      &mService,
 				Handler:      MockHandler{},
 			},
 			calls: 0,
@@ -311,7 +244,7 @@ func TestSendStorageRequest(t *testing.T) {
 			request: storageRequest{
 				ExactlyOne:   false,
 				BuildRequest: buildRequestFn,
-				Service:      &mss,
+				Service:      &mService,
 				Handler:      MockHandler{},
 			},
 			calls: 1,
@@ -322,7 +255,7 @@ func TestSendStorageRequest(t *testing.T) {
 			request: storageRequest{
 				ExactlyOne:   true,
 				BuildRequest: buildRequestFn,
-				Service:      &mss,
+				Service:      &mService,
 				Handler:      MockHandler{},
 			},
 			calls: 1,
@@ -333,7 +266,7 @@ func TestSendStorageRequest(t *testing.T) {
 			request: storageRequest{
 				ExactlyOne:   false,
 				BuildRequest: buildRequestFn,
-				Service:      &mss,
+				Service:      &mService,
 				Handler:      MockHandler{},
 			},
 			calls: 1,
@@ -344,7 +277,7 @@ func TestSendStorageRequest(t *testing.T) {
 			request: storageRequest{
 				ExactlyOne:   true,
 				BuildRequest: buildRequestFn,
-				Service:      &mss,
+				Service:      &mService,
 				Handler:      MockHandler{},
 			},
 			error: "single storage uuid is required",
@@ -364,8 +297,8 @@ func TestSendStorageRequest(t *testing.T) {
 				assert.Equal(t, mockResponse, res)
 			}
 
-			mss.AssertNumberOfCalls(t, getStorages, test.calls)
-			mss.Calls = nil
+			mService.AssertNumberOfCalls(t, targetMethod, test.calls)
+			mService.Calls = nil
 		})
 	}
 }

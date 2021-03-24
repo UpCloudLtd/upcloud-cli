@@ -1,13 +1,16 @@
 package server
 
 import (
+	"testing"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
 )
 
 func TestDeleteServerCommand(t *testing.T) {
@@ -53,12 +56,12 @@ func TestDeleteServerCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mss := MockServerService{}
-			mss.On(deleteServer, mock.Anything).Return(nil, nil)
-			mss.On(deleteServerAndStorages, mock.Anything).Return(nil, nil)
-			mss.On("GetServers", mock.Anything).Return(servers, nil)
+			mService := smock.MockService{}
+			mService.On(deleteServer, mock.Anything).Return(nil, nil)
+			mService.On(deleteServerAndStorages, mock.Anything).Return(nil, nil)
+			mService.On("GetServers", mock.Anything).Return(servers, nil)
 
-			tc := commands.BuildCommand(DeleteCommand(&mss), nil, config.New(viper.New()))
+			tc := commands.BuildCommand(DeleteCommand(&mService), nil, config.New(viper.New()))
 			err := tc.SetFlags(test.args)
 			assert.NoError(t, err)
 
@@ -69,8 +72,8 @@ func TestDeleteServerCommand(t *testing.T) {
 
 			assert.Nil(t, err)
 
-			mss.AssertNumberOfCalls(t, deleteServer, test.deleteServCalls)
-			mss.AssertNumberOfCalls(t, deleteServerAndStorages, test.deleteServStorageCalls)
+			mService.AssertNumberOfCalls(t, deleteServer, test.deleteServCalls)
+			mService.AssertNumberOfCalls(t, deleteServerAndStorages, test.deleteServStorageCalls)
 		})
 	}
 }

@@ -1,17 +1,20 @@
 package ipaddress
 
 import (
+	"testing"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestModifyCommand(t *testing.T) {
-	methodName := "ModifyIPAddress"
+	targetMethod := "ModifyIPAddress"
 
 	ip := upcloud.IPAddress{
 		Address:   "127.0.0.1",
@@ -54,11 +57,11 @@ func TestModifyCommand(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			cachedIPs = nil
-			mips := MockIPAddressService{}
-			mips.On(methodName, &test.expected).Return(&ip, nil)
-			mips.On("GetIPAddresses").Return(&upcloud.IPAddresses{IPAddresses: []upcloud.IPAddress{ip}}, nil)
+			mService := smock.MockService{}
+			mService.On(targetMethod, &test.expected).Return(&ip, nil)
+			mService.On("GetIPAddresses").Return(&upcloud.IPAddresses{IPAddresses: []upcloud.IPAddress{ip}}, nil)
 
-			c := commands.BuildCommand(ModifyCommand(&mips), nil, config.New(viper.New()))
+			c := commands.BuildCommand(ModifyCommand(&mService), nil, config.New(viper.New()))
 			err := c.SetFlags(test.flags)
 			assert.NoError(t, err)
 
@@ -67,7 +70,7 @@ func TestModifyCommand(t *testing.T) {
 			if err != nil {
 				assert.Equal(t, test.error, err.Error())
 			} else {
-				mips.AssertNumberOfCalls(t, methodName, 1)
+				mService.AssertNumberOfCalls(t, targetMethod, 1)
 			}
 		})
 	}

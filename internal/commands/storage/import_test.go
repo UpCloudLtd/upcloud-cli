@@ -2,17 +2,20 @@ package storage
 
 import (
 	"fmt"
+	"io"
+	"io/ioutil"
+	"os"
+	"testing"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"io"
-	"io/ioutil"
-	"os"
-	"testing"
 )
 
 func TestReaderCounterInterface(t *testing.T) {
@@ -97,7 +100,7 @@ func TestImportCommand(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			CachedStorages = nil
-			mss := MockStorageService{}
+			mss := smock.MockService{}
 			mss.On("GetStorages", mock.Anything).Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2}}, nil)
 			mss.On("CreateStorageImport", &test.request).Return(&StorageImportCompleted, nil)
 			mss.On("GetStorageImportDetails", &request.GetStorageImportDetailsRequest{UUID: Storage1.UUID}).Return(&StorageImportCompleted, nil)

@@ -1,18 +1,21 @@
 package storage
 
 import (
+	"testing"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
 )
 
 func TestRestoreBackupCommand(t *testing.T) {
-	methodName := "RestoreBackup"
+	targetMethod := "RestoreBackup"
 
 	var Storage2 = upcloud.Storage{
 		UUID:   UUID2,
@@ -38,16 +41,16 @@ func TestRestoreBackupCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mss := MockStorageService{}
-			mss.On(methodName, mock.Anything).Return(nil, nil)
+			mService := smock.MockService{}
+			mService.On(targetMethod, mock.Anything).Return(nil, nil)
 
-			tc := commands.BuildCommand(RestoreBackupCommand(&mss), nil, config.New(viper.New()))
+			tc := commands.BuildCommand(RestoreBackupCommand(&mService), nil, config.New(viper.New()))
 			err := tc.SetFlags(test.args)
 			assert.NoError(t, err)
 
 			_, err = tc.MakeExecuteCommand()([]string{Storage2.UUID})
 			assert.Nil(t, err)
-			mss.AssertNumberOfCalls(t, methodName, test.methodCalls)
+			mService.AssertNumberOfCalls(t, targetMethod, test.methodCalls)
 		})
 	}
 }

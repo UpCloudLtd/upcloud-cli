@@ -1,16 +1,17 @@
-package serverfirewall_test
+package serverfirewall
 
 import (
+	"testing"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/commands/server"
-	"github.com/UpCloudLtd/cli/internal/commands/serverfirewall"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
 )
 
 func TestCreateFirewallRuleCommand(t *testing.T) {
@@ -82,14 +83,10 @@ func TestCreateFirewallRuleCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			server.CachedServers = nil
+			mService := smock.MockService{}
+			mService.On("GetServers", mock.Anything).Return(servers, nil)
 
-			mServerService := server.MockServerService{}
-			mServerService.On("GetServers", mock.Anything).Return(servers, nil)
-
-			mFirewallRuleService := MockFirewallRuleService{}
-
-			cc := commands.BuildCommand(serverfirewall.CreateCommand(&mServerService, &mFirewallRuleService), nil, config.New(viper.New()))
+			cc := commands.BuildCommand(CreateCommand(&mService, &mService), nil, config.New(viper.New()))
 			err1 := cc.SetFlags(test.args)
 			if err1 != nil {
 				panic(err1)

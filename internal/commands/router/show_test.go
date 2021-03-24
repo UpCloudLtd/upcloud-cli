@@ -2,9 +2,12 @@ package router
 
 import (
 	"bytes"
+	"testing"
+
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestShowCommand(t *testing.T) {
@@ -58,7 +61,7 @@ func TestShowCommand(t *testing.T) {
 `
 
 	buf := new(bytes.Buffer)
-	command := ShowCommand(&MockNetworkService{})
+	command := ShowCommand(&smock.MockService{})
 	err := command.HandleOutput(buf, &routerWithNetworks{
 		router:   &router,
 		networks: networks,

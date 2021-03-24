@@ -1,18 +1,20 @@
 package ipaddress
 
 import (
+	"testing"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/commands/server"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestAssignCommand(t *testing.T) {
-	methodName := "AssignIPAddress"
+	targetMethod := "AssignIPAddress"
 
 	s1 := upcloud.Server{UUID: "f2e42635-b8b8-48ed-aa44-a494ef438f83", Title: "s1"}
 	s2 := upcloud.Server{UUID: "7bc4c854-a87d-40c0-97b5-b0d17333248d", Title: "s2"}
@@ -63,12 +65,11 @@ func TestAssignCommand(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			cachedIPs = nil
-			mips := MockIPAddressService{}
-			mips.On(methodName, &test.expected).Return(&ip, nil)
-			mss := server.MockServerService{}
-			mss.On("GetServers").Return(&servers, nil)
+			mService := smock.MockService{}
+			mService.On(targetMethod, &test.expected).Return(&ip, nil)
+			mService.On("GetServers").Return(&servers, nil)
 
-			c := commands.BuildCommand(AssignCommand(&mss, &mips), nil, config.New(viper.New()))
+			c := commands.BuildCommand(AssignCommand(&mService, &mService), nil, config.New(viper.New()))
 			err := c.SetFlags(test.flags)
 			assert.NoError(t, err)
 
@@ -77,7 +78,7 @@ func TestAssignCommand(t *testing.T) {
 			if err != nil {
 				assert.Equal(t, test.error, err.Error())
 			} else {
-				mips.AssertNumberOfCalls(t, methodName, 1)
+				mService.AssertNumberOfCalls(t, targetMethod, 1)
 			}
 		})
 	}

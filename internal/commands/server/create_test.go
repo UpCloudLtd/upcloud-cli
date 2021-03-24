@@ -2,15 +2,18 @@ package server
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/commands/storage"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
 )
 
 func TestCreateServer(t *testing.T) {
@@ -314,14 +317,12 @@ func TestCreateServer(t *testing.T) {
 			CachedServers = nil
 			storage.CachedStorages = nil
 
-			mServerService := MockServerService{}
-			mServerService.On("CreateServer", &test.createServerReq).Return(&serverDetailsMaint, nil)
-			mServerService.On("GetServerDetails", &request.GetServerDetailsRequest{UUID: serverDetailsMaint.UUID}).Return(&serverDetailsStarted, nil)
+			mService := smock.MockService{}
+			mService.On("CreateServer", &test.createServerReq).Return(&serverDetailsMaint, nil)
+			mService.On("GetServerDetails", &request.GetServerDetailsRequest{UUID: serverDetailsMaint.UUID}).Return(&serverDetailsStarted, nil)
+			mService.On("GetStorages", mock.Anything).Return(storages, nil)
 
-			mStorageService := MockStorageService{}
-			mStorageService.On("GetStorages", mock.Anything).Return(storages, nil)
-
-			cc := commands.BuildCommand(CreateCommand(&mServerService, &mStorageService), nil, config.New(viper.New()))
+			cc := commands.BuildCommand(CreateCommand(&mService, &mService), nil, config.New(viper.New()))
 			err := cc.SetFlags(test.args)
 			assert.NoError(t, err)
 
@@ -330,9 +331,9 @@ func TestCreateServer(t *testing.T) {
 			if test.error != "" {
 				assert.Equal(t, test.error, err.Error())
 			} else {
-				mStorageService.AssertNumberOfCalls(t, "GetStorages", 1)
-				mServerService.AssertNumberOfCalls(t, "CreateServer", 1)
-				mServerService.AssertNumberOfCalls(t, "GetServerDetails", 1)
+				mService.AssertNumberOfCalls(t, "GetStorages", 1)
+				mService.AssertNumberOfCalls(t, "CreateServer", 1)
+				mService.AssertNumberOfCalls(t, "GetServerDetails", 1)
 			}
 		})
 	}

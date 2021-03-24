@@ -1,18 +1,21 @@
 package storage
 
 import (
+	"testing"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
 )
 
 func TestCloneCommand(t *testing.T) {
-	methodName := "CloneStorage"
+	targetMethod := "CloneStorage"
 
 	var Storage1 = upcloud.Storage{
 		UUID:   UUID1,
@@ -80,11 +83,11 @@ func TestCloneCommand(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			CachedStorages = nil
-			mss := MockStorageService{}
-			mss.On(methodName, &test.expected).Return(&details, nil)
-			mss.On("GetStorages", mock.Anything).Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2}}, nil)
+			mService := smock.MockService{}
+			mService.On(targetMethod, &test.expected).Return(&details, nil)
+			mService.On("GetStorages", mock.Anything).Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2}}, nil)
 
-			tc := commands.BuildCommand(CloneCommand(&mss), nil, config.New(viper.New()))
+			tc := commands.BuildCommand(CloneCommand(&mService), nil, config.New(viper.New()))
 			err := tc.SetFlags(test.args)
 			assert.NoError(t, err)
 
@@ -93,7 +96,7 @@ func TestCloneCommand(t *testing.T) {
 			if test.error != "" {
 				assert.Errorf(t, err, test.error)
 			} else {
-				mss.AssertNumberOfCalls(t, methodName, 1)
+				mService.AssertNumberOfCalls(t, targetMethod, 1)
 			}
 		})
 	}

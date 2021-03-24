@@ -1,19 +1,22 @@
 package server
 
 import (
+	"testing"
+	"time"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
-	"time"
 )
 
 func TestStopCommand(t *testing.T) {
-	methodName := "StopServer"
+	targetMethod := "StopServer"
 
 	var Server1 = upcloud.Server{
 		State: upcloud.ServerStateMaintenance,
@@ -70,21 +73,20 @@ func TestStopCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			CachedServers = nil
+			mService := smock.MockService{}
 
-			mServerService := MockServerService{}
-			mServerService.On("GetServers", mock.Anything).Return(servers, nil)
-			mServerService.On("GetServerDetails", &request.GetServerDetailsRequest{UUID: Server1.UUID}).Return(&details2, nil)
-			mServerService.On(methodName, &test.startReq).Return(&details, nil)
+			mService.On("GetServers", mock.Anything).Return(servers, nil)
+			mService.On("GetServerDetails", &request.GetServerDetailsRequest{UUID: Server1.UUID}).Return(&details2, nil)
+			mService.On(targetMethod, &test.startReq).Return(&details, nil)
 
-			c := commands.BuildCommand(StopCommand(&mServerService), nil, config.New(viper.New()))
+			c := commands.BuildCommand(StopCommand(&mService), nil, config.New(viper.New()))
 			err := c.SetFlags(test.args)
 			assert.NoError(t, err)
 
 			_, err = c.MakeExecuteCommand()([]string{Server1.UUID})
 			assert.NoError(t, err)
 
-			mServerService.AssertNumberOfCalls(t, methodName, 1)
+			mService.AssertNumberOfCalls(t, targetMethod, 1)
 		})
 	}
 }

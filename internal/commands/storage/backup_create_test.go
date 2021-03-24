@@ -1,18 +1,21 @@
 package storage
 
 import (
+	"testing"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
 )
 
 func TestCreateBackupCommand(t *testing.T) {
-	methodName := "CreateBackup"
+	targetMethod := "CreateBackup"
 	var Storage1 = upcloud.Storage{
 		UUID:   UUID1,
 		Title:  Title1,
@@ -54,11 +57,11 @@ func TestCreateBackupCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mss := MockStorageService{}
-			mss.On("GetStorages", &request.GetStoragesRequest{}).Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2}}, nil)
-			mss.On(methodName, mock.Anything).Return(&details, nil)
+			mService := smock.MockService{}
+			mService.On("GetStorages", &request.GetStoragesRequest{}).Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2}}, nil)
+			mService.On(targetMethod, mock.Anything).Return(&details, nil)
 
-			tc := commands.BuildCommand(CreateBackupCommand(&mss), nil, config.New(viper.New()))
+			tc := commands.BuildCommand(CreateBackupCommand(&mService), nil, config.New(viper.New()))
 			err := tc.SetFlags(test.args)
 			assert.NoError(t, err)
 
@@ -67,7 +70,7 @@ func TestCreateBackupCommand(t *testing.T) {
 			if test.error != "" {
 				assert.Errorf(t, err, test.error)
 			} else {
-				mss.AssertNumberOfCalls(t, methodName, 1)
+				mService.AssertNumberOfCalls(t, targetMethod, 1)
 			}
 		})
 	}

@@ -1,18 +1,20 @@
 package networkinterface
 
 import (
+	"testing"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/commands/server"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestModifyCommand(t *testing.T) {
-	methodName := "ModifyNetworkInterface"
+	targetMethod := "ModifyNetworkInterface"
 
 	s := upcloud.Server{UUID: "c4cb35bc-3fb5-4cce-9951-79cab2225417"}
 	servers := upcloud.Servers{Servers: []upcloud.Server{s}}
@@ -61,15 +63,12 @@ func TestModifyCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			server.CachedServers = nil
+			mService := smock.MockService{}
+			mService.On("GetNetworks").Return(&networks, nil)
+			mService.On(targetMethod, &test.req).Return(&upcloud.Interface{}, nil)
 
-			mns := MockNetworkService{}
-			mns.On("GetNetworks").Return(&networks, nil)
-			mns.On(methodName, &test.req).Return(&upcloud.Interface{}, nil)
-
-			mss := server.MockServerService{}
-			mss.On("GetServers").Return(&servers, nil)
-			c := commands.BuildCommand(ModifyCommand(&mns, &mss), nil, config.New(viper.New()))
+			mService.On("GetServers").Return(&servers, nil)
+			c := commands.BuildCommand(ModifyCommand(&mService, &mService), nil, config.New(viper.New()))
 			err := c.SetFlags(test.args)
 			assert.NoError(t, err)
 
@@ -78,7 +77,7 @@ func TestModifyCommand(t *testing.T) {
 			if test.error != "" {
 				assert.Errorf(t, err, test.error)
 			} else {
-				mns.AssertNumberOfCalls(t, methodName, 1)
+				mService.AssertNumberOfCalls(t, targetMethod, 1)
 			}
 		})
 	}

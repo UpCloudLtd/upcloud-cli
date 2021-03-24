@@ -1,13 +1,16 @@
 package network
 
 import (
+	"testing"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestListCommand(t *testing.T) {
@@ -69,12 +72,12 @@ func TestListCommand(t *testing.T) {
 		},
 	} {
 		cachedNetworks = nil
-		mns := MockNetworkService{}
-		mns.On("GetNetworks").Return(networks, nil)
-		mns.On("GetNetworksInZone", &request.GetNetworksInZoneRequest{Zone: "fi-hel1"}).Return(&upcloud.Networks{Networks: []upcloud.Network{Network1, Network2}}, nil)
-		mns.On("GetNetworksInZone", &request.GetNetworksInZoneRequest{Zone: "uk-lon1"}).Return(&upcloud.Networks{Networks: []upcloud.Network{Network3, Network4}}, nil)
+		mService := smock.MockService{}
+		mService.On("GetNetworks").Return(networks, nil)
+		mService.On("GetNetworksInZone", &request.GetNetworksInZoneRequest{Zone: "fi-hel1"}).Return(&upcloud.Networks{Networks: []upcloud.Network{Network1, Network2}}, nil)
+		mService.On("GetNetworksInZone", &request.GetNetworksInZoneRequest{Zone: "uk-lon1"}).Return(&upcloud.Networks{Networks: []upcloud.Network{Network3, Network4}}, nil)
 
-		c := commands.BuildCommand(ListCommand(&mns), nil, config.New(viper.New()))
+		c := commands.BuildCommand(ListCommand(&mService), nil, config.New(viper.New()))
 		err := c.SetFlags(test.flags)
 		assert.NoError(t, err)
 

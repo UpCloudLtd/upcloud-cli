@@ -1,18 +1,21 @@
 package router
 
 import (
+	"testing"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
 )
 
 func TestModifyCommand(t *testing.T) {
-	methodName := "ModifyRouter"
+	targetMethod := "ModifyRouter"
 
 	router := upcloud.Router{Name: "test-router"}
 
@@ -35,11 +38,11 @@ func TestModifyCommand(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			cachedRouters = nil
-			mrs := MockNetworkService{}
-			mrs.On(methodName, &test.req).Return(&router, nil)
-			mrs.On("GetRouters", mock.Anything).Return(&upcloud.Routers{Routers: []upcloud.Router{router}}, nil)
+			mService := smock.MockService{}
+			mService.On(targetMethod, &test.req).Return(&router, nil)
+			mService.On("GetRouters", mock.Anything).Return(&upcloud.Routers{Routers: []upcloud.Router{router}}, nil)
 
-			c := commands.BuildCommand(ModifyCommand(&mrs), nil, config.New(viper.New()))
+			c := commands.BuildCommand(ModifyCommand(&mService), nil, config.New(viper.New()))
 			err := c.SetFlags(test.args)
 			assert.NoError(t, err)
 
@@ -48,7 +51,7 @@ func TestModifyCommand(t *testing.T) {
 			if test.error != "" {
 				assert.Errorf(t, err, test.error)
 			} else {
-				mrs.AssertNumberOfCalls(t, methodName, 1)
+				mService.AssertNumberOfCalls(t, targetMethod, 1)
 			}
 		})
 	}

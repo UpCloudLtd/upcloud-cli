@@ -5,6 +5,8 @@ import (
 
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -12,7 +14,6 @@ import (
 )
 
 func TestListStorages(t *testing.T) {
-
 	var Storage1 = upcloud.Storage{
 		UUID:   UUID1,
 		Title:  Title1,
@@ -113,10 +114,10 @@ func TestListStorages(t *testing.T) {
 		t.Run(testcase.name, func(t *testing.T) {
 			CachedStorages = nil
 			storages := upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2, Storage3, Storage4, Storage5, Storage6}}
-			mss := MockStorageService{}
-			mss.On("GetStorages", mock.Anything).Return(&storages, nil)
+			mService := smock.MockService{}
+			mService.On("GetStorages", mock.Anything).Return(&storages, nil)
 
-			lc := commands.BuildCommand(ListCommand(&mss), nil, config.New(viper.New()))
+			lc := commands.BuildCommand(ListCommand(&mService), nil, config.New(viper.New()))
 			err := lc.SetFlags(testcase.args)
 			assert.NoError(t, err)
 

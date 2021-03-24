@@ -1,17 +1,20 @@
 package router
 
 import (
+	"testing"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestCreateCommand(t *testing.T) {
-	methodName := "CreateRouter"
+	targetMethod := "CreateRouter"
 
 	router := upcloud.Router{Name: "test-router"}
 
@@ -33,10 +36,10 @@ func TestCreateCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mrs := MockNetworkService{}
-			mrs.On(methodName, &test.req).Return(&router, nil)
+			mService := smock.MockService{}
+			mService.On(targetMethod, &test.req).Return(&router, nil)
 
-			c := commands.BuildCommand(CreateCommand(&mrs), nil, config.New(viper.New()))
+			c := commands.BuildCommand(CreateCommand(&mService), nil, config.New(viper.New()))
 			err := c.SetFlags(test.args)
 			assert.NoError(t, err)
 
@@ -45,7 +48,7 @@ func TestCreateCommand(t *testing.T) {
 			if test.error != "" {
 				assert.Errorf(t, err, test.error)
 			} else {
-				mrs.AssertNumberOfCalls(t, methodName, 1)
+				mService.AssertNumberOfCalls(t, targetMethod, 1)
 			}
 		})
 	}

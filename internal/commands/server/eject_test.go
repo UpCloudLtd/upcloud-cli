@@ -1,19 +1,21 @@
 package server
 
 import (
+	"testing"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/commands/storage"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
 )
 
 func TestEjectCDROMCommand(t *testing.T) {
-	methodName := "EjectCDROM"
+	targetMethod := "EjectCDROM"
 
 	var Server1 = upcloud.Server{
 		CoreNumber:   1,
@@ -52,23 +54,18 @@ func TestEjectCDROMCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			CachedServers = nil
-			storage.CachedStorages = nil
+			mService := smock.MockService{}
+			mService.On("GetServers", mock.Anything).Return(servers, nil)
+			mService.On(targetMethod, &test.ejectReq).Return(&details, nil)
 
-			mServerService := MockServerService{}
-			mServerService.On("GetServers", mock.Anything).Return(servers, nil)
-
-			mStorageService := MockStorageService{}
-			mStorageService.On(methodName, &test.ejectReq).Return(&details, nil)
-
-			tc := commands.BuildCommand(EjectCommand(&mServerService, &mStorageService), nil, config.New(viper.New()))
+			tc := commands.BuildCommand(EjectCommand(&mService, &mService), nil, config.New(viper.New()))
 			err := tc.SetFlags(test.args)
 			assert.NoError(t, err)
 
 			_, err = tc.MakeExecuteCommand()([]string{Server1.UUID})
 
 			assert.Nil(t, err)
-			mStorageService.AssertNumberOfCalls(t, methodName, 1)
+			mService.AssertNumberOfCalls(t, targetMethod, 1)
 		})
 	}
 }

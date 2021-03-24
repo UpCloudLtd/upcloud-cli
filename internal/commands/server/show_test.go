@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"testing"
 
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/stretchr/testify/assert"
@@ -182,7 +184,8 @@ func TestServerHumanOutput(t *testing.T) {
 `
 
 	buf := new(bytes.Buffer)
-	command := ShowCommand(&MockServerService{}, &MockFirewallService{})
+	mService := smock.MockService{}
+	command := ShowCommand(&mService, &mService)
 	err := command.HandleOutput(buf, &commandResponseHolder{s, firewallRules})
 
 	assert.Nil(t, err)
