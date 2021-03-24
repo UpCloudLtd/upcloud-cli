@@ -34,7 +34,7 @@ var defaultCreateParams = &createParams{
 	},
 	firewall:       false,
 	metadata:       false,
-	os:             "Debian GNU/Linux 10 (Buster)",
+	os:             "Ubuntu Server 20.04 LTS (Focal Fossa)",
 	osStorageSize:  0,
 	sshKeys:        nil,
 	username:       "",

@@ -28,7 +28,7 @@ func TestCreateServer(t *testing.T) {
 
 	var StorageDef = upcloud.Storage{
 		UUID:   UUID2,
-		Title:  "Debian GNU/Linux 10 (Buster)",
+		Title:  "Ubuntu Server 20.04 LTS (Focal Fossa)",
 		Access: "private",
 		State:  "online",
 		Type:   "normal",
