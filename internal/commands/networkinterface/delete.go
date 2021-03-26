@@ -29,7 +29,7 @@ func DeleteCommand(networkSvc service.Network, serverSvc service.Server) command
 // InitCommand implements Command.InitCommand
 func (s *deleteCommand) InitCommand() {
 	s.SetPositionalArgHelp(server.PositionalArgHelp)
-	s.ArgCompletion(server.GetServerArgumentCompletionFunction(s.serverSvc))
+	s.ArgCompletion(server.GetServerArgumentCompletionFunction(s.Config()))
 	fs := &pflag.FlagSet{}
 	fs.IntVar(&s.index, "index", 0, "Interface index.")
 	s.AddFlags(fs)

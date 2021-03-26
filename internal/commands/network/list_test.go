@@ -9,7 +9,6 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -77,7 +76,7 @@ func TestListCommand(t *testing.T) {
 		mService.On("GetNetworksInZone", &request.GetNetworksInZoneRequest{Zone: "fi-hel1"}).Return(&upcloud.Networks{Networks: []upcloud.Network{Network1, Network2}}, nil)
 		mService.On("GetNetworksInZone", &request.GetNetworksInZoneRequest{Zone: "uk-lon1"}).Return(&upcloud.Networks{Networks: []upcloud.Network{Network3, Network4}}, nil)
 
-		c := commands.BuildCommand(ListCommand(&mService), nil, config.New(viper.New()))
+		c := commands.BuildCommand(ListCommand(&mService), nil, config.New())
 		err := c.SetFlags(test.flags)
 		assert.NoError(t, err)
 

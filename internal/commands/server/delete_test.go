@@ -8,7 +8,6 @@ import (
 	smock "github.com/UpCloudLtd/cli/internal/mock"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -56,7 +55,7 @@ func TestDeleteServerCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			conf := config.New(viper.New())
+			conf := config.New()
 			testCmd := DeleteCommand()
 			mService := new(smock.MockService)
 

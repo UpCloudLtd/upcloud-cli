@@ -37,7 +37,7 @@ var defaultDetachParams = &detachParams{
 // InitCommand implements Command.InitCommand
 func (s *detachCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	s.ArgCompletion(server.GetServerArgumentCompletionFunction(s.serverSvc))
+	s.ArgCompletion(server.GetServerArgumentCompletionFunction(s.Config()))
 	s.params = detachParams{DetachStorageRequest: request.DetachStorageRequest{}}
 
 	flagSet := &pflag.FlagSet{}

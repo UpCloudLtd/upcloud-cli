@@ -7,30 +7,32 @@ import (
 	// "github.com/UpCloudLtd/cli/internal/commands/network"
 	// "github.com/UpCloudLtd/cli/internal/commands/networkinterface"
 	// "github.com/UpCloudLtd/cli/internal/commands/router"
+	"github.com/UpCloudLtd/cli/internal/commands/root"
 	"github.com/UpCloudLtd/cli/internal/commands/server"
 	// "github.com/UpCloudLtd/cli/internal/commands/serverfirewall"
 	// "github.com/UpCloudLtd/cli/internal/commands/serverstorage"
 	// "github.com/UpCloudLtd/cli/internal/commands/storage"
 	"github.com/UpCloudLtd/cli/internal/config"
-	// "github.com/UpCloudLtd/cli/internal/upapi"
+
+	"github.com/spf13/cobra"
 )
 
 // BuildCommands is the main function that sets up the commands provided by upctl.
-func BuildCommands(mainCommand commands.Command, conf *config.Config) {
+func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 
 	// Servers
-	serverCommand := commands.BuildCommand(server.BaseServerCommand(), mainCommand, conf)
-	commands.BuildCommand(server.ListCommand(), serverCommand, conf)
-	commands.BuildCommand(server.PlanListCommand(), serverCommand, conf)
-	commands.BuildCommand(server.ShowCommand(), serverCommand, conf)
-	commands.BuildCommand(server.StartCommand(), serverCommand, conf)
-	commands.BuildCommand(server.RestartCommand(), serverCommand, conf)
-	commands.BuildCommand(server.StopCommand(), serverCommand, conf)
-	commands.BuildCommand(server.CreateCommand(), serverCommand, conf)
-	commands.BuildCommand(server.ModifyCommand(), serverCommand, conf)
-	commands.BuildCommand(server.LoadCommand(), serverCommand, conf)
-	commands.BuildCommand(server.EjectCommand(), serverCommand, conf)
-	commands.BuildCommand(server.DeleteCommand(), serverCommand, conf)
+	serverCommand := commands.BuildCommand(server.BaseServerCommand(), rootCmd, conf)
+	commands.BuildCommand(server.ListCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(server.PlanListCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(server.ShowCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(server.StartCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(server.RestartCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(server.StopCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(server.CreateCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(server.ModifyCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(server.LoadCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(server.EjectCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(server.DeleteCommand(), serverCommand.Cobra(), conf)
 
 	// // Server storage operations
 	// serverStorageCommand := commands.BuildCommand(serverstorage.BaseServerStorageCommand(), serverCommand, conf)
@@ -89,7 +91,24 @@ func BuildCommands(mainCommand commands.Command, conf *config.Config) {
 	// commands.BuildCommand(router.DeleteCommand(svc), routerCommand, conf)
 
 	// Account
-	accountCommand := commands.BuildCommand(account.BaseAccountCommand(), mainCommand, conf)
-	commands.BuildCommand(account.ShowCommand(), accountCommand, conf)
+	accountCommand := commands.BuildCommand(account.BaseAccountCommand(), rootCmd, conf)
+	commands.BuildCommand(account.ShowCommand(), accountCommand.Cobra(), conf)
 
+	// Misc
+	commands.BuildCommand(
+		&root.CompletionCommand{
+			BaseCommand: commands.New(
+				"completion",
+				"Generates shell completion",
+			),
+		}, rootCmd, conf,
+	)
+	commands.BuildCommand(
+		&root.VersionCommand{
+			BaseCommand: commands.New(
+				"version",
+				"Display software infomation",
+			),
+		}, rootCmd, conf,
+	)
 }

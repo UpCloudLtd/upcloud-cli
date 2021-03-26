@@ -8,7 +8,6 @@ import (
 	"github.com/UpCloudLtd/cli/internal/config"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -55,7 +54,7 @@ func TestShowCommand(t *testing.T) {
 `
 
 	buf := new(bytes.Buffer)
-	conf := config.New(viper.New())
+	conf := config.New()
 	testCmd := ShowCommand()
 	mService := new(MockAccountService)
 

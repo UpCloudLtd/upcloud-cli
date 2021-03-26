@@ -9,7 +9,6 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -87,7 +86,7 @@ func TestCloneCommand(t *testing.T) {
 			mService.On(targetMethod, &test.expected).Return(&details, nil)
 			mService.On("GetStorages", mock.Anything).Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2}}, nil)
 
-			tc := commands.BuildCommand(CloneCommand(&mService), nil, config.New(viper.New()))
+			tc := commands.BuildCommand(CloneCommand(&mService), nil, config.New())
 			err := tc.SetFlags(test.args)
 			assert.NoError(t, err)
 

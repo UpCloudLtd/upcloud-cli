@@ -8,7 +8,6 @@ import (
 	smock "github.com/UpCloudLtd/cli/internal/mock"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -117,7 +116,7 @@ func TestListStorages(t *testing.T) {
 			mService := smock.MockService{}
 			mService.On("GetStorages", mock.Anything).Return(&storages, nil)
 
-			lc := commands.BuildCommand(ListCommand(&mService), nil, config.New(viper.New()))
+			lc := commands.BuildCommand(ListCommand(&mService), nil, config.New())
 			err := lc.SetFlags(testcase.args)
 			assert.NoError(t, err)
 

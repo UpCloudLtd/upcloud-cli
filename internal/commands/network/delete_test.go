@@ -9,7 +9,6 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -42,7 +41,7 @@ func TestDeleteCommand(t *testing.T) {
 			mService.On(targetMethod, &test.req).Return(nil)
 			mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{n}}, nil)
 
-			c := commands.BuildCommand(DeleteCommand(&mService), nil, config.New(viper.New()))
+			c := commands.BuildCommand(DeleteCommand(&mService), nil, config.New())
 			err := c.SetFlags(test.flags)
 			assert.NoError(t, err)
 

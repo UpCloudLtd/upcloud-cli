@@ -9,7 +9,6 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -61,7 +60,7 @@ func TestModifyCommand(t *testing.T) {
 			mService.On(targetMethod, &test.expected).Return(&ip, nil)
 			mService.On("GetIPAddresses").Return(&upcloud.IPAddresses{IPAddresses: []upcloud.IPAddress{ip}}, nil)
 
-			c := commands.BuildCommand(ModifyCommand(&mService), nil, config.New(viper.New()))
+			c := commands.BuildCommand(ModifyCommand(&mService), nil, config.New())
 			err := c.SetFlags(test.flags)
 			assert.NoError(t, err)
 

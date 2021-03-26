@@ -9,7 +9,6 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -86,7 +85,7 @@ func TestCreateFirewallRuleCommand(t *testing.T) {
 			mService := smock.MockService{}
 			mService.On("GetServers", mock.Anything).Return(servers, nil)
 
-			cc := commands.BuildCommand(CreateCommand(&mService, &mService), nil, config.New(viper.New()))
+			cc := commands.BuildCommand(CreateCommand(&mService, &mService), nil, config.New())
 			err1 := cc.SetFlags(test.args)
 			if err1 != nil {
 				panic(err1)

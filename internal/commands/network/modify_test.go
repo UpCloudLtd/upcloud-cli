@@ -9,7 +9,6 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -85,7 +84,7 @@ func TestModifyCommand(t *testing.T) {
 			mService := smock.MockService{}
 			mService.On(targetMethod, &test.expected).Return(&upcloud.Network{}, nil)
 			mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{n}}, nil)
-			c := commands.BuildCommand(ModifyCommand(&mService), nil, config.New(viper.New()))
+			c := commands.BuildCommand(ModifyCommand(&mService), nil, config.New())
 			err := c.SetFlags(test.flags)
 			assert.NoError(t, err)
 

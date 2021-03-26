@@ -57,7 +57,7 @@ func (s *modifyCommand) buildRequest() (*request.ModifyNetworkInterfaceRequest, 
 // InitCommand implements Command.InitCommand
 func (s *modifyCommand) InitCommand() {
 	s.SetPositionalArgHelp(server.PositionalArgHelp)
-	s.ArgCompletion(server.GetServerArgumentCompletionFunction(s.serverSvc))
+	s.ArgCompletion(server.GetServerArgumentCompletionFunction(s.Config()))
 	fs := &pflag.FlagSet{}
 	fs.IntVar(&s.req.CurrentIndex, "index", s.req.CurrentIndex, "Index of the interface to modify.")
 	fs.IntVar(&s.req.NewIndex, "new-index", s.req.NewIndex, "Index of the interface to modify.")

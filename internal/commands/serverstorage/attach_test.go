@@ -9,7 +9,6 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -108,7 +107,7 @@ func TestAttachStorageCommand(t *testing.T) {
 			mService.On(targetMethod, &test.attacheReq).Return(&serverDetails, nil)
 			mService.On("GetStorages", mock.Anything).Return(storages, nil)
 
-			cc := commands.BuildCommand(AttachCommand(&mService, &mService), nil, config.New(viper.New()))
+			cc := commands.BuildCommand(AttachCommand(&mService, &mService), nil, config.New())
 			err := cc.SetFlags(test.args)
 			assert.NoError(t, err)
 

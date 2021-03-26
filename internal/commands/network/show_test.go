@@ -9,7 +9,6 @@ import (
 	smock "github.com/UpCloudLtd/cli/internal/mock"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -106,7 +105,7 @@ func TestShowCommand(t *testing.T) {
 	mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{network}}, nil)
 	mService.On("GetServers").Return(&upcloud.Servers{Servers: servers}, nil)
 
-	command := commands.BuildCommand(ShowCommand(&mService, &mService), nil, config.New(viper.New()))
+	command := commands.BuildCommand(ShowCommand(&mService, &mService), nil, config.New())
 	res, err := command.MakeExecuteCommand()([]string{network.UUID})
 
 	assert.Nil(t, err)

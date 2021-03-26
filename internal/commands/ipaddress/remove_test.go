@@ -9,7 +9,6 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -48,7 +47,7 @@ func TestRemoveCommand(t *testing.T) {
 			mService.On(targetMethod, &test.expected).Return(nil)
 			mService.On("GetIPAddresses").Return(&upcloud.IPAddresses{IPAddresses: []upcloud.IPAddress{ip}}, nil)
 
-			c := commands.BuildCommand(RemoveCommand(&mService), nil, config.New(viper.New()))
+			c := commands.BuildCommand(RemoveCommand(&mService), nil, config.New())
 
 			_, err := c.MakeExecuteCommand()(test.args)
 

@@ -2,12 +2,18 @@ package config
 
 import (
 	"fmt"
+	"net/http"
+	"strings"
 	"time"
 
+	"github.com/UpCloudLtd/cli/internal/terminal"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/client"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
+	"github.com/hashicorp/go-cleanhttp"
+
+	"github.com/adrg/xdg"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
-
-	"github.com/UpCloudLtd/cli/internal/terminal"
 )
 
 const (
@@ -21,6 +27,9 @@ const (
 	ValueOutputYAML = "yaml"
 	// ValueOutputJSON defines the viper configuration value used to define JSON output
 	ValueOutputJSON = "json"
+
+	// env vars custom prefix
+	envPrefix = "UPCLOUD"
 )
 
 var (
@@ -31,16 +40,59 @@ var (
 )
 
 // New returns a new instance of Config bound to the given viper instance
-func New(viper *viper.Viper) *Config {
-	return &Config{viper: viper}
+func New() *Config {
+	return &Config{viper: viper.New()}
+}
+
+type GlobalFlags struct {
+	ConfigFile   string `valid:"-"`
+	OutputFormat string `valid:"in(human|json|yaml)"`
+	Colors       bool   `valid:"-"`
 }
 
 // Config holds the configuration for running upctl
 type Config struct {
-	viper   *viper.Viper
-	ns      string
-	flagSet *pflag.FlagSet
-	Service interface{}
+	viper       *viper.Viper
+	ns          string
+	flagSet     *pflag.FlagSet
+	Service     interface{}
+	GlobalFlags GlobalFlags
+}
+
+func (s *Config) InitConfig() error {
+	v := s.Viper()
+
+	v.SetEnvPrefix(envPrefix)
+	v.SetEnvKeyReplacer(strings.NewReplacer("-", "_", ".", "_"))
+	v.AutomaticEnv()
+	v.SetConfigName("upctl")
+	v.SetConfigType("yaml")
+
+	configFile := s.GlobalFlags.ConfigFile
+	if configFile != "" {
+		v.SetConfigFile(configFile)
+	} else {
+		// Support XDG default config home dir and common config dirs
+		v.AddConfigPath(xdg.ConfigHome)
+		v.AddConfigPath("$HOME/.config") // for MacOS as XDG config is not common
+	}
+
+	// Attempt to read the config file, ignoring only config file not found errors
+	if err := v.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			return err
+		}
+	}
+
+	v.Set("config", v.ConfigFileUsed())
+
+	// Setup service client
+	if err := s.SetupService(); err != nil {
+		return err
+	}
+
+	return nil
+
 }
 
 // Viper returns a reference to the viper instance
@@ -100,15 +152,9 @@ func (s *Config) ConfigBindFlagSet(flags *pflag.FlagSet) {
 	if flags == nil {
 		panic("Nil flagset")
 	}
-	if s.flagSet == nil {
-		s.flagSet = &pflag.FlagSet{}
-	}
 	flags.VisitAll(func(flag *pflag.Flag) {
-		if s.flagSet.Lookup(flag.Name) != nil {
-			panic(fmt.Sprintf("key %s already bound", flag.Name))
-		}
 		_ = s.viper.BindPFlag(s.prependNs(flag.Name), flag)
-		s.flagSet.AddFlag(flag)
+		// s.flagSet.AddFlag(flag)
 	})
 }
 
@@ -139,4 +185,38 @@ func (s *Config) ClientTimeout() time.Duration {
 // InteractiveUI is a convenience method that returns true if the user has requested human output and the terminal supports it.
 func (s *Config) InteractiveUI() bool {
 	return terminal.IsStdoutTerminal() && s.OutputHuman()
+}
+
+type transport struct{}
+
+// RoundTrip implements http.RoundTripper
+func (t *transport) RoundTrip(req *http.Request) (*http.Response, error) {
+	return cleanhttp.DefaultTransport().RoundTrip(req)
+}
+
+// SetupService creates a new service instance and puts in the conf struct
+func (s *Config) SetupService() error {
+	username := s.Top().GetString("username")
+	password := s.Top().GetString("password")
+
+	if username == "" || password == "" {
+		err := `
+User credentials not found, these must be set in config file or via environment vars
+`
+		return fmt.Errorf(err)
+	}
+
+	hc := &http.Client{Transport: &transport{}}
+	hc.Timeout = s.ClientTimeout()
+
+	whc := client.NewWithHTTPClient(
+		username,
+		password,
+		hc,
+	)
+	whc.UserAgent = fmt.Sprintf("upctl/%s", Version)
+
+	s.Service = service.New(whc)
+
+	return nil
 }

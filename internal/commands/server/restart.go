@@ -39,7 +39,7 @@ var defaultRestartParams = &restartParams{
 // InitCommand implements Command.InitCommand
 func (s *restartCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetServerArgumentCompletionFunction(s.Config().Service.(service.Server)))
+	s.ArgCompletion(GetServerArgumentCompletionFunction(s.Config()))
 
 	s.params = restartParams{RestartServerRequest: request.RestartServerRequest{}}
 	flags := &pflag.FlagSet{}

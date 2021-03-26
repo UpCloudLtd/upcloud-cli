@@ -9,7 +9,6 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -90,7 +89,7 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 			mService.On(targetMethod, &test1.expected).Return(&StorageDetails1, nil)
 			mService.On("GetStorageDetails", &request.GetStorageDetailsRequest{UUID: Storage1.UUID}).Return(&StorageDetails1, nil)
 
-			tc := commands.BuildCommand(ModifyCommand(&mService), nil, config.New(viper.New()))
+			tc := commands.BuildCommand(ModifyCommand(&mService), nil, config.New())
 			err := tc.SetFlags(test1.args)
 			assert.NoError(t, err)
 
@@ -136,7 +135,7 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 			mService.On(targetMethod, &test2.expected).Return(&StorageDetails1, nil)
 			mService.On("GetStorageDetails", &request.GetStorageDetailsRequest{UUID: Storage1.UUID}).Return(&StorageDetails1, nil)
 
-			tc := commands.BuildCommand(ModifyCommand(&mService), nil, config.New(viper.New()))
+			tc := commands.BuildCommand(ModifyCommand(&mService), nil, config.New())
 			err := tc.SetFlags(test2.args)
 			assert.NoError(t, err)
 
@@ -199,7 +198,7 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 			mService.On(targetMethod, &test3.expected).Return(&StorageDetails2, nil)
 			mService.On("GetStorageDetails", &request.GetStorageDetailsRequest{UUID: Storage2.UUID}).Return(&StorageDetails2, nil)
 
-			tc := commands.BuildCommand(ModifyCommand(&mService), nil, config.New(viper.New()))
+			tc := commands.BuildCommand(ModifyCommand(&mService), nil, config.New())
 			err := tc.SetFlags(test3.args)
 			assert.NoError(t, err)
 

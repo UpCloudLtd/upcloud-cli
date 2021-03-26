@@ -37,7 +37,7 @@ var defaultStartParams = &startParams{
 // InitCommand implements Command.InitCommand
 func (s *startCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetServerArgumentCompletionFunction(s.Config().Service.(service.Server)))
+	s.ArgCompletion(GetServerArgumentCompletionFunction(s.Config()))
 
 	flags := &pflag.FlagSet{}
 	flags.IntVar(&s.params.AvoidHost, "avoid-host", defaultStartParams.AvoidHost, "Avoid specific host when starting a server.")

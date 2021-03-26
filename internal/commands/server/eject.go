@@ -18,7 +18,7 @@ type ejectParams struct {
 
 func (s *ejectCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetServerArgumentCompletionFunction(s.Config().Service.(service.Server)))
+	s.ArgCompletion(GetServerArgumentCompletionFunction(s.Config()))
 }
 
 // EjectCommand creates the "server eject" command

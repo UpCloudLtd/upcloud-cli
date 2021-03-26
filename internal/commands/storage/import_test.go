@@ -13,7 +13,6 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -106,7 +105,7 @@ func TestImportCommand(t *testing.T) {
 			mss.On("GetStorageImportDetails", &request.GetStorageImportDetailsRequest{UUID: Storage1.UUID}).Return(&StorageImportCompleted, nil)
 			mss.On("CreateStorage", mock.Anything).Return(&StorageDetails1, nil)
 
-			ic := commands.BuildCommand(ImportCommand(&mss), nil, config.New(viper.New()))
+			ic := commands.BuildCommand(ImportCommand(&mss), nil, config.New())
 			err := ic.SetFlags(test.args)
 			assert.NoError(t, err)
 

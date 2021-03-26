@@ -3,9 +3,12 @@ package server
 import (
 	"errors"
 	"fmt"
+	"time"
+
+	// "github.com/UpCloudLtd/cli/internal/config"
+	"github.com/UpCloudLtd/cli/internal/config"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/spf13/cobra"
-	"time"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
@@ -161,9 +164,10 @@ func (s Request) Send(args []string) (interface{}, error) {
 }
 
 // GetServerArgumentCompletionFunction returns a bash completion function for servers
-func GetServerArgumentCompletionFunction(s service.Server) func(toComplete string) ([]string, cobra.ShellCompDirective) {
+func GetServerArgumentCompletionFunction(conf *config.Config) func(toComplete string) ([]string, cobra.ShellCompDirective) {
 	return func(toComplete string) ([]string, cobra.ShellCompDirective) {
-		servers, err := s.GetServers()
+		svc := conf.Service.(service.Server)
+		servers, err := svc.GetServers()
 		if err != nil {
 			return nil, cobra.ShellCompDirectiveDefault
 		}

@@ -1,281 +1,30 @@
 package main
 
 import (
-	"fmt"
-	"io"
 	"os"
-	"runtime"
-	"strings"
-	"time"
 
-	"github.com/adrg/xdg"
-	"github.com/spf13/pflag"
-	"github.com/spf13/viper"
-	"gopkg.in/yaml.v3"
-
-	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/commands/all"
 	"github.com/UpCloudLtd/cli/internal/config"
-	"github.com/UpCloudLtd/cli/internal/terminal"
-	"github.com/UpCloudLtd/cli/internal/ui"
-	"github.com/UpCloudLtd/cli/internal/validation"
+	"github.com/UpCloudLtd/cli/internal/core"
 )
 
-const envPrefix = "UPCLOUD"
+//BootstrapCLI CLI entrypoint
+func BootstrapCLI(args []string) error {
 
-var (
-	mainConfig = config.New(viper.New())
-	mc         = commands.BuildCommand(
-		&mainCommand{BaseCommand: commands.New("upctl", "UpCloud command line client")},
-		nil, mainConfig)
-)
+	conf := config.New()
+	rootCmd := core.BuildRootCmd(args, conf)
 
-type completionCommand struct {
-	*commands.BaseCommand
-}
-
-func (s *completionCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
-		if len(args) != 1 {
-			return nil, fmt.Errorf("shell name is requred")
-		}
-		shellName := args[0]
-
-		if shellName == "bash" {
-			err := s.Cobra().Root().GenBashCompletion(os.Stdout)
-			return nil, err
-		}
-
-		return nil, fmt.Errorf("completion for %s is not supported", shellName)
+	all.BuildCommands(&rootCmd, conf)
+	if err := rootCmd.Execute(); err != nil {
+		return err
 	}
-}
-
-type versionCommand struct {
-	*commands.BaseCommand
-}
-
-func (s *versionCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
-		return fmt.Printf(
-			"Upctl %v\n\tBuild date: %v\n\tBuilt with: %v",
-			config.Version, config.BuildDate, runtime.Version(),
-		)
-	}
-}
-
-type defaultsCommand struct {
-	*commands.BaseCommand
-}
-
-func (s *defaultsCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
-		return nil, s.HandleOutput(os.Stdout, nil)
-	}
-}
-
-func (s *defaultsCommand) HandleOutput(io.Writer, interface{}) error {
-	output := config.ValueOutputYAML
-	if s.Config().Top().IsSet(config.KeyOutput) && !s.Config().OutputHuman() {
-		output = s.Config().Output()
-	}
-	if output == config.ValueOutputJSON {
-		return fmt.Errorf("only yaml output is supported for this command")
-	}
-
-	var commandsWithFlags []commands.Command
-nextChild:
-	for _, cmd := range append([]commands.Command{s.Parent()}, s.Parent().Children()...) {
-		if len(cmd.Config().BoundFlags()) > 0 {
-			commandsWithFlags = append(commandsWithFlags, cmd)
-		} else {
-			for _, ccmd := range cmd.Children() {
-				if len(ccmd.Config().BoundFlags()) > 0 {
-					commandsWithFlags = append(commandsWithFlags, cmd)
-					continue nextChild
-				}
-			}
-		}
-	}
-	topNode := &yaml.Node{Kind: yaml.DocumentNode}
-	topNode.HeadComment = "UpCtl configuration defaults"
-	curNode := &yaml.Node{Kind: yaml.MappingNode, Tag: "!!map"}
-	topNode.Content = append(topNode.Content, curNode)
-	commandToNode := map[commands.Command]*yaml.Node{s.Parent(): curNode}
-	var prev commands.Command
-	for _, cmd := range commandsWithFlags {
-		if prev != nil && prev != cmd.Parent() {
-			curNode = commandToNode[cmd.Parent()]
-		}
-		// Skip top level command name
-		if cmd.Parent() != nil {
-			curNode.Content = append(curNode.Content,
-				&yaml.Node{
-					Kind:  yaml.ScalarNode,
-					Tag:   "!!str",
-					Value: cmd.Name(),
-				})
-			curNode.Content = append(curNode.Content, &yaml.Node{
-				Kind: yaml.MappingNode,
-				Tag:  "!!map",
-			})
-			curNode = curNode.Content[len(curNode.Content)-1]
-		}
-		commandToNode[cmd] = curNode
-		if len(cmd.Config().BoundFlags()) > 0 {
-			for _, flag := range cmd.Config().BoundFlags() {
-				keyNode := &yaml.Node{
-					Kind:        yaml.ScalarNode,
-					Tag:         "!!str",
-					HeadComment: flag.Usage,
-					Value:       flag.Name,
-					FootComment: "\r",
-				}
-				valueNode := &yaml.Node{}
-				s.applyYamlScalarValue(valueNode, flag.Value.Type(), flag.DefValue)
-				if valueNode.Kind == 0 &&
-					(strings.HasSuffix(flag.Value.Type(), "Slice") ||
-						strings.HasSuffix(flag.Value.Type(), "Array")) {
-
-					styp := flag.Value.Type()[0 : len(flag.Value.Type())-5]
-					valueNode.Kind = yaml.SequenceNode
-					valueNode.Style = yaml.FlowStyle
-					valueNode.Tag = "!!seq"
-					flagSvals := strings.TrimPrefix(flag.Value.String(), "[")
-					flagSvals = strings.TrimSuffix(flagSvals, "]")
-					for _, fsv := range strings.Split(flagSvals, ",") {
-						seqNode := &yaml.Node{}
-						s.applyYamlScalarValue(seqNode, styp, fsv)
-						if seqNode.Kind == 0 {
-							panic(fmt.Sprintf(
-								"cannot marshal %q value %q type %q",
-								flag.Name, flag.Value.String(), flag.Value.Type()))
-						}
-						valueNode.Content = append(valueNode.Content, seqNode)
-					}
-				}
-				if valueNode.Kind == 0 {
-					panic(fmt.Sprintf(
-						"cannot marshal flag %q value %q type %q",
-						flag.Name, flag.Value.String(), flag.Value.Type()))
-				}
-				curNode.Content = append(curNode.Content, keyNode, valueNode)
-			}
-		}
-		prev = cmd
-	}
-	return yaml.NewEncoder(os.Stdout).Encode(topNode)
-}
-
-func (s *defaultsCommand) applyYamlScalarValue(node *yaml.Node, typ string, value string) {
-	switch {
-	case strings.HasPrefix(typ, "int") ||
-		strings.HasPrefix(typ, "uint"):
-		node.Kind = yaml.ScalarNode
-		node.Tag = "!!int"
-		node.Value = value
-	case typ == "string" || typ == "duration":
-		node.Kind = yaml.ScalarNode
-		node.Tag = "!!str"
-		node.Value = value
-	case typ == "bool":
-		node.Kind = yaml.ScalarNode
-		node.Tag = "!!bool"
-		node.Value = value
-	}
-}
-
-type mainCommand struct {
-	*commands.BaseCommand
-}
-
-func (s *mainCommand) initConfig() error {
-	v := s.Config().Viper()
-
-	v.SetEnvPrefix(envPrefix)
-	v.SetEnvKeyReplacer(strings.NewReplacer("-", "_", ".", "_"))
-	v.AutomaticEnv()
-	v.SetConfigName("upctl")
-	v.SetConfigType("yaml")
-
-	configFile := s.Config().Top().GetString("config")
-	if configFile != "" {
-		v.SetConfigFile(configFile)
-	} else {
-		// Support XDG default config home dir and common config dirs
-		v.AddConfigPath(xdg.ConfigHome)
-		v.AddConfigPath("$HOME/.config") // for MacOS as XDG config is not common
-	}
-
-	// Attempt to read the config file, ignoring only config file not found errors
-	if err := v.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
-			return err
-		}
-	}
-
-	v.Set("config", v.ConfigFileUsed())
 
 	return nil
-
-}
-
-func (s *mainCommand) InitCommand() {
-	s.Cobra().SilenceErrors = true
-	s.Cobra().SilenceUsage = true
-	s.Cobra().BashCompletionFunction = commands.CustomBashCompletionFunc(s.Name())
-
-	flags := &pflag.FlagSet{}
-	flags.String("config", "", "Config file")
-	flags.String("output", "human", "Output format (supported: json, yaml and human")
-	flags.String("colours", "auto", "Use terminal colours (supported: auto, true, false)")
-	flags.Duration("client-timeout", 300*time.Second, "Timeout for requests")
-	s.AddPersistentFlags(flags)
-
-	s.SetConfigLoader(func(config *config.Config) error {
-		return s.initConfig()
-	})
-
-	commands.BuildCommand(
-		&completionCommand{commands.New("completion", "Generate shell completion code")},
-		s, config.New(mainConfig.Viper()))
-
-	commands.BuildCommand(
-		&defaultsCommand{commands.New("defaults", "Generate defaults")},
-		s, config.New(mainConfig.Viper()))
-
-	commands.BuildCommand(
-		&versionCommand{commands.New("version", "Display software version")},
-		s, config.New(mainConfig.Viper()),
-	)
-
-	all.BuildCommands(s, s.Config())
-
-	s.Cobra().SetUsageTemplate(ui.CommandUsageTemplate())
-	s.Cobra().SetUsageFunc(ui.UsageFunc)
-
-}
-
-func (s *mainCommand) MakePreExecuteCommand() func(args []string) error {
-	return func(args []string) error {
-		if err := validation.Value(s.Config().GetString("output"), "json", "yaml", "human"); err != nil {
-			return fmt.Errorf("invalid output: %v", err)
-		}
-		if err := validation.Value(s.Config().GetString("colours"), "auto", "true", "false", "on", "off"); err != nil {
-			return fmt.Errorf("invalid colours: %v", err)
-		}
-		switch strings.ToLower(s.Config().GetString("colours")) {
-		case "on", "true":
-			terminal.ForceColours(true)
-		case "off", "false":
-			terminal.ForceColours(false)
-		}
-		return nil
-	}
 }
 
 func main() {
-	if err := mc.Cobra().Execute(); err != nil {
-		mc.HandleError(err)
+
+	if err := BootstrapCLI(os.Args); err != nil {
 		os.Exit(1)
 	}
 }

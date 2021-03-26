@@ -10,7 +10,6 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -76,7 +75,7 @@ func TestStartCommand(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			CachedServers = nil
-			conf := config.New(viper.New())
+			conf := config.New()
 			testCmd := StartCommand()
 			mService := new(smock.MockService)
 

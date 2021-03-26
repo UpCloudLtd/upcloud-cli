@@ -183,7 +183,7 @@ func TestServerHumanOutput(t *testing.T) {
 
 	buf := new(bytes.Buffer)
 	testCmd := ShowCommand()
-	// conf := config.New(viper.New())
+	// conf := config.New()
 	// mService := new(smock.MockService)
 
 	err := testCmd.HandleOutput(buf, &commandResponseHolder{s, firewallRules})

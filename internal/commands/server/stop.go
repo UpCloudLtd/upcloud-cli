@@ -39,7 +39,7 @@ var defaultStopParams = &stopParams{
 // InitCommand implements Command.InitCommand
 func (s *stopCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetServerArgumentCompletionFunction(s.Config().Service.(service.Server)))
+	s.ArgCompletion(GetServerArgumentCompletionFunction(s.Config()))
 
 	flags := &pflag.FlagSet{}
 	flags.StringVar(&s.params.StopType, "type", defaultStopParams.StopType, "The type of stop operation. Available: soft, hard")

@@ -9,7 +9,6 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -66,7 +65,7 @@ func TestDetachCommand(t *testing.T) {
 
 			mService.On(targetMethod, &test.detachReq).Return(&details, nil)
 
-			tc := commands.BuildCommand(DetachCommand(&mService, &mService), nil, config.New(viper.New()))
+			tc := commands.BuildCommand(DetachCommand(&mService, &mService), nil, config.New())
 			err := tc.SetFlags(test.args)
 			assert.NoError(t, err)
 
