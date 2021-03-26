@@ -30,7 +30,7 @@ type planListCommand struct {
 
 // InitCommand implements Command.InitCommand
 func (s *planListCommand) InitCommand() {
-	s.header = table.Row{"Name", "Cores", "Memory (MiB)", "Storage (GiB)", "Storage tier", "Transfer out / month (GiB)"}
+	s.header = table.Row{"Name", "Cores", "Memory (MiB)", "Storage (GiB)", "Storage tier", "Transfer out per month (GiB)"}
 	s.columnKeys = []string{"name", "cores", "memory", "storage", "storage_tier", "transfer"}
 	s.visibleColumns = []string{"name", "cores", "memory", "storage", "storage_tier", "transfer"}
 	flags := &pflag.FlagSet{}
