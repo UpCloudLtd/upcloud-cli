@@ -46,9 +46,9 @@ func (s *restartCommand) InitCommand() {
 	s.params = restartParams{RestartServerRequest: request.RestartServerRequest{}}
 	flags := &pflag.FlagSet{}
 
-	flags.StringVar(&s.params.StopType, "stop-type", defaultRestartParams.StopType, "Restart type\nAvailable: soft, hard")
-	flags.StringVar(&s.params.TimeoutAction, "timeout-action", defaultRestartParams.TimeoutAction, "Action to take if timeout limit is exceeded\nAvailable: destroy, ignore")
-	flags.IntVar(&s.params.timeout, "timeout", defaultRestartParams.timeout, "Stop timeout in seconds\nAvailable: 1-600")
+	flags.StringVar(&s.params.StopType, "stop-type", defaultRestartParams.StopType, "Restart type. Available: soft, hard")
+	flags.StringVar(&s.params.TimeoutAction, "timeout-action", defaultRestartParams.TimeoutAction, "Action to take if timeout limit is exceeded. Available: destroy, ignore")
+	flags.IntVar(&s.params.timeout, "timeout", defaultRestartParams.timeout, "Stop timeout in seconds. Available: 1-600")
 	flags.IntVar(&s.params.Host, "host", defaultRestartParams.Host, "Use this to restart the VM on a specific host. Refers to value from host attribute. Only available for private cloud hosts")
 
 	s.AddFlags(flags)

@@ -31,7 +31,7 @@ type createParams struct {
 func (s *createCommand) InitCommand() {
 	s.params.req = request.CreateRouterRequest{}
 	fs := &pflag.FlagSet{}
-	fs.StringVar(&s.params.req.Name, "name", s.params.req.Name, "Name of the router. [Required]")
+	fs.StringVar(&s.params.req.Name, "name", s.params.req.Name, "Router name.")
 	s.AddFlags(fs)
 }
 

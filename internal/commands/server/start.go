@@ -42,9 +42,9 @@ func (s *startCommand) InitCommand() {
 	s.ArgCompletion(GetServerArgumentCompletionFunction(s.service))
 
 	flags := &pflag.FlagSet{}
-	flags.IntVar(&s.params.AvoidHost, "avoid-host", defaultStartParams.AvoidHost, "Avoid specific host when starting a server")
-	flags.IntVar(&s.params.Host, "host", defaultStartParams.Host, "Start server on a specific host. Note that this is generally available for private clouds only")
-	flags.IntVar(&s.params.timeout, "timeout", defaultStartParams.timeout, "Stop timeout in seconds\nAvailable: 1-600")
+	flags.IntVar(&s.params.AvoidHost, "avoid-host", defaultStartParams.AvoidHost, "Avoid specific host when starting a server.")
+	flags.IntVar(&s.params.Host, "host", defaultStartParams.Host, "Start server on a specific host. Note that this is generally available for private clouds only.")
+	flags.IntVar(&s.params.timeout, "timeout", defaultStartParams.timeout, "Stop timeout in seconds. Available: 1-600")
 	s.AddFlags(flags)
 }
 

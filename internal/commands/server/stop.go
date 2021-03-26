@@ -44,8 +44,8 @@ func (s *stopCommand) InitCommand() {
 	s.ArgCompletion(GetServerArgumentCompletionFunction(s.service))
 
 	flags := &pflag.FlagSet{}
-	flags.StringVar(&s.params.StopType, "type", defaultStopParams.StopType, "The type of stop operation. Soft waits for the OS to shut down cleanly while hard forcibly shuts down a server.\nAvailable: soft, hard")
-	flags.IntVar(&s.params.timeout, "timeout", defaultStartParams.timeout, "Stop timeout in seconds\nAvailable: 1-600")
+	flags.StringVar(&s.params.StopType, "type", defaultStopParams.StopType, "The type of stop operation. Available: soft, hard")
+	flags.IntVar(&s.params.timeout, "timeout", defaultStartParams.timeout, "Stop timeout in seconds. Available: 1-600")
 	s.AddFlags(flags)
 }
 

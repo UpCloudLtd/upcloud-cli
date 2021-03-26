@@ -34,22 +34,21 @@ type createParams struct {
 func (s *createCommand) InitCommand() {
 	s.params.req = request.CreateNetworkRequest{}
 	fs := &pflag.FlagSet{}
-	fs.StringVar(&s.params.req.Name, "name", s.params.req.Name, "Names the network.[Required]")
-	fs.StringVar(&s.params.req.Zone, "zone", s.params.req.Zone, "The zone in which the network is configured.[Required]")
+	fs.StringVar(&s.params.req.Name, "name", s.params.req.Name, "Names the network.")
+	fs.StringVar(&s.params.req.Zone, "zone", s.params.req.Zone, "The zone in which the network is configured.")
 	fs.StringVar(&s.params.req.Router, "router", s.params.req.Router, "Add this network to an existing router.")
 	fs.StringArrayVar(&s.params.networks, "ip-network", s.params.networks, "A network interface for the server, multiple can be declared.\n\n "+
-		"Fields \n\n"+
-		"  address: string \n\n"+
-		"  family: string \n\n"+
-		"  gateway: string \n\n"+
-		"  dhcp: true/false \n\n"+
-		"  dhcp-default-route: true/false \n\n"+
-		"  dhcp-dns: array of strings \n\n"+
-		"Usage \n\n"+
-		"	--ip-network 'address=94.23.112.143,\"dhcp-dns=<value1>,<value2>\",gateway=<gateway>,dhcp=true' \n\n"+
-		"	--ip-network address=94.43.112.143/32,dhcp-dns=<value>\n\n"+
-		"[Required]")
-	s.AddFlags(fs)
+		"Fields: \n"+
+		"  address: string \n"+
+		"  family: string \n"+
+		"  gateway: string \n"+
+		"  dhcp: true/false \n"+
+		"  dhcp-default-route: true/false \n"+
+		"  dhcp-dns: array of strings \n"+
+		"Usage: \n"+
+		"	--ip-network 'address=94.23.112.143,\"dhcp-dns=<value1>,<value2>\",gateway=<gateway>,dhcp=true' \n"+
+		"	--ip-network address=94.43.112.143/32,dhcp-dns=<value>\n")
+	s.AddFlags(fs) // TODO(ana): replace usage with examples once the refactor is done.
 }
 
 func (s *createCommand) buildRequest() (*request.CreateNetworkRequest, error) {

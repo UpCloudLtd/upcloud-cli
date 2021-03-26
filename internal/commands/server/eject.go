@@ -26,7 +26,7 @@ func (s *ejectCommand) InitCommand() {
 // EjectCommand creates the "server eject" command
 func EjectCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
 	return &ejectCommand{
-		BaseCommand: commands.New("eject", "Eject a CD-ROM"),
+		BaseCommand: commands.New("eject", "Eject a CD-ROM from the server"),
 		serverSvc:   serverSvc,
 		storageSvc:  storageSvc,
 	}

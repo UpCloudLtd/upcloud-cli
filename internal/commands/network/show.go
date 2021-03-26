@@ -16,7 +16,7 @@ import (
 // ShowCommand creates the "network show" command
 func ShowCommand(networkSvc service.Network, serverSvc service.Server) commands.Command {
 	return &showCommand{
-		BaseCommand: commands.New("show", "Show current network"),
+		BaseCommand: commands.New("show", "Show network details"),
 		networkSvc:  networkSvc,
 		serverSvc:   serverSvc,
 	}

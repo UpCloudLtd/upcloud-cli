@@ -14,7 +14,7 @@ import (
 // ListCommand creates the "ip-address list" command
 func ListCommand(service service.IpAddress) commands.Command {
 	return &listCommand{
-		BaseCommand: commands.New("list", "List ip addresses"),
+		BaseCommand: commands.New("list", "List IP addresses"),
 		service:     service,
 	}
 }

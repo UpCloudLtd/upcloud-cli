@@ -18,9 +18,10 @@ type createCommand struct {
 	params      createParams
 }
 
+// CreateCommand creates the "server filewall create" command
 func CreateCommand(serverSvc service.Server, firewallSvc service.Firewall) commands.Command {
 	return &createCommand{
-		BaseCommand: commands.New("create", "Creates a new firewall rule."),
+		BaseCommand: commands.New("create", "Create a new firewall rule"),
 		serverSvc:   serverSvc,
 		firewallSvc: firewallSvc,
 	}
@@ -42,19 +43,19 @@ func (s *createCommand) InitCommand() {
 
 	def := defaultCreateParams
 
-	flagSet.StringVar(&s.params.Direction, "direction", def.FirewallRule.Direction, "in / out")
-	flagSet.StringVar(&s.params.Action, "action", def.FirewallRule.Action, "accept / drop")
-	flagSet.StringVar(&s.params.Family, "family", def.FirewallRule.Family, "IPv4 / IPv6")
-	flagSet.IntVar(&s.params.Position, "position", def.Position, "1-1000")
-	flagSet.StringVar(&s.params.Protocol, "protocol", def.Protocol, "tcp / udp / icmp")
-	flagSet.StringVar(&s.params.ICMPType, "icmp-type", def.ICMPType, "0-255")
-	flagSet.StringVar(&s.params.DestIPBlock, "dest-ipaddress-block", "", "Valid IP address")
-	flagSet.StringVar(&s.params.DestinationPortStart, "destination-port-start", def.DestinationPortStart, "1-65535")
-	flagSet.StringVar(&s.params.DestinationPortEnd, "destination-port-end", def.DestinationPortEnd, "1-65535")
-	flagSet.StringVar(&s.params.SrcIPBlock, "src-ipaddress-block", "", "Valid IP address")
-	flagSet.StringVar(&s.params.SourcePortStart, "source-port-start", def.SourcePortStart, "1-65535")
-	flagSet.StringVar(&s.params.SourcePortEnd, "source-port-end", def.SourcePortEnd, "1-65535")
-	flagSet.StringVar(&s.params.Comment, "comment", def.Comment, "0-250 characters")
+	flagSet.StringVar(&s.params.Direction, "direction", def.FirewallRule.Direction, "Rule direction. Available: in / out")
+	flagSet.StringVar(&s.params.Action, "action", def.FirewallRule.Action, "Rule action. Available: accept / drop")
+	flagSet.StringVar(&s.params.Family, "family", def.FirewallRule.Family, "IP family. Available: IPv4, IPv6")
+	flagSet.IntVar(&s.params.Position, "position", def.Position, "Position in relation to other rules. Available: 1-1000")
+	flagSet.StringVar(&s.params.Protocol, "protocol", def.Protocol, "Protocol. Available: tcp, udp, icmp")
+	flagSet.StringVar(&s.params.ICMPType, "icmp-type", def.ICMPType, "ICMP type. Available: 0-255")
+	flagSet.StringVar(&s.params.DestIPBlock, "dest-ipaddress-block", "", "Destination IP address block.")
+	flagSet.StringVar(&s.params.DestinationPortStart, "destination-port-start", def.DestinationPortStart, "Destination port range start. Available: 1-65535")
+	flagSet.StringVar(&s.params.DestinationPortEnd, "destination-port-end", def.DestinationPortEnd, "Destination port range end.")
+	flagSet.StringVar(&s.params.SrcIPBlock, "src-ipaddress-block", "", "Source IP address block.")
+	flagSet.StringVar(&s.params.SourcePortStart, "source-port-start", def.SourcePortStart, "Source port range start.")
+	flagSet.StringVar(&s.params.SourcePortEnd, "source-port-end", def.SourcePortEnd, "Destination port range end.")
+	flagSet.StringVar(&s.params.Comment, "comment", def.Comment, "Freeform comment that can include 0-250 characters.")
 
 	s.AddFlags(flagSet)
 }
@@ -64,19 +65,19 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 	return func(args []string) (interface{}, error) {
 
 		if s.params.Direction == "" {
-			return nil, fmt.Errorf("Direction is required.")
+			return nil, fmt.Errorf("direction is required")
 		}
 
 		if s.params.Action == "" {
-			return nil, fmt.Errorf("Action is required.")
+			return nil, fmt.Errorf("action is required")
 		}
 
 		if s.params.Family == "" {
-			return nil, fmt.Errorf("Family is required. Use 'IPv4' or 'IPv6'.")
+			return nil, fmt.Errorf("family (IPv4/IPv6) is required")
 		}
 
 		if s.params.Family != "IPv4" && s.params.Family != "IPv6" {
-			return nil, fmt.Errorf("Invalid Family. 'IPv4' / 'IPv6'.")
+			return nil, fmt.Errorf("invalid family, use either IPv4 or IPv6")
 		}
 
 		NetDst, err := cidr.ParseCIDR(s.params.DestIPBlock)

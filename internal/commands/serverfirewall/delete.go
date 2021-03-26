@@ -17,6 +17,7 @@ type deleteCommand struct {
 	params      deleteParams
 }
 
+// DeleteCommand creates the "server firewall delete" command
 func DeleteCommand(serverSvc service.Server, firewallSvc service.Firewall) commands.Command {
 	return &deleteCommand{
 		BaseCommand: commands.New("delete", "Removes a firewall rule from a server. Firewall rules must be removed individually. The positions of remaining firewall rules will be adjusted after a rule is removed."),
@@ -37,7 +38,7 @@ func (s *deleteCommand) InitCommand() {
 
 	def := defaultRemoveParams
 
-	flagSet.IntVar(&s.params.Position, "position", def.Position, "1-1000")
+	flagSet.IntVar(&s.params.Position, "position", def.Position, "Rule position. Available: 1-1000")
 
 	s.AddFlags(flagSet)
 }
@@ -47,7 +48,7 @@ func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 	return func(args []string) (interface{}, error) {
 
 		if s.params.Position == 0 {
-			return nil, fmt.Errorf("Position is required.")
+			return nil, fmt.Errorf("position is required")
 		}
 
 		return server.Request{

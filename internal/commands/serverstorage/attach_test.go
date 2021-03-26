@@ -89,7 +89,7 @@ func TestAttachStorageCommand(t *testing.T) {
 				"--storage", Storage1.Title,
 				"--type", "cdrom",
 				"--address", "ide",
-				"--boot-disk", "1",
+				"--boot-disk",
 			},
 			attacheReq: request.AttachStorageRequest{
 				ServerUUID:  Server1.UUID,

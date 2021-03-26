@@ -50,15 +50,15 @@ var def = createParams{
 func (s *createCommand) InitCommand() {
 	s.params.req = request.CreateNetworkInterfaceRequest{}
 	fs := &pflag.FlagSet{}
-	fs.StringVar(&s.params.network, "network", def.network, "Virtual network ID or name to join.\n[Required]")
-	fs.StringVar(&s.params.req.Type, "type", def.req.Type, "Set the type of the network.\nAvailable: public, utility, private")
+	fs.StringVar(&s.params.network, "network", def.network, "Virtual network ID or name to join.")
+	fs.StringVar(&s.params.req.Type, "type", def.req.Type, "Set the type of the network. Available: public, utility, private")
 	fs.StringVar(&s.params.family, "family", def.family, "The address family of new IP address.")
 	fs.IntVar(&s.params.req.Index, "index", def.req.Index, "Interface index.")
 	fs.BoolVar(&s.params.bootable, "bootable", def.bootable, "Whether to try booting through the interface.")
 	fs.BoolVar(&s.params.filtering, "source-ip-filtering", def.filtering, "Whether source IP filtering is enabled on the interface. Disabling it is allowed only for SDN private interfaces.")
 	fs.StringSliceVar(&s.params.ipAddresses, "ip-addresses", s.params.ipAddresses, "Array of IP addresses, multiple can be declared\n\n"+
 		"Usage: --ip-addresses 94.237.112.143,94.237.112.144")
-	s.AddFlags(fs)
+	s.AddFlags(fs) // TODO(ana): replace usage with examples once the refactor is done.
 }
 
 func (s *createCommand) buildRequest() (*request.CreateNetworkInterfaceRequest, error) {

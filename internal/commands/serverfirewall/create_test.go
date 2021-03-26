@@ -44,7 +44,7 @@ func TestCreateFirewallRuleCommand(t *testing.T) {
 		{
 			name:  "Empty info",
 			args:  []string{},
-			error: "Direction is required.",
+			error: "direction is required",
 		},
 		{
 			name: "Action is required",
@@ -52,7 +52,7 @@ func TestCreateFirewallRuleCommand(t *testing.T) {
 				Server1.UUID,
 				"--direction", "in",
 			},
-			error: "Action is required.",
+			error: "action is required",
 		},
 		{
 			name: "Family is required",
@@ -61,7 +61,7 @@ func TestCreateFirewallRuleCommand(t *testing.T) {
 				"--direction", "in",
 				"--action", "accept",
 			},
-			error: "Family is required. Use 'IPv4' or 'IPv6'.",
+			error: "family (IPv4/IPv6) is required",
 		},
 		{
 			name: "FirewallRule, accept incoming IPv6",

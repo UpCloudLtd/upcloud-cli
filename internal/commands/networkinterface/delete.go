@@ -31,7 +31,7 @@ func (s *deleteCommand) InitCommand() {
 	s.SetPositionalArgHelp(server.PositionalArgHelp)
 	s.ArgCompletion(server.GetServerArgumentCompletionFunction(s.serverSvc))
 	fs := &pflag.FlagSet{}
-	fs.IntVar(&s.index, "index", 0, "Interface index.[Required]")
+	fs.IntVar(&s.index, "index", 0, "Interface index.")
 	s.AddFlags(fs)
 }
 
