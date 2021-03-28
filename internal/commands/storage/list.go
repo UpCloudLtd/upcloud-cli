@@ -46,14 +46,14 @@ func (s *listCommand) InitCommand() {
 	s.visibleColumns = []string{"uuid", "title", "zone", "state", "type", "size", "tier", "created"}
 	flags := &pflag.FlagSet{}
 	s.AddVisibleColumnsFlag(flags, &s.visibleColumns, s.columnKeys, s.visibleColumns)
-	flags.BoolVar(&s.all, "all", false, "List all storages")
-	flags.BoolVar(&s.private, "private", true, "List private storages (default)")
-	flags.BoolVar(&s.public, "public", false, "List public storages")
+	flags.BoolVar(&s.all, "all", false, "Show all storages.")
+	flags.BoolVar(&s.private, "private", true, "Show private storages (default).")
+	flags.BoolVar(&s.public, "public", false, "Show public storages.")
 
-	flags.BoolVar(&s.normal, "normal", false, "Filters for normal storages")
-	flags.BoolVar(&s.backup, "backup", false, "Filters for backup storages")
-	flags.BoolVar(&s.cdrom, "cdrom", false, "Filters for cdrom storages")
-	flags.BoolVar(&s.template, "template", false, "Filters for template storages")
+	flags.BoolVar(&s.normal, "normal", false, "Show only normal storages.")
+	flags.BoolVar(&s.backup, "backup", false, "Show only backup storages.")
+	flags.BoolVar(&s.cdrom, "cdrom", false, "Show only cdrom storages.")
+	flags.BoolVar(&s.template, "template", false, "Show only template storages.")
 
 	s.AddFlags(flags)
 }
