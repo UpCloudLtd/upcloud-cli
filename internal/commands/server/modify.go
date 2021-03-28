@@ -40,12 +40,12 @@ func (s *modifyCommand) InitCommand() {
 	s.params = modifyParams{ModifyServerRequest: request.ModifyServerRequest{}}
 	flags := &pflag.FlagSet{}
 	flags.StringVar(&s.params.BootOrder, "boot-order", defaultModifyParams.BootOrder, "The boot device order.")
-	flags.IntVar(&s.params.CoreNumber, "cores", defaultModifyParams.CoreNumber, "Number of cores.")
+	flags.IntVar(&s.params.CoreNumber, "cores", defaultModifyParams.CoreNumber, "Number of cores. Sets server plan to custom.")
 	flags.StringVar(&s.params.Hostname, "hostname", defaultModifyParams.Hostname, "Hostname.")
 	flags.StringVar(&s.params.Firewall, "firewall", defaultModifyParams.Firewall, "Enables or disables firewall on the server. You can manage firewall rules with the firewall command.\nAvailable: true, false")
-	flags.IntVar(&s.params.MemoryAmount, "memory", defaultModifyParams.MemoryAmount, "Memory amount in MiB.")
+	flags.IntVar(&s.params.MemoryAmount, "memory", defaultModifyParams.MemoryAmount, "Memory amount in MiB. Sets server plan to custom.")
 	flags.StringVar(&s.params.metadata, "metadata", defaultModifyParams.metadata, "Enable metadata service.")
-	flags.StringVar(&s.params.Plan, "plan", defaultModifyParams.Plan, "Server plan to use. Set this to custom to use custom core/memory amounts.")
+	flags.StringVar(&s.params.Plan, "plan", defaultModifyParams.Plan, "Server plan to use.")
 	flags.StringVar(&s.params.SimpleBackup, "simple-backup", defaultModifyParams.SimpleBackup, "Simple backup rule. Format (HHMM,{dailies,weeklies,monthlies}).\nExample: 2300,dailies")
 	flags.StringVar(&s.params.Title, "title", defaultModifyParams.Title, "Visible name.")
 	flags.StringVar(&s.params.TimeZone, "time-zone", defaultModifyParams.TimeZone, "Time zone to set the RTC to.")
@@ -78,6 +78,10 @@ func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 			s.params.Firewall = "on"
 		case "false":
 			s.params.Firewall = "off"
+		}
+
+		if s.params.CoreNumber != 0 || s.params.MemoryAmount != 0 {
+			s.params.Plan = "custom" // Valid for all custom plans.
 		}
 
 		return Request{
