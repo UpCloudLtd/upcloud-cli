@@ -108,11 +108,16 @@ func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
 	{
 		dCommon := ui.NewDetailsView()
 		dCommon.SetRowTransformer(rowTransformer)
+		planOutput := srv.Plan
+		if planOutput == "custom" {
+			memory := srv.MemoryAmount / 1024
+			planOutput = fmt.Sprintf("Custom (%dxCPU, %dGB)", srv.CoreNumber, memory)
+		}
 		dCommon.Append(
 			table.Row{"UUID:", ui.DefaultUUUIDColours.Sprint(srv.UUID)},
 			table.Row{"Title:", srv.Title},
 			table.Row{"Hostname:", srv.Hostname},
-			table.Row{"Plan:", srv.Plan},
+			table.Row{"Plan:", planOutput},
 			table.Row{"Zone:", srv.Zone},
 			table.Row{"State:", commands.StateColour(srv.State).Sprint(srv.State)},
 			table.Row{"Tags:", strings.Join(srv.Tags, ",")},

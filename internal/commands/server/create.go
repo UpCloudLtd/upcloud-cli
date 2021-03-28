@@ -218,11 +218,11 @@ func (s *createCommand) InitCommand() {
 	fs.IntVar(&s.params.Host, "host", def.Host, "Use this to start a VM on a specific host. Refers to value from host -attribute. Only available for private cloud hosts.")
 	fs.StringVar(&s.params.BootOrder, "boot-order", def.BootOrder, "The boot device order, disk / cdrom / network or comma separated combination.")
 	fs.StringVar(&s.params.UserData, "user-data", def.UserData, "Defines URL for a server setup script, or the script body itself.")
-	fs.IntVar(&s.params.CoreNumber, "cores", def.CoreNumber, "Number of cores. Plan is used if not defined.")
-	fs.IntVar(&s.params.MemoryAmount, "memory", def.MemoryAmount, "Memory amount in MiB. Plan is used if not defined.")
+	fs.IntVar(&s.params.CoreNumber, "cores", def.CoreNumber, "Number of cores. Use only when defining a custom plan.")
+	fs.IntVar(&s.params.MemoryAmount, "memory", def.MemoryAmount, "Memory amount in MiB. Use only when defining a custom plan.")
 	fs.StringVar(&s.params.Title, "title", def.Title, "Visible name.")
 	fs.StringVar(&s.params.Hostname, "hostname", def.Hostname, "Hostname.")
-	fs.StringVar(&s.params.Plan, "plan", def.Plan, "Server plan to use. Set this to custom to use custom core/memory amounts.")
+	fs.StringVar(&s.params.Plan, "plan", def.Plan, "Server plan name. See \"server plans\" command for valid plans. Set --cores and --memory for a flexible plan.")
 	fs.StringVar(&s.params.os, "os", def.os, "Server OS to use (will be the first storage device). Set to empty to fully customise the storages.")
 	fs.IntVar(&s.params.osStorageSize, "os-storage-size", def.osStorageSize, "OS storage size in GiB. This is only applicable if `os` is also set. Zero value makes the disk equal to the minimum size of the template.")
 	fs.StringVar(&s.params.Zone, "zone", def.Zone, "Zone where to create the server.")
@@ -257,6 +257,14 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 
 		if s.params.Title == "" {
 			s.params.Title = s.params.Hostname
+		}
+
+		if s.params.CoreNumber != 0 || s.params.MemoryAmount != 0 || s.params.Plan == "custom" {
+			if s.params.CoreNumber == 0 || s.params.MemoryAmount == 0 {
+				return nil, fmt.Errorf("both --cores and --memory must be defined for custom plans")
+			}
+
+			s.params.Plan = "custom" // Valid for all custom plans.
 		}
 
 		if err := s.params.processParams(s.storageSvc); err != nil {
