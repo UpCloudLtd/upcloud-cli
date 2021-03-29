@@ -264,6 +264,10 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 				return nil, fmt.Errorf("both --cores and --memory must be defined for custom plans")
 			}
 
+			if s.params.Plan != "" && s.params.Plan != "custom" {
+				return nil, fmt.Errorf("--plan needs to be 'custom' or omitted when --cores and --memory are specified")
+			}
+
 			s.params.Plan = "custom" // Valid for all custom plans.
 		}
 
