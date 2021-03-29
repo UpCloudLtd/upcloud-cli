@@ -20,12 +20,13 @@ type attachCommand struct {
 
 type attachParams struct {
 	request.AttachStorageRequest
+	bootable bool
 }
 
 // AttachCommand creates the "server storage attach" command
 func AttachCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
 	return &attachCommand{
-		BaseCommand: commands.New("attach", "Attaches a storage as a device to a server"),
+		BaseCommand: commands.New("attach", "Attach a storage as a device to a server"),
 		serverSvc:   serverSvc,
 		storageSvc:  storageSvc,
 	}
@@ -46,10 +47,10 @@ func (s *attachCommand) InitCommand() {
 	s.params = attachParams{AttachStorageRequest: request.AttachStorageRequest{}}
 
 	flagSet := &pflag.FlagSet{}
-	flagSet.StringVar(&s.params.Type, "type", defaultAttachParams.Type, "The type of the attached storage.\nAvailable: disk, cdrom")
-	flagSet.StringVar(&s.params.Address, "address", defaultAttachParams.Address, "The address where the storage device is attached on the server. \nSpecify only the bus name (ide/scsi/virtio) to auto-select next available address from that bus.")
-	flagSet.StringVar(&s.params.StorageUUID, "storage", defaultAttachParams.StorageUUID, "The UUID of the storage to attach.\n[Required]")
-	flagSet.IntVar(&s.params.BootDisk, "boot-disk", defaultAttachParams.BootDisk, "If the value is 1 the storage device will be used as a boot disk, unless overridden with the server boot_order attribute.")
+	flagSet.StringVar(&s.params.Type, "type", defaultAttachParams.Type, "Type of the attached storage. Available: disk, cdrom")
+	flagSet.StringVar(&s.params.Address, "address", defaultAttachParams.Address, "Address where the storage device is attached on the server. \nSpecify only the bus name (ide/scsi/virtio) to auto-select next available address from that bus.")
+	flagSet.StringVar(&s.params.StorageUUID, "storage", defaultAttachParams.StorageUUID, "UUID of the storage to attach.")
+	flagSet.BoolVar(&s.params.bootable, "boot-disk", false, "Set attached device as the server's boot disk.")
 
 	s.AddFlags(flagSet)
 }
@@ -67,6 +68,11 @@ func (s *attachCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 			return nil, err
 		}
 		s.params.StorageUUID = strg.UUID
+
+		s.params.BootDisk = defaultAttachParams.BootDisk
+		if s.params.bootable {
+			s.params.BootDisk = 1
+		}
 
 		return server.Request{
 			BuildRequest: func(uuid string) interface{} {

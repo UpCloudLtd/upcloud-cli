@@ -24,7 +24,7 @@ type loadParams struct {
 // LoadCommand creates the "server load" command
 func LoadCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
 	return &loadCommand{
-		BaseCommand: commands.New("load", "Load a CD-ROM"),
+		BaseCommand: commands.New("load", "Load a CD-ROM into the server"),
 		serverSvc:   serverSvc,
 		storageSvc:  storageSvc,
 	}
@@ -41,7 +41,7 @@ func (s *loadCommand) InitCommand() {
 	s.params = loadParams{LoadCDROMRequest: request.LoadCDROMRequest{}}
 
 	flagSet := &pflag.FlagSet{}
-	flagSet.StringVar(&s.params.StorageUUID, "storage", defaultLoadParams.StorageUUID, "The UUID of the storage to be loaded in the CD-ROM device.\n[Required]")
+	flagSet.StringVar(&s.params.StorageUUID, "storage", defaultLoadParams.StorageUUID, "The UUID of the storage to be loaded in the CD-ROM device.")
 
 	s.AddFlags(flagSet)
 }

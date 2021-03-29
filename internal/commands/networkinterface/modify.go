@@ -59,12 +59,12 @@ func (s *modifyCommand) InitCommand() {
 	s.SetPositionalArgHelp(server.PositionalArgHelp)
 	s.ArgCompletion(server.GetServerArgumentCompletionFunction(s.serverSvc))
 	fs := &pflag.FlagSet{}
-	fs.IntVar(&s.req.CurrentIndex, "index", s.req.CurrentIndex, "Index of the interface to modify. [Required]")
+	fs.IntVar(&s.req.CurrentIndex, "index", s.req.CurrentIndex, "Index of the interface to modify.")
 	fs.IntVar(&s.req.NewIndex, "new-index", s.req.NewIndex, "Index of the interface to modify.")
 	fs.StringVar(&s.bootable, "bootable", s.bootable, "Whether to try booting through the interface.")
 	fs.StringVar(&s.filtering, "source-ip-filtering", s.filtering, "Whether source IP filtering is enabled on the interface. Disabling it is allowed only for SDN private interfaces.")
 	fs.StringSliceVar(&s.ipAddresses, "ip-addresses", s.ipAddresses, "Array of IP addresses, multiple can be declared\nUsage: --ip-address address=94.237.112.143,family=IPv4")
-	s.AddFlags(fs)
+	s.AddFlags(fs) // TODO(ana): replace usage with examples once the refactor is done.
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand

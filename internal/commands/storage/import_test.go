@@ -83,7 +83,7 @@ func TestImportCommand(t *testing.T) {
 		{
 			name: "http import",
 			args: []string{
-				"--source", upcloud.StorageImportSourceHTTPImport,
+				"--source-type", upcloud.StorageImportSourceHTTPImport,
 				"--source-location", "http://example.com",
 				"--zone", "fi-hel1",
 				"--title", "test-2",

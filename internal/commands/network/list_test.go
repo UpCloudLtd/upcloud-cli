@@ -49,22 +49,22 @@ func TestListCommand(t *testing.T) {
 	}{
 		{
 			name:     "get all",
-			flags:    []string{},
+			flags:    []string{"--all"},
 			expected: []upcloud.Network{Network1, Network2, Network3, Network4},
 		},
 		{
 			name:     "filter where type is utility",
-			flags:    []string{"--type", "utility"},
+			flags:    []string{"--utility"},
 			expected: []upcloud.Network{Network1, Network3},
 		},
 		{
 			name:     "filter where zone is uk-lon1",
-			flags:    []string{"--zone", "uk-lon1"},
+			flags:    []string{"--zone", "uk-lon1", "--all"},
 			expected: []upcloud.Network{Network3, Network4},
 		},
 		{
 			name:     "filter where zone is uk-lon1 and type is utility",
-			flags:    []string{"--zone", "uk-lon1", "--type", "utility"},
+			flags:    []string{"--zone", "uk-lon1", "--utility"},
 			expected: []upcloud.Network{Network3},
 		},
 	} {

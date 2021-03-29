@@ -42,8 +42,8 @@ func (s *cloneCommand) InitCommand() {
 
 	flagSet := &pflag.FlagSet{}
 	flagSet.StringVar(&s.params.Tier, "tier", defaultCloneParams.Tier, "The storage tier to use.")
-	flagSet.StringVar(&s.params.Title, "title", defaultCloneParams.Title, "A short, informational description.\n[Required]")
-	flagSet.StringVar(&s.params.Zone, "zone", defaultCloneParams.Zone, "The zone in which the storage will be created, e.g. fi-hel1.\n[Required]")
+	flagSet.StringVar(&s.params.Title, "title", defaultCloneParams.Title, "A short, informational description.")
+	flagSet.StringVar(&s.params.Zone, "zone", defaultCloneParams.Zone, "The zone in which the storage will be created, e.g. fi-hel1.")
 
 	s.AddFlags(flagSet)
 }

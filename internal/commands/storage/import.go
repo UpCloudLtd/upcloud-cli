@@ -54,15 +54,17 @@ type importParams struct {
 
 func (s *importParams) processParams(srv service.Storage) error {
 	if s.existingStorageUUIDOrName != "" {
+		if s.sourceLocation == "" {
+			return errors.New("source-location must be defined")
+		}
 		storage, err := searchStorage(&CachedStorages, srv, s.existingStorageUUIDOrName, true)
 		if err != nil {
 			return err
 		}
 		s.existingStorage = storage[0]
 		s.CreateStorageImportRequest.StorageUUID = storage[0].UUID
-	}
-	if s.sourceLocation == "" || s.createStorage.Zone == "" || s.createStorage.Title == "" {
-		return errors.New("source-location, zone and title are required")
+	} else if s.sourceLocation == "" || s.createStorage.Zone == "" || s.createStorage.Title == "" {
+		return errors.New("source-location and either existing storage or both zone and title are required")
 	}
 	// Infer source type from source location
 	if s.Source == "" {
@@ -139,8 +141,8 @@ type importCommand struct {
 }
 
 func importFlags(fs *pflag.FlagSet, dst, def *importParams) {
-	fs.StringVar(&dst.sourceLocation, "source-location", def.sourceLocation, "Location of the source of the import. Can be a file or a URL.\n[Required]")
-	fs.StringVar(&dst.Source, "source", def.Source, fmt.Sprintf("Source type. Available: %s,%s",
+	fs.StringVar(&dst.sourceLocation, "source-location", def.sourceLocation, "Location of the source of the import. Can be a file or a URL.")
+	fs.StringVar(&dst.Source, "source-type", def.Source, fmt.Sprintf("Source type, is derived from source-location if not given. Available: %s,%s",
 		upcloud.StorageImportSourceHTTPImport,
 		upcloud.StorageImportSourceDirectUpload))
 	fs.StringVar(&dst.existingStorageUUIDOrName, "storage", def.existingStorageUUIDOrName, "Import to an existing storage. Storage must be large enough and must be undetached "+"or the server where the storage is attached must be in shutdown state.")

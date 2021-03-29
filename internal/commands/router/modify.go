@@ -28,7 +28,7 @@ func (s *modifyCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
 	s.ArgCompletion(getRouterArgCompletionFunction(s.service))
 	fs := &pflag.FlagSet{}
-	fs.StringVar(&s.req.Name, "name", "", "Name of the router. [Required]")
+	fs.StringVar(&s.req.Name, "name", "", "Router name.")
 	s.AddFlags(fs)
 }
 

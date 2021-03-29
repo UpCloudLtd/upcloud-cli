@@ -15,7 +15,7 @@ type removeCommand struct {
 // RemoveCommand creates the 'ip-address remove' command
 func RemoveCommand(service service.IpAddress) commands.Command {
 	return &removeCommand{
-		BaseCommand: commands.New("remove", "Removes an ip address"),
+		BaseCommand: commands.New("remove", "Remove an IP address"),
 		service:     service,
 	}
 }

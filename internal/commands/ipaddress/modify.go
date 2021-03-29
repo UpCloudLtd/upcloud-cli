@@ -17,7 +17,7 @@ type modifyCommand struct {
 // ModifyCommand creates the 'ip-address modify' command
 func ModifyCommand(service service.IpAddress) commands.Command {
 	return &modifyCommand{
-		BaseCommand: commands.New("modify", "Modify an ip address"),
+		BaseCommand: commands.New("modify", "Modify an IP address"),
 		service:     service,
 	}
 }

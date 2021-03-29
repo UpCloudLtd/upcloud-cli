@@ -33,16 +33,16 @@ func (s *modifyCommand) InitCommand() {
 	fs.StringVar(&s.req.Name, "name", s.req.Name, "Names the private network.")
 	fs.StringVar(&s.req.Router, "router", s.req.Router, "Change or clear the router attachment.")
 	fs.StringArrayVar(&s.networks, "ip-network", s.networks, "The ip network with modified values. \n\n"+
-		"Fields \n\n"+
-		"  family: string \n\n"+
-		"  gateway: string \n\n"+
-		"  dhcp: true/false \n\n"+
-		"  dhcp-default-route: true/false \n\n"+
-		"  dhcp-dns: array of strings \n\n"+
-		"Usage \n\n"+
-		"	--ip-network dhcp-dns=<value1>,family=IPv4 \n\n"+
+		"Fields \n"+
+		"  family: string \n"+
+		"  gateway: string \n"+
+		"  dhcp: true/false \n"+
+		"  dhcp-default-route: true/false \n"+
+		"  dhcp-dns: array of strings \n"+
+		"Usage \n"+
+		"	--ip-network dhcp-dns=<value1>,family=IPv4 \n"+
 		" --ip-network 'dhcp=true,\"dhcp-dns=<value1>,<value2>\",family=IPv6'")
-	s.AddFlags(fs)
+	s.AddFlags(fs) // TODO(ana): replace usage with examples once the refactor is done.
 }
 
 // MakeExecuteCommand implements Command.MakeExecuteCommand

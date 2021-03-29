@@ -38,7 +38,7 @@ func (s *createBackupCommand) InitCommand() {
 	s.params = createBackupParams{CreateBackupRequest: request.CreateBackupRequest{}}
 
 	flagSet := &pflag.FlagSet{}
-	flagSet.StringVar(&s.params.Title, "title", defaultCreateBackupParams.Title, "A short, informational description.\n[Required]")
+	flagSet.StringVar(&s.params.Title, "title", defaultCreateBackupParams.Title, "A short, informational description.")
 
 	s.AddFlags(flagSet)
 }

@@ -27,7 +27,10 @@ type listCommand struct {
 	columnKeys     []string
 	visibleColumns []string
 	zone           string
-	networkType    string
+	all            bool
+	public         bool
+	utility        bool
+	private        bool
 }
 
 // InitCommand implements Command.InitCommand
@@ -36,8 +39,11 @@ func (s *listCommand) InitCommand() {
 	s.columnKeys = []string{"uuid", "name", "router", "type", "zone"}
 	s.visibleColumns = []string{"uuid", "name", "router", "type", "zone"}
 	flags := &pflag.FlagSet{}
-	flags.StringVar(&s.zone, "zone", "", "Filters for given zone")
-	flags.StringVar(&s.networkType, "type", "", "Filters for given type")
+	flags.StringVar(&s.zone, "zone", "", "Show networks from a specific zone.")
+	flags.BoolVar(&s.all, "all", false, "Show all networks.")
+	flags.BoolVar(&s.public, "public", false, "Show public networks.")
+	flags.BoolVar(&s.utility, "utility", false, "Show utility networks.")
+	flags.BoolVar(&s.private, "private", true, "Show private networks (default).")
 	s.AddVisibleColumnsFlag(flags, &s.visibleColumns, s.columnKeys, s.visibleColumns)
 	s.AddFlags(flags)
 }
@@ -45,7 +51,6 @@ func (s *listCommand) InitCommand() {
 // MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		var filtered []upcloud.Network
 
 		var networks *upcloud.Networks
 		var err error
@@ -58,15 +63,28 @@ func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 			return nil, err
 		}
 
-		if s.networkType == "" {
-			return networks, nil
+		if s.public || s.utility {
+			s.private = false
 		}
 
+		var filtered []upcloud.Network
 		for _, n := range networks.Networks {
-			if n.Type == s.networkType {
+			if s.all {
+				filtered = append(filtered, n)
+				continue
+			}
+
+			if s.public && n.Type == upcloud.NetworkTypePublic {
+				filtered = append(filtered, n)
+			}
+			if s.utility && n.Type == upcloud.NetworkTypeUtility {
+				filtered = append(filtered, n)
+			}
+			if s.private && n.Type == upcloud.NetworkTypePrivate {
 				filtered = append(filtered, n)
 			}
 		}
+
 		return &upcloud.Networks{Networks: filtered}, nil
 	}
 }

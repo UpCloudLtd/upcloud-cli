@@ -25,6 +25,9 @@ type listCommand struct {
 	header         table.Row
 	columnKeys     []string
 	visibleColumns []string
+	allRouters     bool
+	normalRouters  bool
+	serviceRouters bool
 }
 
 // InitCommand implements Command.InitCommand
@@ -33,6 +36,9 @@ func (s *listCommand) InitCommand() {
 	s.columnKeys = []string{"uuid", "name", "type"}
 	s.visibleColumns = []string{"uuid", "name", "type"}
 	flags := &pflag.FlagSet{}
+	flags.BoolVar(&s.allRouters, "all", false, "Show all routers.")
+	flags.BoolVar(&s.normalRouters, "normal", true, "Show normal routers (default).")
+	flags.BoolVar(&s.serviceRouters, "service", false, "Show service routers.")
 	s.AddVisibleColumnsFlag(flags, &s.visibleColumns, s.columnKeys, s.visibleColumns)
 	s.AddFlags(flags)
 }
@@ -40,11 +46,31 @@ func (s *listCommand) InitCommand() {
 // MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		ips, err := s.service.GetRouters()
+		routers, err := s.service.GetRouters()
 		if err != nil {
 			return nil, err
 		}
-		return ips, nil
+
+		if s.serviceRouters {
+			s.normalRouters = false
+		}
+
+		var filtered []upcloud.Router
+		for _, r := range routers.Routers {
+			if s.allRouters {
+				filtered = append(filtered, r)
+				continue
+			}
+
+			if s.normalRouters && r.Type == "normal" {
+				filtered = append(filtered, r)
+			}
+			if s.serviceRouters && r.Type == "service" {
+				filtered = append(filtered, r)
+			}
+		}
+
+		return &upcloud.Routers{Routers: filtered}, nil
 	}
 }
 
