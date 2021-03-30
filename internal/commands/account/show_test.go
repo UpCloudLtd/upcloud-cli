@@ -63,9 +63,8 @@ func TestShowCommand(t *testing.T) {
 	// force human output
 	conf.Viper().Set(config.KeyOutput, config.ValueOutputHuman)
 
-	cmd := commands.BuildCommand(testCmd, nil, conf)
-
-	out, err := cmd.(commands.NewCommand).MakeExecutor()([]string{})
+	command := commands.BuildCommand(testCmd, nil, conf)
+	out, err := command.(commands.NewCommand).Execute(commands.NewExecutor(conf), "")
 	assert.NoError(t, err)
 
 	buf := bytes.NewBuffer(nil)

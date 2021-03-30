@@ -1,12 +1,12 @@
 package network
 
 import (
-	"github.com/UpCloudLtd/cli/internal/output"
 	"testing"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
 	smock "github.com/UpCloudLtd/cli/internal/mock"
+	"github.com/UpCloudLtd/cli/internal/output"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
@@ -78,10 +78,12 @@ func TestListCommand(t *testing.T) {
 			mService.On("GetNetworksInZone", &request.GetNetworksInZoneRequest{Zone: "fi-hel1"}).Return(&upcloud.Networks{Networks: []upcloud.Network{Network1, Network2}}, nil)
 			mService.On("GetNetworksInZone", &request.GetNetworksInZoneRequest{Zone: "uk-lon1"}).Return(&upcloud.Networks{Networks: []upcloud.Network{Network3, Network4}}, nil)
 
-			c := commands.BuildCommand(ListCommand(&mService), nil, config.New())
+			cfg := config.New()
+			c := commands.BuildCommand(ListCommand(&mService), nil, cfg)
 			err := c.SetFlags(test.flags)
 			assert.NoError(t, err)
-			res, err := c.(commands.NewCommand).MakeExecutor()([]string{})
+
+			res, err := c.(commands.NewCommand).Execute(commands.NewExecutor(cfg), "")
 
 			assert.Nil(t, err)
 			assert.Equal(t, createTable(test.expected), res)

@@ -2,6 +2,7 @@ package network
 
 import (
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/mapper"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
@@ -31,61 +32,12 @@ type listCommand struct {
 	private        bool
 }
 
-func (s *listCommand) MakeExecutor() commands.CommandExecutor {
-	return func(args []string) (output.Command, error) {
+func (s *listCommand) MaximumExecutions() int {
+	return 1
+}
 
-		var networks *upcloud.Networks
-		var err error
-		if s.zone != "" {
-			networks, err = s.service.GetNetworksInZone(&request.GetNetworksInZoneRequest{Zone: s.zone})
-		} else {
-			networks, err = s.service.GetNetworks()
-		}
-		if err != nil {
-			return nil, err
-		}
-
-		var filtered []upcloud.Network
-		for _, n := range networks.Networks {
-			if s.all {
-				filtered = append(filtered, n)
-				continue
-			}
-
-			if s.public && n.Type == upcloud.NetworkTypePublic {
-				filtered = append(filtered, n)
-			}
-			if s.utility && n.Type == upcloud.NetworkTypeUtility {
-				filtered = append(filtered, n)
-			}
-			if !s.public && !s.utility && n.Type == upcloud.NetworkTypePrivate {
-				filtered = append(filtered, n)
-			}
-		}
-
-		var rows []output.TableRow
-		for _, n := range filtered {
-			rows = append(rows, output.TableRow{
-				// TODO: reimplement
-				// ui.DefaultUUUIDColours.Sprint(n.UUID),
-				n.UUID,
-				n.Name,
-				n.Router,
-				n.Type,
-				n.Zone,
-			})
-		}
-		return output.Table{
-			Columns: []output.TableColumn{
-				{Key: "uuid", Header: "UUID"},
-				{Key: "name", Header: "Name"},
-				{Key: "router", Header: "Router"},
-				{Key: "type", Header: "Type"},
-				{Key: "zone", Header: "Zone"},
-			},
-			Rows: rows,
-		}, nil
-	}
+func (s *listCommand) ArgumentMapper() (mapper.Argument, error) {
+	return nil, nil
 }
 
 // InitCommand implements Command.InitCommand
@@ -98,4 +50,59 @@ func (s *listCommand) InitCommand() {
 	//	flags.BoolVar(&s.private, "private", true, "Show private networks (default).")
 	s.AddVisibleColumnsFlag(flags, &s.visibleColumns, s.columnKeys, s.visibleColumns)
 	s.AddFlags(flags)
+}
+
+// Execute implements command.NewCommand
+func (s *listCommand) Execute(_ commands.Executor, _ string) (output.Command, error) {
+	var networks *upcloud.Networks
+	var err error
+	if s.zone != "" {
+		networks, err = s.service.GetNetworksInZone(&request.GetNetworksInZoneRequest{Zone: s.zone})
+	} else {
+		networks, err = s.service.GetNetworks()
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	var filtered []upcloud.Network
+	for _, n := range networks.Networks {
+		if s.all {
+			filtered = append(filtered, n)
+			continue
+		}
+
+		if s.public && n.Type == upcloud.NetworkTypePublic {
+			filtered = append(filtered, n)
+		}
+		if s.utility && n.Type == upcloud.NetworkTypeUtility {
+			filtered = append(filtered, n)
+		}
+		if !s.public && !s.utility && n.Type == upcloud.NetworkTypePrivate {
+			filtered = append(filtered, n)
+		}
+	}
+
+	var rows []output.TableRow
+	for _, n := range filtered {
+		rows = append(rows, output.TableRow{
+			// TODO: reimplement
+			// ui.DefaultUUUIDColours.Sprint(n.UUID),
+			n.UUID,
+			n.Name,
+			n.Router,
+			n.Type,
+			n.Zone,
+		})
+	}
+	return output.Table{
+		Columns: []output.TableColumn{
+			{Key: "uuid", Header: "UUID"},
+			{Key: "name", Header: "Name"},
+			{Key: "router", Header: "Router"},
+			{Key: "type", Header: "Type"},
+			{Key: "zone", Header: "Zone"},
+		},
+		Rows: rows,
+	}, nil
 }

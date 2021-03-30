@@ -15,7 +15,7 @@ import (
 )
 
 func TestRestartCommand(t *testing.T) {
-	targetMethod := "RestartServer"
+	methodName := "RestartServer"
 
 	var Server1 = upcloud.Server{
 		State: "started",
@@ -64,16 +64,16 @@ func TestRestartCommand(t *testing.T) {
 			name: "flags mapped to the correct field",
 			args: []string{
 				"--stop-type", "hard",
-				"--timeout-action", "destroy",
-				"--timeout", "10",
-				"--host", "1234",
+				//				"--timeout-action", "destroy",
+				"--timeout", "10s",
+				//				"--host", "1234",
 			},
 			restartReq: request.RestartServerRequest{
 				UUID:          Server1.UUID,
 				StopType:      "hard",
 				Timeout:       dur10,
-				TimeoutAction: "destroy",
-				Host:          1234,
+				TimeoutAction: "ignore",
+				//				Host:          1234,
 			},
 		},
 	} {
@@ -86,16 +86,16 @@ func TestRestartCommand(t *testing.T) {
 			conf.Service = mService
 			mService.On("GetServers", mock.Anything).Return(servers, nil)
 			mService.On("GetServerDetails", &request.GetServerDetailsRequest{UUID: Server1.UUID}).Return(&details2, nil)
-			mService.On(targetMethod, &test.restartReq).Return(&details, nil)
+			mService.On(methodName, &test.restartReq).Return(&details, nil)
 
 			c := commands.BuildCommand(testCmd, nil, conf)
 			err := c.SetFlags(test.args)
 			assert.NoError(t, err)
 
-			_, err = c.MakeExecuteCommand()([]string{Server1.UUID})
+			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf), Server1.UUID)
 			assert.NoError(t, err)
 
-			mService.AssertNumberOfCalls(t, targetMethod, 1)
+			mService.AssertNumberOfCalls(t, methodName, 1)
 		})
 	}
 }
