@@ -3,6 +3,7 @@ package commands
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/UpCloudLtd/cli/internal/output"
 	"io"
 	"os"
 	"strings"
@@ -39,6 +40,15 @@ type Command interface {
 	CobraCommand
 }
 
+// CommandExecutor is the signature for new style commands being executed and returning output.Command
+type CommandExecutor func(args []string) (output.Command, error)
+
+// NewCommand is a new container for commands, currently still including the old interface until we can deprecate it
+type NewCommand interface {
+	MakeExecutor() CommandExecutor
+	Command
+}
+
 // CobraCommand is an interface for commands that can refer back to their base cobra.Command
 type CobraCommand interface {
 	Cobra() *cobra.Command
@@ -64,8 +74,16 @@ func BuildCommand(child Command, parent *cobra.Command, config *config.Config) C
 	// Init
 	child.InitCommand()
 
-	//Run
-	if cCmd := child.MakeExecuteCommand(); cCmd != nil && child.Cobra().RunE == nil {
+	// Run
+	if nc, ok := child.(NewCommand); ok {
+		child.Cobra().RunE = func(cmd *cobra.Command, args []string) error {
+			commandOutput, err := nc.MakeExecutor()(args)
+			if err != nil {
+				return err
+			}
+			return output.Render(os.Stdout, config, commandOutput)
+		}
+	} else if cCmd := child.MakeExecuteCommand(); cCmd != nil && child.Cobra().RunE == nil {
 		child.Cobra().RunE = func(_ *cobra.Command, args []string) error {
 
 			// Apply values set from viper if any

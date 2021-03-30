@@ -6,6 +6,7 @@ import (
 
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
+	"github.com/UpCloudLtd/cli/internal/output"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/stretchr/testify/assert"
@@ -53,22 +54,24 @@ func TestShowCommand(t *testing.T) {
     Storage SSD:            10240 
 `
 
-	buf := new(bytes.Buffer)
 	conf := config.New()
 	testCmd := ShowCommand()
 	mService := new(MockAccountService)
 
 	mService.On("GetAccount").Return(&account, nil)
 	conf.Service = mService
+	// force human output
+	conf.Viper().Set(config.KeyOutput, config.ValueOutputHuman)
 
 	cmd := commands.BuildCommand(testCmd, nil, conf)
 
-	rawData, err := cmd.MakeExecuteCommand()([]string{})
-	assert.Nil(t, err)
+	out, err := cmd.(commands.NewCommand).MakeExecutor()([]string{})
+	assert.NoError(t, err)
 
-	err = testCmd.HandleOutput(buf, rawData)
-
-	assert.Nil(t, err)
-	mService.AssertNumberOfCalls(t, "GetAccount", 1)
+	buf := bytes.NewBuffer(nil)
+	err = output.Render(buf, conf, out)
+	assert.NoError(t, err)
 	assert.Equal(t, expected, buf.String())
+
+	mService.AssertNumberOfCalls(t, "GetAccount", 1)
 }
