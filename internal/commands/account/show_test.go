@@ -2,6 +2,7 @@ package account
 
 import (
 	"bytes"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
 	"testing"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
@@ -10,17 +11,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 )
-
-type MockAccountService struct {
-	mock.Mock
-}
-
-func (m *MockAccountService) GetAccount() (*upcloud.Account, error) {
-	args := m.Called()
-	return args[0].(*upcloud.Account), args.Error(1)
-}
 
 func TestShowCommand(t *testing.T) {
 
@@ -56,15 +47,14 @@ func TestShowCommand(t *testing.T) {
 
 	conf := config.New()
 	testCmd := ShowCommand()
-	mService := new(MockAccountService)
+	mService := new(smock.Service)
 
 	mService.On("GetAccount").Return(&account, nil)
-	conf.Service = mService
 	// force human output
 	conf.Viper().Set(config.KeyOutput, config.ValueOutputHuman)
 
 	command := commands.BuildCommand(testCmd, nil, conf)
-	out, err := command.(commands.NewCommand).Execute(commands.NewExecutor(conf), "")
+	out, err := command.(commands.NewCommand).Execute(commands.NewExecutor(conf, mService), "")
 	assert.NoError(t, err)
 
 	buf := bytes.NewBuffer(nil)

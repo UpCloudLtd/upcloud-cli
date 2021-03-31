@@ -1,6 +1,7 @@
 package server
 
 import (
+	internal "github.com/UpCloudLtd/cli/internal/service"
 	"testing"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
@@ -59,7 +60,7 @@ func TestEjectCDROMCommand(t *testing.T) {
 
 			CachedServers = nil
 			// storage.CachedStorages = nil
-			conf.Service = mService
+			conf.Service = internal.Wrapper{Service: mService}
 			mService.On("GetServers", mock.Anything).Return(servers, nil)
 			mService.On(targetMethod, &test.ejectReq).Return(&details, nil)
 

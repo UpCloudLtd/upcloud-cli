@@ -1,6 +1,7 @@
 package server
 
 import (
+	internal "github.com/UpCloudLtd/cli/internal/service"
 	"testing"
 	"time"
 
@@ -83,7 +84,7 @@ func TestRestartCommand(t *testing.T) {
 			testCmd := RestartCommand()
 			mService := new(smock.Service)
 
-			conf.Service = mService
+			conf.Service = internal.Wrapper{Service: mService}
 			mService.On("GetServers", mock.Anything).Return(servers, nil)
 			mService.On("GetServerDetails", &request.GetServerDetailsRequest{UUID: Server1.UUID}).Return(&details2, nil)
 			mService.On(methodName, &test.restartReq).Return(&details, nil)
@@ -92,7 +93,7 @@ func TestRestartCommand(t *testing.T) {
 			err := c.SetFlags(test.args)
 			assert.NoError(t, err)
 
-			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf), Server1.UUID)
+			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, mService), Server1.UUID)
 			assert.NoError(t, err)
 
 			mService.AssertNumberOfCalls(t, methodName, 1)

@@ -1,6 +1,7 @@
 package server
 
 import (
+	internal "github.com/UpCloudLtd/cli/internal/service"
 	"testing"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
@@ -105,7 +106,7 @@ func TestModifyCommand(t *testing.T) {
 			mService := new(smock.Service)
 
 			CachedServers = nil
-			conf.Service = mService
+			conf.Service = internal.Wrapper{Service: mService}
 			mService.On(targetMethod, &test.modifyCall).Return(&details, nil)
 			mService.On("GetServers", mock.Anything).Return(servers, nil)
 			c := commands.BuildCommand(testCmd, nil, conf)

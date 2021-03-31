@@ -31,10 +31,6 @@ func BuildRootCmd(_ []string, conf *config.Config) cobra.Command {
 				return fmt.Errorf("cannot load configuration: %w", err)
 			}
 
-			if err := conf.SetupService(); err != nil {
-				return fmt.Errorf("cannot setup service client: %w", err)
-			}
-
 			return nil
 		},
 

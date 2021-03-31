@@ -1,6 +1,7 @@
 package server
 
 import (
+	internal "github.com/UpCloudLtd/cli/internal/service"
 	"testing"
 	"time"
 
@@ -77,7 +78,7 @@ func TestStopCommand(t *testing.T) {
 			testCmd := StopCommand()
 			mService := new(smock.Service)
 
-			conf.Service = mService
+			conf.Service = internal.Wrapper{Service: mService}
 			mService.On("GetServers", mock.Anything).Return(servers, nil)
 			mService.On("GetServerDetails", &request.GetServerDetailsRequest{UUID: Server1.UUID}).Return(&details2, nil)
 			mService.On(targetMethod, &test.stopReq).Return(&details, nil)

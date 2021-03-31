@@ -1,6 +1,7 @@
 package server
 
 import (
+	internal "github.com/UpCloudLtd/cli/internal/service"
 	"testing"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
@@ -59,7 +60,7 @@ func TestDeleteServerCommand(t *testing.T) {
 			testCmd := DeleteCommand()
 			mService := new(smock.Service)
 
-			conf.Service = mService
+			conf.Service = internal.Wrapper{Service: mService}
 			mService.On(deleteServerMethod, mock.Anything).Return(nil, nil)
 			mService.On(deleteServerAndStoragesMethod, mock.Anything).Return(nil, nil)
 			mService.On("GetServers", mock.Anything).Return(servers, nil)

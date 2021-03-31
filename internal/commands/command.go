@@ -78,7 +78,11 @@ func BuildCommand(child Command, parent *cobra.Command, config *config.Config) C
 	// Run
 	if nc, ok := child.(NewCommand); ok {
 		child.Cobra().RunE = func(cmd *cobra.Command, args []string) error {
-			executor := NewExecutor(config)
+			svc, err := config.CreateService()
+			if err != nil {
+				return fmt.Errorf("cannot create service: %w", err)
+			}
+			executor := NewExecutor(config, svc)
 			argmapper, err := nc.ArgumentMapper()
 			if err != nil {
 				return fmt.Errorf("invalid mapper: %w", err)
@@ -136,6 +140,10 @@ func BuildCommand(child Command, parent *cobra.Command, config *config.Config) C
 		}
 	} else if cCmd := child.MakeExecuteCommand(); cCmd != nil && child.Cobra().RunE == nil {
 		child.Cobra().RunE = func(_ *cobra.Command, args []string) error {
+			// calling this just to init service in non-refactored commands as well, TODO: remove when refactored..
+			if _, err := config.CreateService(); err != nil {
+				return fmt.Errorf("cannot setup service client: %w", err)
+			}
 
 			// Apply values set from viper if any
 			child.Cobra().Flags().VisitAll(func(f *pflag.Flag) {

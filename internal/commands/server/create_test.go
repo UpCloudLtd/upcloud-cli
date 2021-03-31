@@ -338,7 +338,11 @@ func TestCreateServer(t *testing.T) {
 			_, err = c.MakeExecuteCommand()([]string{})
 
 			if test.error != "" {
-				assert.Equal(t, test.error, err.Error())
+				if err == nil {
+					t.Errorf("expected error '%v', got nil", test.error)
+				} else {
+					assert.Equal(t, test.error, err.Error())
+				}
 			} else {
 				mService.AssertNumberOfCalls(t, "GetStorages", 1)
 				mService.AssertNumberOfCalls(t, "CreateServer", 1)

@@ -1,6 +1,7 @@
 package server
 
 import (
+	internal "github.com/UpCloudLtd/cli/internal/service"
 	"testing"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
@@ -81,7 +82,7 @@ func TestLoadCDROMCommand(t *testing.T) {
 			mService := new(smock.Service)
 
 			CachedServers = nil
-			conf.Service = mService
+			conf.Service = internal.Wrapper{Service: mService}
 
 			mService.On("GetServers", mock.Anything).Return(servers, nil)
 			mService.On("GetStorages", mock.Anything).Return(storages, nil)
@@ -94,7 +95,11 @@ func TestLoadCDROMCommand(t *testing.T) {
 			_, err = c.MakeExecuteCommand()([]string{Server1.UUID})
 
 			if test.error != "" {
-				assert.Equal(t, test.error, err.Error())
+				if err == nil {
+					t.Errorf("expected error '%v', got nil", test.error)
+				} else {
+					assert.Equal(t, test.error, err.Error())
+				}
 			} else {
 				mService.AssertNumberOfCalls(t, targetMethod, 1)
 			}

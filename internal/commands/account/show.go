@@ -28,8 +28,8 @@ func (s *showCommand) ArgumentMapper() (mapper.Argument, error) {
 	return nil, nil
 }
 
-func (s *showCommand) Execute(_ commands.Executor, _ string) (output.Command, error) {
-	svc := s.Config().Service.Account()
+func (s *showCommand) Execute(exec commands.Executor, _ string) (output.Command, error) {
+	svc := exec.Account()
 	account, err := svc.GetAccount()
 	if err != nil {
 		return nil, err

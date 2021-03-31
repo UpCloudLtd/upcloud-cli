@@ -12,11 +12,24 @@ type Service struct {
 	mock.Mock
 }
 
+// GetAccount implements service.Account.GetAccount
+func (m *Service) GetAccount() (*upcloud.Account, error) {
+	args := m.Called()
+	return args[0].(*upcloud.Account), args.Error(1)
+}
+
+// GetPlans implements service.Plan.GetPlans
+func (m *Service) GetPlans() (*upcloud.Plans, error) {
+	args := m.Called()
+	return args[0].(*upcloud.Plans), args.Error(1)
+}
+
 // make sure Service implements service interfaces
 var _ service.Server = &Service{}
 var _ service.Storage = &Service{}
 var _ service.Firewall = &Service{}
 var _ service.Network = &Service{}
+var _ service.Plans = &Service{}
 
 // GetServerConfigurations implements service.Server.GetServerConfigurations
 func (m *Service) GetServerConfigurations() (*upcloud.ServerConfigurations, error) {

@@ -54,9 +54,10 @@ type GlobalFlags struct {
 
 // Config holds the configuration for running upctl
 type Config struct {
-	viper       *viper.Viper
-	ns          string
-	flagSet     *pflag.FlagSet
+	viper   *viper.Viper
+	ns      string
+	flagSet *pflag.FlagSet
+	// TODO: remove this after refactored
 	Service     internal.Wrapper
 	GlobalFlags GlobalFlags
 }
@@ -192,8 +193,8 @@ func (t *transport) RoundTrip(req *http.Request) (*http.Response, error) {
 	return cleanhttp.DefaultTransport().RoundTrip(req)
 }
 
-// SetupService creates a new service instance and puts in the conf struct
-func (s *Config) SetupService() error {
+// CreateService creates a new service instance and puts in the conf struct
+func (s *Config) CreateService() (internal.AllServices, error) {
 	username := s.Top().GetString("username")
 	password := s.Top().GetString("password")
 
@@ -201,7 +202,7 @@ func (s *Config) SetupService() error {
 		err := `
 User credentials not found, these must be set in config file or via environment vars
 `
-		return fmt.Errorf(err)
+		return nil, fmt.Errorf(err)
 	}
 
 	hc := &http.Client{Transport: &transport{}}
@@ -213,8 +214,7 @@ User credentials not found, these must be set in config file or via environment 
 		hc,
 	)
 	whc.UserAgent = fmt.Sprintf("upctl/%s", Version)
-
+	// TODO; remove this when refactor is complete
 	s.Service = internal.Wrapper{Service: service.New(whc)}
-
-	return nil
+	return s.Service.Service, nil
 }
