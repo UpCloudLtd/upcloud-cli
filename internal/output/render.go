@@ -1,8 +1,9 @@
 package output
 
 import (
-	"github.com/UpCloudLtd/cli/internal/config"
 	"io"
+
+	"github.com/UpCloudLtd/cli/internal/config"
 )
 
 // Render renders commandOutput to writer using cfg to configure the output.

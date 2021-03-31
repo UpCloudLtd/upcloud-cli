@@ -2,6 +2,8 @@ package output
 
 import (
 	"encoding/json"
+	"fmt"
+
 	"gopkg.in/yaml.v2"
 )
 
@@ -24,6 +26,7 @@ func (d Marshaled) MarshalYAML() ([]byte, error) {
 
 // MarshalHuman implements output.Command
 // For Marshaled outputs, we dont return anything as it's assumed the log output is what the user wants
+// XXX: should be reworked because the output is raw (golang print output)
 func (d Marshaled) MarshalHuman() ([]byte, error) {
-	return []byte{}, nil
+	return []byte(fmt.Sprintf("%v", d.Value)), nil
 }
