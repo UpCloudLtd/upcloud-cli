@@ -37,7 +37,7 @@ func TestDeleteCommand(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			cachedNetworks = nil
-			mService := smock.MockService{}
+			mService := smock.Service{}
 			mService.On(targetMethod, &test.req).Return(nil)
 			mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{n}}, nil)
 

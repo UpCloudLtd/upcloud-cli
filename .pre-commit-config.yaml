@@ -5,6 +5,7 @@ repos:
       - id: go-fmt
       # - id: go-vet
       - id: go-lint
+      - id: golangci-lint # implies go-vet, https://golangci-lint.run/usage/linters
       - id: go-critic
       - id: go-unit-tests
       - id: go-build

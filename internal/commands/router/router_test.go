@@ -38,7 +38,7 @@ func TestSearchRouter(t *testing.T) {
 		UUID: "f14dd3e7-3dbb-4e3c-92b9-d1cf5178a13e",
 	}
 
-	mService := mock.MockService{}
+	mService := mock.Service{}
 
 	getRouters := "GetRouters"
 	mService.On(getRouters).Return(&upcloud.Routers{Routers: []upcloud.Router{Router1, Router2}}, nil)

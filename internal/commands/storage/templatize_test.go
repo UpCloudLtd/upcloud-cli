@@ -59,7 +59,7 @@ func TestTemplatizeCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mService := smock.MockService{}
+			mService := smock.Service{}
 			mService.On("GetStorages", mock.Anything).Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2}}, nil)
 			mService.On(targetMethod, &test.expected).Return(&details, nil)
 

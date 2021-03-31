@@ -37,7 +37,7 @@ func TestShowCommand(t *testing.T) {
 `
 
 	buf := new(bytes.Buffer)
-	command := ShowCommand(&smock.MockService{})
+	command := ShowCommand(&smock.Service{})
 	err := command.HandleOutput(buf, &account)
 
 	assert.Nil(t, err)

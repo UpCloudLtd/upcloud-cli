@@ -1,13 +1,15 @@
 package server
 
 import (
+	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/mapper"
+	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
-	"strconv"
 	"time"
 )
 
@@ -20,68 +22,90 @@ func RestartCommand() commands.Command {
 
 type restartCommand struct {
 	*commands.BaseCommand
-	params restartParams
+	WaitForServerToStart bool
+	StopType             string
+	TimeoutAction        string
+	Timeout              time.Duration
 }
 
-type restartParams struct {
-	request.RestartServerRequest
-	timeout int
-}
-
-var defaultRestartParams = &restartParams{
-	RestartServerRequest: request.RestartServerRequest{
-		StopType:      "soft",
-		TimeoutAction: "ignore",
-	},
-	timeout: 120,
-}
+const defaultStopType = "soft"
+const defaultTimeout = time.Duration(120) * time.Second
 
 // InitCommand implements Command.InitCommand
 func (s *restartCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
 	s.ArgCompletion(GetServerArgumentCompletionFunction(s.Config()))
 
-	s.params = restartParams{RestartServerRequest: request.RestartServerRequest{}}
 	flags := &pflag.FlagSet{}
 
-	flags.StringVar(&s.params.StopType, "stop-type", defaultRestartParams.StopType, "Restart type. Available: soft, hard")
-	flags.StringVar(&s.params.TimeoutAction, "timeout-action", defaultRestartParams.TimeoutAction, "Action to take if timeout limit is exceeded. Available: destroy, ignore")
-	flags.IntVar(&s.params.timeout, "timeout", defaultRestartParams.timeout, "Stop timeout in seconds. Available: 1-600")
-	flags.IntVar(&s.params.Host, "host", defaultRestartParams.Host, "Use this to restart the VM on a specific host. Refers to value from host attribute. Only available for private cloud hosts")
+	flags.StringVar(&s.StopType, "stop-type", defaultStopType, "Restart type. Available: soft, hard")
+	// TODO: reimplement? does not seem to make sense to automagically destroy servers if restart fails..
+	// flags.StringVar(&s.params.TimeoutAction, "timeout-action", defaultRestartParams.TimeoutAction, "Action to take if timeout limit is exceeded. Available: destroy, ignore")
+	flags.DurationVar(&s.Timeout, "timeout", defaultTimeout, "Stop timeout in Go duration string\nExamples: 100ms, 1m10s, 3h")
+	// TODO: reimplement? does not seem to be in use..
+	// flags.IntVar(&s.params.Host, "host", defaultRestartParams.Host, "Use this to restart the VM on a specific host. Refers to value from host attribute. Only available for private cloud hosts")
+
+	flags.BoolVar(&s.WaitForServerToStart, "wait", false, "Wait for server to start before exiting")
 
 	s.AddFlags(flags)
 }
 
-// MakeExecuteCommand implements Command.MakeExecuteCommand
-func (s *restartCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
+func (s *restartCommand) MaximumExecutions() int {
+	return maxServerActions
+}
 
-		timeout, err := time.ParseDuration(strconv.Itoa(s.params.timeout) + "s")
-		if err != nil {
+func (s *restartCommand) ArgumentMapper() (mapper.Argument, error) {
+	return mapper.CachingServer(s.Config().Service.(service.Server))
+}
+
+func (s *restartCommand) Execute(exec commands.Executor, uuid string) (output.Command, error) {
+	msg := fmt.Sprintf("restarting server %v", uuid)
+	logline := exec.NewLogEntry(msg)
+	logline.StartedNow()
+	svc := s.Config().Service.(service.Server)
+	res, err := svc.RestartServer(&request.RestartServerRequest{
+		UUID:          uuid,
+		StopType:      s.StopType,
+		Timeout:       s.Timeout,
+		TimeoutAction: "ignore",
+	})
+	if err != nil {
+		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
+		logline.SetDetails(err.Error(), "error: ")
+		//		logline.SetMessage(fmt.Sprintf("failed (%v)", err))
+		return nil, err
+	}
+	if s.WaitForServerToStart {
+		logline.SetMessage(fmt.Sprintf("%s: waiting to restart", msg))
+		if err := exec.WaitFor(serverStateWaiter(uuid, upcloud.ServerStateMaintenance, msg, svc, logline), s.Config().ClientTimeout()); err != nil {
 			return nil, err
 		}
+		logline.SetMessage(fmt.Sprintf("%s: waiting to start", msg))
+		if err := exec.WaitFor(serverStateWaiter(uuid, upcloud.ServerStateStarted, msg, svc, logline), s.Config().ClientTimeout()); err != nil {
+			return nil, err
+		}
+		// TODO: this seems to not work as expected as the backend will report started->maintenance->started->maintenance..
+		// should be fixed i guess?
+		logline.SetMessage(fmt.Sprintf("%s: server restarted", msg))
+	} else {
+		logline.SetMessage(fmt.Sprintf("%s: request sent", msg))
+	}
+	logline.MarkDone()
+	return output.Marshaled{Value: res}, nil
+}
 
-		s.params.Timeout = timeout
-		svc := s.Config().Service.(service.Server)
-
-		return Request{
-			BuildRequest: func(uuid string) interface{} {
-				req := s.params.RestartServerRequest
-				req.UUID = uuid
-				return &req
-			},
-			Service: svc,
-			Handler: ui.HandleContext{
-				RequestID:     func(in interface{}) string { return in.(*request.RestartServerRequest).UUID },
-				InteractiveUI: s.Config().InteractiveUI(),
-				WaitMsg:       "restart request sent",
-				WaitFn:        waitForServer(svc, upcloud.ServerStateStarted, s.Config().ClientTimeout()),
-				MaxActions:    maxServerActions,
-				ActionMsg:     "Restarting",
-				Action: func(req interface{}) (interface{}, error) {
-					return svc.RestartServer(req.(*request.RestartServerRequest))
-				},
-			},
-		}.Send(args)
+func serverStateWaiter(uuid, state, msg string, service service.Server, logline *ui.LogEntry) func() error {
+	return func() error {
+		for {
+			time.Sleep(100 * time.Millisecond)
+			details, err := service.GetServerDetails(&request.GetServerDetailsRequest{UUID: uuid})
+			if err != nil {
+				return err
+			}
+			if details.State == state {
+				return nil
+			}
+			logline.SetMessage(fmt.Sprintf("%s: waiting to start (%v)", msg, details.State))
+		}
 	}
 }

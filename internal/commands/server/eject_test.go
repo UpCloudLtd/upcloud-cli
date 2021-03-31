@@ -55,7 +55,7 @@ func TestEjectCDROMCommand(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			conf := config.New()
 			testCmd := EjectCommand()
-			mService := new(smock.MockService)
+			mService := new(smock.Service)
 
 			CachedServers = nil
 			// storage.CachedStorages = nil

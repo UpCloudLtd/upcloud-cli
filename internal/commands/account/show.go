@@ -2,14 +2,13 @@ package account
 
 import (
 	"fmt"
-	"io"
+	"math"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/ui"
+	"github.com/UpCloudLtd/cli/internal/mapper"
+	"github.com/UpCloudLtd/cli/internal/output"
 
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
-	"github.com/jedib0t/go-pretty/v6/table"
 )
 
 // ShowCommand creates the 'account show' command
@@ -23,56 +22,43 @@ type showCommand struct {
 	*commands.BaseCommand
 }
 
-// MakeExecuteCommand implements command.MakeExecuteCommand
-func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
-		svc := s.Config().Service.(service.Account)
-		account, err := svc.GetAccount()
-		if err != nil {
-			return nil, err
-		}
-		return account, nil
-	}
+func (s *showCommand) MaximumExecutions() int {
+	return 1
 }
 
-// HandleOutput implements command.HandleOutput
-func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
-	account := out.(*upcloud.Account)
+func (s *showCommand) ArgumentMapper() (mapper.Argument, error) {
+	return nil, nil
+}
 
-	var credits string
-
-	if account.Credits == 0.0 {
-		credits = "Denied"
-	} else {
-		credits = fmt.Sprintf("%.2f$", account.Credits/100)
+func (s *showCommand) Execute(_ commands.Executor, _ string) (output.Command, error) {
+	svc := s.Config().Service.(service.Account)
+	account, err := svc.GetAccount()
+	if err != nil {
+		return nil, err
 	}
+	return output.Details{
+		Sections: []output.DetailSection{
+			{Title: "", Rows: []output.DetailRow{
+				{Title: "Username:", Value: account.UserName},
+				{Title: "Credits:", Value: formatCredits(account.Credits)},
+			}},
+			{Title: "Resource Limits:", Rows: []output.DetailRow{
+				{Title: "Cores:", Value: account.ResourceLimits.Cores},
+				{Title: "Detached Floating IPs:", Value: account.ResourceLimits.DetachedFloatingIps},
+				{Title: "Memory:", Value: account.ResourceLimits.Memory},
+				{Title: "Networks:", Value: account.ResourceLimits.Networks},
+				{Title: "Public IPv4:", Value: account.ResourceLimits.PublicIPv4},
+				{Title: "Public IPv6:", Value: account.ResourceLimits.PublicIPv6},
+				{Title: "Storage HDD:", Value: account.ResourceLimits.StorageHDD},
+				{Title: "Storage SSD:", Value: account.ResourceLimits.StorageSSD},
+			}},
+		},
+	}, nil
+}
 
-	layout := ui.ListLayoutDefault
-	l := ui.NewListLayout(layout)
-	{
-		dCommon := ui.NewDetailsView()
-		dCommon.Append(
-			table.Row{"Username:", account.UserName},
-			table.Row{"Credits:", credits},
-		)
-		l.AppendSection("", dCommon.Render())
+func formatCredits(credits float64) string {
+	if math.Abs(credits) < 0.001 {
+		return "Denied"
 	}
-
-	{
-		dCommon := ui.NewDetailsView()
-		dCommon.SetHeaderWidth(25)
-		dCommon.Append(
-			table.Row{"Cores:", account.ResourceLimits.Cores},
-			table.Row{"Detached Floating IPs:", account.ResourceLimits.DetachedFloatingIps},
-			table.Row{"Memory:", account.ResourceLimits.Memory},
-			table.Row{"Networks:", account.ResourceLimits.Networks},
-			table.Row{"Public IPv4:", account.ResourceLimits.PublicIPv4},
-			table.Row{"Public IPv6:", account.ResourceLimits.PublicIPv6},
-			table.Row{"Storage HDD:", account.ResourceLimits.StorageHDD},
-			table.Row{"Storage SSD:", account.ResourceLimits.StorageSSD},
-		)
-		l.AppendSection("Resource Limits:", dCommon.Render())
-	}
-	_, _ = fmt.Fprintln(writer, l.Render())
-	return nil
+	return fmt.Sprintf("%.2f$", credits/100)
 }

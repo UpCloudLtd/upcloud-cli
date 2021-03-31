@@ -13,8 +13,8 @@ import (
 	"github.com/UpCloudLtd/cli/internal/ui"
 )
 
-// BuildRootCmd()
-func BuildRootCmd(args []string, conf *config.Config) cobra.Command {
+// BuildRootCmd builds the root command
+func BuildRootCmd(_ []string, conf *config.Config) cobra.Command {
 	rootCmd := cobra.Command{
 		Use:   "upctl",
 		Short: "UpCloud CLI",
@@ -27,9 +27,12 @@ func BuildRootCmd(args []string, conf *config.Config) cobra.Command {
 
 			terminal.ForceColours(conf.GlobalFlags.Colors)
 
-			// Load config
-			if err := conf.InitConfig(); err != nil {
-				return fmt.Errorf("Config load: %v", err)
+			if err := conf.Load(); err != nil {
+				return fmt.Errorf("cannot load configuration: %w", err)
+			}
+
+			if err := conf.SetupService(); err != nil {
+				return fmt.Errorf("cannot setup service client: %w", err)
 			}
 
 			return nil

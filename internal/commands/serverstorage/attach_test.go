@@ -101,7 +101,7 @@ func TestAttachStorageCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mService := smock.MockService{}
+			mService := smock.Service{}
 			mService.On("GetServers", mock.Anything).Return(servers, nil)
 
 			mService.On(targetMethod, &test.attacheReq).Return(&serverDetails, nil)

@@ -84,7 +84,7 @@ func TestSearchAllNetworks(t *testing.T) {
 	} {
 		t.Run(testcase.name, func(t *testing.T) {
 			cachedNetworks = nil
-			mService := smock.MockService{}
+			mService := smock.Service{}
 			mService.On("GetNetworks", mock.Anything).Return(networks, nil)
 
 			result, err := searchAllNetworks(testcase.args, &mService, testcase.unique)
@@ -153,7 +153,7 @@ func TestSearchSUniqueNetwork(t *testing.T) {
 	} {
 		t.Run(testcase.name, func(t *testing.T) {
 			cachedNetworks = nil
-			mService := smock.MockService{}
+			mService := smock.Service{}
 			mService.On("GetNetworks", mock.Anything).Return(networks, nil)
 
 			result, err := SearchUniqueNetwork(testcase.args, &mService)

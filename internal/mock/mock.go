@@ -3,272 +3,333 @@ package mock
 import (
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/stretchr/testify/mock"
 )
 
-type MockService struct {
+// Service represents a mock upcloud API service
+type Service struct {
 	mock.Mock
 }
 
-func (m *MockService) GetServerConfigurations() (*upcloud.ServerConfigurations, error) {
+// make sure Service implements service interfaces
+var _ service.Server = &Service{}
+var _ service.Storage = &Service{}
+var _ service.Firewall = &Service{}
+var _ service.Network = &Service{}
+
+// GetServerConfigurations implements service.Server.GetServerConfigurations
+func (m *Service) GetServerConfigurations() (*upcloud.ServerConfigurations, error) {
 	args := m.Called()
 	return args[0].(*upcloud.ServerConfigurations), args.Error(1)
 }
 
-func (m *MockService) GetServers() (*upcloud.Servers, error) {
+// GetServers implements service.Server.GetServers
+func (m *Service) GetServers() (*upcloud.Servers, error) {
 	args := m.Called()
 	return args[0].(*upcloud.Servers), args.Error(1)
 }
 
-func (m *MockService) GetServerDetails(r *request.GetServerDetailsRequest) (*upcloud.ServerDetails, error) {
+// GetServerDetails implements service.Server.GetServerDetails
+func (m *Service) GetServerDetails(r *request.GetServerDetailsRequest) (*upcloud.ServerDetails, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.ServerDetails), args.Error(1)
 }
 
-func (m *MockService) CreateServer(r *request.CreateServerRequest) (*upcloud.ServerDetails, error) {
+// CreateServer implements service.Server.CreateServer
+func (m *Service) CreateServer(r *request.CreateServerRequest) (*upcloud.ServerDetails, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.ServerDetails), args.Error(1)
 }
 
-func (m *MockService) WaitForServerState(r *request.WaitForServerStateRequest) (*upcloud.ServerDetails, error) {
+// WaitForServerState implements service.Server.WaitForServerState
+func (m *Service) WaitForServerState(r *request.WaitForServerStateRequest) (*upcloud.ServerDetails, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.ServerDetails), args.Error(1)
 }
 
-func (m *MockService) StartServer(r *request.StartServerRequest) (*upcloud.ServerDetails, error) {
+// StartServer implements service.Server.StartServer
+func (m *Service) StartServer(r *request.StartServerRequest) (*upcloud.ServerDetails, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.ServerDetails), args.Error(1)
 }
 
-func (m *MockService) StopServer(r *request.StopServerRequest) (*upcloud.ServerDetails, error) {
+// StopServer implements service.Server.StopServer
+func (m *Service) StopServer(r *request.StopServerRequest) (*upcloud.ServerDetails, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.ServerDetails), args.Error(1)
 }
 
-func (m *MockService) RestartServer(r *request.RestartServerRequest) (*upcloud.ServerDetails, error) {
+// RestartServer implements service.Server.RestartServer
+func (m *Service) RestartServer(r *request.RestartServerRequest) (*upcloud.ServerDetails, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.ServerDetails), args.Error(1)
 }
 
-func (m *MockService) ModifyServer(r *request.ModifyServerRequest) (*upcloud.ServerDetails, error) {
+// ModifyServer implements service.Server.ModifyServer
+func (m *Service) ModifyServer(r *request.ModifyServerRequest) (*upcloud.ServerDetails, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.ServerDetails), args.Error(1)
 }
 
-func (m *MockService) DeleteServer(r *request.DeleteServerRequest) error {
+// DeleteServer implements service.Server.DeleteServer
+func (m *Service) DeleteServer(r *request.DeleteServerRequest) error {
 	args := m.Called(r)
 	return args.Error(0)
 }
 
-func (m *MockService) DeleteServerAndStorages(r *request.DeleteServerAndStoragesRequest) error {
+// DeleteServerAndStorages implements service.Server.DeleteServerAndStorages
+func (m *Service) DeleteServerAndStorages(r *request.DeleteServerAndStoragesRequest) error {
 	args := m.Called(r)
 	return args.Error(0)
 }
 
-func (m *MockService) GetStorages(r *request.GetStoragesRequest) (*upcloud.Storages, error) {
+// GetStorages implements service.Storage.GetStorages
+func (m *Service) GetStorages(r *request.GetStoragesRequest) (*upcloud.Storages, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.Storages), args.Error(1)
 }
 
-func (m *MockService) GetStorageDetails(r *request.GetStorageDetailsRequest) (*upcloud.StorageDetails, error) {
+// GetStorageDetails implements service.Storage.GetStorageDetails
+func (m *Service) GetStorageDetails(r *request.GetStorageDetailsRequest) (*upcloud.StorageDetails, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.StorageDetails), args.Error(1)
 }
 
-func (m *MockService) CreateStorage(r *request.CreateStorageRequest) (*upcloud.StorageDetails, error) {
+// CreateStorage implements service.Storage.CreateStorage
+func (m *Service) CreateStorage(r *request.CreateStorageRequest) (*upcloud.StorageDetails, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.StorageDetails), args.Error(1)
 }
 
-func (m *MockService) ModifyStorage(r *request.ModifyStorageRequest) (*upcloud.StorageDetails, error) {
+// ModifyStorage implements service.Storage.ModifyStorage
+func (m *Service) ModifyStorage(r *request.ModifyStorageRequest) (*upcloud.StorageDetails, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.StorageDetails), args.Error(1)
 }
 
-func (m *MockService) AttachStorage(r *request.AttachStorageRequest) (*upcloud.ServerDetails, error) {
+// AttachStorage implements service.Storage.AttachStorage
+func (m *Service) AttachStorage(r *request.AttachStorageRequest) (*upcloud.ServerDetails, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.ServerDetails), args.Error(1)
 }
 
-func (m *MockService) DetachStorage(r *request.DetachStorageRequest) (*upcloud.ServerDetails, error) {
+// DetachStorage implements service.Storage.DetachStorage
+func (m *Service) DetachStorage(r *request.DetachStorageRequest) (*upcloud.ServerDetails, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.ServerDetails), args.Error(1)
 }
 
-func (m *MockService) CloneStorage(r *request.CloneStorageRequest) (*upcloud.StorageDetails, error) {
+// CloneStorage implements service.Storage.CloneStorage
+func (m *Service) CloneStorage(r *request.CloneStorageRequest) (*upcloud.StorageDetails, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.StorageDetails), args.Error(1)
 }
 
-func (m *MockService) TemplatizeStorage(r *request.TemplatizeStorageRequest) (*upcloud.StorageDetails, error) {
+// TemplatizeStorage implements service.Storage.TemplatizeStorage
+func (m *Service) TemplatizeStorage(r *request.TemplatizeStorageRequest) (*upcloud.StorageDetails, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.StorageDetails), args.Error(1)
 }
 
-func (m *MockService) WaitForStorageState(r *request.WaitForStorageStateRequest) (*upcloud.StorageDetails, error) {
+// WaitForStorageState implements service.Storage.WaitForStorageState
+func (m *Service) WaitForStorageState(r *request.WaitForStorageStateRequest) (*upcloud.StorageDetails, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.StorageDetails), args.Error(1)
 }
 
-func (m *MockService) LoadCDROM(r *request.LoadCDROMRequest) (*upcloud.ServerDetails, error) {
+// LoadCDROM implements service.Storage.LoadCDDROM
+func (m *Service) LoadCDROM(r *request.LoadCDROMRequest) (*upcloud.ServerDetails, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.ServerDetails), args.Error(1)
 }
 
-func (m *MockService) EjectCDROM(r *request.EjectCDROMRequest) (*upcloud.ServerDetails, error) {
+// EjectCDROM implements service.Storage.EjectCDROM
+func (m *Service) EjectCDROM(r *request.EjectCDROMRequest) (*upcloud.ServerDetails, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.ServerDetails), args.Error(1)
 }
 
-func (m *MockService) CreateBackup(r *request.CreateBackupRequest) (*upcloud.StorageDetails, error) {
+// CreateBackup implements service.Storage.CreateBackup
+func (m *Service) CreateBackup(r *request.CreateBackupRequest) (*upcloud.StorageDetails, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.StorageDetails), args.Error(1)
 }
 
-func (m *MockService) RestoreBackup(r *request.RestoreBackupRequest) error {
+// RestoreBackup implements service.Storage.RestoreBackup
+func (m *Service) RestoreBackup(r *request.RestoreBackupRequest) error {
 	return m.Called(r).Error(0)
 }
 
-func (m *MockService) CreateStorageImport(r *request.CreateStorageImportRequest) (*upcloud.StorageImportDetails, error) {
+// CreateStorageImport implements service.Storage.CreateStorageImport
+func (m *Service) CreateStorageImport(r *request.CreateStorageImportRequest) (*upcloud.StorageImportDetails, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.StorageImportDetails), args.Error(1)
 }
 
-func (m *MockService) GetStorageImportDetails(r *request.GetStorageImportDetailsRequest) (*upcloud.StorageImportDetails, error) {
+// GetStorageImportDetails implements service.Storage.GetStorageImportDetails
+func (m *Service) GetStorageImportDetails(r *request.GetStorageImportDetailsRequest) (*upcloud.StorageImportDetails, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.StorageImportDetails), args.Error(1)
 }
 
-func (m *MockService) WaitForStorageImportCompletion(r *request.WaitForStorageImportCompletionRequest) (*upcloud.StorageImportDetails, error) {
+// WaitForStorageImportCompletion implements service.Storage.WaitForStorageImportCompletion
+func (m *Service) WaitForStorageImportCompletion(r *request.WaitForStorageImportCompletionRequest) (*upcloud.StorageImportDetails, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.StorageImportDetails), args.Error(1)
 }
 
-func (m *MockService) DeleteStorage(r *request.DeleteStorageRequest) error {
+// DeleteStorage implements service.Storage.DeleteStorage
+func (m *Service) DeleteStorage(r *request.DeleteStorageRequest) error {
 	return m.Called(r).Error(0)
 }
 
-func (m *MockService) GetFirewallRules(r *request.GetFirewallRulesRequest) (*upcloud.FirewallRules, error) {
+// GetFirewallRules implements service.Firewall.GetFirewallRules
+func (m *Service) GetFirewallRules(r *request.GetFirewallRulesRequest) (*upcloud.FirewallRules, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.FirewallRules), args.Error(1)
 }
 
-func (m *MockService) GetFirewallRuleDetails(r *request.GetFirewallRuleDetailsRequest) (*upcloud.FirewallRule, error) {
+// GetFirewallRuleDetails implements service.Firewall.GetFirewallRuleDetails
+func (m *Service) GetFirewallRuleDetails(r *request.GetFirewallRuleDetailsRequest) (*upcloud.FirewallRule, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.FirewallRule), args.Error(1)
 }
 
-func (m *MockService) CreateFirewallRule(r *request.CreateFirewallRuleRequest) (*upcloud.FirewallRule, error) {
+// CreateFirewallRule implements service.Firewall.CreateFirewallRule
+func (m *Service) CreateFirewallRule(r *request.CreateFirewallRuleRequest) (*upcloud.FirewallRule, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.FirewallRule), args.Error(1)
 }
 
-func (m *MockService) CreateFirewallRules(r *request.CreateFirewallRulesRequest) error {
+// CreateFirewallRules implements service.Firewall.CreateFirewallRules
+func (m *Service) CreateFirewallRules(r *request.CreateFirewallRulesRequest) error {
 	args := m.Called(r)
 	return args.Error(0)
 }
 
-func (m *MockService) DeleteFirewallRule(r *request.DeleteFirewallRuleRequest) error {
+// DeleteFirewallRule implements service.Firewall.DeleteFirewallRule
+func (m *Service) DeleteFirewallRule(r *request.DeleteFirewallRuleRequest) error {
 	args := m.Called(r)
 	return args.Error(0)
 }
 
-func (m *MockService) GetNetworks() (*upcloud.Networks, error) {
+// GetNetworks implements service.Network.GetNetworks
+func (m *Service) GetNetworks() (*upcloud.Networks, error) {
 	args := m.Called()
 	return args[0].(*upcloud.Networks), args.Error(1)
 }
 
-func (m *MockService) GetNetworksInZone(r *request.GetNetworksInZoneRequest) (*upcloud.Networks, error) {
+// GetNetworksInZone implements service.Network.GetNetworksInZone
+func (m *Service) GetNetworksInZone(r *request.GetNetworksInZoneRequest) (*upcloud.Networks, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.Networks), args.Error(1)
 }
 
-func (m *MockService) CreateNetwork(r *request.CreateNetworkRequest) (*upcloud.Network, error) {
+// CreateNetwork implements service.Network.CreateNetwork
+func (m *Service) CreateNetwork(r *request.CreateNetworkRequest) (*upcloud.Network, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.Network), args.Error(1)
 }
 
-func (m *MockService) GetNetworkDetails(r *request.GetNetworkDetailsRequest) (*upcloud.Network, error) {
+// GetNetworkDetails implements service.Network.GetNetworkDetails
+func (m *Service) GetNetworkDetails(r *request.GetNetworkDetailsRequest) (*upcloud.Network, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.Network), args.Error(1)
 }
 
-func (m *MockService) ModifyNetwork(r *request.ModifyNetworkRequest) (*upcloud.Network, error) {
+// ModifyNetwork implements service.Network.ModifyNetwork
+func (m *Service) ModifyNetwork(r *request.ModifyNetworkRequest) (*upcloud.Network, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.Network), args.Error(1)
 }
 
-func (m *MockService) GetServerNetworks(r *request.GetServerNetworksRequest) (*upcloud.Networking, error) {
+// GetServerNetworks implements service.Network.GetServerNetworks
+func (m *Service) GetServerNetworks(r *request.GetServerNetworksRequest) (*upcloud.Networking, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.Networking), args.Error(1)
 }
 
-func (m *MockService) CreateNetworkInterface(r *request.CreateNetworkInterfaceRequest) (*upcloud.Interface, error) {
+// CreateNetworkInterface implements service.Network.CreateNetworkInterface
+func (m *Service) CreateNetworkInterface(r *request.CreateNetworkInterfaceRequest) (*upcloud.Interface, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.Interface), args.Error(1)
 }
 
-func (m *MockService) ModifyNetworkInterface(r *request.ModifyNetworkInterfaceRequest) (*upcloud.Interface, error) {
+// ModifyNetworkInterface implements service.Network.ModifyNetworkInterface
+func (m *Service) ModifyNetworkInterface(r *request.ModifyNetworkInterfaceRequest) (*upcloud.Interface, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.Interface), args.Error(1)
 }
 
-func (m *MockService) DeleteNetwork(r *request.DeleteNetworkRequest) error {
+// DeleteNetwork implements service.Network.DeleteNetwork
+func (m *Service) DeleteNetwork(r *request.DeleteNetworkRequest) error {
 	args := m.Called(r)
 	return args.Error(0)
 }
 
-func (m *MockService) DeleteNetworkInterface(r *request.DeleteNetworkInterfaceRequest) error {
+// DeleteNetworkInterface implements service.Network.DeleteNetworkInterface
+func (m *Service) DeleteNetworkInterface(r *request.DeleteNetworkInterfaceRequest) error {
 	args := m.Called(r)
 	return args.Error(0)
 }
 
-func (m *MockService) GetRouters() (*upcloud.Routers, error) {
+// GetRouters implements service.Network.GetRouters
+func (m *Service) GetRouters() (*upcloud.Routers, error) {
 	args := m.Called()
 	return args[0].(*upcloud.Routers), args.Error(1)
 }
 
-func (m *MockService) GetRouterDetails(r *request.GetRouterDetailsRequest) (*upcloud.Router, error) {
+// GetRouterDetails implements service.Network.GetRouterDetails
+func (m *Service) GetRouterDetails(r *request.GetRouterDetailsRequest) (*upcloud.Router, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.Router), args.Error(1)
 }
 
-func (m *MockService) CreateRouter(r *request.CreateRouterRequest) (*upcloud.Router, error) {
+// CreateRouter implements service.Network.CreateRouter
+func (m *Service) CreateRouter(r *request.CreateRouterRequest) (*upcloud.Router, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.Router), args.Error(1)
 }
 
-func (m *MockService) ModifyRouter(r *request.ModifyRouterRequest) (*upcloud.Router, error) {
+// ModifyRouter implements service.Network.ModifyRouter
+func (m *Service) ModifyRouter(r *request.ModifyRouterRequest) (*upcloud.Router, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.Router), args.Error(1)
 }
 
-func (m *MockService) DeleteRouter(r *request.DeleteRouterRequest) error {
+// DeleteRouter implements service.Network.DeleteRouter
+func (m *Service) DeleteRouter(r *request.DeleteRouterRequest) error {
 	args := m.Called(r)
 	return args.Error(0)
 }
 
-func (m *MockService) GetIPAddresses() (*upcloud.IPAddresses, error) {
+// GetIPAddresses implements service.Network.GetIPAddresses
+func (m *Service) GetIPAddresses() (*upcloud.IPAddresses, error) {
 	args := m.Called()
 	return args[0].(*upcloud.IPAddresses), args.Error(1)
 }
 
-func (m *MockService) GetIPAddressDetails(r *request.GetIPAddressDetailsRequest) (*upcloud.IPAddress, error) {
+// GetIPAddressDetails implements service.Network.GetIPAddressDetails
+func (m *Service) GetIPAddressDetails(r *request.GetIPAddressDetailsRequest) (*upcloud.IPAddress, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.IPAddress), args.Error(1)
 }
 
-func (m *MockService) AssignIPAddress(r *request.AssignIPAddressRequest) (*upcloud.IPAddress, error) {
+// AssignIPAddress implements service.Network.AssignIPAddress
+func (m *Service) AssignIPAddress(r *request.AssignIPAddressRequest) (*upcloud.IPAddress, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.IPAddress), args.Error(1)
 }
 
-func (m *MockService) ModifyIPAddress(r *request.ModifyIPAddressRequest) (*upcloud.IPAddress, error) {
+// ModifyIPAddress implements service.Network.ModifyIPAddress
+func (m *Service) ModifyIPAddress(r *request.ModifyIPAddressRequest) (*upcloud.IPAddress, error) {
 	args := m.Called(r)
 	return args[0].(*upcloud.IPAddress), args.Error(1)
 }
 
-func (m *MockService) ReleaseIPAddress(r *request.ReleaseIPAddressRequest) error {
+// ReleaseIPAddress implements service.Network.ReleaseIPAddress
+func (m *Service) ReleaseIPAddress(r *request.ReleaseIPAddressRequest) error {
 	args := m.Called(r)
 	return args.Error(0)
 }

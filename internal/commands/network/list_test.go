@@ -6,6 +6,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
 	smock "github.com/UpCloudLtd/cli/internal/mock"
+	"github.com/UpCloudLtd/cli/internal/output"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
@@ -70,19 +71,43 @@ func TestListCommand(t *testing.T) {
 			expected: []upcloud.Network{Network3},
 		},
 	} {
-		cachedNetworks = nil
-		mService := smock.MockService{}
-		mService.On("GetNetworks").Return(networks, nil)
-		mService.On("GetNetworksInZone", &request.GetNetworksInZoneRequest{Zone: "fi-hel1"}).Return(&upcloud.Networks{Networks: []upcloud.Network{Network1, Network2}}, nil)
-		mService.On("GetNetworksInZone", &request.GetNetworksInZoneRequest{Zone: "uk-lon1"}).Return(&upcloud.Networks{Networks: []upcloud.Network{Network3, Network4}}, nil)
+		t.Run(test.name, func(t *testing.T) {
+			cachedNetworks = nil
+			mService := smock.Service{}
+			mService.On("GetNetworks").Return(networks, nil)
+			mService.On("GetNetworksInZone", &request.GetNetworksInZoneRequest{Zone: "fi-hel1"}).Return(&upcloud.Networks{Networks: []upcloud.Network{Network1, Network2}}, nil)
+			mService.On("GetNetworksInZone", &request.GetNetworksInZoneRequest{Zone: "uk-lon1"}).Return(&upcloud.Networks{Networks: []upcloud.Network{Network3, Network4}}, nil)
 
-		c := commands.BuildCommand(ListCommand(&mService), nil, config.New())
-		err := c.SetFlags(test.flags)
-		assert.NoError(t, err)
+			cfg := config.New()
+			c := commands.BuildCommand(ListCommand(&mService), nil, cfg)
+			err := c.SetFlags(test.flags)
+			assert.NoError(t, err)
 
-		res, err := c.MakeExecuteCommand()([]string{})
+			res, err := c.(commands.NewCommand).Execute(commands.NewExecutor(cfg), "")
 
-		assert.Nil(t, err)
-		assert.Equal(t, &upcloud.Networks{Networks: test.expected}, res)
+			assert.Nil(t, err)
+			assert.Equal(t, createTable(test.expected), res)
+		})
+	}
+}
+
+func createTable(networks []upcloud.Network) output.Table {
+	rows := []output.TableRow{}
+	for _, network := range networks {
+		rows = append(rows,
+			output.TableRow{network.UUID, network.Name, network.Router, network.Type, network.Zone},
+		)
+	}
+
+	return output.Table{
+		HideHeader: false,
+		Columns: []output.TableColumn{
+			{Header: "UUID", Key: "uuid", Hidden: false},
+			{Header: "Name", Key: "name", Hidden: false},
+			{Header: "Router", Key: "router", Hidden: false},
+			{Header: "Type", Key: "type", Hidden: false},
+			{Header: "Zone", Key: "zone", Hidden: false},
+		},
+		Rows: rows,
 	}
 }

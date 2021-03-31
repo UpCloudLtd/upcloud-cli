@@ -3,9 +3,12 @@ package commands
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/UpCloudLtd/cli/internal/mapper"
+	"github.com/UpCloudLtd/cli/internal/output"
 	"io"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/UpCloudLtd/cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
@@ -39,6 +42,14 @@ type Command interface {
 	CobraCommand
 }
 
+// NewCommand is a new container for commands, currently still including the old interface until we can deprecate it
+type NewCommand interface {
+	Execute(exec Executor, arg string) (output.Command, error)
+	MaximumExecutions() int
+	ArgumentMapper() (mapper.Argument, error)
+	Command
+}
+
 // CobraCommand is an interface for commands that can refer back to their base cobra.Command
 type CobraCommand interface {
 	Cobra() *cobra.Command
@@ -64,8 +75,66 @@ func BuildCommand(child Command, parent *cobra.Command, config *config.Config) C
 	// Init
 	child.InitCommand()
 
-	//Run
-	if cCmd := child.MakeExecuteCommand(); cCmd != nil && child.Cobra().RunE == nil {
+	// Run
+	if nc, ok := child.(NewCommand); ok {
+		child.Cobra().RunE = func(cmd *cobra.Command, args []string) error {
+			executor := NewExecutor(config)
+			argmapper, err := nc.ArgumentMapper()
+			if err != nil {
+				return fmt.Errorf("invalid mapper: %w", err)
+			}
+			returnChan := make(chan executeResult)
+			for i, arg := range args {
+				go func(index int, argument string) {
+					executeArgument := argument
+					if argmapper != nil {
+						if res, err := argmapper(argument); err == nil {
+							executeArgument = res
+						} else {
+							executor.NewLogEntry(fmt.Sprintf("invalid argument: %v", err))
+							returnChan <- executeResult{Job: index, Error: fmt.Errorf("cannot map argument '%v': %w", argument, err)}
+							return
+						}
+					}
+					res, err := nc.Execute(executor, executeArgument)
+					returnChan <- executeResult{Job: index, Result: res, Error: err}
+				}(i, arg)
+			}
+			result := map[int]executeResult{}
+			renderTicker := time.NewTicker(100 * time.Millisecond)
+		waitForResults:
+			for {
+				select {
+				case res := <-returnChan:
+					result[res.Job] = res
+					if len(result) == len(args) {
+						// we're done
+						break waitForResults
+					}
+				case <-renderTicker.C:
+					if config.InteractiveUI() {
+						executor.Update()
+					}
+				}
+			}
+			executor.Update()
+			if len(result) > 1 {
+				resultList := []interface{}{}
+				for i := 0; i < len(result); i++ {
+					if result[i].Error != nil {
+						resultList = append(resultList, result[i].Error)
+					} else {
+						resultList = append(resultList, result[i].Result)
+					}
+				}
+				return output.Render(os.Stdout, config, output.Marshaled{Value: resultList})
+			}
+			if result[0].Error != nil {
+				return output.Render(os.Stdout, config, output.Marshaled{Value: result[0].Error})
+			}
+			return output.Render(os.Stdout, config, output.Marshaled{Value: result[0].Result})
+		}
+	} else if cCmd := child.MakeExecuteCommand(); cCmd != nil && child.Cobra().RunE == nil {
 		child.Cobra().RunE = func(_ *cobra.Command, args []string) error {
 
 			// Apply values set from viper if any

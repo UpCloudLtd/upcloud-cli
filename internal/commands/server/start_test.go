@@ -77,7 +77,7 @@ func TestStartCommand(t *testing.T) {
 			CachedServers = nil
 			conf := config.New()
 			testCmd := StartCommand()
-			mService := new(smock.MockService)
+			mService := new(smock.Service)
 
 			conf.Service = mService
 			mService.On("GetServers", mock.Anything).Return(servers, nil)

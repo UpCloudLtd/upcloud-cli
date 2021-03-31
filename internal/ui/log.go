@@ -19,7 +19,8 @@ var (
 		Details:    text.Colors{text.FgHiBlack},
 		Time:       text.Colors{text.FgHiCyan},
 	}
-	liveLogDefaultConfig = LiveLogConfig{
+	// LiveLogDefaultConfig represents the default settings for live log
+	LiveLogDefaultConfig = LiveLogConfig{
 		EntryMaxWidth:        80,
 		renderPending:        true,
 		DisableLiveRendering: !terminal.IsStdoutTerminal(),

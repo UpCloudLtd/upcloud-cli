@@ -83,6 +83,8 @@ func searchServer(serversPtr *[]upcloud.Server, service service.Server, uuidOrHo
 	return matched, nil
 }
 
+// SearchAllServers searches for servers based on terms from service
+// TODO: refactor?
 func SearchAllServers(terms []string, service service.Server, unique bool) ([]string, error) {
 	return commands.SearchResources(
 		terms,

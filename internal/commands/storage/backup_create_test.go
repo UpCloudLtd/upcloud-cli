@@ -56,7 +56,7 @@ func TestCreateBackupCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mService := smock.MockService{}
+			mService := smock.Service{}
 			mService.On("GetStorages", &request.GetStoragesRequest{}).Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2}}, nil)
 			mService.On(targetMethod, mock.Anything).Return(&details, nil)
 
