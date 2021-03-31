@@ -99,7 +99,7 @@ func TestImportCommand(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			CachedStorages = nil
-			mss := smock.MockService{}
+			mss := smock.Service{}
 			mss.On("GetStorages", mock.Anything).Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2}}, nil)
 			mss.On("CreateStorageImport", &test.request).Return(&StorageImportCompleted, nil)
 			mss.On("GetStorageImportDetails", &request.GetStorageImportDetailsRequest{UUID: Storage1.UUID}).Return(&StorageImportCompleted, nil)

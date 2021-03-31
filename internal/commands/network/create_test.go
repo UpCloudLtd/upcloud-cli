@@ -92,7 +92,7 @@ func TestCreateCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mService := smock.MockService{}
+			mService := smock.Service{}
 			mService.On(targetMethod, &test.expected).Return(&upcloud.Network{}, nil)
 			c := commands.BuildCommand(CreateCommand(&mService), nil, config.New())
 			err := c.SetFlags(test.args)

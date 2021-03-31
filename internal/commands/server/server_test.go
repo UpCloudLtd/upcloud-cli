@@ -177,7 +177,7 @@ func TestSearchServer(t *testing.T) {
 	} {
 		t.Run(testcase.name, func(t *testing.T) {
 			CachedServers = []upcloud.Server{}
-			mService := smock.MockService{}
+			mService := smock.Service{}
 			mService.On("GetServers", mock.Anything).Return(servers, nil)
 
 			result, err := SearchAllServers(testcase.args, &mService, testcase.unique)
@@ -289,7 +289,7 @@ func TestSendServerRequest(t *testing.T) {
 		},
 	}
 
-	mService := smock.MockService{}
+	mService := smock.Service{}
 
 	getServers := "GetServers"
 	mService.On(getServers, mock.Anything).Return(servers, nil)

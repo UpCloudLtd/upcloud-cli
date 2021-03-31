@@ -8,7 +8,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/core"
 )
 
-//BootstrapCLI CLI entrypoint
+// BootstrapCLI is the CLI entrypoint
 func BootstrapCLI(args []string) error {
 
 	conf := config.New()

@@ -38,19 +38,19 @@ func (s *showCommand) Execute(_ commands.Executor, _ string) (output.Command, er
 	}
 	return output.Details{
 		Sections: []output.DetailSection{
-			{"", []output.DetailRow{
-				{"Username:", account.UserName},
-				{"Credits:", formatCredits(account.Credits)},
+			{Title: "", Rows: []output.DetailRow{
+				{Title: "Username:", Value: account.UserName},
+				{Title: "Credits:", Value: formatCredits(account.Credits)},
 			}},
-			{"Resource Limits:", []output.DetailRow{
-				{"Cores:", account.ResourceLimits.Cores},
-				{"Detached Floating IPs:", account.ResourceLimits.DetachedFloatingIps},
-				{"Memory:", account.ResourceLimits.Memory},
-				{"Networks:", account.ResourceLimits.Networks},
-				{"Public IPv4:", account.ResourceLimits.PublicIPv4},
-				{"Public IPv6:", account.ResourceLimits.PublicIPv6},
-				{"Storage HDD:", account.ResourceLimits.StorageHDD},
-				{"Storage SSD:", account.ResourceLimits.StorageSSD},
+			{Title: "Resource Limits:", Rows: []output.DetailRow{
+				{Title: "Cores:", Value: account.ResourceLimits.Cores},
+				{Title: "Detached Floating IPs:", Value: account.ResourceLimits.DetachedFloatingIps},
+				{Title: "Memory:", Value: account.ResourceLimits.Memory},
+				{Title: "Networks:", Value: account.ResourceLimits.Networks},
+				{Title: "Public IPv4:", Value: account.ResourceLimits.PublicIPv4},
+				{Title: "Public IPv6:", Value: account.ResourceLimits.PublicIPv6},
+				{Title: "Storage HDD:", Value: account.ResourceLimits.StorageHDD},
+				{Title: "Storage SSD:", Value: account.ResourceLimits.StorageSSD},
 			}},
 		},
 	}, nil

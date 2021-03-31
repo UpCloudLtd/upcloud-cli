@@ -81,7 +81,7 @@ func TestRestartCommand(t *testing.T) {
 			CachedServers = nil
 			conf := config.New()
 			testCmd := RestartCommand()
-			mService := new(smock.MockService)
+			mService := new(smock.Service)
 
 			conf.Service = mService
 			mService.On("GetServers", mock.Anything).Return(servers, nil)

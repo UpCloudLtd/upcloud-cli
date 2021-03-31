@@ -82,7 +82,7 @@ func TestCloneCommand(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			CachedStorages = nil
-			mService := smock.MockService{}
+			mService := smock.Service{}
 			mService.On(targetMethod, &test.expected).Return(&details, nil)
 			mService.On("GetStorages", mock.Anything).Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2}}, nil)
 

@@ -136,7 +136,7 @@ func TestSearchStorage(t *testing.T) {
 	} {
 		t.Run(testcase.name, func(t *testing.T) {
 			cachedIPs = nil
-			mService := smock.MockService{}
+			mService := smock.Service{}
 			mService.On("GetIPAddresses").Return(&IPAddresses, nil)
 
 			result, err := searchIPAddresses(testcase.args, &mService, testcase.unique)

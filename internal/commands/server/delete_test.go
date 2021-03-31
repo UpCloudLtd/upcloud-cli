@@ -57,7 +57,7 @@ func TestDeleteServerCommand(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			conf := config.New()
 			testCmd := DeleteCommand()
-			mService := new(smock.MockService)
+			mService := new(smock.Service)
 
 			conf.Service = mService
 			mService.On(deleteServerMethod, mock.Anything).Return(nil, nil)

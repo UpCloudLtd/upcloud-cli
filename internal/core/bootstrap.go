@@ -13,8 +13,8 @@ import (
 	"github.com/UpCloudLtd/cli/internal/ui"
 )
 
-// BuildRootCmd()
-func BuildRootCmd(args []string, conf *config.Config) cobra.Command {
+// BuildRootCmd builds the root command
+func BuildRootCmd(_ []string, conf *config.Config) cobra.Command {
 	rootCmd := cobra.Command{
 		Use:   "upctl",
 		Short: "UpCloud CLI",

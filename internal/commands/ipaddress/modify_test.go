@@ -56,7 +56,7 @@ func TestModifyCommand(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			cachedIPs = nil
-			mService := smock.MockService{}
+			mService := smock.Service{}
 			mService.On(targetMethod, &test.expected).Return(&ip, nil)
 			mService.On("GetIPAddresses").Return(&upcloud.IPAddresses{IPAddresses: []upcloud.IPAddress{ip}}, nil)
 

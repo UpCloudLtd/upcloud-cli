@@ -40,7 +40,7 @@ func TestDeleteStorageCommand(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			CachedStorages = nil
-			mService := smock.MockService{}
+			mService := smock.Service{}
 			mService.On(targetMethod, &test.expected).Return(nil, nil)
 			mService.On("GetStorages", mock.Anything).Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage2}}, nil)
 

@@ -73,7 +73,7 @@ func TestListCommand(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			cachedNetworks = nil
-			mService := smock.MockService{}
+			mService := smock.Service{}
 			mService.On("GetNetworks").Return(networks, nil)
 			mService.On("GetNetworksInZone", &request.GetNetworksInZoneRequest{Zone: "fi-hel1"}).Return(&upcloud.Networks{Networks: []upcloud.Network{Network1, Network2}}, nil)
 			mService.On("GetNetworksInZone", &request.GetNetworksInZoneRequest{Zone: "uk-lon1"}).Return(&upcloud.Networks{Networks: []upcloud.Network{Network3, Network4}}, nil)

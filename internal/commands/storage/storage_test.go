@@ -126,7 +126,7 @@ func TestSearchStorage(t *testing.T) {
 		t.Run(testcase.name, func(t *testing.T) {
 			CachedStorages = nil
 
-			mService := smock.MockService{}
+			mService := smock.Service{}
 			mService.On(targetMethod, mock.Anything).Return(storages, nil)
 
 			result, err := searchAllStorages(testcase.args, &mService, testcase.unique)
@@ -158,7 +158,7 @@ func (s MockHandler) Handle(requests []interface{}) (interface{}, error) {
 }
 
 func TestSendStorageRequest(t *testing.T) {
-	mService := smock.MockService{}
+	mService := smock.Service{}
 
 	var Storage1 = upcloud.Storage{
 		UUID:   UUID1,

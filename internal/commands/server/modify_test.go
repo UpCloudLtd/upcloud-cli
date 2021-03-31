@@ -102,7 +102,7 @@ func TestModifyCommand(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			conf := config.New()
 			testCmd := ModifyCommand()
-			mService := new(smock.MockService)
+			mService := new(smock.Service)
 
 			CachedServers = nil
 			conf.Service = mService

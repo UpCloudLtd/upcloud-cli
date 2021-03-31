@@ -40,7 +40,7 @@ func TestRestoreBackupCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mService := smock.MockService{}
+			mService := smock.Service{}
 			mService.On(targetMethod, mock.Anything).Return(nil, nil)
 
 			tc := commands.BuildCommand(RestoreBackupCommand(&mService), nil, config.New())

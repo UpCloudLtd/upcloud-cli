@@ -84,7 +84,7 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 	} {
 		t.Run(test1.name, func(t *testing.T) {
 			CachedStorages = nil
-			mService := smock.MockService{}
+			mService := smock.Service{}
 			mService.On("GetStorages").Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1}}, nil)
 			mService.On(targetMethod, &test1.expected).Return(&StorageDetails1, nil)
 			mService.On("GetStorageDetails", &request.GetStorageDetailsRequest{UUID: Storage1.UUID}).Return(&StorageDetails1, nil)
@@ -130,7 +130,7 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 	} {
 		t.Run(test2.name, func(t *testing.T) {
 			CachedStorages = nil
-			mService := smock.MockService{}
+			mService := smock.Service{}
 			mService.On("GetStorages").Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1}}, nil)
 			mService.On(targetMethod, &test2.expected).Return(&StorageDetails1, nil)
 			mService.On("GetStorageDetails", &request.GetStorageDetailsRequest{UUID: Storage1.UUID}).Return(&StorageDetails1, nil)
@@ -193,7 +193,7 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 	} {
 		t.Run(test3.name, func(t *testing.T) {
 			CachedStorages = nil
-			mService := smock.MockService{}
+			mService := smock.Service{}
 			mService.On("GetStorages").Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage2}}, nil)
 			mService.On(targetMethod, &test3.expected).Return(&StorageDetails2, nil)
 			mService.On("GetStorageDetails", &request.GetStorageDetailsRequest{UUID: Storage2.UUID}).Return(&StorageDetails2, nil)

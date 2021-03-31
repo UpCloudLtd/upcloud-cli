@@ -112,7 +112,7 @@ func TestCreateCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mService := mock.MockService{}
+			mService := mock.Service{}
 			mService.On(targetMethod, &test.expected).Return(&details, nil)
 
 			tc := commands.BuildCommand(CreateCommand(&mService), nil, config.New())

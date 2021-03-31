@@ -19,9 +19,10 @@ import (
 	"github.com/jedib0t/go-pretty/v6/text"
 )
 
+// ShowCommand is the 'server firewall show' command, displaying firewall details
 func ShowCommand(serverSvc service.Server, firewallSvc service.Firewall) commands.Command {
 	return &showCommand{
-		BaseCommand: commands.New("show", "Show server details."),
+		BaseCommand: commands.New("show", "Show server firewall details."),
 		serverSvc:   serverSvc,
 		firewallSvc: firewallSvc,
 	}
@@ -45,7 +46,7 @@ func (c *commandResponseHolder) MarshalJSON() ([]byte, error) {
 
 // InitCommand implements Command.InitCommand
 func (s *showCommand) InitCommand() {
-	s.SetPositionalArgHelp(PositionalArgHelp)
+	s.SetPositionalArgHelp(positionalArgHelp)
 	s.ArgCompletion(server.GetServerArgumentCompletionFunction(s.Config()))
 }
 

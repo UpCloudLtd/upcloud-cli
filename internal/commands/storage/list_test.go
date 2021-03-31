@@ -113,7 +113,7 @@ func TestListStorages(t *testing.T) {
 		t.Run(testcase.name, func(t *testing.T) {
 			CachedStorages = nil
 			storages := upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2, Storage3, Storage4, Storage5, Storage6}}
-			mService := smock.MockService{}
+			mService := smock.Service{}
 			mService.On("GetStorages", mock.Anything).Return(&storages, nil)
 
 			lc := commands.BuildCommand(ListCommand(&mService), nil, config.New())

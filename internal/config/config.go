@@ -44,6 +44,7 @@ func New() *Config {
 	return &Config{viper: viper.New()}
 }
 
+// GlobalFlags holds information on the flags shared among all commands
 type GlobalFlags struct {
 	ConfigFile   string `valid:"-"`
 	OutputFormat string `valid:"in(human|json|yaml)"`
@@ -59,6 +60,7 @@ type Config struct {
 	GlobalFlags GlobalFlags
 }
 
+// InitConfig loads config and sets up service
 func (s *Config) InitConfig() error {
 	v := s.Viper()
 
