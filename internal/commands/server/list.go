@@ -9,7 +9,6 @@ import (
 	"github.com/UpCloudLtd/cli/internal/ui"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/pflag"
 )
@@ -41,7 +40,7 @@ func (s *listCommand) InitCommand() {
 // MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		svc := s.Config().Service.(service.Server)
+		svc := s.Config().Service.Server()
 		servers, err := svc.GetServers()
 		if err != nil {
 			return nil, err

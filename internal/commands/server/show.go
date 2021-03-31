@@ -13,7 +13,6 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
 )
@@ -52,8 +51,8 @@ func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 		if len(args) != 1 {
 			return nil, fmt.Errorf("one server hostname, title or uuid is required")
 		}
-		serverSvc := s.Config().Service.(service.Server)
-		firewallSvc := s.Config().Service.(service.Firewall)
+		serverSvc := s.Config().Service.Server()
+		firewallSvc := s.Config().Service.Firewall()
 		serverUUIDs, err := SearchAllServers(args, serverSvc, true)
 		if err != nil {
 			return nil, err

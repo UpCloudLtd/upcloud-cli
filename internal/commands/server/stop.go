@@ -3,7 +3,6 @@ package server
 import (
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
 	"strconv"
 	"time"
@@ -57,7 +56,7 @@ func (s *stopCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 		}
 
 		s.params.Timeout = timeout
-		svc := s.Config().Service.(service.Server)
+		svc := s.Config().Service.Server()
 
 		return Request{
 			BuildRequest: func(uuid string) interface{} {

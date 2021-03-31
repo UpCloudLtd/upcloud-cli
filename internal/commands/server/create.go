@@ -267,8 +267,8 @@ func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 			s.params.Plan = "custom" // Valid for all custom plans.
 		}
 
-		serverSvc := s.Config().Service.(service.Server)
-		storageSvc := s.Config().Service.(service.Storage)
+		serverSvc := s.Config().Service.Server()
+		storageSvc := s.Config().Service.Storage()
 
 		if err := s.params.processParams(storageSvc); err != nil {
 			return nil, err

@@ -6,12 +6,13 @@ import (
 	"strings"
 	"time"
 
+	internal "github.com/UpCloudLtd/cli/internal/service"
 	"github.com/UpCloudLtd/cli/internal/terminal"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/client"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
-	"github.com/hashicorp/go-cleanhttp"
-
 	"github.com/adrg/xdg"
+	"github.com/hashicorp/go-cleanhttp"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
@@ -56,7 +57,7 @@ type Config struct {
 	viper       *viper.Viper
 	ns          string
 	flagSet     *pflag.FlagSet
-	Service     interface{}
+	Service     internal.Wrapper
 	GlobalFlags GlobalFlags
 }
 
@@ -213,7 +214,7 @@ User credentials not found, these must be set in config file or via environment 
 	)
 	whc.UserAgent = fmt.Sprintf("upctl/%s", Version)
 
-	s.Service = service.New(whc)
+	s.Service = internal.Wrapper{Service: service.New(whc)}
 
 	return nil
 }

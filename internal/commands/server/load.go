@@ -5,8 +5,8 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/commands/storage"
 	"github.com/UpCloudLtd/cli/internal/ui"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
 )
 
@@ -50,8 +50,8 @@ func (s *loadCommand) MakeExecuteCommand() func(args []string) (interface{}, err
 			return nil, fmt.Errorf("storage is required")
 		}
 
-		serverSvc := s.Config().Service.(service.Server)
-		storageSvc := s.Config().Service.(service.Storage)
+		serverSvc := s.Config().Service.Server()
+		storageSvc := s.Config().Service.Storage()
 		strg, err := storage.SearchSingleStorage(s.params.StorageUUID, storageSvc)
 		if err != nil {
 			return nil, err

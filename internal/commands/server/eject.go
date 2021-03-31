@@ -4,7 +4,6 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 )
 
 type ejectCommand struct {
@@ -31,8 +30,8 @@ func EjectCommand() commands.Command {
 // MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *ejectCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		serverSvc := s.Config().Service.(service.Server)
-		storageSvc := s.Config().Service.(service.Storage)
+		serverSvc := s.Config().Service.Server()
+		storageSvc := s.Config().Service.Storage()
 
 		return Request{
 			BuildRequest: func(uuid string) interface{} {

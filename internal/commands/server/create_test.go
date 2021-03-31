@@ -8,6 +8,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands/storage"
 	"github.com/UpCloudLtd/cli/internal/config"
 	smock "github.com/UpCloudLtd/cli/internal/mock"
+	internal "github.com/UpCloudLtd/cli/internal/service"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
@@ -319,7 +320,7 @@ func TestCreateServer(t *testing.T) {
 
 			CachedServers = nil
 			storage.CachedStorages = nil
-			conf.Service = mService
+			conf.Service = internal.Wrapper{Service: mService}
 			mService.On("CreateServer", &test.createServerReq).Return(&serverDetailsMaint, nil)
 			mService.On(
 				"GetServerDetails",

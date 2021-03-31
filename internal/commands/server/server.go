@@ -168,7 +168,7 @@ func (s Request) Send(args []string) (interface{}, error) {
 // GetServerArgumentCompletionFunction returns a bash completion function for servers
 func GetServerArgumentCompletionFunction(conf *config.Config) func(toComplete string) ([]string, cobra.ShellCompDirective) {
 	return func(toComplete string) ([]string, cobra.ShellCompDirective) {
-		svc := conf.Service.(service.Server)
+		svc := conf.Service.Server()
 		servers, err := svc.GetServers()
 		if err != nil {
 			return nil, cobra.ShellCompDirectiveDefault

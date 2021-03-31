@@ -5,7 +5,6 @@ import (
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
 )
 
@@ -70,7 +69,7 @@ func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, e
 			return nil, err
 		}
 
-		svc := s.Config().Service.(service.Server)
+		svc := s.Config().Service.Server()
 		s.params.Metadata = *metadata
 
 		switch s.params.Firewall {

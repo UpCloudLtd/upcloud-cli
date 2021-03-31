@@ -2,10 +2,12 @@ package server
 
 import (
 	"fmt"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/mapper"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/ui"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
@@ -55,14 +57,14 @@ func (s *restartCommand) MaximumExecutions() int {
 }
 
 func (s *restartCommand) ArgumentMapper() (mapper.Argument, error) {
-	return mapper.CachingServer(s.Config().Service.(service.Server))
+	return mapper.CachingServer(s.Config().Service.Server())
 }
 
 func (s *restartCommand) Execute(exec commands.Executor, uuid string) (output.Command, error) {
 	msg := fmt.Sprintf("restarting server %v", uuid)
 	logline := exec.NewLogEntry(msg)
 	logline.StartedNow()
-	svc := s.Config().Service.(service.Server)
+	svc := s.Config().Service.Server()
 	res, err := svc.RestartServer(&request.RestartServerRequest{
 		UUID:          uuid,
 		StopType:      s.StopType,

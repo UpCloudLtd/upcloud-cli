@@ -2,7 +2,6 @@ package server
 
 import (
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
@@ -33,7 +32,7 @@ func (s *deleteCommand) InitCommand() {
 // MakeExecuteCommand implements Command.MakeExecuteCommand
 func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
 	return func(args []string) (interface{}, error) {
-		svc := s.Config().Service.(service.Server)
+		svc := s.Config().Service.Server()
 
 		var action = func(uuid interface{}) (interface{}, error) {
 			var err error

@@ -7,8 +7,6 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/mapper"
 	"github.com/UpCloudLtd/cli/internal/output"
-
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 )
 
 // ShowCommand creates the 'account show' command
@@ -31,7 +29,7 @@ func (s *showCommand) ArgumentMapper() (mapper.Argument, error) {
 }
 
 func (s *showCommand) Execute(_ commands.Executor, _ string) (output.Command, error) {
-	svc := s.Config().Service.(service.Account)
+	svc := s.Config().Service.Account()
 	account, err := svc.GetAccount()
 	if err != nil {
 		return nil, err
