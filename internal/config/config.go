@@ -60,8 +60,8 @@ type Config struct {
 	GlobalFlags GlobalFlags
 }
 
-// InitConfig loads config and sets up service
-func (s *Config) InitConfig() error {
+// Load loads config and sets up service
+func (s *Config) Load() error {
 	v := s.Viper()
 
 	v.SetEnvPrefix(envPrefix)
@@ -87,11 +87,6 @@ func (s *Config) InitConfig() error {
 	}
 
 	v.Set("config", v.ConfigFileUsed())
-
-	// Setup service client
-	if err := s.SetupService(); err != nil {
-		return err
-	}
 
 	return nil
 
