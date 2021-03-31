@@ -82,28 +82,38 @@ func BuildCommand(child Command, parent *cobra.Command, config *config.Config) C
 			if err != nil {
 				return fmt.Errorf("cannot create service: %w", err)
 			}
+
 			executor := NewExecutor(config, svc)
 			argmapper, err := nc.ArgumentMapper()
 			if err != nil {
 				return fmt.Errorf("invalid mapper: %w", err)
 			}
+
 			returnChan := make(chan executeResult)
-			for i, arg := range args {
-				go func(index int, argument string) {
-					executeArgument := argument
-					if argmapper != nil {
-						if res, err := argmapper(argument); err == nil {
-							executeArgument = res
-						} else {
-							executor.NewLogEntry(fmt.Sprintf("invalid argument: %v", err))
-							returnChan <- executeResult{Job: index, Error: fmt.Errorf("cannot map argument '%v': %w", argument, err)}
-							return
+			if len(args) > 0 {
+				for i, arg := range args {
+					go func(index int, argument string) {
+						executeArgument := argument
+						if argmapper != nil {
+							if res, err := argmapper(argument); err == nil {
+								executeArgument = res
+							} else {
+								executor.NewLogEntry(fmt.Sprintf("invalid argument: %v", err))
+								returnChan <- executeResult{Job: index, Error: fmt.Errorf("cannot map argument '%v': %w", argument, err)}
+								return
+							}
 						}
-					}
-					res, err := nc.Execute(executor, executeArgument)
-					returnChan <- executeResult{Job: index, Result: res, Error: err}
-				}(i, arg)
+						res, err := nc.Execute(executor, executeArgument)
+						returnChan <- executeResult{Job: index, Result: res, Error: err}
+					}(i, arg)
+				}
+			} else { // no args cmds
+				go func() {
+					res, err := nc.Execute(executor, "")
+					returnChan <- executeResult{Job: 0, Result: res, Error: err}
+				}()
 			}
+
 			result := map[int]executeResult{}
 			renderTicker := time.NewTicker(100 * time.Millisecond)
 		waitForResults:
@@ -111,7 +121,7 @@ func BuildCommand(child Command, parent *cobra.Command, config *config.Config) C
 				select {
 				case res := <-returnChan:
 					result[res.Job] = res
-					if len(result) == len(args) {
+					if len(result) >= len(args) {
 						// we're done
 						break waitForResults
 					}
@@ -121,6 +131,7 @@ func BuildCommand(child Command, parent *cobra.Command, config *config.Config) C
 					}
 				}
 			}
+
 			executor.Update()
 			if len(result) > 1 {
 				resultList := []interface{}{}
@@ -133,9 +144,11 @@ func BuildCommand(child Command, parent *cobra.Command, config *config.Config) C
 				}
 				return output.Render(os.Stdout, config, output.Marshaled{Value: resultList})
 			}
+
 			if result[0].Error != nil {
 				return output.Render(os.Stdout, config, output.Marshaled{Value: result[0].Error})
 			}
+
 			return output.Render(os.Stdout, config, output.Marshaled{Value: result[0].Result})
 		}
 	} else if cCmd := child.MakeExecuteCommand(); cCmd != nil && child.Cobra().RunE == nil {
