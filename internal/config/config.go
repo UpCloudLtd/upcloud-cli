@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"net/http"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -199,10 +200,14 @@ func (s *Config) CreateService() (internal.AllServices, error) {
 	password := s.Top().GetString("password")
 
 	if username == "" || password == "" {
-		err := `
-User credentials not found, these must be set in config file or via environment vars
-`
-		return nil, fmt.Errorf(err)
+		// nb. this might give silghtly unexpected results on OS X, as xdg.ConfigHome points to ~/Library/Application Support
+		// while we really use/prefer/document ~/.config - which does work on osx as well but won't be displayed here.
+		// TODO: fix this?
+		configDetails := fmt.Sprintf("default location %s", filepath.Join(xdg.ConfigHome, "upctl.yaml"))
+		if s.Top().GetString("config") != "" {
+			configDetails = fmt.Sprintf("used %s", s.Top().GetString("config"))
+		}
+		return nil, fmt.Errorf("user credentials not found, these must be set in config file (%s) or via environment variables", configDetails)
 	}
 
 	hc := &http.Client{Transport: &transport{}}
