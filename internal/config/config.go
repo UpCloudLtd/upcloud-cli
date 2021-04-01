@@ -48,9 +48,10 @@ func New() *Config {
 
 // GlobalFlags holds information on the flags shared among all commands
 type GlobalFlags struct {
-	ConfigFile   string `valid:"-"`
-	OutputFormat string `valid:"in(human|json|yaml)"`
-	Colors       bool   `valid:"-"`
+	ConfigFile    string        `valid:"-"`
+	OutputFormat  string        `valid:"in(human|json|yaml)"`
+	Colors        bool          `valid:"-"`
+	ClientTimeout time.Duration `valid:"-"`
 }
 
 // Config holds the configuration for running upctl

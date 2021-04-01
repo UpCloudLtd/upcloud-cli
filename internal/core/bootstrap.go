@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"time"
 
 	valid "github.com/asaskevich/govalidator"
 	"github.com/spf13/cobra"
@@ -50,6 +51,11 @@ func BuildRootCmd(_ []string, conf *config.Config) cobra.Command {
 	flags.BoolVar(
 		&conf.GlobalFlags.Colors, "colours", true,
 		"Use terminal colours (supported: auto, true, false)",
+	)
+	flags.DurationVarP(
+		&conf.GlobalFlags.ClientTimeout, "client-timeout", "t",
+		time.Duration(60*time.Second),
+		"CLI timeout when using interactive mode on some commands",
 	)
 
 	// Add flags
