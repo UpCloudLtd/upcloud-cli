@@ -142,6 +142,7 @@ func BuildCommand(child Command, parent *cobra.Command, config *config.Config) C
 						resultList = append(resultList, result[i].Result)
 					}
 				}
+				// TODO: this probably shouldnt be marshaled.. commands return marshaled output so this might need a special output?
 				return output.Render(os.Stdout, config, output.Marshaled{Value: resultList})
 			}
 
@@ -149,7 +150,7 @@ func BuildCommand(child Command, parent *cobra.Command, config *config.Config) C
 				return output.Render(os.Stdout, config, output.Marshaled{Value: result[0].Error})
 			}
 
-			return output.Render(os.Stdout, config, output.Marshaled{Value: result[0].Result})
+			return output.Render(os.Stdout, config, result[0].Result)
 		}
 	} else if cCmd := child.MakeExecuteCommand(); cCmd != nil && child.Cobra().RunE == nil {
 		child.Cobra().RunE = func(_ *cobra.Command, args []string) error {
