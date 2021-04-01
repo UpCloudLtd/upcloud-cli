@@ -79,7 +79,7 @@ func TestListCommand(t *testing.T) {
 			mService.On("GetNetworksInZone", &request.GetNetworksInZoneRequest{Zone: "uk-lon1"}).Return(&upcloud.Networks{Networks: []upcloud.Network{Network3, Network4}}, nil)
 
 			cfg := config.New()
-			c := commands.BuildCommand(ListCommand(&mService), nil, cfg)
+			c := commands.BuildCommand(ListCommand(), nil, cfg)
 			err := c.SetFlags(test.flags)
 			assert.NoError(t, err)
 

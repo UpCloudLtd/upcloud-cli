@@ -6,21 +6,18 @@ import (
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
 )
 
 // ListCommand creates the "network list" command
-func ListCommand(service service.Network) commands.NewCommand {
+func ListCommand() commands.NewCommand {
 	return &listCommand{
 		BaseCommand: commands.New("list", "List networks, by default private networks only"),
-		service:     service,
 	}
 }
 
 type listCommand struct {
 	*commands.BaseCommand
-	service        service.Network
 	columnKeys     []string
 	visibleColumns []string
 	zone           string
@@ -50,13 +47,14 @@ func (s *listCommand) InitCommand() {
 }
 
 // Execute implements command.NewCommand
-func (s *listCommand) Execute(_ commands.Executor, _ string) (output.Command, error) {
+func (s *listCommand) Execute(exec commands.Executor, _ string) (output.Command, error) {
+	svc := exec.Network()
 	var networks *upcloud.Networks
 	var err error
 	if s.zone != "" {
-		networks, err = s.service.GetNetworksInZone(&request.GetNetworksInZoneRequest{Zone: s.zone})
+		networks, err = svc.GetNetworksInZone(&request.GetNetworksInZoneRequest{Zone: s.zone})
 	} else {
-		networks, err = s.service.GetNetworks()
+		networks, err = svc.GetNetworks()
 	}
 	if err != nil {
 		return nil, err
