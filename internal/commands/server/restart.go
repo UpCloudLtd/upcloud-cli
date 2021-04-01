@@ -42,14 +42,17 @@ func (s *restartCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
+// MaximumExecutions implements NewCommand.MaximumExecutions
 func (s *restartCommand) MaximumExecutions() int {
 	return maxServerActions
 }
 
+// ArgumentMapper implements NewCommand.ArgumentMapper
 func (s *restartCommand) ArgumentMapper() (mapper.Argument, error) {
 	return mapper.CachingServer(s.Config().Service.Server())
 }
 
+// Execute implements NewCommand.Execute
 func (s *restartCommand) Execute(exec commands.Executor, uuid string) (output.Command, error) {
 	svc := exec.Server()
 	msg := fmt.Sprintf("restarting server %v", uuid)
