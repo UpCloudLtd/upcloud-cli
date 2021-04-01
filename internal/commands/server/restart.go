@@ -61,10 +61,10 @@ func (s *restartCommand) ArgumentMapper() (mapper.Argument, error) {
 }
 
 func (s *restartCommand) Execute(exec commands.Executor, uuid string) (output.Command, error) {
+	svc := exec.Server()
 	msg := fmt.Sprintf("restarting server %v", uuid)
 	logline := exec.NewLogEntry(msg)
 	logline.StartedNow()
-	svc := s.Config().Service.Server()
 	logline.SetMessage(fmt.Sprintf("%s: sending request", msg))
 	res, err := svc.RestartServer(&request.RestartServerRequest{
 		UUID:          uuid,
