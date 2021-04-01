@@ -36,19 +36,19 @@ func (s *showCommand) Execute(exec commands.Executor, _ string) (output.Command,
 	}
 	return output.Details{
 		Sections: []output.DetailSection{
-			{Title: "", Rows: []output.DetailRow{
-				{Title: "Username:", Value: account.UserName},
-				{Title: "Credits:", Value: formatCredits(account.Credits)},
+			{Rows: []output.DetailRow{
+				{Title: "Username:", Key: "username", Value: account.UserName},
+				{Title: "Credits:", Key: "credits", Value: formatCredits(account.Credits)},
 			}},
-			{Title: "Resource Limits:", Rows: []output.DetailRow{
-				{Title: "Cores:", Value: account.ResourceLimits.Cores},
-				{Title: "Detached Floating IPs:", Value: account.ResourceLimits.DetachedFloatingIps},
-				{Title: "Memory:", Value: account.ResourceLimits.Memory},
-				{Title: "Networks:", Value: account.ResourceLimits.Networks},
-				{Title: "Public IPv4:", Value: account.ResourceLimits.PublicIPv4},
-				{Title: "Public IPv6:", Value: account.ResourceLimits.PublicIPv6},
-				{Title: "Storage HDD:", Value: account.ResourceLimits.StorageHDD},
-				{Title: "Storage SSD:", Value: account.ResourceLimits.StorageSSD},
+			{Title: "Resource Limits:", Key: "resource_limits", Rows: []output.DetailRow{
+				{Title: "Cores:", Key: "cores", Value: account.ResourceLimits.Cores},
+				{Title: "Detached Floating IPs:", Key: "detached_floating_ips", Value: account.ResourceLimits.DetachedFloatingIps},
+				{Title: "Memory:", Key: "memory", Value: account.ResourceLimits.Memory},
+				{Title: "Networks:", Key: "networks", Value: account.ResourceLimits.Networks},
+				{Title: "Public IPv4:", Key: "public_ipv4", Value: account.ResourceLimits.PublicIPv4},
+				{Title: "Public IPv6:", Key: "public_ipv6", Value: account.ResourceLimits.PublicIPv6},
+				{Title: "Storage HDD:", Key: "storage_hdd", Value: account.ResourceLimits.StorageHDD},
+				{Title: "Storage SSD:", Key: "storage_ssd", Value: account.ResourceLimits.StorageSSD},
 			}},
 		},
 	}, nil
