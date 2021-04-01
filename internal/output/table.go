@@ -44,7 +44,7 @@ func (s Table) asListOfMaps() []map[string]interface{} {
 
 // MarshalJSON implements json.Marshaler
 func (s Table) MarshalJSON() ([]byte, error) {
-	return json.Marshal(s.asListOfMaps())
+	return json.MarshalIndent(s.asListOfMaps(), "", "  ")
 }
 
 // MarshalYAML returns table output marshaled to YAML.
