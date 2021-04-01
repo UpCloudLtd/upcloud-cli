@@ -55,8 +55,104 @@ type CobraCommand interface {
 	Cobra() *cobra.Command
 }
 
-// type namespace interface {
-// }
+func commandRunE(nc NewCommand, config *config.Config) func(cmd *cobra.Command, args []string) error {
+	return func(cmd *cobra.Command, args []string) error {
+		svc, err := config.CreateService()
+		if err != nil {
+			return fmt.Errorf("cannot create service: %w", err)
+		}
+
+		executor := NewExecutor(config, svc)
+		argmapper, err := nc.ArgumentMapper()
+		if err != nil {
+			return fmt.Errorf("invalid mapper: %w", err)
+		}
+
+		returnChan := make(chan executeResult)
+
+		workerCount := 1
+		if nc.MaximumExecutions() > workerCount {
+			workerCount = nc.MaximumExecutions()
+		}
+		workerQueue := make(chan int, workerCount)
+
+		// push initial workers into the worker queue
+		for n := 0; n < workerCount; n++ {
+			workerQueue <- n
+		}
+
+		// make a copy of the original args to pass into the workers
+		argQueue := args
+		if len(argQueue) == 0 {
+			// no argument commands *still* need to run so trigger a single execution with "" as the argument
+			argQueue = []string{""}
+		}
+
+		results := make([]executeResult, 0, len(args))
+		renderTicker := time.NewTicker(100 * time.Millisecond)
+
+		for {
+			select {
+			case workerID := <-workerQueue:
+				// got an idle worker
+				if len(argQueue) == 0 {
+					// we are out of arguments to process, just let the worker exit
+					break
+				}
+				arg := argQueue[0]
+				argQueue = argQueue[1:]
+				// trigger execution in a goroutine
+				go func(index int, argument string) {
+					defer func() {
+						// return worker to queue when exiting
+						workerQueue <- workerID
+					}()
+					executeArgument := argument
+					if argmapper != nil {
+						if res, err := argmapper(argument); err == nil {
+							executeArgument = res
+						} else {
+							executor.NewLogEntry(fmt.Sprintf("invalid argument: %v", err))
+							returnChan <- executeResult{Job: index, Error: fmt.Errorf("cannot map argument '%v': %w", argument, err)}
+							return
+						}
+					}
+					res, err := nc.Execute(executor, executeArgument)
+					// return result
+					returnChan <- executeResult{Job: index, Result: res, Error: err}
+				}(workerID, arg)
+			case res := <-returnChan:
+				// got a result from a worker
+				results = append(results, res)
+				if len(results) >= len(args) {
+					// we're done, update ui for the last time and render the results
+					executor.Update()
+					if len(results) > 1 {
+						resultList := []interface{}{}
+						for i := 0; i < len(results); i++ {
+							if results[i].Error != nil {
+								resultList = append(resultList, results[i].Error)
+							} else {
+								resultList = append(resultList, results[i].Result)
+							}
+						}
+						// TODO: this probably shouldnt be marshaled.. commands return marshaled output so this might need a special output?
+						return output.Render(os.Stdout, config, output.Marshaled{Value: resultList})
+					}
+
+					if results[0].Error != nil {
+						return output.Render(os.Stdout, config, output.Marshaled{Value: results[0].Error})
+					}
+					return output.Render(os.Stdout, config, results[0].Result)
+				}
+			case <-renderTicker.C:
+				if config.InteractiveUI() {
+					executor.Update()
+				}
+			}
+		}
+	}
+}
 
 // BuildCommand sets up a Command with the specified config and adds it to Cobra
 func BuildCommand(child Command, parent *cobra.Command, config *config.Config) Command {
@@ -77,81 +173,7 @@ func BuildCommand(child Command, parent *cobra.Command, config *config.Config) C
 
 	// Run
 	if nc, ok := child.(NewCommand); ok {
-		child.Cobra().RunE = func(cmd *cobra.Command, args []string) error {
-			svc, err := config.CreateService()
-			if err != nil {
-				return fmt.Errorf("cannot create service: %w", err)
-			}
-
-			executor := NewExecutor(config, svc)
-			argmapper, err := nc.ArgumentMapper()
-			if err != nil {
-				return fmt.Errorf("invalid mapper: %w", err)
-			}
-
-			returnChan := make(chan executeResult)
-			if len(args) > 0 {
-				for i, arg := range args {
-					go func(index int, argument string) {
-						executeArgument := argument
-						if argmapper != nil {
-							if res, err := argmapper(argument); err == nil {
-								executeArgument = res
-							} else {
-								executor.NewLogEntry(fmt.Sprintf("invalid argument: %v", err))
-								returnChan <- executeResult{Job: index, Error: fmt.Errorf("cannot map argument '%v': %w", argument, err)}
-								return
-							}
-						}
-						res, err := nc.Execute(executor, executeArgument)
-						returnChan <- executeResult{Job: index, Result: res, Error: err}
-					}(i, arg)
-				}
-			} else { // no args cmds
-				go func() {
-					res, err := nc.Execute(executor, "")
-					returnChan <- executeResult{Job: 0, Result: res, Error: err}
-				}()
-			}
-
-			result := map[int]executeResult{}
-			renderTicker := time.NewTicker(100 * time.Millisecond)
-		waitForResults:
-			for {
-				select {
-				case res := <-returnChan:
-					result[res.Job] = res
-					if len(result) >= len(args) {
-						// we're done
-						break waitForResults
-					}
-				case <-renderTicker.C:
-					if config.InteractiveUI() {
-						executor.Update()
-					}
-				}
-			}
-
-			executor.Update()
-			if len(result) > 1 {
-				resultList := []interface{}{}
-				for i := 0; i < len(result); i++ {
-					if result[i].Error != nil {
-						resultList = append(resultList, result[i].Error)
-					} else {
-						resultList = append(resultList, result[i].Result)
-					}
-				}
-				// TODO: this probably shouldnt be marshaled.. commands return marshaled output so this might need a special output?
-				return output.Render(os.Stdout, config, output.Marshaled{Value: resultList})
-			}
-
-			if result[0].Error != nil {
-				return output.Render(os.Stdout, config, output.Marshaled{Value: result[0].Error})
-			}
-
-			return output.Render(os.Stdout, config, result[0].Result)
-		}
+		child.Cobra().RunE = commandRunE(nc, config)
 	} else if cCmd := child.MakeExecuteCommand(); cCmd != nil && child.Cobra().RunE == nil {
 		child.Cobra().RunE = func(_ *cobra.Command, args []string) error {
 			// calling this just to init service in non-refactored commands as well, TODO: remove when refactored..

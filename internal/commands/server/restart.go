@@ -43,7 +43,7 @@ func (s *restartCommand) InitCommand() {
 	flags.StringVar(&s.StopType, "stop-type", defaultStopType, "Restart type. Available: soft, hard")
 	// TODO: reimplement? does not seem to make sense to automagically destroy servers if restart fails..
 	// flags.StringVar(&s.params.TimeoutAction, "timeout-action", defaultRestartParams.TimeoutAction, "Action to take if timeout limit is exceeded. Available: destroy, ignore")
-	flags.DurationVar(&s.Timeout, "timeout", defaultTimeout, "Stop timeout in Go duration string\nExamples: 100ms, 1m10s, 3h")
+	flags.DurationVar(&s.Timeout, "timeout", defaultTimeout, "Server stop timeout in Go duration string\nExamples: 100ms, 1m10s, 3h")
 	// TODO: reimplement? does not seem to be in use..
 	// flags.IntVar(&s.params.Host, "host", defaultRestartParams.Host, "Use this to restart the VM on a specific host. Refers to value from host attribute. Only available for private cloud hosts")
 
@@ -65,6 +65,7 @@ func (s *restartCommand) Execute(exec commands.Executor, uuid string) (output.Co
 	logline := exec.NewLogEntry(msg)
 	logline.StartedNow()
 	svc := s.Config().Service.Server()
+	logline.SetMessage(fmt.Sprintf("%s: sending request", msg))
 	res, err := svc.RestartServer(&request.RestartServerRequest{
 		UUID:          uuid,
 		StopType:      s.StopType,
@@ -74,7 +75,6 @@ func (s *restartCommand) Execute(exec commands.Executor, uuid string) (output.Co
 	if err != nil {
 		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
 		logline.SetDetails(err.Error(), "error: ")
-		//		logline.SetMessage(fmt.Sprintf("failed (%v)", err))
 		return nil, err
 	}
 	if s.WaitForServerToStart {
