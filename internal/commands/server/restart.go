@@ -10,7 +10,6 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
 	"time"
 )
@@ -94,20 +93,4 @@ func (s *restartCommand) Execute(exec commands.Executor, uuid string) (output.Co
 	}
 	logline.MarkDone()
 	return output.Marshaled{Value: res}, nil
-}
-
-func serverStateWaiter(uuid, state, msg string, service service.Server, logline *ui.LogEntry) func() error {
-	return func() error {
-		for {
-			time.Sleep(100 * time.Millisecond)
-			details, err := service.GetServerDetails(&request.GetServerDetailsRequest{UUID: uuid})
-			if err != nil {
-				return err
-			}
-			if details.State == state {
-				return nil
-			}
-			logline.SetMessage(fmt.Sprintf("%s: waiting to start (%v)", msg, details.State))
-		}
-	}
 }

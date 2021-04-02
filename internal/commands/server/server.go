@@ -180,3 +180,19 @@ func GetServerArgumentCompletionFunction(conf *config.Config) func(toComplete st
 		return commands.MatchStringPrefix(vals, toComplete, true), cobra.ShellCompDirectiveNoFileComp
 	}
 }
+
+func serverStateWaiter(uuid, state, msg string, service service.Server, logline *ui.LogEntry) func() error {
+	return func() error {
+		for {
+			time.Sleep(100 * time.Millisecond)
+			details, err := service.GetServerDetails(&request.GetServerDetailsRequest{UUID: uuid})
+			if err != nil {
+				return err
+			}
+			if details.State == state {
+				return nil
+			}
+			logline.SetMessage(fmt.Sprintf("%s: waiting to start (%v)", msg, details.State))
+		}
+	}
+}
