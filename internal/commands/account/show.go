@@ -5,7 +5,6 @@ import (
 	"math"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/mapper"
 	"github.com/UpCloudLtd/cli/internal/output"
 )
 
@@ -18,14 +17,6 @@ func ShowCommand() commands.Command {
 
 type showCommand struct {
 	*commands.BaseCommand
-}
-
-func (s *showCommand) MaximumExecutions() int {
-	return 1
-}
-
-func (s *showCommand) ArgumentMapper() (mapper.Argument, error) {
-	return nil, nil
 }
 
 func (s *showCommand) Execute(exec commands.Executor, _ string) (output.Command, error) {

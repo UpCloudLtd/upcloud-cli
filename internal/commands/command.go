@@ -69,11 +69,7 @@ func commandRunE(nc NewCommand, config *config.Config) func(cmd *cobra.Command, 
 		}
 
 		returnChan := make(chan executeResult)
-
-		workerCount := 1
-		if nc.MaximumExecutions() > workerCount {
-			workerCount = nc.MaximumExecutions()
-		}
+		workerCount := nc.MaximumExecutions()
 		workerQueue := make(chan int, workerCount)
 
 		// push initial workers into the worker queue
@@ -231,6 +227,16 @@ type BaseCommand struct {
 	cobra  *cobra.Command
 	name   string
 	config *config.Config
+}
+
+//MaximumExecutions return the max executed workers
+func (s *BaseCommand) MaximumExecutions() int {
+	return 1
+}
+
+//ArgumentMapper returns the argument handler
+func (s *BaseCommand) ArgumentMapper() (mapper.Argument, error) {
+	return nil, nil
 }
 
 // Name returns the name of the command
