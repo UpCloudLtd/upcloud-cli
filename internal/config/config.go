@@ -52,6 +52,7 @@ type GlobalFlags struct {
 	OutputFormat  string        `valid:"in(human|json|yaml)"`
 	Colors        bool          `valid:"-"`
 	ClientTimeout time.Duration `valid:"-"`
+	Wait          bool          `valid:"-"`
 }
 
 // Config holds the configuration for running upctl

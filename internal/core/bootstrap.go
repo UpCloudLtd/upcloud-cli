@@ -57,6 +57,10 @@ func BuildRootCmd(_ []string, conf *config.Config) cobra.Command {
 		time.Duration(60*time.Second),
 		"CLI timeout when using interactive mode on some commands",
 	)
+	flags.BoolVarP(
+		&conf.GlobalFlags.Wait, "wait", "w", false,
+		"Wait for the command to be completed",
+	)
 
 	// Add flags
 	flags.VisitAll(func(flag *pflag.Flag) {

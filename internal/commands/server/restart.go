@@ -77,7 +77,7 @@ func (s *restartCommand) Execute(exec commands.Executor, uuid string) (output.Co
 		logline.SetDetails(err.Error(), "error: ")
 		return nil, err
 	}
-	if s.WaitForServerToStart {
+	if s.Config().GlobalFlags.Wait {
 		logline.SetMessage(fmt.Sprintf("%s: waiting to restart", msg))
 		if err := exec.WaitFor(serverStateWaiter(uuid, upcloud.ServerStateMaintenance, msg, svc, logline), s.Config().ClientTimeout()); err != nil {
 			return nil, err
