@@ -21,7 +21,7 @@ func (s CachingIPAddress) Get(svc internal.AllServices) (Resolver, error) {
 		for _, ipAddress := range ipaddresses.IPAddresses {
 			if ipAddress.PTRRecord == arg || ipAddress.Address == arg {
 				if rv != "" {
-					return "", fmt.Errorf("'%v' is ambiguous, found multiple servers matching", arg)
+					return "", fmt.Errorf("'%v' is ambiguous, found multiple ip addresses matching", arg)
 				}
 				rv = ipAddress.Address
 			}
