@@ -2,6 +2,7 @@ package output
 
 import (
 	"encoding/json"
+	"fmt"
 	"gopkg.in/yaml.v2"
 )
 
@@ -13,12 +14,22 @@ type Marshaled struct {
 
 // MarshalJSON implements json.Marshaler and output.Command
 func (d Marshaled) MarshalJSON() ([]byte, error) {
+	if errValue, ok := d.Value.(error); ok {
+		return json.MarshalIndent(map[string]interface{}{
+			"error": errValue.Error(),
+		}, "", "  ")
+	}
 	return json.MarshalIndent(d.Value, "", "  ")
 }
 
 // MarshalYAML implements output.Command, it marshals the value and returns the YAML as []byte
 // nb. does *not* implement yaml.Marshaler
 func (d Marshaled) MarshalYAML() ([]byte, error) {
+	if errValue, ok := d.Value.(error); ok {
+		return yaml.Marshal(map[string]interface{}{
+			"error": errValue.Error(),
+		})
+	}
 	return yaml.Marshal(d.Value)
 }
 
@@ -26,5 +37,8 @@ func (d Marshaled) MarshalYAML() ([]byte, error) {
 // For Marshaled outputs, we dont return anything in humanized output as it's assumed the log output is what the user
 // wants and it is down to the command itself to provide that.
 func (d Marshaled) MarshalHuman() ([]byte, error) {
+	if errValue, ok := d.Value.(error); ok {
+		return []byte(fmt.Sprintf("ERROR: %v", errValue)), nil
+	}
 	return []byte{}, nil
 }
