@@ -1,11 +1,15 @@
 ---
 name: Bug report
-about: Found a bug or something not working quite as it should?
+about: Report a bug or something that is not working quite as it should
 title: ''
 labels: bug
 assignees: ''
 
 ---
+
+**Environment (required):**
+- OS: [e.g. macOS (Darwin or M1), Linux, Windows]
+- Version [e.g. 1.2.0, "upctl version" gives you this]
 
 **Describe the bug**
 A clear and concise description of what the bug is.
@@ -23,10 +27,6 @@ What happened instead (e.g. I received an error with a message of "BOOT_ORDER_IN
 
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
-
-**Desktop (please complete the following information):**
- - OS: [e.g. macOS, Linux, Windows]
- - Version [e.g. 1.2.0]
 
 
 **Additional context**
