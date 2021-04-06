@@ -44,7 +44,7 @@ type Command interface {
 
 // NewCommand is a new container for commands, currently still including the old interface until we can deprecate it
 type NewCommand interface {
-	Execute(exec Executor, arg string) (output.Command, error)
+	Execute(exec Executor, arg string) (output.Output, error)
 	MaximumExecutions() int
 	Command
 }

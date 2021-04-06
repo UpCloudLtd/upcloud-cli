@@ -27,7 +27,7 @@ func (s *deleteCommand) InitCommand() {
 }
 
 // Execute implements NewCommand.Execute
-func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Command, error) {
+func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	svc := exec.Network()
 	msg := fmt.Sprintf("deleting network %v", arg)
 	logline := exec.NewLogEntry(msg)

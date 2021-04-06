@@ -49,7 +49,7 @@ func (s *restartCommand) MaximumExecutions() int {
 }
 
 // Execute implements NewCommand.Execute
-func (s *restartCommand) Execute(exec commands.Executor, uuid string) (output.Command, error) {
+func (s *restartCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Server()
 	msg := fmt.Sprintf("restarting server %v", uuid)
 	logline := exec.NewLogEntry(msg)

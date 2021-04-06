@@ -12,7 +12,7 @@ type Marshaled struct {
 	Value interface{}
 }
 
-// MarshalJSON implements json.Marshaler and output.Command
+// MarshalJSON implements json.Marshaler and output.Output
 func (d Marshaled) MarshalJSON() ([]byte, error) {
 	if errValue, ok := d.Value.(error); ok {
 		return json.MarshalIndent(map[string]interface{}{
@@ -22,7 +22,7 @@ func (d Marshaled) MarshalJSON() ([]byte, error) {
 	return json.MarshalIndent(d.Value, "", "  ")
 }
 
-// MarshalYAML implements output.Command, it marshals the value and returns the YAML as []byte
+// MarshalYAML implements output.Output, it marshals the value and returns the YAML as []byte
 // nb. does *not* implement yaml.Marshaler
 func (d Marshaled) MarshalYAML() ([]byte, error) {
 	if errValue, ok := d.Value.(error); ok {
@@ -33,7 +33,7 @@ func (d Marshaled) MarshalYAML() ([]byte, error) {
 	return yaml.Marshal(d.Value)
 }
 
-// MarshalHuman implements output.Command
+// MarshalHuman implements output.Output
 // For Marshaled outputs, we dont return anything in humanized output as it's assumed the log output is what the user
 // wants and it is down to the command itself to provide that.
 func (d Marshaled) MarshalHuman() ([]byte, error) {

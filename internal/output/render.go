@@ -7,7 +7,7 @@ import (
 )
 
 // Render renders commandOutput to writer using cfg to configure the output.
-func Render(writer io.Writer, cfg *config.Config, commandOutput Command) (err error) {
+func Render(writer io.Writer, cfg *config.Config, commandOutput Output) (err error) {
 	var bytes []byte
 	switch {
 	case cfg.OutputHuman():

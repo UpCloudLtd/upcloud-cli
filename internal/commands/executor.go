@@ -27,7 +27,7 @@ type Executor interface {
 
 type executeResult struct {
 	Job    int
-	Result output.Command
+	Result output.Output
 	Error  error
 }
 

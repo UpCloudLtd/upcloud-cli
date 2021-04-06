@@ -30,7 +30,7 @@ func (d DetailSection) MarshalJSON() ([]byte, error) {
 	return json.Marshal(jsonObject)
 }
 
-// Details implements output.Command for a details-style view
+// Details implements output.Output for a details-style view
 type Details struct {
 	Sections []DetailSection
 }

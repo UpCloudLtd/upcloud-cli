@@ -37,7 +37,7 @@ func (s *stopCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
-func (s *stopCommand) Execute(exec commands.Executor, uuid string) (output.Command, error) {
+func (s *stopCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Server()
 	msg := fmt.Sprintf("stoping server %v", uuid)
 	logline := exec.NewLogEntry(msg)

@@ -241,7 +241,7 @@ func (s *createCommand) InitCommand() {
 	s.AddFlags(fs)
 }
 
-func (s *createCommand) Execute(exec commands.Executor, _ string) (output.Command, error) {
+func (s *createCommand) Execute(exec commands.Executor, _ string) (output.Output, error) {
 
 	if s.params.Hostname == "" || s.params.Zone == "" {
 		return nil, fmt.Errorf("hostname, zone and some password delivery method are required")

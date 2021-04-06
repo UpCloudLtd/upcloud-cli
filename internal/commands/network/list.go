@@ -42,7 +42,7 @@ func (s *listCommand) InitCommand() {
 }
 
 // Execute implements command.NewCommand
-func (s *listCommand) Execute(exec commands.Executor, _ string) (output.Command, error) {
+func (s *listCommand) Execute(exec commands.Executor, _ string) (output.Output, error) {
 	svc := exec.Network()
 	var networks *upcloud.Networks
 	var err error

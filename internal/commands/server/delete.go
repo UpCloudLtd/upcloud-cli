@@ -34,7 +34,7 @@ func (s *deleteCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
-func (s *deleteCommand) Execute(exec commands.Executor, uuid string) (output.Command, error) {
+func (s *deleteCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Server()
 	msg := fmt.Sprintf("deleting server %v", uuid)
 	logline := exec.NewLogEntry(msg)

@@ -84,7 +84,8 @@ func (s *createCommand) buildRequest() (*request.CreateNetworkRequest, error) {
 }
 
 // Execute implements NewCommand.Execute
-func (s *createCommand) Execute(exec commands.Executor, _ string) (output.Command, error) {
+func (s *createCommand) Execute(exec commands.Executor, _ string) (output.Output, error) {
+
 	// TODO: should we, for example, accept name as the first argument instead of as a flag?
 	if s.name == "" {
 		return nil, fmt.Errorf("name is required")

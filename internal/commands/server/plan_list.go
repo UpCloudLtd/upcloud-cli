@@ -16,7 +16,7 @@ type planListCommand struct {
 	*commands.BaseCommand
 }
 
-func (s *planListCommand) Execute(exec commands.Executor, _ string) (output.Command, error) {
+func (s *planListCommand) Execute(exec commands.Executor, _ string) (output.Output, error) {
 	svc := exec.Plan()
 	plans, err := svc.GetPlans()
 	if err != nil {

@@ -30,7 +30,7 @@ func (s *startCommand) InitCommand() {
 	s.ArgCompletion(GetServerArgumentCompletionFunction(s.Config()))
 }
 
-func (s *startCommand) Execute(exec commands.Executor, uuid string) (output.Command, error) {
+func (s *startCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Server()
 	msg := fmt.Sprintf("starting server %v", uuid)
 	logline := exec.NewLogEntry(msg)

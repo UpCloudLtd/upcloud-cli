@@ -60,7 +60,8 @@ func (s *modifyCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
-func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Command, error) {
+// Execute implements command.NewCommand
+func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 
 	remoteAccess := new(upcloud.Boolean)
 	if err := remoteAccess.UnmarshalJSON([]byte(s.params.remoteAccessEnabled)); err != nil {
