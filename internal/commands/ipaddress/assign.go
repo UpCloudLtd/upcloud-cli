@@ -59,7 +59,7 @@ func (s *assignCommand) Execute(exec commands.Executor, arg string) (output.Outp
 	if s.serverUUID != "" {
 		_, err := exec.Server().GetServerDetails(&request.GetServerDetailsRequest{UUID: s.serverUUID})
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("invalid server uuid: %w", err)
 		}
 	}
 	target := s.mac
