@@ -30,7 +30,6 @@ func (m Combined) MarshalYAML() ([]byte, error) {
 func flattenSections(m Combined) map[string]interface{} {
 	out := map[string]interface{}{}
 	for _, sec := range m {
-		fmt.Println("SEC", sec.Title, sec.Key)
 		if sec.Key != "" {
 			if _, ok := out[sec.Key]; ok {
 				panic(fmt.Sprintf("duplicate section key '%v' in output", sec.Key))
@@ -67,7 +66,8 @@ func (m Combined) MarshalHuman() ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		if _, ok := sec.Contents.(Details); !ok {
+		if _, ok := sec.Contents.(Details); !ok && sec.Title != "" {
+			// skip drawing title for details
 			out = append(out, []byte(fmt.Sprintf("  %v\n", sec.Title))...)
 		}
 		out = append(out, marshaled...)
