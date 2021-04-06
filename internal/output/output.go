@@ -10,4 +10,5 @@ type Output interface {
 	// yaml.Marshaler
 	MarshalYAML() ([]byte, error)
 	MarshalHuman() ([]byte, error)
+	MarshalRawMap() (map[string]interface{}, error)
 }

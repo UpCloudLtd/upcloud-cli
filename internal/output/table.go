@@ -138,6 +138,14 @@ func (s Table) MarshalHuman() ([]byte, error) {
 	return []byte(t.Render()), nil
 }
 
+// MarshalRawMap implements output.Output
+func (s Table) MarshalRawMap() (map[string]interface{}, error) {
+	// TODO: make this better..
+	return map[string]interface{}{
+		"table": s.asListOfMaps(),
+	}, nil
+}
+
 var defaultTableStyle = table.Style{
 	Name: "DataTable",
 	Box: table.BoxStyle{

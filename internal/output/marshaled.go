@@ -2,6 +2,7 @@ package output
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"gopkg.in/yaml.v2"
 )
@@ -41,4 +42,9 @@ func (d Marshaled) MarshalHuman() ([]byte, error) {
 		return []byte(fmt.Sprintf("ERROR: %v", errValue)), nil
 	}
 	return []byte{}, nil
+}
+
+// MarshalRawMap implements output.Output
+func (d Marshaled) MarshalRawMap() (map[string]interface{}, error) {
+	return nil, errors.New("marshaled should not be used as part of multiple output, raw output is undefined")
 }

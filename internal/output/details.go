@@ -90,3 +90,8 @@ func (d Details) MarshalHuman() ([]byte, error) {
 	}
 	return []byte(l.Render()), nil
 }
+
+// MarshalRawMap implements output.Output
+func (d Details) MarshalRawMap() (map[string]interface{}, error) {
+	return mapSections(d.Sections), nil
+}
