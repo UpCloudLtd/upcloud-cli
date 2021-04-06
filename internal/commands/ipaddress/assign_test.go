@@ -67,12 +67,18 @@ func TestAssignCommand(t *testing.T) {
 			mService := smock.Service{}
 			mService.On(targetMethod, &test.expected).Return(&ip, nil)
 			mService.On("GetServers").Return(&servers, nil)
+			for _, server := range servers.Servers {
+				mService.On("GetServerDetails",
+					&request.GetServerDetailsRequest{UUID: server.UUID},
+				).Return(&upcloud.ServerDetails{Server: server}, nil)
+			}
+			conf := config.New()
 
-			c := commands.BuildCommand(AssignCommand(&mService, &mService), nil, config.New())
+			c := commands.BuildCommand(AssignCommand(), nil, conf)
 			err := c.SetFlags(test.flags)
 			assert.NoError(t, err)
 
-			_, err = c.MakeExecuteCommand()([]string{})
+			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, &mService), "")
 
 			if err != nil {
 				assert.Equal(t, test.error, err.Error())

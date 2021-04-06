@@ -1,48 +1,57 @@
 package ipaddress
 
 import (
+	"errors"
+	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 )
 
 type removeCommand struct {
 	*commands.BaseCommand
-	service service.IpAddress
 }
 
 // RemoveCommand creates the 'ip-address remove' command
-func RemoveCommand(service service.IpAddress) commands.Command {
+func RemoveCommand() commands.Command {
+	// TODO: should this be 'release'? inconsistent with libs now
 	return &removeCommand{
 		BaseCommand: commands.New("remove", "Remove an IP address"),
-		service:     service,
 	}
+}
+
+// MaximumExecutions implements NewCommand.MaximumExecutions
+func (s *removeCommand) MaximumExecutions() int {
+	return maxIPAddressActions
 }
 
 // InitCommand implements Command.MakeExecuteCommand
 func (s *removeCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	s.ArgCompletion(getArgCompFn(s.service))
+	// TODO: reimplement
+	// s.ArgCompletion(getArgCompFn(s.service))
 }
 
-// MakeExecuteCommand implements Command.MakeExecuteCommand
-func (s *removeCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
-		return ipAddressRequest{
-			BuildRequest: func(address string) interface{} {
-				return &request.ReleaseIPAddressRequest{IPAddress: address}
-			},
-			Service: s.service,
-			HandleContext: ui.HandleContext{
-				RequestID:     func(in interface{}) string { return in.(*request.ReleaseIPAddressRequest).IPAddress },
-				MaxActions:    maxIPAddressActions,
-				InteractiveUI: s.Config().InteractiveUI(),
-				ActionMsg:     "Removing IP Address",
-				Action: func(req interface{}) (interface{}, error) {
-					return nil, s.service.ReleaseIPAddress(req.(*request.ReleaseIPAddressRequest))
-				},
-			},
-		}.send(args)
+// Execute implements NewCommand.Execute
+func (s *removeCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
+	if arg == "" {
+		return nil, errors.New("need ip address to remove")
 	}
+	msg := fmt.Sprintf("removing ip-address %v", arg)
+	logline := exec.NewLogEntry(msg)
+
+	logline.StartedNow()
+	logline.SetMessage(fmt.Sprintf("%s: sending request", msg))
+	err := exec.IPAddress().ReleaseIPAddress(&request.ReleaseIPAddressRequest{
+		IPAddress: arg,
+	})
+	if err != nil {
+		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
+		logline.SetDetails(err.Error(), "error: ")
+		return nil, err
+	}
+	logline.SetMessage(fmt.Sprintf("%s: success", msg))
+	logline.MarkDone()
+	return output.Marshaled{Value: nil}, nil
 }

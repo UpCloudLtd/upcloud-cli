@@ -1,55 +1,67 @@
 package ipaddress
 
 import (
+	"errors"
+	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
 )
 
 type modifyCommand struct {
 	*commands.BaseCommand
-	service service.IpAddress
-	req     request.ModifyIPAddressRequest
+	mac       string
+	ptrrecord string
+	resolver.CachingIPAddress
 }
 
 // ModifyCommand creates the 'ip-address modify' command
-func ModifyCommand(service service.IpAddress) commands.Command {
+func ModifyCommand() commands.Command {
 	return &modifyCommand{
 		BaseCommand: commands.New("modify", "Modify an IP address"),
-		service:     service,
 	}
 }
 
 // InitCommand implements Command.InitCommand
 func (s *modifyCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	s.ArgCompletion(getArgCompFn(s.service))
+	// TODO: reimplement
+	// s.ArgCompletion(getArgCompFn(s.service))
 	fs := &pflag.FlagSet{}
-	fs.StringVar(&s.req.MAC, "mac", "", "MAC address of server interface to attach floating IP to.")
-	fs.StringVar(&s.req.PTRRecord, "ptr-record", "", "A fully qualified domain name.")
+	fs.StringVar(&s.mac, "mac", "", "MAC address of server interface to attach floating IP to.")
+	fs.StringVar(&s.ptrrecord, "ptr-record", "", "A fully qualified domain name.")
 	s.AddFlags(fs)
 }
 
-// MakeExecuteCommand implements Command.MakeExecuteCommand
-func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
-		return ipAddressRequest{
-			BuildRequest: func(address string) interface{} {
-				s.req.IPAddress = address
-				return &s.req
-			},
-			Service: s.service,
-			HandleContext: ui.HandleContext{
-				RequestID:     func(in interface{}) string { return in.(*request.ModifyIPAddressRequest).IPAddress },
-				MaxActions:    maxIPAddressActions,
-				InteractiveUI: s.Config().InteractiveUI(),
-				ActionMsg:     "Modifying IP Address",
-				Action: func(req interface{}) (interface{}, error) {
-					return s.service.ModifyIPAddress(req.(*request.ModifyIPAddressRequest))
-				},
-			},
-		}.send(args)
+// MaximumExecutions implements NewCommand.MaximumExecutions
+func (s *modifyCommand) MaximumExecutions() int {
+	return maxIPAddressActions
+}
+
+// Execute implements NewCommand.Execute
+func (s *modifyCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
+	if arg == "" {
+		return nil, errors.New("need ip address to modify")
 	}
+	msg := fmt.Sprintf("modifying ip-address %v", arg)
+	logline := exec.NewLogEntry(msg)
+
+	logline.StartedNow()
+	logline.SetMessage(fmt.Sprintf("%s: sending request", msg))
+	res, err := exec.IPAddress().ModifyIPAddress(&request.ModifyIPAddressRequest{
+		IPAddress: arg,
+		MAC:       s.mac,
+		PTRRecord: s.ptrrecord,
+	})
+	if err != nil {
+		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
+		logline.SetDetails(err.Error(), "error: ")
+		return nil, err
+	}
+	logline.SetMessage(fmt.Sprintf("%s: success", msg))
+	logline.MarkDone()
+	return output.Marshaled{Value: res}, nil
 }

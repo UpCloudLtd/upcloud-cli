@@ -13,7 +13,6 @@ import (
 )
 
 func TestRemoveCommand(t *testing.T) {
-	targetMethod := "ReleaseIPAddress"
 
 	ip := upcloud.IPAddress{
 		Address:   "127.0.0.1",
@@ -22,40 +21,44 @@ func TestRemoveCommand(t *testing.T) {
 
 	for _, test := range []struct {
 		name     string
-		args     []string
+		arg      string
 		error    string
 		expected request.ReleaseIPAddressRequest
 	}{
 		{
-			name: "set optional fields, ip identified by address",
-			args: []string{ip.Address},
+			name: "remove ip identified by address",
+			arg:  ip.Address,
 			expected: request.ReleaseIPAddressRequest{
 				IPAddress: ip.Address,
 			},
 		},
-		{
-			name: "set optional fields, ip identified by PTR Record",
-			args: []string{ip.PTRRecord},
-			expected: request.ReleaseIPAddressRequest{
-				IPAddress: ip.Address,
-			},
-		},
+		// TODO: reimplement test in resolver!
+		/*		{
+					name: "set optional fields, ip identified by PTR Record",
+					args: []string{ip.PTRRecord},
+					expected: request.ReleaseIPAddressRequest{
+						IPAddress: ip.Address,
+					},
+				},
+		*/
 	} {
+		targetMethod := "ReleaseIPAddress"
 		t.Run(test.name, func(t *testing.T) {
 			cachedIPs = nil
 			mService := smock.Service{}
 			mService.On(targetMethod, &test.expected).Return(nil)
 			mService.On("GetIPAddresses").Return(&upcloud.IPAddresses{IPAddresses: []upcloud.IPAddress{ip}}, nil)
+			conf := config.New()
 
-			c := commands.BuildCommand(RemoveCommand(&mService), nil, config.New())
-
-			_, err := c.MakeExecuteCommand()(test.args)
+			c := commands.BuildCommand(RemoveCommand(), nil, conf)
+			_, err := c.(commands.NewCommand).Execute(commands.NewExecutor(conf, &mService), test.arg)
 
 			if err != nil {
 				assert.Equal(t, test.error, err.Error())
 			} else {
 				mService.AssertNumberOfCalls(t, targetMethod, 1)
 			}
+
 		})
 	}
 }

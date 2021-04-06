@@ -1,0 +1,34 @@
+package resolver
+
+import (
+	"fmt"
+	internal "github.com/UpCloudLtd/cli/internal/service"
+)
+
+// CachingIPAddress implements resolver for ip addresses that resolve with ptr records, caching the results
+type CachingIPAddress struct{}
+
+var _ ResolutionProvider = CachingIPAddress{}
+
+// Get implements ResolutionProvider.Get
+func (s CachingIPAddress) Get(svc internal.AllServices) (Resolver, error) {
+	ipaddresses, err := svc.GetIPAddresses()
+	if err != nil {
+		return nil, err
+	}
+	return func(arg string) (uuid string, err error) {
+		rv := ""
+		for _, ipAddress := range ipaddresses.IPAddresses {
+			if ipAddress.PTRRecord == arg || ipAddress.Address == arg {
+				if rv != "" {
+					return "", fmt.Errorf("'%v' is ambiguous, found multiple servers matching", arg)
+				}
+				rv = ipAddress.Address
+			}
+		}
+		if rv != "" {
+			return rv, nil
+		}
+		return "", fmt.Errorf("no ip address found matching '%v'", arg)
+	}, nil
+}

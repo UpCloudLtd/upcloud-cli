@@ -3,6 +3,7 @@ package all
 import (
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/commands/account"
+	"github.com/UpCloudLtd/cli/internal/commands/ipaddress"
 	"github.com/UpCloudLtd/cli/internal/commands/network"
 
 	// "github.com/UpCloudLtd/cli/internal/commands/ipaddress"
@@ -62,12 +63,12 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	// commands.BuildCommand(storage.RestoreBackupCommand(svc), backupCommand, conf)
 
 	// // IP Addresses
-	// ipAddressCommand := commands.BuildCommand(ipaddress.BaseIPAddressCommand(), mainCommand, conf)
-	// commands.BuildCommand(ipaddress.ListCommand(svc), ipAddressCommand, conf)
-	// commands.BuildCommand(ipaddress.ShowCommand(svc), ipAddressCommand, conf)
-	// commands.BuildCommand(ipaddress.ModifyCommand(svc), ipAddressCommand, conf)
-	// commands.BuildCommand(ipaddress.AssignCommand(svc, svc), ipAddressCommand, conf)
-	// commands.BuildCommand(ipaddress.RemoveCommand(svc), ipAddressCommand, conf)
+	ipAddressCommand := commands.BuildCommand(ipaddress.BaseIPAddressCommand(), rootCmd, conf)
+	commands.BuildCommand(ipaddress.ListCommand(), ipAddressCommand.Cobra(), conf)
+	commands.BuildCommand(ipaddress.ShowCommand(), ipAddressCommand.Cobra(), conf)
+	commands.BuildCommand(ipaddress.ModifyCommand(), ipAddressCommand.Cobra(), conf)
+	commands.BuildCommand(ipaddress.AssignCommand(), ipAddressCommand.Cobra(), conf)
+	commands.BuildCommand(ipaddress.RemoveCommand(), ipAddressCommand.Cobra(), conf)
 
 	// Networks
 	networkCommand := commands.BuildCommand(network.BaseNetworkCommand(), rootCmd, conf)

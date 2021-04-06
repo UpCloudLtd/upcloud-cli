@@ -22,14 +22,14 @@ func TestModifyCommand(t *testing.T) {
 
 	for _, test := range []struct {
 		name     string
-		args     []string
+		arg      string
 		flags    []string
 		error    string
 		expected request.ModifyIPAddressRequest
 	}{
 		{
 			name: "set optional fields, ip identified by address",
-			args: []string{ip.Address},
+			arg:  ip.Address,
 			flags: []string{
 				"--ptr-record", "example.com",
 				"--mac", "AA-00-04-00-XX-YY",
@@ -40,32 +40,33 @@ func TestModifyCommand(t *testing.T) {
 				MAC:       "AA-00-04-00-XX-YY",
 			},
 		},
-		{
-			name: "set optional fields, ip identified by PTR Record",
-			args: []string{ip.PTRRecord},
-			flags: []string{
-				"--ptr-record", "example.com",
-				"--mac", "AA-00-04-00-XX-YY",
-			},
-			expected: request.ModifyIPAddressRequest{
-				IPAddress: ip.Address,
-				PTRRecord: "example.com",
-				MAC:       "AA-00-04-00-XX-YY",
-			},
-		},
+		// TODO: reimplement test in resolver!
+		/*		{
+				name: "set optional fields, ip identified by PTR Record",
+				arg: ip.PTRRecord,
+				flags: []string{
+					"--ptr-record", "example.com",
+					"--mac", "AA-00-04-00-XX-YY",
+				},
+				expected: request.ModifyIPAddressRequest{
+					IPAddress: ip.Address,
+					PTRRecord: "example.com",
+					MAC:       "AA-00-04-00-XX-YY",
+				},
+			},*/
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			cachedIPs = nil
 			mService := smock.Service{}
 			mService.On(targetMethod, &test.expected).Return(&ip, nil)
 			mService.On("GetIPAddresses").Return(&upcloud.IPAddresses{IPAddresses: []upcloud.IPAddress{ip}}, nil)
+			conf := config.New()
 
-			c := commands.BuildCommand(ModifyCommand(&mService), nil, config.New())
+			c := commands.BuildCommand(ModifyCommand(), nil, conf)
 			err := c.SetFlags(test.flags)
 			assert.NoError(t, err)
 
-			_, err = c.MakeExecuteCommand()(test.args)
-
+			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, &mService), test.arg)
 			if err != nil {
 				assert.Equal(t, test.error, err.Error())
 			} else {

@@ -2,17 +2,20 @@ package ipaddress
 
 import (
 	"bytes"
-	"testing"
-
+	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/config"
 	smock "github.com/UpCloudLtd/cli/internal/mock"
+	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+
+	"testing"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestShowCommand(t *testing.T) {
-
-	account := upcloud.IPAddress{
+	ipAddress := upcloud.IPAddress{
 		Address:    "94.237.117.150",
 		Access:     "public",
 		Family:     "IPv4",
@@ -36,10 +39,23 @@ func TestShowCommand(t *testing.T) {
   Zone:         fi-hel1                              
 `
 
-	buf := new(bytes.Buffer)
-	command := ShowCommand(&smock.Service{})
-	err := command.HandleOutput(buf, &account)
+	svc := &smock.Service{}
+	conf := config.New()
 
-	assert.Nil(t, err)
+	svc.On("GetIPAddressDetails",
+		&request.GetIPAddressDetailsRequest{Address: ipAddress.Address},
+	).Return(&ipAddress, nil)
+	conf.Viper().Set(config.KeyOutput, config.ValueOutputHuman)
+
+	command := commands.BuildCommand(ShowCommand(), nil, conf)
+	out, err := command.(commands.NewCommand).Execute(commands.NewExecutor(conf, svc), ipAddress.Address)
+	assert.NoError(t, err)
+
+	buf := bytes.NewBuffer(nil)
+	err = output.Render(buf, conf, out)
+	assert.NoError(t, err)
 	assert.Equal(t, expected, buf.String())
+
+	svc.AssertNumberOfCalls(t, "GetIPAddressDetails", 1)
+
 }
