@@ -63,6 +63,7 @@ func (s Table) MarshalHuman() ([]byte, error) {
 	t.ResetHeaders()
 	t.ResetFooters()
 	t.ResetRows()
+	t.SetStyle(defaultTableStyle)
 	/*
 		// TODO: reimplement this if/when necessary
 		if len(s.overrideColumnKeys) > 0 {
@@ -135,4 +136,44 @@ func (s Table) MarshalHuman() ([]byte, error) {
 		}
 	}
 	return []byte(t.Render()), nil
+}
+
+var defaultTableStyle = table.Style{
+	Name: "DataTable",
+	Box: table.BoxStyle{
+		BottomLeft:       " ",
+		BottomRight:      " ",
+		BottomSeparator:  " ",
+		Left:             " ",
+		LeftSeparator:    " ",
+		MiddleHorizontal: "─",
+		MiddleSeparator:  " ",
+		MiddleVertical:   " ",
+		PaddingLeft:      " ",
+		PaddingRight:     " ",
+		Right:            " ",
+		RightSeparator:   " ",
+		TopLeft:          " ",
+		TopRight:         " ",
+		TopSeparator:     " ",
+		UnfinishedRow:    " ",
+	},
+	Color: table.ColorOptions{
+		Footer:       ui.DefaultHeaderColours,
+		Header:       ui.DefaultHeaderColours,
+		Row:          nil,
+		RowAlternate: nil,
+	},
+	Format: table.FormatOptions{
+		Footer: text.FormatDefault,
+		Header: text.FormatDefault,
+		Row:    text.FormatDefault,
+	},
+	Options: table.Options{
+		DrawBorder:      false,
+		SeparateColumns: true,
+		SeparateFooter:  false,
+		SeparateHeader:  true,
+		SeparateRows:    false,
+	},
 }
