@@ -21,6 +21,8 @@ type TableColumn struct {
 	Key    string
 	Hidden bool
 	config *table.ColumnConfig
+	Color  text.Colors
+	Format func(val interface{}) (text.Colors, string, error)
 }
 
 // Table represents command output rendered as a table
@@ -129,7 +131,17 @@ func (s Table) MarshalHuman() ([]byte, error) {
 			if _, ok := columnKeyPos[column.Key]; !ok {
 				continue
 			}
-			arow = append(arow, row[columnKeyPos[column.Key]])
+			val := row[columnKeyPos[column.Key]]
+			if column.Format != nil {
+				color, formatted, err := column.Format(val)
+				if err != nil {
+					return nil, fmt.Errorf("error formatting column '%v': %w", column.Key, err)
+				}
+				val = color.Sprintf("%v", formatted)
+			} else if column.Color != nil {
+				val = column.Color.Sprintf("%v", val)
+			}
+			arow = append(arow, val)
 		}
 		if len(arow) > 0 {
 			t.AppendRow(arow)
