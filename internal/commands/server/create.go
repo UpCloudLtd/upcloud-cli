@@ -3,21 +3,23 @@ package server
 import (
 	"bufio"
 	"fmt"
+	"os"
+	"strings"
+
+	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/commands/storage"
+	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/cli/internal/ui"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
 	"golang.org/x/crypto/ssh"
-	"os"
-	"strings"
-
-	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/ui"
 )
 
 // CreateCommand creates the "server create" command
-func CreateCommand() commands.Command {
+func CreateCommand() commands.NewCommand {
 	return &createCommand{
 		BaseCommand: commands.New("create", "Create a server"),
 	}
@@ -239,81 +241,93 @@ func (s *createCommand) InitCommand() {
 	s.AddFlags(fs)
 }
 
-// MakeExecuteCommand implements Command.MakeExecuteCommand
-func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
+func (s *createCommand) Execute(exec commands.Executor, _ string) (output.Command, error) {
 
-		if s.params.Hostname == "" || s.params.Zone == "" {
-			return nil, fmt.Errorf("hostname, zone and some password delivery method are required")
-		}
-
-		if s.params.os == defaultCreateParams.os && s.params.PasswordDelivery == "none" && s.params.sshKeys == nil {
-			return nil, fmt.Errorf("a password-delivery method, ssh-keys or a custom image must be specified")
-		}
-
-		if s.params.Title == "" {
-			s.params.Title = s.params.Hostname
-		}
-
-		if s.params.CoreNumber != 0 || s.params.MemoryAmount != 0 || s.params.Plan == "custom" {
-			if s.params.CoreNumber == 0 || s.params.MemoryAmount == 0 {
-				return nil, fmt.Errorf("both --cores and --memory must be defined for custom plans")
-			}
-
-			if s.params.Plan != "" && s.params.Plan != "custom" {
-				return nil, fmt.Errorf("--plan needs to be 'custom' or omitted when --cores and --memory are specified")
-			}
-
-			s.params.Plan = "custom" // Valid for all custom plans.
-		}
-
-		serverSvc := s.Config().Service.Server()
-		storageSvc := s.Config().Service.Storage()
-
-		if err := s.params.processParams(storageSvc); err != nil {
-			return nil, err
-		}
-
-		req := s.params.CreateServerRequest
-
-		var iFaces []request.CreateServerInterface
-		for _, network := range s.params.networks {
-			_interface, err := s.params.handleNetwork(network)
-			if err != nil {
-				return nil, err
-			}
-			iFaces = append(iFaces, *_interface)
-		}
-
-		for _, strg := range s.params.storages {
-			strg, err := s.params.handleStorage(strg, storageSvc)
-			if err != nil {
-				return nil, err
-			}
-			req.StorageDevices = append(req.StorageDevices, *strg)
-		}
-
-		if err := s.params.handleSSHKey(); err != nil {
-			return nil, err
-		}
-
-		if len(iFaces) > 0 {
-			req.Networking = &request.CreateServerNetworking{Interfaces: iFaces}
-		}
-
-		return ui.HandleContext{
-			RequestID:       func(in interface{}) string { return in.(*request.CreateServerRequest).Hostname },
-			ResultUUID:      getServerDetailsUUID,
-			ResultExtras:    getServerDetailsIPAddresses,
-			ResultExtraName: "IP addresses",
-			InteractiveUI:   s.Config().InteractiveUI(),
-			WaitMsg:         "server starting",
-			WaitFn:          waitForServer(serverSvc, upcloud.ServerStateStarted, s.Config().ClientTimeout()),
-			MaxActions:      5,
-			ActionMsg:       "Creating server",
-			Action: func(req interface{}) (interface{}, error) {
-				return serverSvc.CreateServer(req.(*request.CreateServerRequest))
-			},
-		}.Handle(commands.ToArray(&req))
+	if s.params.Hostname == "" || s.params.Zone == "" {
+		return nil, fmt.Errorf("hostname, zone and some password delivery method are required")
 	}
+	if s.params.os == defaultCreateParams.os && s.params.PasswordDelivery == "none" && s.params.sshKeys == nil {
+		return nil, fmt.Errorf("a password-delivery method, ssh-keys or a custom image must be specified")
+	}
+
+	if s.params.Title == "" {
+		s.params.Title = s.params.Hostname
+	}
+
+	if s.params.CoreNumber != 0 || s.params.MemoryAmount != 0 || s.params.Plan == "custom" {
+		if s.params.CoreNumber == 0 || s.params.MemoryAmount == 0 {
+			return nil, fmt.Errorf("both --cores and --memory must be defined for custom plans")
+		}
+
+		if s.params.Plan != "" && s.params.Plan != "custom" {
+			return nil, fmt.Errorf("--plan needs to be 'custom' or omitted when --cores and --memory are specified")
+		}
+
+		s.params.Plan = "custom" // Valid for all custom plans.
+	}
+
+	serverSvc := exec.Server()
+	storageSvc := exec.Storage()
+	msg := fmt.Sprintf("creating server %v", s.params.Hostname)
+	logline := exec.NewLogEntry(msg)
+
+	logline.StartedNow()
+
+	if err := s.params.processParams(storageSvc); err != nil {
+		return nil, err
+	}
+
+	req := s.params.CreateServerRequest
+
+	logline.SetMessage(fmt.Sprintf("%s: creating network interfaces", msg))
+	var iFaces []request.CreateServerInterface
+	for _, network := range s.params.networks {
+		_interface, err := s.params.handleNetwork(network)
+		if err != nil {
+			return nil, err
+		}
+		iFaces = append(iFaces, *_interface)
+	}
+
+	logline.SetMessage(fmt.Sprintf("%s: creating storage devices", msg))
+	for _, strg := range s.params.storages {
+		strg, err := s.params.handleStorage(strg, storageSvc)
+		if err != nil {
+			return nil, err
+		}
+		req.StorageDevices = append(req.StorageDevices, *strg)
+	}
+
+	if err := s.params.handleSSHKey(); err != nil {
+		return nil, err
+	}
+
+	if len(iFaces) > 0 {
+		req.Networking = &request.CreateServerNetworking{Interfaces: iFaces}
+	}
+
+	res, err := serverSvc.CreateServer(&req)
+	if err != nil {
+		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
+		logline.SetDetails(err.Error(), "error: ")
+		return nil, err
+	}
+
+	if s.Config().GlobalFlags.Wait {
+
+		logline.SetMessage(fmt.Sprintf("%s: waiting to start", msg))
+		if err := exec.WaitFor(
+			serverStateWaiter(res.UUID, upcloud.ServerStateStarted, msg, serverSvc, logline),
+			s.Config().ClientTimeout(),
+		); err != nil {
+			return nil, err
+		}
+	} else {
+		logline.SetMessage(fmt.Sprintf("%s: request sent", msg))
+	}
+
+	logline.SetMessage(fmt.Sprintf("%s: done", msg))
+	logline.MarkDone()
+
+	return output.Marshaled{Value: res}, nil
 }

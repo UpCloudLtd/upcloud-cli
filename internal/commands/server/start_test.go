@@ -3,7 +3,6 @@ package server
 import (
 	internal "github.com/UpCloudLtd/cli/internal/service"
 	"testing"
-	"time"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
@@ -41,9 +40,6 @@ func TestStartCommand(t *testing.T) {
 		},
 	}
 
-	dur120, _ := time.ParseDuration("120s")
-	dur10, _ := time.ParseDuration("10s")
-
 	for _, test := range []struct {
 		name     string
 		args     []string
@@ -53,24 +49,7 @@ func TestStartCommand(t *testing.T) {
 			name: "use default values",
 			args: []string{},
 			startReq: request.StartServerRequest{
-				UUID:      Server1.UUID,
-				Timeout:   dur120,
-				AvoidHost: 0,
-				Host:      0,
-			},
-		},
-		{
-			name: "flags mapped to the correct field",
-			args: []string{
-				"--avoid-host", "5678",
-				"--timeout", "10",
-				"--host", "1234",
-			},
-			startReq: request.StartServerRequest{
-				UUID:      Server1.UUID,
-				Timeout:   dur10,
-				AvoidHost: 5678,
-				Host:      1234,
+				UUID: Server1.UUID,
 			},
 		},
 	} {
@@ -89,7 +68,10 @@ func TestStartCommand(t *testing.T) {
 			err := c.SetFlags(test.args)
 			assert.NoError(t, err)
 
-			_, err = c.MakeExecuteCommand()([]string{Server1.UUID})
+			_, err = c.(commands.NewCommand).Execute(
+				commands.NewExecutor(conf, mService),
+				Server1.UUID,
+			)
 			assert.NoError(t, err)
 
 			mService.AssertNumberOfCalls(t, targetMethod, 1)

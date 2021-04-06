@@ -1,20 +1,12 @@
 package server
 
 import (
-	"fmt"
-	"io"
-	"sort"
-
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/ui"
-
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/jedib0t/go-pretty/v6/table"
-	"github.com/spf13/pflag"
+	"github.com/UpCloudLtd/cli/internal/output"
 )
 
 // PlanListCommand creates the "server plans" command
-func PlanListCommand() commands.Command {
+func PlanListCommand() commands.NewCommand {
 	return &planListCommand{
 		BaseCommand: commands.New("plans", "List server plans"),
 	}
@@ -22,58 +14,36 @@ func PlanListCommand() commands.Command {
 
 type planListCommand struct {
 	*commands.BaseCommand
-	header         table.Row
-	columnKeys     []string
-	visibleColumns []string
 }
 
-// InitCommand implements Command.InitCommand
-func (s *planListCommand) InitCommand() {
-	s.header = table.Row{"Name", "Cores", "Memory (MiB)", "Storage (GiB)", "Storage tier", "Transfer out per month (GiB)"}
-	s.columnKeys = []string{"name", "cores", "memory", "storage", "storage_tier", "transfer"}
-	s.visibleColumns = []string{"name", "cores", "memory", "storage", "storage_tier", "transfer"}
-	flags := &pflag.FlagSet{}
-	s.AddVisibleColumnsFlag(flags, &s.visibleColumns, s.columnKeys, s.visibleColumns)
-	s.AddFlags(flags)
-}
-
-// MakeExecuteCommand implements Command.MakeExecuteCommand
-func (s *planListCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
-		svc := s.Config().Service.Plan()
-		plans, err := svc.GetPlans()
-		if err != nil {
-			return nil, err
-		}
-		return plans, nil
+func (s *planListCommand) Execute(exec commands.Executor, _ string) (output.Command, error) {
+	svc := exec.Plan()
+	plans, err := svc.GetPlans()
+	if err != nil {
+		return nil, err
 	}
-}
 
-// HandleOutput implements Command.HandleOutput
-func (s *planListCommand) HandleOutput(writer io.Writer, out interface{}) error {
-	plans := out.(*upcloud.Plans)
-	t := ui.NewDataTable(s.columnKeys...)
-	t.SetHeader(s.header)
-	t.OverrideColumnKeys(s.visibleColumns...)
-
-	sort.SliceStable(plans.Plans, func(i, j int) bool {
-		return plans.Plans[i].MemoryAmount < plans.Plans[j].MemoryAmount
-	})
-	sort.SliceStable(plans.Plans, func(i, j int) bool {
-		return plans.Plans[i].CoreNumber < plans.Plans[j].CoreNumber
-	})
-
-	for _, plan := range plans.Plans {
-		t.Append(table.Row{
-			plan.Name,
-			fmt.Sprintf("%d", plan.CoreNumber),
-			fmt.Sprintf("%d", plan.MemoryAmount),
-			fmt.Sprintf("%d", plan.StorageSize),
-			plan.StorageTier,
-			fmt.Sprintf("%d", plan.PublicTrafficOut),
+	rows := []output.TableRow{}
+	for _, p := range plans.Plans {
+		rows = append(rows, output.TableRow{
+			p.Name,
+			p.CoreNumber,
+			p.MemoryAmount,
+			p.StorageSize,
+			p.StorageTier,
+			p.PublicTrafficOut,
 		})
 	}
 
-	_, _ = fmt.Fprintln(writer, t.Render())
-	return nil
+	return output.Table{
+		Columns: []output.TableColumn{
+			{Key: "name", Header: "Name"},
+			{Key: "cores", Header: "Cores"},
+			{Key: "memory", Header: "Memory"},
+			{Key: "storage", Header: "Storage size"},
+			{Key: "storage_tier", Header: "Storage tier"},
+			{Key: "egress_transfer", Header: "Transfer out (GiB/month)"},
+		},
+		Rows: rows,
+	}, nil
 }

@@ -3,7 +3,7 @@ package server
 import (
 	internal "github.com/UpCloudLtd/cli/internal/service"
 	"testing"
-	"time"
+	// "time"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
@@ -42,9 +42,6 @@ func TestRestartCommand(t *testing.T) {
 		},
 	}
 
-	dur120, _ := time.ParseDuration("120s")
-	dur10, _ := time.ParseDuration("10s")
-
 	for _, test := range []struct {
 		name       string
 		args       []string
@@ -55,26 +52,21 @@ func TestRestartCommand(t *testing.T) {
 			args: []string{},
 			restartReq: request.RestartServerRequest{
 				UUID:          Server1.UUID,
-				StopType:      "soft",
-				Timeout:       dur120,
-				TimeoutAction: "ignore",
-				Host:          0,
+				StopType:      defaultStopType,
+				Timeout:       defaultRestartTimeout,
+				TimeoutAction: defaultRestartTimeoutAction,
 			},
 		},
 		{
 			name: "flags mapped to the correct field",
 			args: []string{
 				"--stop-type", "hard",
-				//				"--timeout-action", "destroy",
-				"--timeout", "10s",
-				//				"--host", "1234",
 			},
 			restartReq: request.RestartServerRequest{
 				UUID:          Server1.UUID,
 				StopType:      "hard",
-				Timeout:       dur10,
-				TimeoutAction: "ignore",
-				//				Host:          1234,
+				Timeout:       defaultRestartTimeout,
+				TimeoutAction: defaultRestartTimeoutAction,
 			},
 		},
 	} {

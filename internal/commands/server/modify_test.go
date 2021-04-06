@@ -113,7 +113,7 @@ func TestModifyCommand(t *testing.T) {
 			err := c.SetFlags(test.args)
 			assert.NoError(t, err)
 
-			_, err = c.MakeExecuteCommand()([]string{test.server.UUID})
+			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, mService), test.server.UUID)
 			assert.NoError(t, err)
 			mService.AssertNumberOfCalls(t, targetMethod, 1)
 		})

@@ -1,7 +1,6 @@
 package server
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
@@ -22,6 +21,11 @@ const (
 	// PositionalArgHelp is the helper string for server arguments
 	// TODO: remove the cross-command dependencies
 	PositionalArgHelp = "<UUID/Title/Hostname...>"
+
+	//Server state related consts
+	defaultStopType             = request.ServerStopTypeSoft
+	defaultRestartTimeout       = time.Duration(120) * time.Second
+	defaultRestartTimeoutAction = request.RestartTimeoutActionIgnore
 )
 
 // CachedServers stores a cached list of servers fetched from the service
@@ -92,47 +96,6 @@ func SearchAllServers(terms []string, service service.Server, unique bool) ([]st
 			return searchServer(&CachedServers, service, term, unique)
 		},
 		func(in interface{}) string { return in.(*upcloud.Server).UUID })
-}
-
-func waitForServerState(service service.Server, uuid, desiredState string, timeout time.Duration) (*upcloud.ServerDetails, error) {
-	timer := time.After(timeout)
-	for {
-		time.Sleep(1 * time.Second)
-		details, err := service.GetServerDetails(&request.GetServerDetailsRequest{UUID: uuid})
-		if err != nil {
-			return nil, err
-		}
-		switch details.State {
-		case upcloud.ServerStateError:
-			return nil, errors.New("server in error state")
-		case desiredState:
-			return details, nil
-		}
-		select {
-		case <-timer:
-			return nil, fmt.Errorf("timed out while waiting server to transition into %q", desiredState)
-		default:
-		}
-	}
-}
-
-func waitForServer(svc service.Server, state string, timeout time.Duration) func(uuid string, waitMsg string, err error) (interface{}, error) {
-	return func(uuid string, waitMsg string, err error) (interface{}, error) {
-		return waitForServerState(svc, uuid, state, timeout)
-	}
-}
-
-func getServerDetailsUUID(in interface{}) string { return in.(*upcloud.ServerDetails).UUID }
-
-func getServerDetailsIPAddresses(in interface{}) []string {
-	addresses := []string{}
-	for _, iface := range in.(*upcloud.ServerDetails).Networking.Interfaces {
-		for _, addr := range iface.IPAddresses {
-			addresses = append(addresses, addr.Address)
-		}
-	}
-
-	return addresses
 }
 
 // Request represents a request for all servers

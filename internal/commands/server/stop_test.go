@@ -3,7 +3,6 @@ package server
 import (
 	internal "github.com/UpCloudLtd/cli/internal/service"
 	"testing"
-	"time"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
@@ -42,9 +41,6 @@ func TestStopCommand(t *testing.T) {
 		},
 	}
 
-	dur120, _ := time.ParseDuration("120s")
-	dur10, _ := time.ParseDuration("10s")
-
 	for _, test := range []struct {
 		name    string
 		args    []string
@@ -55,19 +51,16 @@ func TestStopCommand(t *testing.T) {
 			args: []string{},
 			stopReq: request.StopServerRequest{
 				UUID:     Server1.UUID,
-				Timeout:  dur120,
-				StopType: upcloud.StopTypeSoft,
+				StopType: defaultStopType,
 			},
 		},
 		{
 			name: "flags mapped to the correct field",
 			args: []string{
-				"--timeout", "10",
 				"--type", "hard",
 			},
 			stopReq: request.StopServerRequest{
 				UUID:     Server1.UUID,
-				Timeout:  dur10,
 				StopType: upcloud.StopTypeHard,
 			},
 		},
@@ -87,7 +80,10 @@ func TestStopCommand(t *testing.T) {
 			err := c.SetFlags(test.args)
 			assert.NoError(t, err)
 
-			_, err = c.MakeExecuteCommand()([]string{Server1.UUID})
+			_, err = c.(commands.NewCommand).Execute(
+				commands.NewExecutor(conf, mService),
+				Server1.UUID,
+			)
 			assert.NoError(t, err)
 
 			mService.AssertNumberOfCalls(t, targetMethod, 1)

@@ -322,20 +322,13 @@ func TestCreateServer(t *testing.T) {
 			storage.CachedStorages = nil
 			conf.Service = internal.Wrapper{Service: mService}
 			mService.On("CreateServer", &test.createServerReq).Return(&serverDetailsMaint, nil)
-			mService.On(
-				"GetServerDetails",
-				&request.GetServerDetailsRequest{
-					UUID: serverDetailsMaint.UUID,
-				},
-			).Return(&serverDetailsStarted, nil)
-
 			mService.On("GetStorages", mock.Anything).Return(storages, nil)
 
 			c := commands.BuildCommand(testCmd, nil, conf)
 			err := c.SetFlags(test.args)
 			assert.NoError(t, err)
 
-			_, err = c.MakeExecuteCommand()([]string{})
+			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, mService), "")
 
 			if test.error != "" {
 				if err == nil {
@@ -346,7 +339,6 @@ func TestCreateServer(t *testing.T) {
 			} else {
 				mService.AssertNumberOfCalls(t, "GetStorages", 1)
 				mService.AssertNumberOfCalls(t, "CreateServer", 1)
-				mService.AssertNumberOfCalls(t, "GetServerDetails", 1)
 			}
 		})
 	}

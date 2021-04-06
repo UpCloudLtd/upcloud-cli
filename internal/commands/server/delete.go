@@ -1,15 +1,19 @@
 package server
 
 import (
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/spf13/pflag"
+	"fmt"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/mapper"
+	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/ui"
+
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/spf13/pflag"
 )
 
 // DeleteCommand creates the "server delete" command
-func DeleteCommand() commands.Command {
+func DeleteCommand() commands.NewCommand {
 	return &deleteCommand{
 		BaseCommand: commands.New("delete", "Delete a server"),
 	}
@@ -29,35 +33,36 @@ func (s *deleteCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
-// MakeExecuteCommand implements Command.MakeExecuteCommand
-func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
-		svc := s.Config().Service.Server()
+func (s *deleteCommand) ArgumentMapper() (mapper.Argument, error) {
+	return mapper.CachingServer(s.Config().Service.Server())
+}
 
-		var action = func(uuid interface{}) (interface{}, error) {
-			var err error
-			if s.deleteStorages {
-				err = svc.DeleteServerAndStorages(&request.DeleteServerAndStoragesRequest{
-					UUID: uuid.(string),
-				})
-			} else {
-				err = svc.DeleteServer(&request.DeleteServerRequest{
-					UUID: uuid.(string),
-				})
-			}
-			return nil, err
-		}
+func (s *deleteCommand) Execute(exec commands.Executor, uuid string) (output.Command, error) {
+	svc := exec.Server()
+	msg := fmt.Sprintf("deleting server %v", uuid)
+	logline := exec.NewLogEntry(msg)
 
-		return Request{
-			BuildRequest: func(uuid string) interface{} { return uuid },
-			Service:      svc,
-			Handler: ui.HandleContext{
-				RequestID:     func(in interface{}) string { return in.(string) },
-				InteractiveUI: s.Config().InteractiveUI(),
-				MaxActions:    maxServerActions,
-				ActionMsg:     "Deleting",
-				Action:        action,
-			},
-		}.Send(args)
+	logline.StartedNow()
+
+	var err error
+	if s.deleteStorages {
+		logline.SetMessage(fmt.Sprintf("%s: deleting server and related storages", msg))
+		err = svc.DeleteServerAndStorages(&request.DeleteServerAndStoragesRequest{
+			UUID: uuid,
+		})
+	} else {
+		logline.SetMessage(fmt.Sprintf("%s: deleting server", msg))
+		err = svc.DeleteServer(&request.DeleteServerRequest{
+			UUID: uuid,
+		})
 	}
+	if err != nil {
+		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
+		logline.SetDetails(err.Error(), "error: ")
+		return nil, err
+	}
+
+	logline.SetMessage(fmt.Sprintf("%s: done", msg))
+
+	return nil, nil
 }

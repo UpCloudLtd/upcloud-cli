@@ -2,19 +2,13 @@ package server
 
 import (
 	"fmt"
-	"io"
-	"strings"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/ui"
-
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/jedib0t/go-pretty/v6/table"
-	"github.com/spf13/pflag"
+	"github.com/UpCloudLtd/cli/internal/output"
 )
 
 // ListCommand creates the "server list" command
-func ListCommand() commands.Command {
+func ListCommand() commands.NewCommand {
 	return &listCommand{
 		BaseCommand: commands.New("list", "List current servers"),
 	}
@@ -22,61 +16,39 @@ func ListCommand() commands.Command {
 
 type listCommand struct {
 	*commands.BaseCommand
-	header         table.Row
-	columnKeys     []string
-	visibleColumns []string
 }
 
-// InitCommand implements Command.InitCommand
-func (s *listCommand) InitCommand() {
-	s.header = table.Row{"UUID", "Hostname", "Plan", "Zone", "State", "Tags", "Title", "Licence"}
-	s.columnKeys = []string{"uuid", "hostname", "plan", "zone", "state", "tags", "title", "licence"}
-	s.visibleColumns = []string{"uuid", "hostname", "plan", "zone", "state"}
-	flags := &pflag.FlagSet{}
-	s.AddVisibleColumnsFlag(flags, &s.visibleColumns, s.columnKeys, s.visibleColumns)
-	s.AddFlags(flags)
-}
-
-// MakeExecuteCommand implements Command.MakeExecuteCommand
-func (s *listCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
-		svc := s.Config().Service.Server()
-		servers, err := svc.GetServers()
-		if err != nil {
-			return nil, err
-		}
-		return servers, nil
+func (s *listCommand) Execute(exec commands.Executor, _ string) (output.Command, error) {
+	svc := exec.Server()
+	servers, err := svc.GetServers()
+	if err != nil {
+		return nil, err
 	}
-}
 
-// HandleOutput implements Command.HandleOutput
-func (s *listCommand) HandleOutput(writer io.Writer, out interface{}) error {
-	servers := out.(*upcloud.Servers)
-	t := ui.NewDataTable(s.columnKeys...)
-	t.OverrideColumnKeys(s.visibleColumns...)
-	t.SetHeader(s.header)
-
-	t.SetColumnConfig("state", table.ColumnConfig{Transformer: func(val interface{}) string {
-		return commands.StateColour(val.(string)).Sprint(val)
-	}})
-
-	for _, server := range servers.Servers {
-		plan := server.Plan
+	rows := []output.TableRow{}
+	for _, s := range servers.Servers {
+		plan := s.Plan
 		if plan == "custom" {
-			memory := server.MemoryAmount / 1024
-			plan = fmt.Sprintf("Custom (%dxCPU, %dGB)", server.CoreNumber, memory)
+			memory := s.MemoryAmount / 1024
+			plan = fmt.Sprintf("%dxCPU-%dGB (custom)", s.CoreNumber, memory)
 		}
-		t.Append(table.Row{
-			server.UUID,
-			server.Hostname,
+		rows = append(rows, output.TableRow{
+			s.UUID,
+			s.Hostname,
 			plan,
-			server.Zone,
-			server.State,
-			strings.Join(server.Tags, ","),
-			server.Title,
-			server.License})
+			s.Zone,
+			s.State,
+		})
 	}
 
-	_, _ = fmt.Fprintln(writer, t.Render())
-	return nil
+	return output.Table{
+		Columns: []output.TableColumn{
+			{Key: "uuid", Header: "UUID"},
+			{Key: "hostname", Header: "Hostname"},
+			{Key: "plan", Header: "Plan"},
+			{Key: "zone", Header: "Zone"},
+			{Key: "state", Header: "State"},
+		},
+		Rows: rows,
+	}, nil
 }

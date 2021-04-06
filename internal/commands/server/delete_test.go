@@ -69,10 +69,8 @@ func TestDeleteServerCommand(t *testing.T) {
 			err := c.SetFlags(test.args)
 			assert.NoError(t, err)
 
-			results, err := c.MakeExecuteCommand()([]string{Server1.UUID})
-			for _, result := range results.([]interface{}) {
-				assert.Nil(t, result)
-			}
+			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, mService), Server1.UUID)
+			assert.Nil(t, err)
 
 			assert.Nil(t, err)
 
