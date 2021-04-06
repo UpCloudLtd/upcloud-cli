@@ -5,7 +5,7 @@ import (
 	internal "github.com/UpCloudLtd/cli/internal/service"
 )
 
-// CachingServer implements resolver for networks, caching the results
+// CachingServer implements resolver for servers, caching the results
 type CachingServer struct{}
 
 var _ ResolutionProvider = CachingServer{}
