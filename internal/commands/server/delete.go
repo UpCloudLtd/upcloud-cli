@@ -2,9 +2,9 @@ package server
 
 import (
 	"fmt"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/mapper"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/ui"
 
@@ -21,6 +21,7 @@ func DeleteCommand() commands.NewCommand {
 
 type deleteCommand struct {
 	*commands.BaseCommand
+	resolver.CachingServer
 	deleteStorages bool
 }
 
@@ -31,10 +32,6 @@ func (s *deleteCommand) InitCommand() {
 	flags := &pflag.FlagSet{}
 	flags.BoolVar(&s.deleteStorages, "delete-storages", false, "Delete storages that are attached to the server.")
 	s.AddFlags(flags)
-}
-
-func (s *deleteCommand) ArgumentMapper() (mapper.Argument, error) {
-	return mapper.CachingServer(s.Config().Service.Server())
 }
 
 func (s *deleteCommand) Execute(exec commands.Executor, uuid string) (output.Command, error) {

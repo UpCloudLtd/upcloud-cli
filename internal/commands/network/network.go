@@ -3,6 +3,7 @@ package network
 import (
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
@@ -16,11 +17,14 @@ const positionalArgHelp = "<UUID/Name...>"
 
 // BaseNetworkCommand creates the base "network" command
 func BaseNetworkCommand() commands.Command {
-	return &networkCommand{commands.New("network", "Manage network")}
+	return &networkCommand{
+		BaseCommand: commands.New("network", "Manage network"),
+	}
 }
 
 type networkCommand struct {
 	*commands.BaseCommand
+	resolver.CachingNetwork
 }
 
 // SearchUniqueNetwork returns exactly one network with name or uuid matching *term*

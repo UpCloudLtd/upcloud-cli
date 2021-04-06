@@ -1,12 +1,17 @@
-package mapper
+package resolver
 
 import (
 	"fmt"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
+	internal "github.com/UpCloudLtd/cli/internal/service"
 )
 
-// CachingServer maps server by title, hostname or uuid to uuids. It caches the results from backend so servers are only queried once.
-func CachingServer(svc service.Server) (Argument, error) {
+// CachingServer implements resolver for networks, caching the results
+type CachingServer struct{}
+
+var _ ResolutionProvider = CachingServer{}
+
+// Get implements ResolutionProvider.Get
+func (s CachingServer) Get(svc internal.AllServices) (Resolver, error) {
 	servers, err := svc.GetServers()
 	if err != nil {
 		return nil, err

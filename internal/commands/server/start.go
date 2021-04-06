@@ -2,9 +2,9 @@ package server
 
 import (
 	"fmt"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/mapper"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/ui"
 
@@ -21,15 +21,13 @@ func StartCommand() commands.NewCommand {
 
 type startCommand struct {
 	*commands.BaseCommand
+	resolver.CachingServer
 }
 
 // InitCommand implements Command.InitCommand
 func (s *startCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
 	s.ArgCompletion(GetServerArgumentCompletionFunction(s.Config()))
-}
-func (s *startCommand) ArgumentMapper() (mapper.Argument, error) {
-	return mapper.CachingServer(s.Config().Service.Server())
 }
 
 func (s *startCommand) Execute(exec commands.Executor, uuid string) (output.Command, error) {

@@ -3,8 +3,8 @@ package commands
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/UpCloudLtd/cli/internal/mapper"
 	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 	"io"
 	"os"
 	"strings"
@@ -46,7 +46,6 @@ type Command interface {
 type NewCommand interface {
 	Execute(exec Executor, arg string) (output.Command, error)
 	MaximumExecutions() int
-	ArgumentMapper() (mapper.Argument, error)
 	Command
 }
 
@@ -63,9 +62,13 @@ func commandRunE(nc NewCommand, config *config.Config) func(cmd *cobra.Command, 
 		}
 
 		executor := NewExecutor(config, svc)
-		argmapper, err := nc.ArgumentMapper()
-		if err != nil {
-			return fmt.Errorf("invalid mapper: %w", err)
+
+		var argumentResolver resolver.Resolver
+		if resolve, ok := nc.(resolver.ResolutionProvider); ok {
+			argumentResolver, err = resolve.Get(svc)
+			if err != nil {
+				return fmt.Errorf("cannot create resolver: %w", err)
+			}
 		}
 
 		returnChan := make(chan executeResult)
@@ -104,8 +107,8 @@ func commandRunE(nc NewCommand, config *config.Config) func(cmd *cobra.Command, 
 						workerQueue <- workerID
 					}()
 					executeArgument := argument
-					if argmapper != nil {
-						if res, err := argmapper(argument); err == nil {
+					if argumentResolver != nil {
+						if res, err := argumentResolver(argument); err == nil {
 							executeArgument = res
 						} else {
 							executor.NewLogEntry(fmt.Sprintf("invalid argument: %v", err))
@@ -229,14 +232,9 @@ type BaseCommand struct {
 	config *config.Config
 }
 
-//MaximumExecutions return the max executed workers
+// MaximumExecutions return the max executed workers
 func (s *BaseCommand) MaximumExecutions() int {
 	return 1
-}
-
-//ArgumentMapper returns the argument handler
-func (s *BaseCommand) ArgumentMapper() (mapper.Argument, error) {
-	return nil, nil
 }
 
 // Name returns the name of the command

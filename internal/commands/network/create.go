@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/commands/ipaddress"
-	"github.com/UpCloudLtd/cli/internal/mapper"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
@@ -53,10 +52,6 @@ func (s *createCommand) InitCommand() {
 // MaximumExecutions implements NewCommand.MaximumExecutions
 func (s *createCommand) MaximumExecutions() int {
 	return maxNetworkActions
-}
-
-func (s *createCommand) ArgumentMapper() (mapper.Argument, error) {
-	return nil, nil
 }
 
 func (s *createCommand) buildRequest() (*request.CreateNetworkRequest, error) {

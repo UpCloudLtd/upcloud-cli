@@ -2,9 +2,9 @@ package server
 
 import (
 	"fmt"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/mapper"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/ui"
 
@@ -23,6 +23,7 @@ func StopCommand() commands.NewCommand {
 type stopCommand struct {
 	*commands.BaseCommand
 	StopType string
+	resolver.CachingServer
 }
 
 // InitCommand implements Command.InitCommand
@@ -34,10 +35,6 @@ func (s *stopCommand) InitCommand() {
 	flags := &pflag.FlagSet{}
 	flags.StringVar(&s.StopType, "type", defaultStopType, "The type of stop operation. Available: soft, hard")
 	s.AddFlags(flags)
-}
-
-func (s *stopCommand) ArgumentMapper() (mapper.Argument, error) {
-	return mapper.CachingServer(s.Config().Service.Server())
 }
 
 func (s *stopCommand) Execute(exec commands.Executor, uuid string) (output.Command, error) {

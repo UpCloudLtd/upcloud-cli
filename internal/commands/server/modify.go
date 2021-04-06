@@ -2,9 +2,9 @@ package server
 
 import (
 	"fmt"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/mapper"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/ui"
 
@@ -23,6 +23,7 @@ func ModifyCommand() commands.NewCommand {
 type modifyCommand struct {
 	*commands.BaseCommand
 	params modifyParams
+	resolver.CachingServer
 }
 
 type modifyParams struct {
@@ -57,10 +58,6 @@ func (s *modifyCommand) InitCommand() {
 	flags.StringVar(&s.params.RemoteAccessPassword, "remote-access-password", defaultModifyParams.RemoteAccessPassword, "The remote access password.")
 
 	s.AddFlags(flags)
-}
-
-func (s *modifyCommand) ArgumentMapper() (mapper.Argument, error) {
-	return mapper.CachingServer(s.Config().Service.Server())
 }
 
 func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Command, error) {

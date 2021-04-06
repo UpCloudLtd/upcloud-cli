@@ -2,9 +2,9 @@ package server
 
 import (
 	"fmt"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/mapper"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/ui"
 
@@ -27,6 +27,7 @@ type restartCommand struct {
 	StopType             string
 	TimeoutAction        string
 	Timeout              time.Duration
+	resolver.CachingServer
 }
 
 // InitCommand implements Command.InitCommand
@@ -45,11 +46,6 @@ func (s *restartCommand) InitCommand() {
 // MaximumExecutions implements NewCommand.MaximumExecutions
 func (s *restartCommand) MaximumExecutions() int {
 	return maxServerActions
-}
-
-// ArgumentMapper implements NewCommand.ArgumentMapper
-func (s *restartCommand) ArgumentMapper() (mapper.Argument, error) {
-	return mapper.CachingServer(s.Config().Service.Server())
 }
 
 // Execute implements NewCommand.Execute
