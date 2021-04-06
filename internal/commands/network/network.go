@@ -23,10 +23,6 @@ type networkCommand struct {
 	*commands.BaseCommand
 }
 
-func getNetworkUUID(in interface{}) string {
-	return in.(*upcloud.Network).UUID
-}
-
 // SearchUniqueNetwork returns exactly one network with name or uuid matching *term*
 func SearchUniqueNetwork(term string, service service.Network) (*upcloud.Network, error) {
 	result, err := SearchNetwork(term, service, true)

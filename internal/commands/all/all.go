@@ -10,7 +10,6 @@ import (
 	// "github.com/UpCloudLtd/cli/internal/commands/networkinterface"
 	// "github.com/UpCloudLtd/cli/internal/commands/router"
 	"github.com/UpCloudLtd/cli/internal/commands/root"
-	"github.com/UpCloudLtd/cli/internal/commands/server"
 	// "github.com/UpCloudLtd/cli/internal/commands/serverfirewall"
 	// "github.com/UpCloudLtd/cli/internal/commands/serverstorage"
 	// "github.com/UpCloudLtd/cli/internal/commands/storage"
@@ -23,19 +22,19 @@ import (
 func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 
 	// Servers
-	serverCommand := commands.BuildCommand(server.BaseServerCommand(), rootCmd, conf)
-	commands.BuildCommand(server.ListCommand(), serverCommand.Cobra(), conf)
-	commands.BuildCommand(server.PlanListCommand(), serverCommand.Cobra(), conf)
-	commands.BuildCommand(server.ShowCommand(), serverCommand.Cobra(), conf)
-	commands.BuildCommand(server.StartCommand(), serverCommand.Cobra(), conf)
-	commands.BuildCommand(server.RestartCommand(), serverCommand.Cobra(), conf)
-	commands.BuildCommand(server.StopCommand(), serverCommand.Cobra(), conf)
-	commands.BuildCommand(server.CreateCommand(), serverCommand.Cobra(), conf)
-	commands.BuildCommand(server.ModifyCommand(), serverCommand.Cobra(), conf)
-	commands.BuildCommand(server.LoadCommand(), serverCommand.Cobra(), conf)
-	commands.BuildCommand(server.EjectCommand(), serverCommand.Cobra(), conf)
-	commands.BuildCommand(server.DeleteCommand(), serverCommand.Cobra(), conf)
-
+	/*	serverCommand := commands.BuildCommand(server.BaseServerCommand(), rootCmd, conf)
+		commands.BuildCommand(server.ListCommand(), serverCommand.Cobra(), conf)
+		commands.BuildCommand(server.PlanListCommand(), serverCommand.Cobra(), conf)
+		commands.BuildCommand(server.ShowCommand(), serverCommand.Cobra(), conf)
+		commands.BuildCommand(server.StartCommand(), serverCommand.Cobra(), conf)
+		commands.BuildCommand(server.RestartCommand(), serverCommand.Cobra(), conf)
+		commands.BuildCommand(server.StopCommand(), serverCommand.Cobra(), conf)
+		commands.BuildCommand(server.CreateCommand(), serverCommand.Cobra(), conf)
+		commands.BuildCommand(server.ModifyCommand(), serverCommand.Cobra(), conf)
+		commands.BuildCommand(server.LoadCommand(), serverCommand.Cobra(), conf)
+		commands.BuildCommand(server.EjectCommand(), serverCommand.Cobra(), conf)
+		commands.BuildCommand(server.DeleteCommand(), serverCommand.Cobra(), conf)
+	*/
 	// // Server storage operations
 	// serverStorageCommand := commands.BuildCommand(serverstorage.BaseServerStorageCommand(), serverCommand, conf)
 	// commands.BuildCommand(serverstorage.AttachCommand(svc, svc), serverStorageCommand, conf)
@@ -72,11 +71,11 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 
 	// Networks
 	networkCommand := commands.BuildCommand(network.BaseNetworkCommand(), rootCmd, conf)
-	// commands.BuildCommand(network.CreateCommand(svc), networkCommand, conf)
+	commands.BuildCommand(network.CreateCommand(), networkCommand.Cobra(), conf)
 	commands.BuildCommand(network.ListCommand(), networkCommand.Cobra(), conf)
-	// commands.BuildCommand(network.ShowCommand(svc, svc), networkCommand, conf)
+	// commands.BuildCommand(network.ShowCommand(), networkCommand.Cobra(), conf)
 	// commands.BuildCommand(network.ModifyCommand(svc), networkCommand, conf)
-	// commands.BuildCommand(network.DeleteCommand(svc), networkCommand, conf)
+	commands.BuildCommand(network.DeleteCommand(), networkCommand.Cobra(), conf)
 
 	// // Network Interfaces
 	// networkInterfaceCommand := commands.BuildCommand(networkinterface.BaseNetworkInterfaceCommand(), serverCommand, conf)

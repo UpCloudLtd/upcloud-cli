@@ -4,40 +4,39 @@ import (
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/commands/ipaddress"
+	"github.com/UpCloudLtd/cli/internal/mapper"
+	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
 )
 
 type createCommand struct {
 	*commands.BaseCommand
-	service service.Network
-	params  createParams
+	networks []string
+	name     string
+	zone     string
+	router   string
 }
+
+// make sure we implemnet the interface
+var _ commands.NewCommand = &createCommand{}
 
 // CreateCommand creates the 'network create' command
-func CreateCommand(service service.Network) commands.Command {
+func CreateCommand() commands.Command {
 	return &createCommand{
 		BaseCommand: commands.New("create", "Create a network"),
-		service:     service,
 	}
-}
-
-type createParams struct {
-	req      request.CreateNetworkRequest
-	networks []string
 }
 
 // InitCommand implements Command.InitCommand
 func (s *createCommand) InitCommand() {
-	s.params.req = request.CreateNetworkRequest{}
 	fs := &pflag.FlagSet{}
-	fs.StringVar(&s.params.req.Name, "name", s.params.req.Name, "Names the network.")
-	fs.StringVar(&s.params.req.Zone, "zone", s.params.req.Zone, "The zone in which the network is configured.")
-	fs.StringVar(&s.params.req.Router, "router", s.params.req.Router, "Add this network to an existing router.")
-	fs.StringArrayVar(&s.params.networks, "ip-network", s.params.networks, "A network interface for the server, multiple can be declared.\n\n "+
+	fs.StringVar(&s.name, "name", s.name, "Names the network.")
+	fs.StringVar(&s.zone, "zone", s.zone, "The zone in which the network is configured.")
+	fs.StringVar(&s.router, "router", s.router, "Add this network to an existing router.")
+	fs.StringArrayVar(&s.networks, "ip-network", s.networks, "A network interface for the server, multiple can be declared.\n\n "+
 		"Fields: \n"+
 		"  address: string \n"+
 		"  family: string \n"+
@@ -51,9 +50,18 @@ func (s *createCommand) InitCommand() {
 	s.AddFlags(fs) // TODO(ana): replace usage with examples once the refactor is done.
 }
 
+// MaximumExecutions implements NewCommand.MaximumExecutions
+func (s *createCommand) MaximumExecutions() int {
+	return maxNetworkActions
+}
+
+func (s *createCommand) ArgumentMapper() (mapper.Argument, error) {
+	return nil, nil
+}
+
 func (s *createCommand) buildRequest() (*request.CreateNetworkRequest, error) {
 	var networks []upcloud.IPNetwork
-	for _, networkStr := range s.params.networks {
+	for _, networkStr := range s.networks {
 		network, err := handleNetwork(networkStr)
 		if err != nil {
 			return nil, err
@@ -72,39 +80,46 @@ func (s *createCommand) buildRequest() (*request.CreateNetworkRequest, error) {
 		network.Family = derivedFamily
 		networks = append(networks, *network)
 	}
-	s.params.req.IPNetworks = networks
-
-	return &s.params.req, nil
+	return &request.CreateNetworkRequest{
+		Name:       s.name,
+		Zone:       s.zone,
+		Router:     s.router,
+		IPNetworks: networks,
+	}, nil
 }
 
-// MakeExecuteCommand implements Command.MakeExecuteCommand
-func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
-
-		if s.params.req.Name == "" {
-			return nil, fmt.Errorf("name is required")
-		}
-		if s.params.req.Zone == "" {
-			return nil, fmt.Errorf("zone is required")
-		}
-		if len(s.params.networks) == 0 {
-			return nil, fmt.Errorf("at least one IP network is required")
-		}
-
-		req, err := s.buildRequest()
-		if err != nil {
-			return nil, err
-		}
-
-		return ui.HandleContext{
-			RequestID:     func(in interface{}) string { return in.(*request.CreateNetworkRequest).Name },
-			ResultUUID:    getNetworkUUID,
-			MaxActions:    maxNetworkActions,
-			InteractiveUI: s.Config().InteractiveUI(),
-			ActionMsg:     "Creating network",
-			Action: func(req interface{}) (interface{}, error) {
-				return s.service.CreateNetwork(req.(*request.CreateNetworkRequest))
-			},
-		}.Handle(commands.ToArray(req))
+// Execute implements NewCommand.Execute
+func (s *createCommand) Execute(exec commands.Executor, _ string) (output.Command, error) {
+	// TODO: should we, for example, accept name as the first argument instead of as a flag?
+	if s.name == "" {
+		return nil, fmt.Errorf("name is required")
 	}
+	if s.zone == "" {
+		return nil, fmt.Errorf("zone is required")
+	}
+	if len(s.networks) == 0 {
+		return nil, fmt.Errorf("at least one IP network is required")
+	}
+	svc := exec.Network()
+
+	msg := fmt.Sprintf("creating network %v", s.name)
+	logline := exec.NewLogEntry(msg)
+	logline.StartedNow()
+
+	req, err := s.buildRequest()
+	if err != nil {
+		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
+		logline.SetDetails(err.Error(), "error: ")
+		return nil, err
+	}
+
+	res, err := svc.CreateNetwork(req)
+	if err != nil {
+		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
+		logline.SetDetails(err.Error(), "error: ")
+		return nil, err
+	}
+	logline.SetMessage(fmt.Sprintf("%s: success", msg))
+	logline.MarkDone()
+	return output.Marshaled{Value: res}, nil
 }
