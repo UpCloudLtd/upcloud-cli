@@ -35,7 +35,7 @@ To use upctl, download the upctl binary from the
 ### macOS
 
 ```bash
-sudo mv ~/Downloads/upctl-v<VERSION>-darwin-amd64 /usr/local/bin/upctl
+sudo curl -o /usr/local/bin/upctl https://github.com/UpCloudLtd/upcloud-cli/releases/download/v<VERSION>/upctl-v<VERSION>-darwin-amd64
 sudo chmod +x /usr/local/bin/upctl
 upctl -h
 ```
@@ -43,14 +43,14 @@ upctl -h
 ### macOS & Linux
 
 ```bash
-sudo mv ~/Downloads/upctl-v<VERSION>-linux-amd64 /usr/local/bin/upctl
+sudo curl -o /usr/local/bin/upctl https://github.com/UpCloudLtd/upcloud-cli/releases/download/v<VERSION>/upctl-v<VERSION>-linux-amd64
 sudo chmod +x /usr/local/bin/upctl
 upctl -h
 ```
 
 ### Windows
 ```bash
-move Downloads\upctl-v<VERSION>-windows-amd64.exe upctl.exe
+Invoke-WebRequest -Uri "https://github.com/UpCloudLtd/upcloud-cli/releases/download/v<VERSION>/upctl-v<VERSION>-windows-amd64" -OutFile "upctl.exe"
 upctl.exe -h
 ```
 
@@ -79,7 +79,7 @@ $ upctl server list
 
 ## Examples
 
-Every command has a help included and you can find all its options just by adding `-h` at the end of the command,
+Every command has a help included and you can find all its options by adding `-h` at the end of the command,
 like `upctl network list -h`. Below, you'll find a few common commands that have many other available options as well.
 
 ### Create a new server
@@ -114,12 +114,12 @@ upctl server storage attach <SERVER-UUID> --storage <STORAGE-UUID>
 ## Contributing
 
 Contributions from the community are much appreciated! Please note that all features using our
-API should be implemented with [Golang API SDK](https://github.com/UpCloudLtd/upcloud-go-api). 
+API should be implemented with [UpCloud Golang API SDK](https://github.com/UpCloudLtd/upcloud-go-api).
 If something is missing from there, add an issue or PR in that repository instead before implementing it here.
 
 * Check GitHub issues and pull requests before creating new ones
   * If the issue isn't yet reported, you can [create a new issue](https://github.com/UpCloudLtd/upcloud-cli/issues/new).
-* Besides bug reports, any improvement ideas or feature requests are more than welcome and can be submitted through issues.
+* Besides bug reports, all improvement ideas and feature requests are more than welcome and can be submitted through GitHub issues.
   * New features and enhancements can be submitted by first forking the repository and then sending your changes back as a pull request.
 * Following [semantic versioning](https://semver.org/), we won't accept breaking changes within the major version (1.x.x, 2.x.x etc).
   * Such PRs can be open for some time and are only accepted when the next major version is being created.
@@ -167,9 +167,8 @@ git commit -m "New feature: create a new server in the nearest zone if not speci
 git push --set-upstream <branch-name>
 ```
 
-After pushing the new branch, browse to your fork of the repository in Github and it allows you to easily create
-a pull request from there. Once pull request is created, you can make changes to your own branch after comments &
-discussions in the PR. Those additions become part of pull request once you have committed and pushed them to your branch.
+After pushing the new branch, browse to your fork of the repository in GitHub and create a pull request from there.
+Once the pull request is created, please make changes to your branch based on the comments & discussion in the PR.
 
 ## Releasing for beta versions
 
