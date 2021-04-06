@@ -183,4 +183,4 @@ Current release process:
 
 ## License
 
-[Apache License 2.0](LICENSE)
+[MIT license](LICENSE)
