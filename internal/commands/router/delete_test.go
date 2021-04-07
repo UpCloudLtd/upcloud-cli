@@ -23,18 +23,13 @@ func TestDeleteCommand(t *testing.T) {
 
 	for _, test := range []struct {
 		name  string
-		args  []string
+		arg   string
 		error string
 		req   request.DeleteRouterRequest
 	}{
 		{
 			name: "delete with UUID",
-			args: []string{router.UUID},
-			req:  request.DeleteRouterRequest{UUID: router.UUID},
-		},
-		{
-			name: "delete with name",
-			args: []string{router.Name},
+			arg:  router.UUID,
 			req:  request.DeleteRouterRequest{UUID: router.UUID},
 		},
 	} {
@@ -43,9 +38,11 @@ func TestDeleteCommand(t *testing.T) {
 			mService.On(targetMethod, &test.req).Return(nil)
 			mService.On("GetRouters", mock.Anything).Return(&upcloud.Routers{Routers: []upcloud.Router{router}}, nil)
 
-			c := commands.BuildCommand(DeleteCommand(&mService), nil, config.New())
+			conf := config.New()
 
-			_, err := c.MakeExecuteCommand()(test.args)
+			c := commands.BuildCommand(DeleteCommand(), nil, conf)
+
+			_, err := c.(commands.NewCommand).Execute(commands.NewExecutor(conf, &mService), test.arg)
 
 			if test.error != "" {
 				assert.Errorf(t, err, test.error)

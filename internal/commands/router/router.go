@@ -6,7 +6,6 @@ import (
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
-	"github.com/spf13/cobra"
 )
 
 var cachedRouters []upcloud.Router
@@ -21,10 +20,6 @@ func BaseRouterCommand() commands.Command {
 
 type routerCommand struct {
 	*commands.BaseCommand
-}
-
-func getRouterUUID(in interface{}) string {
-	return in.(*upcloud.Router).UUID
 }
 
 func searchRouter(term string, service service.Network, unique bool) ([]*upcloud.Router, error) {
@@ -90,6 +85,8 @@ func (s routerRequest) send(args []string) (interface{}, error) {
 	return s.Handler.Handle(requests)
 }
 
+/*
+TODO: reimplement
 func getRouterArgCompletionFunction(s service.Network) func(toComplete string) ([]string, cobra.ShellCompDirective) {
 	return func(toComplete string) ([]string, cobra.ShellCompDirective) {
 		routers, err := s.GetRouters()
@@ -103,3 +100,4 @@ func getRouterArgCompletionFunction(s service.Network) func(toComplete string) (
 		return commands.MatchStringPrefix(vals, toComplete, true), cobra.ShellCompDirectiveNoFileComp
 	}
 }
+*/

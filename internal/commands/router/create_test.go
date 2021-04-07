@@ -19,30 +19,32 @@ func TestCreateCommand(t *testing.T) {
 
 	for _, test := range []struct {
 		name  string
-		args  []string
+		flags []string
 		error string
 		req   request.CreateRouterRequest
 	}{
 		{
 			name:  "name is missing",
-			args:  []string{},
+			flags: []string{},
 			error: "name is required",
 		},
 		{
-			name: "name is passed",
-			args: []string{"--name", router.Name},
-			req:  request.CreateRouterRequest{Name: router.Name},
+			name:  "name is passed",
+			flags: []string{"--name", router.Name},
+			req:   request.CreateRouterRequest{Name: router.Name},
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			mService := smock.Service{}
 			mService.On(targetMethod, &test.req).Return(&router, nil)
 
-			c := commands.BuildCommand(CreateCommand(&mService), nil, config.New())
-			err := c.SetFlags(test.args)
+			conf := config.New()
+
+			c := commands.BuildCommand(CreateCommand(), nil, conf)
+			err := c.SetFlags(test.flags)
 			assert.NoError(t, err)
 
-			_, err = c.MakeExecuteCommand()([]string{})
+			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, &mService), "")
 
 			if test.error != "" {
 				assert.Errorf(t, err, test.error)

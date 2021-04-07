@@ -6,6 +6,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands/ipaddress"
 	"github.com/UpCloudLtd/cli/internal/commands/network"
 	"github.com/UpCloudLtd/cli/internal/commands/networkinterface"
+	"github.com/UpCloudLtd/cli/internal/commands/router"
 	"github.com/UpCloudLtd/cli/internal/commands/server"
 
 	// "github.com/UpCloudLtd/cli/internal/commands/ipaddress"
@@ -83,16 +84,16 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	commands.BuildCommand(network.CreateCommand(), networkCommand.Cobra(), conf)
 	commands.BuildCommand(network.ListCommand(), networkCommand.Cobra(), conf)
 	commands.BuildCommand(network.ShowCommand(), networkCommand.Cobra(), conf)
-	// commands.BuildCommand(network.ModifyCommand(svc), networkCommand, conf)
+	// commands.BuildCommand(network.ModifyCommand(), networkCommand.Cobra(), conf)
 	commands.BuildCommand(network.DeleteCommand(), networkCommand.Cobra(), conf)
 
-	// // Routers
-	// routerCommand := commands.BuildCommand(router.BaseRouterCommand(), mainCommand, conf)
-	// commands.BuildCommand(router.CreateCommand(svc), routerCommand, conf)
-	// commands.BuildCommand(router.ListCommand(svc), routerCommand, conf)
-	// commands.BuildCommand(router.ShowCommand(svc), routerCommand, conf)
-	// commands.BuildCommand(router.ModifyCommand(svc), routerCommand, conf)
-	// commands.BuildCommand(router.DeleteCommand(svc), routerCommand, conf)
+	// Routers
+	routerCommand := commands.BuildCommand(router.BaseRouterCommand(), rootCmd, conf)
+	commands.BuildCommand(router.CreateCommand(), routerCommand.Cobra(), conf)
+	commands.BuildCommand(router.ListCommand(), routerCommand.Cobra(), conf)
+	commands.BuildCommand(router.ShowCommand(), routerCommand.Cobra(), conf)
+	commands.BuildCommand(router.ModifyCommand(), routerCommand.Cobra(), conf)
+	commands.BuildCommand(router.DeleteCommand(), routerCommand.Cobra(), conf)
 
 	// Account
 	accountCommand := commands.BuildCommand(account.BaseAccountCommand(), rootCmd, conf)
