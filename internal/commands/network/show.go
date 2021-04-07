@@ -34,7 +34,7 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 	if err != nil {
 		return nil, err
 	}
-	commonSection := output.CombinedSection{Key: "", Title: "", Contents: output.Details{
+	commonSection := &output.CombinedSection{Key: "", Title: "", Contents: output.Details{
 		Sections: []output.DetailSection{
 			{
 				Title: "Common",
@@ -62,7 +62,7 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 			})
 		}
 	}
-	networkSection := output.CombinedSection{
+	networkSection := &output.CombinedSection{
 		Key:   "ip_networks",
 		Title: "IP Networks:",
 		Contents: output.Table{
@@ -89,7 +89,7 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 			fetched.State,
 		})
 	}
-	serverSection := output.CombinedSection{
+	serverSection := &output.CombinedSection{
 		Key:   "servers",
 		Title: "Servers:",
 		Contents: output.Table{

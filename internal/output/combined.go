@@ -15,7 +15,7 @@ type CombinedSection struct {
 }
 
 // Combined represents multiple outputs combined and displayed sequentially (or wrapped into the same object)
-type Combined []CombinedSection
+type Combined []*CombinedSection
 
 // MarshalJSON implements json.Marshaler
 func (m Combined) MarshalJSON() ([]byte, error) {
@@ -30,6 +30,10 @@ func (m Combined) MarshalYAML() ([]byte, error) {
 func flattenSections(m Combined) map[string]interface{} {
 	out := map[string]interface{}{}
 	for _, sec := range m {
+		if sec == nil {
+			continue
+		}
+
 		if sec.Key != "" {
 			if _, ok := out[sec.Key]; ok {
 				panic(fmt.Sprintf("duplicate section key '%v' in output", sec.Key))
@@ -62,6 +66,10 @@ func flattenSections(m Combined) map[string]interface{} {
 func (m Combined) MarshalHuman() ([]byte, error) {
 	out := []byte{}
 	for _, sec := range m {
+		if sec == nil {
+			continue
+		}
+
 		marshaled, err := sec.Contents.MarshalHuman()
 		if err != nil {
 			return nil, err
