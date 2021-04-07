@@ -3,72 +3,57 @@ package serverfirewall
 import (
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/commands/server"
+	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
 )
 
 type deleteCommand struct {
 	*commands.BaseCommand
-	serverSvc   service.Server
-	firewallSvc service.Firewall
-	params      deleteParams
+	rulePosition int
 }
 
 // DeleteCommand creates the "server firewall delete" command
-func DeleteCommand(serverSvc service.Server, firewallSvc service.Firewall) commands.Command {
+func DeleteCommand() commands.Command {
 	return &deleteCommand{
 		BaseCommand: commands.New("delete", "Removes a firewall rule from a server. Firewall rules must be removed individually. The positions of remaining firewall rules will be adjusted after a rule is removed."),
-		serverSvc:   serverSvc,
-		firewallSvc: firewallSvc,
 	}
-}
-
-var defaultRemoveParams = request.DeleteFirewallRuleRequest{}
-
-type deleteParams struct {
-	request.DeleteFirewallRuleRequest
 }
 
 // InitCommand implements Command.InitCommand
 func (s *deleteCommand) InitCommand() {
 	flagSet := &pflag.FlagSet{}
-
-	def := defaultRemoveParams
-
-	flagSet.IntVar(&s.params.Position, "position", def.Position, "Rule position. Available: 1-1000")
-
+	flagSet.IntVar(&s.rulePosition, "position", 0, "Rule position. Available: 1-1000")
 	s.AddFlags(flagSet)
 }
 
-// MakeExecuteCommand implements Command.MakeExecuteCommand
-func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
-
-		if s.params.Position == 0 {
-			return nil, fmt.Errorf("position is required")
-		}
-
-		return server.Request{
-			BuildRequest: func(uuid string) interface{} {
-				req := s.params.DeleteFirewallRuleRequest
-				req.ServerUUID = uuid
-				return &req
-			},
-			Service: s.serverSvc,
-			Handler: ui.HandleContext{
-				MessageFn: func(in interface{}) string {
-					req := in.(*request.DeleteFirewallRuleRequest)
-					return fmt.Sprintf("Remove firewall rule at position %d from server %q", s.params.Position, req.ServerUUID)
-				},
-				InteractiveUI: s.Config().InteractiveUI(),
-				MaxActions:    10,
-				Action: func(req interface{}) (interface{}, error) {
-					return nil, s.firewallSvc.DeleteFirewallRule(req.(*request.DeleteFirewallRuleRequest))
-				},
-			},
-		}.Send(args)
+// Execute implements NewCommand.Execute
+func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
+	if arg == "" {
+		return nil, fmt.Errorf("server is required")
 	}
+	if s.rulePosition == 0 {
+		return nil, fmt.Errorf("position is required")
+	}
+	if s.rulePosition < 1 || s.rulePosition > 1000 {
+		return nil, fmt.Errorf("invalid position (1-1000 allowed)")
+	}
+	msg := fmt.Sprintf("deleting firewall rule %d from server %v", s.rulePosition, arg)
+	logline := exec.NewLogEntry(msg)
+	logline.StartedNow()
+	err := exec.Firewall().DeleteFirewallRule(&request.DeleteFirewallRuleRequest{
+		ServerUUID: arg,
+		Position:   s.rulePosition,
+	})
+	if err != nil {
+		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
+		logline.SetDetails(err.Error(), "error: ")
+		return nil, err
+	}
+
+	logline.SetMessage(fmt.Sprintf("%s: done", msg))
+	logline.MarkDone()
+
+	return output.Marshaled{Value: nil}, nil
 }
