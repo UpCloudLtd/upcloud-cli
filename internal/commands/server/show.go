@@ -1,24 +1,21 @@
 package server
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
-	"net"
 	"strings"
 	"sync"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/jedib0t/go-pretty/v6/table"
-	"github.com/jedib0t/go-pretty/v6/text"
 )
 
 // ShowCommand creates the "server show" command
-func ShowCommand() commands.Command {
+func ShowCommand() commands.NewCommand {
 	return &showCommand{
 		BaseCommand: commands.New("show", "Show server details"),
 	}
@@ -26,278 +23,234 @@ func ShowCommand() commands.Command {
 
 type showCommand struct {
 	*commands.BaseCommand
+	resolver.CachingServer
 }
 
-type commandResponseHolder struct {
-	serverDetails *upcloud.ServerDetails
-	firewallRules *upcloud.FirewallRules
-}
-
-// MarshalJSON implements json.Marshaler
-func (c *commandResponseHolder) MarshalJSON() ([]byte, error) {
-	return json.Marshal(c.serverDetails)
-}
-
-// InitCommand implements Command.InitCommand
 func (s *showCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
 	s.ArgCompletion(GetServerArgumentCompletionFunction(s.Config()))
 }
 
-// MakeExecuteCommand implements Command.MakeExecuteCommand
-func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
-		// TODO(aakso): implement prompting with readline support
-		if len(args) != 1 {
-			return nil, fmt.Errorf("one server hostname, title or uuid is required")
-		}
-		serverSvc := s.Config().Service.Server()
-		firewallSvc := s.Config().Service.Firewall()
-		serverUUIDs, err := SearchAllServers(args, serverSvc, true)
-		if err != nil {
-			return nil, err
-		}
-		if len(serverUUIDs) != 1 {
-			return nil, fmt.Errorf("server not found")
-		}
-		serverUUID := serverUUIDs[0]
-		var (
-			wg        sync.WaitGroup
-			fwRuleErr error
-		)
-		wg.Add(1)
-		var firewallRules *upcloud.FirewallRules
-		go func() {
-			defer wg.Done()
-			firewallRules, fwRuleErr = firewallSvc.GetFirewallRules(&request.GetFirewallRulesRequest{ServerUUID: serverUUID})
-		}()
-		serverDetails, err := serverSvc.GetServerDetails(&request.GetServerDetailsRequest{UUID: serverUUID})
-		if err != nil {
-			return nil, err
-		}
-		wg.Wait()
-		if fwRuleErr != nil {
-			return nil, fwRuleErr
-		}
-		return &commandResponseHolder{serverDetails, firewallRules}, nil
-	}
-}
+// Execute implements Command.MakeExecuteCommand
+func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
+	var (
+		wg        sync.WaitGroup
+		fwRuleErr error
+	)
 
-// HandleOutput implements Command.HandleOutput
-func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
-	resp := out.(*commandResponseHolder)
-	srv := resp.serverDetails
-	firewallRules := resp.firewallRules
+	serverSvc := exec.Server()
+	firewallSvc := exec.Firewall()
 
-	formatBool := func(v bool) interface{} {
-		if v {
-			return ui.DefaultBooleanColoursTrue.Sprint("yes")
-		}
-		return ui.DefaultBooleanColoursFalse.Sprint("no")
-	}
-	rowTransformer := func(row table.Row) table.Row {
-		if v, ok := row[len(row)-1].(upcloud.Boolean); ok {
-			row[len(row)-1] = formatBool(v.Bool())
-		}
-		return row
+	wg.Add(1)
+	var firewallRules *upcloud.FirewallRules
+	go func() {
+		defer wg.Done()
+		firewallRules, fwRuleErr = firewallSvc.GetFirewallRules(&request.GetFirewallRulesRequest{ServerUUID: uuid})
+	}()
+
+	server, err := serverSvc.GetServerDetails(&request.GetServerDetailsRequest{UUID: uuid})
+	if err != nil {
+		return nil, err
 	}
 
-	l := ui.NewListLayout(ui.ListLayoutDefault)
-	{
-		dCommon := ui.NewDetailsView()
-		dCommon.SetRowTransformer(rowTransformer)
-		planOutput := srv.Plan
-		if planOutput == "custom" {
-			memory := srv.MemoryAmount / 1024
-			planOutput = fmt.Sprintf("Custom (%dxCPU, %dGB)", srv.CoreNumber, memory)
-		}
-		dCommon.Append(
-			table.Row{"UUID:", ui.DefaultUUUIDColours.Sprint(srv.UUID)},
-			table.Row{"Title:", srv.Title},
-			table.Row{"Hostname:", srv.Hostname},
-			table.Row{"Plan:", planOutput},
-			table.Row{"Zone:", srv.Zone},
-			table.Row{"State:", commands.StateColour(srv.State).Sprint(srv.State)},
-			table.Row{"Tags:", strings.Join(srv.Tags, ",")},
-			table.Row{"Licence:", srv.License},
-			table.Row{"Metadata:", srv.Metadata},
-			table.Row{"Timezone:", srv.Timezone},
-			table.Row{"Host ID:", srv.Host},
-		)
-		l.AppendSection("Common:", dCommon.Render())
+	wg.Wait()
+	if fwRuleErr != nil {
+		return nil, fwRuleErr
+	}
+
+	planOutput := server.Plan
+	if planOutput == "custom" {
+		memory := server.MemoryAmount / 1024
+		planOutput = fmt.Sprintf("%dxCPU-%dGB (custom)", server.CoreNumber, memory)
+	}
+	serverSection := &output.CombinedSection{
+		Contents: output.Details{
+			Sections: []output.DetailSection{
+				{
+					Title: "Common",
+					Rows: []output.DetailRow{
+						{Title: "UUID:", Key: "uuid", Value: server.UUID},
+						{Title: "Hostname:", Key: "hostname", Value: server.Hostname},
+						{Title: "Title:", Key: "title", Value: server.Title},
+						{Title: "Plan:", Key: "plan", Value: planOutput},
+						{Title: "Zone:", Key: "zone", Value: server.Zone},
+						{Title: "State:", Key: "state", Value: server.State, Color: commands.StateColour(server.State)},
+						{Title: "Simple Backup:", Key: "simple_backup", Value: server.SimpleBackup},
+						{Title: "Licence:", Key: "licence", Value: server.License},
+						{Title: "Metadata:", Key: "metadata", Value: server.Metadata.String()},
+						{Title: "Timezone:", Key: "timezone", Value: server.Timezone},
+						{Title: "Host ID:", Key: "host_id", Value: server.Host},
+						{Title: "Tags:", Key: "tags", Value: strings.Join(server.Tags, ",")},
+					},
+				},
+			},
+		},
 	}
 
 	// Storage details
-	{
-		tStorage := ui.NewDataTable("Title (UUID)", "Type", "Address", "Size (GiB)", "Flags")
-		for _, storage := range srv.StorageDevices {
-			var flags []string
-			if storage.PartOfPlan == "yes" {
-				flags = append(flags, "P")
-			}
-			if storage.BootDisk == 1 {
-				flags = append(flags, "B")
-			}
-			tStorage.Append(table.Row{
-				fmt.Sprintf("%s\n(%s)", storage.Title, ui.DefaultUUUIDColours.Sprint(storage.UUID)),
-				storage.Type,
-				storage.Address,
-				storage.Size,
-				strings.Join(flags, " "),
-			})
+	storageRows := []output.TableRow{}
+	for _, storage := range server.StorageDevices {
+		var flags []string
+		if storage.PartOfPlan == "yes" {
+			flags = append(flags, "P")
+		}
+		if storage.BootDisk == 1 {
+			flags = append(flags, "B")
 		}
 
-		simpleBackup := srv.SimpleBackup
-		if simpleBackup == "no" {
-			simpleBackup = ui.DefaultBooleanColoursFalse.Sprint(simpleBackup)
-		}
+		storageRows = append(storageRows, output.TableRow{
+			storage.UUID,
+			storage.Title,
+			storage.Type,
+			storage.Address,
+			storage.Size,
+			strings.Join(flags, " "),
+		})
+	}
 
-		dStorage := ui.NewListLayout(ui.ListLayoutNestedTable)
-
-		dBackup := ui.NewDetailsView()
-		dBackup.SetRowTransformer(rowTransformer)
-		dBackup.Append(table.Row{"Simple Backup:", simpleBackup})
-		dStorage.AppendSectionWithNote("Devices:", tStorage.Render(), "(Flags: B = bootdisk, P = part of plan)")
-
-		l.AppendSection("Storage:", dBackup.Render(), dStorage.Render())
+	storageSection := &output.CombinedSection{
+		Key:   "storage",
+		Title: "Storage: (Flags: B = bootdisk, P = part of plan)",
+		Contents: output.Table{
+			Columns: []output.TableColumn{
+				{Key: "uuid", Header: "UUID", Color: ui.DefaultUUUIDColours},
+				{Key: "title", Header: "Title"},
+				{Key: "type", Header: "Type"},
+				{Key: "address", Header: "Address"},
+				{Key: "size", Header: "Size (GiB)"},
+				{Key: "flags", Header: "Flags"},
+			},
+			Rows: storageRows,
+		},
 	}
 
 	// Network details
-	{
-		dNetwork := ui.NewDetailsView()
-		dNetwork.SetRowSpacing(true)
-		tNics := ui.NewDataTable("#", "Type", "Network", "Addresses", "Flags")
-		tNics.SetColumnConfig("#", table.ColumnConfig{WidthMax: 2})
-		tNics.SetColumnConfig("Network", table.ColumnConfig{WidthMax: 19})
-		for _, nic := range srv.Networking.Interfaces {
-			var flags []string
-			if nic.SourceIPFiltering.Bool() {
-				flags = append(flags, "S")
+	nicRows := []output.TableRow{}
+	for _, nic := range server.Networking.Interfaces {
+		var flags []string
+		if nic.SourceIPFiltering.Bool() {
+			flags = append(flags, "S")
+		}
+		if nic.Bootable.Bool() {
+			flags = append(flags, "B")
+		}
+
+		var addrs []string
+		for _, addr := range nic.IPAddresses {
+			var floating string
+			if addr.Floating.Bool() {
+				floating = "(f)"
 			}
-			if nic.Bootable.Bool() {
-				flags = append(flags, "B")
-			}
-			var addrs []string
-			addrs = append(addrs, "MAC:  "+nic.MAC)
-			for _, addr := range nic.IPAddresses {
-				prefix := "IPv4: "
-				if addr.Family == "IPv6" {
-					prefix = "IPv6: "
-				}
-				var floating string
-				if addr.Floating.Bool() {
-					floating = " (f)"
-				}
-				addrs = append(addrs, prefix+ui.DefaultAddressColours.Sprint(addr.Address)+floating)
-			}
-			tNics.Append(table.Row{
-				nic.Index,
-				nic.Type,
-				ui.DefaultUUUIDColours.Sprint(nic.Network),
-				strings.Join(addrs, "\n"),
-				strings.Join(flags, " "),
+
+			addrs = append(
+				addrs,
+				fmt.Sprintf(
+					"%v: %s %s",
+					addr.Family,
+					ui.DefaultAddressColours.Sprint(addr.Address),
+					floating),
+			)
+		}
+
+		nicRows = append(nicRows, output.TableRow{
+			nic.Index,
+			nic.Type,
+			strings.Join(addrs, "\n"),
+			nic.MAC,
+			nic.Network,
+			strings.Join(flags, " "),
+		})
+	}
+
+	nicSection := &output.CombinedSection{
+		Key:   "nics",
+		Title: "NICs: (Flags: S = source IP filtering, B = bootable)",
+		Contents: output.Table{
+			Columns: []output.TableColumn{
+				{Key: "id", Header: "#"},
+				{Key: "type", Header: "Type"},
+				{Key: "ip_address", Header: "IP Address"},
+				{Key: "mac_address", Header: "MAC Address"},
+				{Key: "network", Header: "Network"},
+				{Key: "flags", Header: "Flags"},
+			},
+			Rows: nicRows,
+		},
+	}
+
+	// Firewall rules
+	var fwSection *output.CombinedSection
+	if server.Firewall == "on" {
+		fwRows := []output.TableRow{}
+		for _, rule := range firewallRules.FirewallRules {
+			fwRows = append(fwRows, output.TableRow{
+				rule.Position,
+				rule.Direction,
+				rule.Action,
+				ui.FormatRange(
+					rule.SourceAddressStart,
+					rule.SourceAddressEnd,
+				),
+				ui.FormatRange(
+					rule.DestinationAddressStart,
+					rule.DestinationAddressEnd,
+				),
+				ui.FormatRange(
+					rule.SourcePortStart,
+					rule.SourcePortEnd,
+				),
+				ui.FormatRange(
+					rule.DestinationPortStart,
+					rule.DestinationPortEnd,
+				),
+				ui.ConcatStrings(rule.Family, rule.Protocol, rule.ICMPType),
 			})
 		}
 
-		dNICs := ui.NewListLayout(ui.ListLayoutNestedTable)
-		dNICs.AppendSectionWithNote("NICS:", tNics.Render(), "(Flags: S = source IP filtering, B = bootable)")
-
-		l.AppendSection("Networking:", dNICs.Render())
-
-		fwEnabled := srv.Firewall == "on"
-		dNetwork.Append(table.Row{"Firewall", formatBool(fwEnabled)})
-		if fwEnabled {
-			formatMatch := func(start, stop, portStart, portStop string) string {
-				var sb strings.Builder
-				ipStart := net.ParseIP(start)
-				ipStop := net.ParseIP(stop)
-				if ipStart != nil {
-					if ipStart.Equal(ipStop) {
-						sb.WriteString(ui.DefaultAddressColours.Sprint(ipStart))
-					} else {
-						sb.WriteString(ui.DefaultAddressColours.Sprintf("%s →\n%s", ipStart, ipStop))
-					}
-				}
-				if portStart != "" {
-					if ipStart != nil {
-						sb.WriteString("\n")
-					}
-					if portStart == portStop {
-						sb.WriteString(fmt.Sprintf("port: %s", portStart))
-					} else {
-						sb.WriteString(fmt.Sprintf("port: %s → %s", portStart, portStop))
-					}
-				}
-				return sb.String()
-			}
-			formatProto := func(family, proto, icmptype string) string {
-				var sb strings.Builder
-				sb.WriteString(family)
-				if proto == "" {
-					return sb.String()
-				}
-				sb.WriteString(fmt.Sprintf("/%s", proto))
-				if icmptype == "" {
-					return sb.String()
-				}
-				sb.WriteString(fmt.Sprintf("/%s", icmptype))
-				return sb.String()
-			}
-			tFw := ui.NewDataTable(
-				"#",
-				"Action",
-				"Source",
-				"Destination",
-				"Dir",
-				"Proto",
-			)
-			tFw.SetColumnConfig("Source", table.ColumnConfig{WidthMax: 27})
-			tFw.SetColumnConfig("Destination", table.ColumnConfig{WidthMax: 27})
-
-			for _, rule := range firewallRules.FirewallRules {
-				actColour := text.FgHiGreen
-				if rule.Action == "drop" {
-					actColour = text.FgHiRed
-				}
-				tFw.Append(table.Row{
-					rule.Position,
-					actColour.Sprint(rule.Action),
-					formatMatch(
-						rule.SourceAddressStart,
-						rule.SourceAddressEnd,
-						rule.SourcePortStart,
-						rule.SourcePortEnd),
-					formatMatch(
-						rule.DestinationAddressStart,
-						rule.DestinationAddressEnd,
-						rule.DestinationPortStart,
-						rule.DestinationPortEnd),
-					rule.Direction,
-					formatProto(
-						rule.Family,
-						rule.Protocol,
-						rule.ICMPType),
-				})
-			}
-
-			l.AppendSection("Firewall Rules:", ui.WrapWithListLayout(tFw.Render(), ui.ListLayoutNestedTable).Render())
+		fwSection = &output.CombinedSection{
+			Key:   "firewall",
+			Title: "Firewall Rules:",
+			Contents: output.Table{
+				Columns: []output.TableColumn{
+					{Key: "position", Header: "#"},
+					{Key: "direction", Header: "Direction"},
+					{Key: "action", Header: "Action"},
+					{Key: "src_ipaddress", Header: "Src IPAddress", Color: ui.DefaultAddressColours},
+					{Key: "dest_ipaddress", Header: "Dest IPAddress", Color: ui.DefaultAddressColours},
+					{Key: "src_port", Header: "Src Port"},
+					{Key: "dest_port", Header: "Dest Port"},
+					{Key: "protocol", Header: "Protocol"},
+				},
+				Rows: fwRows,
+			},
 		}
 	}
 
 	// Remote access
-	{
-		dRemote := ui.NewDetailsView()
-		dRemote.Append(table.Row{"Enabled", formatBool(srv.RemoteAccessEnabled.Bool())})
-		if srv.RemoteAccessEnabled.Bool() {
-			dRemote.Append(
-				table.Row{"Type:", srv.RemoteAccessType},
-				table.Row{"Address:", fmt.Sprintf("%s:%d", srv.RemoteAccessHost, srv.RemoteAccessPort)},
-				table.Row{"Password:", srv.RemoteAccessPassword},
-			)
+	var remoteSection *output.CombinedSection
+	if server.RemoteAccessEnabled.Bool() {
+		remoteSection = &output.CombinedSection{
+			Contents: output.Details{
+				Sections: []output.DetailSection{
+					{
+						Title: "Remote Access",
+						Rows: []output.DetailRow{
+							{Title: "Type:", Key: "type", Value: server.RemoteAccessType},
+							{Title: "Host:", Key: "host", Value: server.RemoteAccessHost},
+							{Title: "Port:", Key: "port", Value: server.RemoteAccessPort},
+							{Title: "Password:", Key: "password", Value: server.RemoteAccessPassword},
+						},
+					},
+				},
+			},
 		}
-		l.AppendSection("Remote Access:", dRemote.Render())
 	}
 
-	_, _ = fmt.Fprintln(writer, l.Render())
-	return nil
+	return output.Combined{
+		serverSection,
+		storageSection,
+		nicSection,
+		fwSection,
+		remoteSection,
+	}, nil
 }

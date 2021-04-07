@@ -29,17 +29,17 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	// Servers
 	serverCommand := commands.BuildCommand(server.BaseServerCommand(), rootCmd, conf)
 	commands.BuildCommand(server.ListCommand(), serverCommand.Cobra(), conf)
-	/*	commands.BuildCommand(server.PlanListCommand(), serverCommand.Cobra(), conf)
-		commands.BuildCommand(server.ShowCommand(), serverCommand.Cobra(), conf)
-		commands.BuildCommand(server.StartCommand(), serverCommand.Cobra(), conf)
-		commands.BuildCommand(server.RestartCommand(), serverCommand.Cobra(), conf)
-		commands.BuildCommand(server.StopCommand(), serverCommand.Cobra(), conf)
-		commands.BuildCommand(server.CreateCommand(), serverCommand.Cobra(), conf)
-		commands.BuildCommand(server.ModifyCommand(), serverCommand.Cobra(), conf)
-		commands.BuildCommand(server.LoadCommand(), serverCommand.Cobra(), conf)
-		commands.BuildCommand(server.EjectCommand(), serverCommand.Cobra(), conf)
-		commands.BuildCommand(server.DeleteCommand(), serverCommand.Cobra(), conf)
-	*/
+	commands.BuildCommand(server.PlanListCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(server.ShowCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(server.StartCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(server.RestartCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(server.StopCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(server.CreateCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(server.ModifyCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(server.LoadCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(server.EjectCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(server.DeleteCommand(), serverCommand.Cobra(), conf)
+
 	// Server Network Interfaces
 	networkInterfaceCommand := commands.BuildCommand(networkinterface.BaseNetworkInterfaceCommand(), serverCommand.Cobra(), conf)
 	commands.BuildCommand(networkinterface.CreateCommand(), networkInterfaceCommand.Cobra(), conf)

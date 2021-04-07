@@ -1,6 +1,10 @@
 package ui
 
-import "github.com/jedib0t/go-pretty/v6/text"
+import (
+	"fmt"
+
+	"github.com/jedib0t/go-pretty/v6/text"
+)
 
 var (
 	// DefaultHeaderColours defines the default colors used for headers
@@ -25,4 +29,38 @@ func FormatBool(v bool) string {
 		return DefaultBooleanColoursTrue.Sprint("yes")
 	}
 	return DefaultBooleanColoursFalse.Sprint("no")
+}
+
+// FormatRange takes start and end value and generates a ranged value
+func FormatRange(start, end string) string {
+	if start == end {
+		if start == "" {
+			return "Any"
+		}
+
+		return start
+	}
+
+	if end == "" {
+		return start
+	}
+
+	return fmt.Sprintf("%s →\n%s", start, end)
+}
+
+// ConcatStrings like join but handles well the empty strings
+func ConcatStrings(strs ...string) string {
+	ret := fmt.Sprintf(strs[0])
+
+	if len(strs) <= 1 {
+		return ret
+	}
+
+	for _, str := range strs[1:] {
+		if str != "" {
+			ret = fmt.Sprintf("%s/%s", ret, str)
+		}
+	}
+
+	return ret
 }
