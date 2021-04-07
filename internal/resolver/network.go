@@ -2,7 +2,6 @@ package resolver
 
 import (
 	"errors"
-	"fmt"
 	internal "github.com/UpCloudLtd/cli/internal/service"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 )
@@ -12,6 +11,7 @@ type CachingNetwork struct {
 	cached []upcloud.Network
 }
 
+// make sure we implement the ResolutionProvider interface
 var _ ResolutionProvider = &CachingNetwork{}
 
 // Get implements ResolutionProvider.Get
@@ -26,7 +26,7 @@ func (s *CachingNetwork) Get(svc internal.AllServices) (Resolver, error) {
 		for _, network := range s.cached {
 			if network.Name == arg || network.UUID == arg {
 				if rv != "" {
-					return "", fmt.Errorf("'%v' is ambiguous, found multiple networks matching", arg)
+					return "", AmbiguousResolutionError(arg)
 				}
 				rv = network.UUID
 			}
@@ -34,7 +34,7 @@ func (s *CachingNetwork) Get(svc internal.AllServices) (Resolver, error) {
 		if rv != "" {
 			return rv, nil
 		}
-		return "", fmt.Errorf("no network found matching '%v'", arg)
+		return "", NotFoundError(arg)
 	}, nil
 }
 
@@ -48,5 +48,5 @@ func (s *CachingNetwork) GetCached(uuid string) (upcloud.Network, error) {
 			return network, nil
 		}
 	}
-	return upcloud.Network{}, fmt.Errorf("network with uuid '%v' not found", uuid)
+	return upcloud.Network{}, NotFoundError(uuid)
 }
