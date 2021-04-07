@@ -1,134 +1,123 @@
 package networkinterface
 
 import (
+	"errors"
 	"fmt"
-	"strconv"
-
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/commands/network"
-	"github.com/UpCloudLtd/cli/internal/commands/server"
+	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
 )
 
 type createCommand struct {
 	*commands.BaseCommand
-	serverSvc  service.Server
-	networkSvc service.Network
-	params     createParams
+	ipAddresses       []string
+	bootable          bool
+	sourceIPFiltering bool
+	networkUUID       string
+	family            string
+	interfaceIndex    int
+	networkType       string
+	resolver.CachingServer
 }
 
 // CreateCommand creates the "network-interface create" command
-func CreateCommand(serverSvc service.Server, networkSvc service.Network) commands.Command {
+func CreateCommand() commands.Command {
 	return &createCommand{
 		BaseCommand: commands.New("create", "Create a network interface"),
-		serverSvc:   serverSvc,
-		networkSvc:  networkSvc,
 	}
 }
 
-type createParams struct {
-	req         request.CreateNetworkInterfaceRequest
-	ipAddresses []string
-	bootable    bool
-	filtering   bool
-	network     string
-	family      string
-}
-
-var def = createParams{
-	req: request.CreateNetworkInterfaceRequest{
-		Type: upcloud.NetworkTypePrivate,
-	},
-	family: upcloud.IPAddressFamilyIPv4,
-}
+const (
+	defaultNetworkType     = upcloud.NetworkTypePrivate
+	defaultIPAddressFamily = upcloud.IPAddressFamilyIPv4
+)
 
 // InitCommand implements Command.InitCommand
 func (s *createCommand) InitCommand() {
-	s.params.req = request.CreateNetworkInterfaceRequest{}
 	fs := &pflag.FlagSet{}
-	fs.StringVar(&s.params.network, "network", def.network, "Virtual network ID or name to join.")
-	fs.StringVar(&s.params.req.Type, "type", def.req.Type, "Set the type of the network. Available: public, utility, private")
-	fs.StringVar(&s.params.family, "family", def.family, "The address family of new IP address.")
-	fs.IntVar(&s.params.req.Index, "index", def.req.Index, "Interface index.")
-	fs.BoolVar(&s.params.bootable, "bootable", def.bootable, "Whether to try booting through the interface.")
-	fs.BoolVar(&s.params.filtering, "source-ip-filtering", def.filtering, "Whether source IP filtering is enabled on the interface. Disabling it is allowed only for SDN private interfaces.")
-	fs.StringSliceVar(&s.params.ipAddresses, "ip-addresses", s.params.ipAddresses, "Array of IP addresses, multiple can be declared\n\n"+
+	fs.StringVar(&s.networkUUID, "network", "", "Virtual network ID or name to join.")
+	fs.StringVar(&s.networkType, "type", defaultNetworkType, "Set the type of the network. Available: public, utility, private")
+	fs.StringVar(&s.family, "family", defaultIPAddressFamily, "The address family of new IP address.")
+	fs.IntVar(&s.interfaceIndex, "index", 0, "Interface index.")
+	fs.BoolVar(&s.bootable, "bootable", false, "Whether to try booting through the interface.")
+	fs.BoolVar(&s.sourceIPFiltering, "source-ip-filtering", false, "Whether source IP filtering is enabled on the interface. Disabling it is allowed only for SDN private interfaces.")
+	fs.StringSliceVar(&s.ipAddresses, "ip-addresses", []string{}, "Array of IP addresses, multiple can be declared\n\n"+
 		"Usage: --ip-addresses 94.237.112.143,94.237.112.144")
 	s.AddFlags(fs) // TODO(ana): replace usage with examples once the refactor is done.
 }
 
-func (s *createCommand) buildRequest() (*request.CreateNetworkInterfaceRequest, error) {
-	if s.params.network == "" {
-		s.params.req.IPAddresses = request.CreateNetworkInterfaceIPAddressSlice{{Family: s.params.family}}
+// MaximumExecutions implements NewCommand.MaximumExecutions
+func (s *createCommand) MaximumExecutions() int {
+	return maxNetworkInterfaceActions
+}
+
+// Execute implements command.NewCommand
+func (s *createCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
+	if arg == "" {
+		return nil, errors.New("single server uuid is required")
+	}
+	ipAddresses := []request.CreateNetworkInterfaceIPAddress{}
+	if s.networkUUID == "" {
+		ipAddresses = request.CreateNetworkInterfaceIPAddressSlice{{Family: s.family}}
 	} else {
-		if len(s.params.ipAddresses) == 0 {
-			var ipAddresses []request.CreateNetworkInterfaceIPAddress
+		if len(s.ipAddresses) == 0 {
 			ipFamily := upcloud.IPAddressFamilyIPv4
 			// Currently only IPv4 is supported in private networks
-			if s.params.family != "IPv4" && s.params.req.Type == "private" {
-				return nil, fmt.Errorf("Currently only IPv4 is supported in private networks")
+			if s.family != "IPv4" && s.networkType == "private" {
+				return nil, fmt.Errorf("currently only IPv4 is supported in private networks")
 			}
-			if s.params.family != "" {
-				ipFamily = s.params.family
+			if s.family != "" {
+				ipFamily = s.family
 			}
 			ip := request.CreateNetworkInterfaceIPAddress{
 				Family: ipFamily,
 			}
 			ipAddresses = append(ipAddresses, ip)
-			s.params.req.IPAddresses = ipAddresses
 		} else {
-			ipAddresses, err := handleIPAddress(s.params.ipAddresses)
+			handled, err := mapIPAddressesToRequest(s.ipAddresses)
 			if err != nil {
 				return nil, err
 			}
-			s.params.req.IPAddresses = ipAddresses
+			ipAddresses = handled
 		}
-
-		nw, err := network.SearchUniqueNetwork(s.params.network, s.networkSvc)
+		// TODO: reimplement resolution of network names..
+		/*		resolvedUUID,err := s.CachingNetwork.Resolve(s.networkUUID)
+				if err != nil {
+					return nil, err
+				}
+				s.networkUUID = resolvedUUID*/
+		res, err := exec.Network().GetNetworkDetails(&request.GetNetworkDetailsRequest{UUID: s.networkUUID})
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("invalid network requested: %w", err)
 		}
-		s.params.req.NetworkUUID = nw.UUID
+		s.networkUUID = res.UUID
 	}
 
-	s.params.req.Bootable = upcloud.FromBool(s.params.bootable)
-	s.params.req.SourceIPFiltering = upcloud.FromBool(s.params.filtering)
-	return &s.params.req, nil
-}
+	msg := fmt.Sprintf("Creating network interface for server %s network %s", arg, s.networkUUID)
+	logline := exec.NewLogEntry(msg)
+	logline.StartedNow()
 
-// MakeExecuteCommand implements Command.MakeExecuteCommand
-func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
-
-		req, err := s.buildRequest()
-		if err != nil {
-			return nil, err
-		}
-
-		return server.Request{
-			BuildRequest: func(uuid string) interface{} {
-				req.ServerUUID = uuid
-				return req
-			},
-			Service:    s.serverSvc,
-			ExactlyOne: true,
-			Handler: ui.HandleContext{
-				MessageFn: func(in interface{}) string {
-					req := in.(*request.CreateNetworkInterfaceRequest)
-					return fmt.Sprintf("Creating network interface for server %s network %s", req.ServerUUID, req.NetworkUUID)
-				},
-				ResultUUID:    func(in interface{}) string { return strconv.Itoa(in.(*upcloud.Interface).Index) },
-				ResultPrefix:  "Index",
-				MaxActions:    maxNetworkInterfaceActions,
-				InteractiveUI: s.Config().InteractiveUI(),
-				Action: func(req interface{}) (interface{}, error) {
-					return s.networkSvc.CreateNetworkInterface(req.(*request.CreateNetworkInterfaceRequest))
-				},
-			},
-		}.Send(args)
+	res, err := exec.Network().CreateNetworkInterface(&request.CreateNetworkInterfaceRequest{
+		ServerUUID:        arg,
+		Type:              s.networkType,
+		NetworkUUID:       s.networkUUID,
+		Index:             s.interfaceIndex,
+		IPAddresses:       ipAddresses,
+		SourceIPFiltering: upcloud.FromBool(s.sourceIPFiltering),
+		Bootable:          upcloud.FromBool(s.bootable),
+	})
+	if err != nil {
+		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
+		logline.SetDetails(err.Error(), "error: ")
+		return nil, err
 	}
+
+	logline.SetMessage(fmt.Sprintf("%s: done", msg))
+	logline.MarkDone()
+
+	return output.Marshaled{Value: res}, nil
 }

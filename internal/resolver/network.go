@@ -14,16 +14,10 @@ type CachingNetwork struct {
 // make sure we implement the ResolutionProvider interface
 var _ ResolutionProvider = &CachingNetwork{}
 
-// Get implements ResolutionProvider.Get
-func (s *CachingNetwork) Get(svc internal.AllServices) (Resolver, error) {
-	networks, err := svc.GetNetworks()
-	if err != nil {
-		return nil, err
-	}
-	s.cached = networks.Networks
+func rawResolver(cached []upcloud.Network) func(arg string) (uuid string, err error) {
 	return func(arg string) (uuid string, err error) {
 		rv := ""
-		for _, network := range s.cached {
+		for _, network := range cached {
 			if network.Name == arg || network.UUID == arg {
 				if rv != "" {
 					return "", AmbiguousResolutionError(arg)
@@ -35,7 +29,17 @@ func (s *CachingNetwork) Get(svc internal.AllServices) (Resolver, error) {
 			return rv, nil
 		}
 		return "", NotFoundError(arg)
-	}, nil
+	}
+}
+
+// Get implements ResolutionProvider.Get
+func (s *CachingNetwork) Get(svc internal.AllServices) (Resolver, error) {
+	networks, err := svc.GetNetworks()
+	if err != nil {
+		return nil, err
+	}
+	s.cached = networks.Networks
+	return rawResolver(s.cached), nil
 }
 
 // GetCached is a helper method for commands to use when they need to get an item from the cached results
@@ -49,4 +53,13 @@ func (s *CachingNetwork) GetCached(uuid string) (upcloud.Network, error) {
 		}
 	}
 	return upcloud.Network{}, NotFoundError(uuid)
+}
+
+// Resolve is a helper method for commands to resolve networks inside Execute(), outside arguments
+func (s *CachingNetwork) Resolve(arg string) (resolved string, err error) {
+	if s.cached == nil {
+		return "", errors.New("caching network does not have a cache initialized")
+	}
+	return rawResolver(s.cached)(arg)
+
 }

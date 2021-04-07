@@ -15,32 +15,32 @@ import (
 func TestModifyCommand(t *testing.T) {
 	targetMethod := "ModifyNetworkInterface"
 
-	s := upcloud.Server{UUID: "c4cb35bc-3fb5-4cce-9951-79cab2225417"}
-	servers := upcloud.Servers{Servers: []upcloud.Server{s}}
+	server := upcloud.Server{UUID: "c4cb35bc-3fb5-4cce-9951-79cab2225417"}
+	servers := upcloud.Servers{Servers: []upcloud.Server{server}}
 	network := upcloud.Network{UUID: "aa39e313-d908-418a-a959-459699bdc83a", Name: "test-network"}
 	networks := upcloud.Networks{Networks: []upcloud.Network{network}}
 
 	for _, test := range []struct {
 		name  string
-		args  []string
+		flags []string
 		error string
 		req   request.ModifyNetworkInterfaceRequest
 	}{
 		{
 			name:  "index is missing",
-			args:  []string{},
+			flags: []string{},
 			error: "index is required",
 		},
 		{
 			name: "index is present, using default values",
-			args: []string{
+			flags: []string{
 				"--index", "4",
 			},
-			req: request.ModifyNetworkInterfaceRequest{CurrentIndex: 4, ServerUUID: s.UUID},
+			req: request.ModifyNetworkInterfaceRequest{CurrentIndex: 4, ServerUUID: server.UUID},
 		},
 		{
 			name: "index is present, all values modified",
-			args: []string{
+			flags: []string{
 				"--index", "4",
 				"--new-index", "5",
 				"--bootable", "false",
@@ -48,7 +48,7 @@ func TestModifyCommand(t *testing.T) {
 				"--ip-addresses", "127.0.0.2,127.0.0.3,127.0.0.4",
 			},
 			req: request.ModifyNetworkInterfaceRequest{
-				ServerUUID:        s.UUID,
+				ServerUUID:        server.UUID,
 				CurrentIndex:      4,
 				NewIndex:          5,
 				Bootable:          upcloud.FromBool(false),
@@ -67,11 +67,13 @@ func TestModifyCommand(t *testing.T) {
 			mService.On(targetMethod, &test.req).Return(&upcloud.Interface{}, nil)
 
 			mService.On("GetServers").Return(&servers, nil)
-			c := commands.BuildCommand(ModifyCommand(&mService, &mService), nil, config.New())
-			err := c.SetFlags(test.args)
+			conf := config.New()
+
+			c := commands.BuildCommand(ModifyCommand(), nil, conf)
+			err := c.SetFlags(test.flags)
 			assert.NoError(t, err)
 
-			_, err = c.MakeExecuteCommand()([]string{s.UUID})
+			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, &mService), server.UUID)
 
 			if test.error != "" {
 				assert.Errorf(t, err, test.error)

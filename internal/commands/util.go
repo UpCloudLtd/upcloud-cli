@@ -84,6 +84,8 @@ func StateColour(state string) text.Colors {
 
 // BoolFromString parses a string and returns *upcloud.Boolean
 func BoolFromString(b string) (*upcloud.Boolean, error) {
+	// TODO: why does this return a pointer? this should (eventually) not be needed as tristate flags
+	// should be handled much more easily than with this approach
 	var result upcloud.Boolean
 	switch b {
 	case "true":

@@ -2,101 +2,96 @@ package networkinterface
 
 import (
 	"fmt"
+	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/commands/server"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
 )
 
 type modifyCommand struct {
 	*commands.BaseCommand
-	networkSvc  service.Network
-	serverSvc   service.Server
-	req         request.ModifyNetworkInterfaceRequest
-	bootable    string
-	filtering   string
-	ipAddresses []string
+	bootable          string
+	sourceIPfiltering string
+	ipAddresses       []string
+	newIndex          int
+	currentIndex      int
 }
 
 // ModifyCommand creates the "network-interface modify" command
-func ModifyCommand(networkSvc service.Network, serverSvc service.Server) commands.Command {
+func ModifyCommand() commands.Command {
 	return &modifyCommand{
 		BaseCommand: commands.New("modify", "Modify a network interface"),
-		serverSvc:   serverSvc,
-		networkSvc:  networkSvc,
 	}
-}
-
-func (s *modifyCommand) buildRequest() (*request.ModifyNetworkInterfaceRequest, error) {
-	ipAddresses, err := handleIPAddress(s.ipAddresses)
-	if err != nil {
-		return nil, err
-	}
-	s.req.IPAddresses = ipAddresses
-
-	if s.bootable != "" {
-		bootable, err := commands.BoolFromString(s.bootable)
-		if err != nil {
-			return nil, err
-		}
-		s.req.Bootable = *bootable
-	}
-	if s.filtering != "" {
-		filtering, err := commands.BoolFromString(s.filtering)
-		if err != nil {
-			return nil, err
-		}
-		s.req.SourceIPFiltering = *filtering
-	}
-	return &s.req, nil
 }
 
 // InitCommand implements Command.InitCommand
 func (s *modifyCommand) InitCommand() {
 	s.SetPositionalArgHelp(server.PositionalArgHelp)
-	s.ArgCompletion(server.GetServerArgumentCompletionFunction(s.Config()))
+	// TODO: reimplement
+	//	s.ArgCompletion(server.GetServerArgumentCompletionFunction(s.Config()))
 	fs := &pflag.FlagSet{}
-	fs.IntVar(&s.req.CurrentIndex, "index", s.req.CurrentIndex, "Index of the interface to modify.")
-	fs.IntVar(&s.req.NewIndex, "new-index", s.req.NewIndex, "Index of the interface to modify.")
+	fs.IntVar(&s.currentIndex, "index", s.currentIndex, "Index of the interface to modify.")
+	fs.IntVar(&s.newIndex, "new-index", s.newIndex, "Index of the interface to modify.")
+	// TODO: refactor string to tristate bools (eg. allow empty)
 	fs.StringVar(&s.bootable, "bootable", s.bootable, "Whether to try booting through the interface.")
-	fs.StringVar(&s.filtering, "source-ip-filtering", s.filtering, "Whether source IP filtering is enabled on the interface. Disabling it is allowed only for SDN private interfaces.")
+	fs.StringVar(&s.sourceIPfiltering, "source-ip-filtering", s.sourceIPfiltering, "Whether source IP filtering is enabled on the interface. Disabling it is allowed only for SDN private interfaces.")
 	fs.StringSliceVar(&s.ipAddresses, "ip-addresses", s.ipAddresses, "Array of IP addresses, multiple can be declared\nUsage: --ip-address address=94.237.112.143,family=IPv4")
 	s.AddFlags(fs) // TODO(ana): replace usage with examples once the refactor is done.
 }
 
-// MakeExecuteCommand implements Command.MakeExecuteCommand
-func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
-		if s.req.CurrentIndex == 0 {
-			return nil, fmt.Errorf("index is required")
-		}
+// MaximumExecutions implements NewCommand.MaximumExecutions
+func (s *modifyCommand) MaximumExecutions() int {
+	return maxNetworkInterfaceActions
+}
 
-		req, err := s.buildRequest()
+// Execute implements command.NewCommand
+func (s *modifyCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
+	if s.currentIndex == 0 {
+		return nil, fmt.Errorf("index is required")
+	}
+	ipAddresses, err := mapIPAddressesToRequest(s.ipAddresses)
+	if err != nil {
+		return nil, err
+	}
+	// initialize bootable and filtering flags as empty
+	var empty = upcloud.Empty
+	var bootable *upcloud.Boolean = &empty
+	var sourceIPFiltering *upcloud.Boolean = &empty
+	if s.bootable != "" {
+		bootable, err = commands.BoolFromString(s.bootable)
 		if err != nil {
 			return nil, err
 		}
-
-		return server.Request{
-			BuildRequest: func(uuid string) interface{} {
-				req.ServerUUID = uuid
-				return req
-			},
-			Service:    s.serverSvc,
-			ExactlyOne: true,
-			Handler: ui.HandleContext{
-				MessageFn: func(in interface{}) string {
-					req := in.(*request.ModifyNetworkInterfaceRequest)
-					return fmt.Sprintf("Modifying network interface %q of server %q", req.CurrentIndex, req.ServerUUID)
-				},
-				MaxActions:    maxNetworkInterfaceActions,
-				InteractiveUI: s.Config().InteractiveUI(),
-				Action: func(req interface{}) (interface{}, error) {
-					return s.networkSvc.ModifyNetworkInterface(req.(*request.ModifyNetworkInterfaceRequest))
-				},
-			},
-		}.Send(args)
 	}
+	if s.sourceIPfiltering != "" {
+		sourceIPFiltering, err = commands.BoolFromString(s.sourceIPfiltering)
+		if err != nil {
+			return nil, err
+		}
+	}
+	msg := fmt.Sprintf("Modifying network interface %q of server %q", s.currentIndex, arg)
+	logline := exec.NewLogEntry(msg)
+	logline.StartedNow()
+	res, err := exec.Network().ModifyNetworkInterface(&request.ModifyNetworkInterfaceRequest{
+		ServerUUID:        arg,
+		CurrentIndex:      s.currentIndex,
+		NewIndex:          s.newIndex,
+		IPAddresses:       ipAddresses,
+		SourceIPFiltering: *sourceIPFiltering,
+		Bootable:          *bootable,
+	})
+	if err != nil {
+		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
+		logline.SetDetails(err.Error(), "error: ")
+		return nil, err
+	}
+
+	logline.SetMessage(fmt.Sprintf("%s: done", msg))
+	logline.MarkDone()
+
+	return output.Marshaled{Value: res}, nil
 }

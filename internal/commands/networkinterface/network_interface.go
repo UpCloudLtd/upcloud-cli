@@ -17,7 +17,7 @@ type networkInterfaceCommand struct {
 	*commands.BaseCommand
 }
 
-func handleIPAddress(ipStrings []string) ([]request.CreateNetworkInterfaceIPAddress, error) {
+func mapIPAddressesToRequest(ipStrings []string) ([]request.CreateNetworkInterfaceIPAddress, error) {
 	var ipAddresses []request.CreateNetworkInterfaceIPAddress
 	for _, ipAddrStr := range ipStrings {
 		t, err := ipaddress.GetFamily(ipAddrStr)
