@@ -84,14 +84,18 @@ func TestModifyCommand(t *testing.T) {
 			mService := smock.Service{}
 			mService.On(targetMethod, &test.expected).Return(&upcloud.Network{}, nil)
 			mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{n}}, nil)
-			c := commands.BuildCommand(ModifyCommand(&mService), nil, config.New())
+			conf := config.New()
+			c := commands.BuildCommand(ModifyCommand(), nil, conf)
 			err := c.SetFlags(test.flags)
 			assert.NoError(t, err)
 
-			_, err = c.MakeExecuteCommand()([]string{n.Name})
+			_, err = c.(commands.NewCommand).Execute(
+				commands.NewExecutor(conf, &mService),
+				n.UUID,
+			)
 
 			if err != nil {
-				assert.Equal(t, test.error, err.Error())
+				assert.EqualError(t, err, test.error)
 			} else {
 				mService.AssertNumberOfCalls(t, targetMethod, 1)
 			}

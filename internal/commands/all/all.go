@@ -85,7 +85,7 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	commands.BuildCommand(network.CreateCommand(), networkCommand.Cobra(), conf)
 	commands.BuildCommand(network.ListCommand(), networkCommand.Cobra(), conf)
 	commands.BuildCommand(network.ShowCommand(), networkCommand.Cobra(), conf)
-	// commands.BuildCommand(network.ModifyCommand(), networkCommand.Cobra(), conf)
+	commands.BuildCommand(network.ModifyCommand(), networkCommand.Cobra(), conf)
 	commands.BuildCommand(network.DeleteCommand(), networkCommand.Cobra(), conf)
 
 	// Routers
