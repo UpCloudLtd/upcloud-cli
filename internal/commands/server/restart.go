@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/resolver"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
@@ -28,12 +29,12 @@ type restartCommand struct {
 	TimeoutAction        string
 	Timeout              time.Duration
 	resolver.CachingServer
+	completion.Server
 }
 
 // InitCommand implements Command.InitCommand
 func (s *restartCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetServerArgumentCompletionFunction(s.Config()))
 
 	flags := &pflag.FlagSet{}
 
