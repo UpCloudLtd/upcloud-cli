@@ -1,7 +1,6 @@
 package network
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
@@ -30,12 +29,6 @@ func TestDeleteCommand(t *testing.T) {
 			arg:  n.UUID,
 			req:  request.DeleteNetworkRequest{UUID: n.UUID},
 		},
-		// TODO: re-enable after resolution complete
-		/*		{
-				name: "delete network with name",
-				arg: n.Name,
-				req:  request.DeleteNetworkRequest{UUID: n.UUID},
-			},*/
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			cachedNetworks = nil
@@ -47,7 +40,6 @@ func TestDeleteCommand(t *testing.T) {
 			err := c.SetFlags(test.flags)
 			assert.NoError(t, err)
 
-			fmt.Println("RUNNING ARG", test.arg)
 			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, &mService), test.arg)
 
 			if test.error != "" {

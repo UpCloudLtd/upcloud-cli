@@ -41,7 +41,6 @@ func TestCreateCommand(t *testing.T) {
 		{
 			name: "ip-address is missing",
 			flags: []string{
-				// TODO: reimplement resolution of network names..
 				"--network", network.UUID,
 			},
 			req: request.CreateNetworkInterfaceRequest{
@@ -58,7 +57,6 @@ func TestCreateCommand(t *testing.T) {
 		{
 			name: "ip-family unsupported for private network",
 			flags: []string{
-				// TODO: reimplement resolution of network names..
 				"--network", network.UUID,
 				"--family", "IPv6",
 			},
@@ -83,7 +81,6 @@ func TestCreateCommand(t *testing.T) {
 		{
 			name: "invalid ip-address",
 			flags: []string{
-				// TODO: reimplement resolution of network names..
 				"--network", network.UUID,
 				"--ip-addresses", "1000.40.210.253",
 			},
@@ -92,7 +89,6 @@ func TestCreateCommand(t *testing.T) {
 		{
 			name: "using default values",
 			flags: []string{
-				// TODO: reimplement resolution of network names..
 				"--network", network.UUID,
 				"--ip-addresses", "127.0.0.1",
 			},
@@ -110,7 +106,6 @@ func TestCreateCommand(t *testing.T) {
 		{
 			name: "set optional fields",
 			flags: []string{
-				// TODO: reimplement resolution of network names..
 				"--network", network.UUID,
 				"--ip-addresses", "127.0.0.1,127.0.0.2,127.0.0.3/22",
 				"--bootable",
