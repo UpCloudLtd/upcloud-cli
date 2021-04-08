@@ -6,6 +6,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
 	smock "github.com/UpCloudLtd/cli/internal/mock"
+	internal "github.com/UpCloudLtd/cli/internal/service"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
@@ -40,14 +41,18 @@ func TestRestoreBackupCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mService := smock.Service{}
+			conf := config.New()
+			mService := new(smock.Service)
+
+			conf.Service = internal.Wrapper{Service: mService}
+
 			mService.On(targetMethod, mock.Anything).Return(nil, nil)
 
-			tc := commands.BuildCommand(RestoreBackupCommand(&mService), nil, config.New())
-			err := tc.SetFlags(test.args)
+			c := commands.BuildCommand(RestoreBackupCommand(), nil, conf)
+			err := c.SetFlags(test.args)
 			assert.NoError(t, err)
 
-			_, err = tc.MakeExecuteCommand()([]string{Storage2.UUID})
+			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, mService), Storage2.UUID)
 			assert.Nil(t, err)
 			mService.AssertNumberOfCalls(t, targetMethod, test.methodCalls)
 		})

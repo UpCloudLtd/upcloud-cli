@@ -62,9 +62,9 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	commands.BuildCommand(storage.ImportCommand(), storageCommand.Cobra(), conf)
 	commands.BuildCommand(storage.ShowCommand(), storageCommand.Cobra(), conf)
 
-	// backupCommand := commands.BuildCommand(storage.BackupCommand(), storageCommand, conf)
-	// commands.BuildCommand(storage.CreateBackupCommand(svc), backupCommand, conf)
-	// commands.BuildCommand(storage.RestoreBackupCommand(svc), backupCommand, conf)
+	backupCommand := commands.BuildCommand(storage.BackupCommand(), storageCommand.Cobra(), conf)
+	commands.BuildCommand(storage.CreateBackupCommand(), backupCommand.Cobra(), conf)
+	commands.BuildCommand(storage.RestoreBackupCommand(), backupCommand.Cobra(), conf)
 
 	// // IP Addresses
 	ipAddressCommand := commands.BuildCommand(ipaddress.BaseIPAddressCommand(), rootCmd, conf)
