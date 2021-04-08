@@ -221,7 +221,8 @@ func (s *Config) CreateService() (internal.AllServices, error) {
 		hc,
 	)
 	whc.UserAgent = fmt.Sprintf("upctl/%s", Version)
+	svc := service.New(whc)
 	// TODO; remove this when refactor is complete
-	s.Service = internal.Wrapper{Service: service.New(whc)}
-	return s.Service.Service, nil
+	s.Service = internal.Wrapper{Service: svc}
+	return svc, nil
 }
