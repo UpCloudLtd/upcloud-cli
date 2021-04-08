@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
@@ -16,6 +17,7 @@ type modifyCommand struct {
 	networks []string
 	router   string
 	name     string
+	completion.Network
 }
 
 // ModifyCommand creates the "network modify" command
@@ -28,8 +30,6 @@ func ModifyCommand() commands.Command {
 // InitCommand implements Command.InitCommand
 func (s *modifyCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	// TODO: reimplement
-	// s.ArgCompletion(getArgCompFn(s.service))
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.name, "name", "", "Set name of the private network.")
 	fs.StringVar(&s.router, "router", "", "Change or clear the router attachment.")
