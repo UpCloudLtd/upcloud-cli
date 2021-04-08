@@ -3,14 +3,15 @@ package commands
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/UpCloudLtd/cli/internal/output"
-	"github.com/UpCloudLtd/cli/internal/resolver"
 	"io"
 	"os"
 	"strings"
 	"time"
 
+	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/config"
+	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	gyaml "github.com/ghodss/yaml"
 	"github.com/mattn/go-isatty"
@@ -170,6 +171,20 @@ func BuildCommand(child Command, parent *cobra.Command, config *config.Config) C
 	// Init
 	child.InitCommand()
 
+	// Set up completion, if necessary
+	if cp, ok := child.(completion.Provider); ok {
+		child.Cobra().ValidArgsFunction = func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			svc, err := config.CreateService()
+			if err != nil {
+				panic(fmt.Sprintf("cannot create service for completion: %v", err))
+			}
+			completer, err := cp.Generate(svc)
+			if err != nil {
+				panic(fmt.Sprintf("cannot generate completion: %v", err))
+			}
+			return completer(toComplete)
+		}
+	}
 	// Run
 	if nc, ok := child.(NewCommand); ok {
 		child.Cobra().RunE = commandRunE(nc, config)

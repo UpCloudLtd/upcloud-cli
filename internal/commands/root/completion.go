@@ -17,8 +17,8 @@ func (s *CompletionCommand) Execute(exec commands.Executor, arg string) (output.
 	if arg == "" {
 		return nil, fmt.Errorf("shell name is requred")
 	}
-	completion := new(bytes.Buffer)
 	if arg == "bash" {
+		completion := new(bytes.Buffer)
 		err := s.Cobra().Root().GenBashCompletion(completion)
 		return output.Raw(completion.Bytes()), err
 	}

@@ -3,6 +3,7 @@ package network
 import (
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
@@ -20,12 +21,11 @@ func ShowCommand() commands.Command {
 type showCommand struct {
 	*commands.BaseCommand
 	resolver.CachingNetwork
+	completion.Network
 }
 
 func (s *showCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	// TODO: reimplement
-	//	s.ArgCompletion(getArgCompFn(s.networkSvc))
 }
 
 // Execute implements NewCommand.Execute
