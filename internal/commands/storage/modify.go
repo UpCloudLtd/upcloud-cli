@@ -2,8 +2,11 @@ package storage
 
 import (
 	"fmt"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/ui"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
@@ -34,10 +37,9 @@ var defaultBackupRuleParams = upcloud.BackupRule{
 }
 
 // ModifyCommand creates the "storage modify" command
-func ModifyCommand(service service.Storage) commands.Command {
+func ModifyCommand() commands.NewCommand {
 	return &modifyCommand{
 		BaseCommand: commands.New("modify", "Modify a storage"),
-		service:     service,
 	}
 }
 
@@ -108,34 +110,38 @@ func setBackupFields(storageUUID string, p modifyParams, service service.Storage
 		if p.backupRetention != 0 {
 			req.BackupRule.Retention = p.backupRetention
 		}
+
 	}
+
+	req.UUID = storageUUID
 
 	return nil
 }
 
-// MakeExecuteCommand implements Command.MakeExecuteCommand
-func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
+// Execute implements command.NewCommand
+func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
+	svc := exec.Storage()
+	msg := fmt.Sprintf("modifing storage %v", uuid)
+	logline := exec.NewLogEntry(msg)
 
-		return storageRequest{
-			BuildRequest: func(uuid string) (interface{}, error) {
-				req := s.params.ModifyStorageRequest
-				if err := setBackupFields(uuid, s.params, s.service, &req); err != nil {
-					return nil, err
-				}
-				req.UUID = uuid
-				return &req, nil
-			},
-			Service: s.service,
-			Handler: ui.HandleContext{
-				RequestID:     func(in interface{}) string { return in.(*request.ModifyStorageRequest).UUID },
-				MaxActions:    maxStorageActions,
-				InteractiveUI: s.Config().InteractiveUI(),
-				ActionMsg:     "Modifying storage",
-				Action: func(req interface{}) (interface{}, error) {
-					return s.service.ModifyStorage(req.(*request.ModifyStorageRequest))
-				},
-			},
-		}.send(args)
+	logline.StartedNow()
+
+	req := s.params.ModifyStorageRequest
+	if err := setBackupFields(uuid, s.params, svc, &req); err != nil {
+		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
+		logline.SetDetails(err.Error(), "error: ")
+		return nil, err
 	}
+
+	res, err := svc.ModifyStorage(&req)
+	if err != nil {
+		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
+		logline.SetDetails(err.Error(), "error: ")
+		return nil, err
+	}
+
+	logline.SetMessage(fmt.Sprintf("%s: done", msg))
+	logline.MarkDone()
+
+	return output.Marshaled{Value: res}, nil
 }

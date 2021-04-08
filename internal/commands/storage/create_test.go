@@ -5,7 +5,8 @@ import (
 
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
-	"github.com/UpCloudLtd/cli/internal/mock"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+	internal "github.com/UpCloudLtd/cli/internal/service"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
@@ -20,16 +21,6 @@ func TestCreateCommand(t *testing.T) {
 		Access: "private",
 		State:  "maintenance",
 		Type:   "backup",
-		Zone:   "fi-hel1",
-		Size:   40,
-		Tier:   "maxiops",
-	}
-	var Storage2 = upcloud.Storage{
-		UUID:   UUID2,
-		Title:  Title2,
-		Access: "private",
-		State:  "online",
-		Type:   "normal",
 		Zone:   "fi-hel1",
 		Size:   40,
 		Tier:   "maxiops",
@@ -112,14 +103,18 @@ func TestCreateCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mService := mock.Service{}
+			conf := config.New()
+			testCmd := CreateCommand()
+			mService := new(smock.Service)
+
+			conf.Service = internal.Wrapper{Service: mService}
 			mService.On(targetMethod, &test.expected).Return(&details, nil)
 
-			tc := commands.BuildCommand(CreateCommand(&mService), nil, config.New())
-			err := tc.SetFlags(test.args)
+			c := commands.BuildCommand(testCmd, nil, config.New())
+			err := c.SetFlags(test.args)
 			assert.NoError(t, err)
 
-			_, err = tc.MakeExecuteCommand()([]string{Storage2.UUID})
+			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, mService), "")
 			if test.error != "" {
 				assert.Errorf(t, err, test.error)
 			} else {

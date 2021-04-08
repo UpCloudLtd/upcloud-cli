@@ -6,18 +6,11 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands/ipaddress"
 	"github.com/UpCloudLtd/cli/internal/commands/network"
 	"github.com/UpCloudLtd/cli/internal/commands/networkinterface"
+	"github.com/UpCloudLtd/cli/internal/commands/root"
 	"github.com/UpCloudLtd/cli/internal/commands/router"
 	"github.com/UpCloudLtd/cli/internal/commands/server"
 	"github.com/UpCloudLtd/cli/internal/commands/serverfirewall"
-
-	// "github.com/UpCloudLtd/cli/internal/commands/ipaddress"
-	// "github.com/UpCloudLtd/cli/internal/commands/network"
-	// "github.com/UpCloudLtd/cli/internal/commands/networkinterface"
-	// "github.com/UpCloudLtd/cli/internal/commands/router"
-	"github.com/UpCloudLtd/cli/internal/commands/root"
-	// "github.com/UpCloudLtd/cli/internal/commands/serverfirewall"
-	// "github.com/UpCloudLtd/cli/internal/commands/serverstorage"
-	// "github.com/UpCloudLtd/cli/internal/commands/storage"
+	"github.com/UpCloudLtd/cli/internal/commands/storage"
 	"github.com/UpCloudLtd/cli/internal/config"
 
 	"github.com/spf13/cobra"
@@ -57,16 +50,16 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	commands.BuildCommand(serverfirewall.DeleteCommand(), serverFirewallCommand.Cobra(), conf)
 	commands.BuildCommand(serverfirewall.ShowCommand(), serverFirewallCommand.Cobra(), conf)
 
-	// // Storages
-	// storageCommand := commands.BuildCommand(storage.BaseStorageCommand(), mainCommand, conf)
-	// commands.BuildCommand(storage.ListCommand(svc), storageCommand, conf)
-	// commands.BuildCommand(storage.CreateCommand(svc), storageCommand, conf)
-	// commands.BuildCommand(storage.ModifyCommand(svc), storageCommand, conf)
-	// commands.BuildCommand(storage.CloneCommand(svc), storageCommand, conf)
-	// commands.BuildCommand(storage.TemplatizeCommand(svc), storageCommand, conf)
-	// commands.BuildCommand(storage.DeleteCommand(svc), storageCommand, conf)
-	// commands.BuildCommand(storage.ImportCommand(svc), storageCommand, conf)
-	// commands.BuildCommand(storage.ShowCommand(svc, svc), storageCommand, conf)
+	// Storages
+	storageCommand := commands.BuildCommand(storage.BaseStorageCommand(), rootCmd, conf)
+	commands.BuildCommand(storage.ListCommand(), storageCommand.Cobra(), conf)
+	commands.BuildCommand(storage.CreateCommand(), storageCommand.Cobra(), conf)
+	commands.BuildCommand(storage.ModifyCommand(), storageCommand.Cobra(), conf)
+	// commands.BuildCommand(storage.CloneCommand(), storageCommand.Cobra(), conf)
+	// commands.BuildCommand(storage.TemplatizeCommand(), storageCommand.Cobra(), conf)
+	commands.BuildCommand(storage.DeleteCommand(), storageCommand.Cobra(), conf)
+	// commands.BuildCommand(storage.ImportCommand(), storageCommand.Cobra(), conf)
+	commands.BuildCommand(storage.ShowCommand(), storageCommand.Cobra(), conf)
 
 	// backupCommand := commands.BuildCommand(storage.BackupCommand(), storageCommand, conf)
 	// commands.BuildCommand(storage.CreateBackupCommand(svc), backupCommand, conf)

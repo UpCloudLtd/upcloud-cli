@@ -6,6 +6,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
 	smock "github.com/UpCloudLtd/cli/internal/mock"
+	internal "github.com/UpCloudLtd/cli/internal/service"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
@@ -84,16 +85,20 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 	} {
 		t.Run(test1.name, func(t *testing.T) {
 			CachedStorages = nil
-			mService := smock.Service{}
+			conf := config.New()
+			testCmd := ModifyCommand()
+			mService := new(smock.Service)
+
+			conf.Service = internal.Wrapper{Service: mService}
 			mService.On("GetStorages").Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1}}, nil)
 			mService.On(targetMethod, &test1.expected).Return(&StorageDetails1, nil)
 			mService.On("GetStorageDetails", &request.GetStorageDetailsRequest{UUID: Storage1.UUID}).Return(&StorageDetails1, nil)
 
-			tc := commands.BuildCommand(ModifyCommand(&mService), nil, config.New())
-			err := tc.SetFlags(test1.args)
+			c := commands.BuildCommand(testCmd, nil, conf)
+			err := c.SetFlags(test1.args)
 			assert.NoError(t, err)
 
-			_, err = tc.MakeExecuteCommand()([]string{test1.storage.UUID})
+			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, mService), test1.storage.UUID)
 
 			if test1.error != "" {
 				assert.Equal(t, test1.error, err.Error())
@@ -130,16 +135,20 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 	} {
 		t.Run(test2.name, func(t *testing.T) {
 			CachedStorages = nil
-			mService := smock.Service{}
+			conf := config.New()
+			testCmd := ModifyCommand()
+			mService := new(smock.Service)
+
+			conf.Service = internal.Wrapper{Service: mService}
 			mService.On("GetStorages").Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1}}, nil)
 			mService.On(targetMethod, &test2.expected).Return(&StorageDetails1, nil)
 			mService.On("GetStorageDetails", &request.GetStorageDetailsRequest{UUID: Storage1.UUID}).Return(&StorageDetails1, nil)
 
-			tc := commands.BuildCommand(ModifyCommand(&mService), nil, config.New())
-			err := tc.SetFlags(test2.args)
+			c := commands.BuildCommand(testCmd, nil, config.New())
+			err := c.SetFlags(test2.args)
 			assert.NoError(t, err)
 
-			_, err = tc.MakeExecuteCommand()([]string{test2.storage.UUID})
+			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, mService), test2.storage.UUID)
 
 			if test2.error != "" {
 				assert.Equal(t, test2.error, err.Error())
@@ -193,16 +202,20 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 	} {
 		t.Run(test3.name, func(t *testing.T) {
 			CachedStorages = nil
-			mService := smock.Service{}
+			conf := config.New()
+			testCmd := ModifyCommand()
+			mService := new(smock.Service)
+
+			conf.Service = internal.Wrapper{Service: mService}
 			mService.On("GetStorages").Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage2}}, nil)
 			mService.On(targetMethod, &test3.expected).Return(&StorageDetails2, nil)
 			mService.On("GetStorageDetails", &request.GetStorageDetailsRequest{UUID: Storage2.UUID}).Return(&StorageDetails2, nil)
 
-			tc := commands.BuildCommand(ModifyCommand(&mService), nil, config.New())
-			err := tc.SetFlags(test3.args)
+			c := commands.BuildCommand(testCmd, nil, config.New())
+			err := c.SetFlags(test3.args)
 			assert.NoError(t, err)
 
-			_, err = tc.MakeExecuteCommand()([]string{test3.storage.UUID})
+			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, mService), test3.storage.UUID)
 
 			if test3.error != "" {
 				assert.Equal(t, test3.error, err.Error())

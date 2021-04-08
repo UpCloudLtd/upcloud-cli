@@ -6,7 +6,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
-	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
@@ -28,36 +27,6 @@ func BaseStorageCommand() commands.Command {
 
 type storageCommand struct {
 	*commands.BaseCommand
-}
-
-func storageStateColor(state string) text.Colors {
-	switch state {
-	case upcloud.StorageStateOnline, upcloud.StorageStateSyncing:
-		return text.Colors{text.FgGreen}
-	case upcloud.StorageStateError:
-		return text.Colors{text.FgHiRed, text.Bold}
-	case upcloud.StorageStateMaintenance:
-		return text.Colors{text.FgYellow}
-	case upcloud.StorageStateCloning, upcloud.StorageStateBackuping:
-		return text.Colors{text.FgHiMagenta, text.Bold}
-	default:
-		return text.Colors{text.FgHiBlack}
-	}
-}
-
-func importStateColor(state string) text.Colors {
-	switch state {
-	case "completed":
-		return text.Colors{text.FgGreen}
-	case "failed":
-		return text.Colors{text.FgHiRed, text.Bold}
-	case "pending", "importing":
-		return text.Colors{text.FgYellow}
-	case "cancelling":
-		return text.Colors{text.FgHiMagenta, text.Bold}
-	default:
-		return text.Colors{text.FgHiBlack}
-	}
 }
 
 func matchStorages(storages []upcloud.Storage, searchVal string) []*upcloud.Storage {

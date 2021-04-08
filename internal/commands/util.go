@@ -68,8 +68,8 @@ func SearchResources(
 	return result, nil
 }
 
-// StateColour is a helper mapping states to colors
-func StateColour(state string) text.Colors {
+// ServerStateColour is a helper mapping states to colors
+func ServerStateColour(state string) text.Colors {
 	switch state {
 	case upcloud.ServerStateStarted:
 		return text.Colors{text.FgGreen}
@@ -77,6 +77,21 @@ func StateColour(state string) text.Colors {
 		return text.Colors{text.FgHiRed, text.Bold}
 	case upcloud.ServerStateMaintenance:
 		return text.Colors{text.FgYellow}
+	default:
+		return text.Colors{text.FgHiBlack}
+	}
+}
+
+func StorageStateColor(state string) text.Colors {
+	switch state {
+	case upcloud.StorageStateOnline, upcloud.StorageStateSyncing:
+		return text.Colors{text.FgGreen}
+	case upcloud.StorageStateError:
+		return text.Colors{text.FgHiRed, text.Bold}
+	case upcloud.StorageStateMaintenance:
+		return text.Colors{text.FgYellow}
+	case upcloud.StorageStateCloning, upcloud.StorageStateBackuping:
+		return text.Colors{text.FgHiMagenta, text.Bold}
 	default:
 		return text.Colors{text.FgHiBlack}
 	}

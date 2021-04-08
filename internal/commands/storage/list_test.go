@@ -112,17 +112,24 @@ func TestListStorages(t *testing.T) {
 	} {
 		t.Run(testcase.name, func(t *testing.T) {
 			CachedStorages = nil
+			conf := config.New()
+			mService := new(smock.Service)
+
 			storages := upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2, Storage3, Storage4, Storage5, Storage6}}
-			mService := smock.Service{}
 			mService.On("GetStorages", mock.Anything).Return(&storages, nil)
 
-			lc := commands.BuildCommand(ListCommand(&mService), nil, config.New())
-			err := lc.SetFlags(testcase.args)
+			c := commands.BuildCommand(ListCommand(), nil, config.New())
+			err := c.SetFlags(testcase.args)
 			assert.NoError(t, err)
 
-			res, err := lc.MakeExecuteCommand()([]string{})
-			result := res.(*upcloud.Storages)
-			testcase.testFn(*result, err)
+			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, mService), "")
+			assert.NoError(t, err)
+
+			mService.AssertNumberOfCalls(t, "GetStorages", 1)
+			// more checks
+			// res, err := lc.MakeExecuteCommand()([]string{})
+			// result := res.(*upcloud.Storages)
+			// testcase.testFn(*result, err)
 		})
 	}
 }
