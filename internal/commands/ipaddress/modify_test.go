@@ -40,20 +40,6 @@ func TestModifyCommand(t *testing.T) {
 				MAC:       "AA-00-04-00-XX-YY",
 			},
 		},
-		// TODO: reimplement test in resolver!
-		/*		{
-				name: "set optional fields, ip identified by PTR Record",
-				arg: ip.PTRRecord,
-				flags: []string{
-					"--ptr-record", "example.com",
-					"--mac", "AA-00-04-00-XX-YY",
-				},
-				expected: request.ModifyIPAddressRequest{
-					IPAddress: ip.Address,
-					PTRRecord: "example.com",
-					MAC:       "AA-00-04-00-XX-YY",
-				},
-			},*/
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			cachedIPs = nil

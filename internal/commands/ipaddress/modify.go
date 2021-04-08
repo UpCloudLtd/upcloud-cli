@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
@@ -16,6 +17,7 @@ type modifyCommand struct {
 	mac       string
 	ptrrecord string
 	resolver.CachingIPAddress
+	completion.IPAddress
 }
 
 // ModifyCommand creates the 'ip-address modify' command
@@ -28,8 +30,6 @@ func ModifyCommand() commands.Command {
 // InitCommand implements Command.InitCommand
 func (s *modifyCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	// TODO: reimplement
-	// s.ArgCompletion(getArgCompFn(s.service))
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.mac, "mac", "", "MAC address of server interface to attach floating IP to.")
 	fs.StringVar(&s.ptrrecord, "ptr-record", "", "A fully qualified domain name.")

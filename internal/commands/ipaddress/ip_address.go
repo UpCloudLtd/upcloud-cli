@@ -88,21 +88,3 @@ func searchIPAddresses(terms []string, service service.IpAddress, unique bool) (
 	}
 	return result, nil
 }
-
-/*
-TODO: reimplement
-// getArgCompFn returns the bash completion function for an ip address
-func getArgCompFn(s service.IpAddress) func(toComplete string) ([]string, cobra.ShellCompDirective) {
-	return func(toComplete string) ([]string, cobra.ShellCompDirective) {
-		ip, err := s.GetIPAddresses()
-		if err != nil {
-			return nil, cobra.ShellCompDirectiveDefault
-		}
-		var vals []string
-		for _, v := range ip.IPAddresses {
-			vals = append(vals, v.Address, v.PTRRecord)
-		}
-		return commands.MatchStringPrefix(vals, toComplete, true), cobra.ShellCompDirectiveNoFileComp
-	}
-}
-*/

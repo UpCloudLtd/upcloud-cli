@@ -32,15 +32,6 @@ func TestRemoveCommand(t *testing.T) {
 				IPAddress: ip.Address,
 			},
 		},
-		// TODO: reimplement test in resolver!
-		/*		{
-					name: "set optional fields, ip identified by PTR Record",
-					args: []string{ip.PTRRecord},
-					expected: request.ReleaseIPAddressRequest{
-						IPAddress: ip.Address,
-					},
-				},
-		*/
 	} {
 		targetMethod := "ReleaseIPAddress"
 		t.Run(test.name, func(t *testing.T) {
