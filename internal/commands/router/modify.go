@@ -3,6 +3,7 @@ package router
 import (
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
@@ -14,6 +15,7 @@ type modifyCommand struct {
 	*commands.BaseCommand
 	name string
 	resolver.CachingRouter
+	completion.Router
 }
 
 // ModifyCommand creates the "router modify" command
@@ -26,8 +28,6 @@ func ModifyCommand() commands.Command {
 // InitCommand implements Command.InitCommand
 func (s *modifyCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	// TODO: reimplement
-	// s.ArgCompletion(getRouterArgCompletionFunction(s.service))
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.name, "name", "", "New router name.")
 	s.AddFlags(fs)

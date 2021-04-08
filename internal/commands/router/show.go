@@ -3,6 +3,7 @@ package router
 import (
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
@@ -20,13 +21,12 @@ func ShowCommand() commands.Command {
 type showCommand struct {
 	*commands.BaseCommand
 	resolver.CachingRouter
+	completion.Router
 }
 
 // InitCommand implements Command.InitCommand
 func (s *showCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	// TODO: reimplement
-	// s.ArgCompletion(getRouterArgCompletionFunction(s.service))
 }
 
 // Execute implements command.NewCommand

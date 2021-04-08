@@ -84,20 +84,3 @@ func (s routerRequest) send(args []string) (interface{}, error) {
 
 	return s.Handler.Handle(requests)
 }
-
-/*
-TODO: reimplement
-func getRouterArgCompletionFunction(s service.Network) func(toComplete string) ([]string, cobra.ShellCompDirective) {
-	return func(toComplete string) ([]string, cobra.ShellCompDirective) {
-		routers, err := s.GetRouters()
-		if err != nil {
-			return nil, cobra.ShellCompDirectiveDefault
-		}
-		var vals []string
-		for _, v := range routers.Routers {
-			vals = append(vals, v.UUID, v.Name)
-		}
-		return commands.MatchStringPrefix(vals, toComplete, true), cobra.ShellCompDirectiveNoFileComp
-	}
-}
-*/

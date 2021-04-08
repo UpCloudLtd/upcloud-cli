@@ -3,6 +3,7 @@ package router
 import (
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
@@ -12,6 +13,7 @@ import (
 type deleteCommand struct {
 	*commands.BaseCommand
 	resolver.CachingRouter
+	completion.Router
 }
 
 // DeleteCommand creates the "delete router" command
@@ -24,8 +26,6 @@ func DeleteCommand() commands.Command {
 // InitCommand implements Command.InitCommand
 func (s *deleteCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	// TODO: reimplement
-	// s.ArgCompletion(getRouterArgCompletionFunction(s.service))
 }
 
 // MaximumExecutions implements NewCommand.MaximumExecutions
