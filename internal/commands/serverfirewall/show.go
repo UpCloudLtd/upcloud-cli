@@ -2,7 +2,9 @@ package serverfirewall
 
 import (
 	"fmt"
+	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
@@ -23,13 +25,13 @@ func ShowCommand() commands.Command {
 
 type showCommand struct {
 	*commands.BaseCommand
+	resolver.CachingServer
+	completion.Server
 }
 
 // InitCommand implements Command.InitCommand
 func (s *showCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	// TODO: reimplement
-	// s.ArgCompletion(server.GetServerArgumentCompletionFunction(s.Config()))
 }
 
 type fwRuleAddress struct {

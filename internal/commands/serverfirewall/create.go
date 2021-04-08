@@ -3,7 +3,9 @@ package serverfirewall
 import (
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
@@ -26,6 +28,8 @@ type createCommand struct {
 	sourcePortStart      string
 	sourcePortEnd        string
 	comment              string
+	completion.Server
+	resolver.CachingServer
 }
 
 // CreateCommand creates the "server filewall create" command
