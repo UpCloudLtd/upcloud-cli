@@ -1,7 +1,7 @@
 package completion
 
 import (
-	internal "github.com/UpCloudLtd/cli/internal/service"
+	"github.com/UpCloudLtd/cli/internal/service"
 	"github.com/spf13/cobra"
 )
 
@@ -9,19 +9,15 @@ import (
 type IPAddress struct {
 }
 
-// Generate implements completion.Provider
-func (s IPAddress) Generate(services internal.AllServices) (Completer, error) {
-	ipAddresses, err := services.GetIPAddresses()
+// CompleteArgument implements completion.Provider
+func (s IPAddress) CompleteArgument(svc service.AllServices, toComplete string) ([]string, cobra.ShellCompDirective) {
+	ipAddresses, err := svc.GetIPAddresses()
 	if err != nil {
-		return func(toComplete string) ([]string, cobra.ShellCompDirective) {
-			return nil, cobra.ShellCompDirectiveDefault
-		}, nil
+		return None(toComplete)
 	}
-	return func(toComplete string) ([]string, cobra.ShellCompDirective) {
-		var vals []string
-		for _, v := range ipAddresses.IPAddresses {
-			vals = append(vals, v.PTRRecord, v.Address)
-		}
-		return MatchStringPrefix(vals, toComplete, true), cobra.ShellCompDirectiveNoFileComp
-	}, nil
+	var vals []string
+	for _, v := range ipAddresses.IPAddresses {
+		vals = append(vals, v.PTRRecord, v.Address)
+	}
+	return MatchStringPrefix(vals, toComplete, true), cobra.ShellCompDirectiveNoFileComp
 }

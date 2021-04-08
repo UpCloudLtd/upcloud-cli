@@ -12,6 +12,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/config"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/resolver"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	gyaml "github.com/ghodss/yaml"
 	"github.com/mattn/go-isatty"
@@ -176,13 +177,10 @@ func BuildCommand(child Command, parent *cobra.Command, config *config.Config) C
 		child.Cobra().ValidArgsFunction = func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			svc, err := config.CreateService()
 			if err != nil {
-				panic(fmt.Sprintf("cannot create service for completion: %v", err))
+				// TODO: debug log fmt.Sprintf("cannot create service for completion: %v", err)
+				return completion.None(toComplete)
 			}
-			completer, err := cp.Generate(svc)
-			if err != nil {
-				panic(fmt.Sprintf("cannot generate completion: %v", err))
-			}
-			return completer(toComplete)
+			return cp.CompleteArgument(svc, toComplete)
 		}
 	}
 	// Run
