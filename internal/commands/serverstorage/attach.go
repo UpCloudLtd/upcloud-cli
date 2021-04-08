@@ -2,20 +2,22 @@ package serverstorage
 
 import (
 	"fmt"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/commands/server"
 	"github.com/UpCloudLtd/cli/internal/commands/storage"
+	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
 )
 
 type attachCommand struct {
 	*commands.BaseCommand
-	serverSvc  service.Server
-	storageSvc service.Storage
-	params     attachParams
+	resolver.CachingServer
+	params attachParams
 }
 
 type attachParams struct {
@@ -24,11 +26,9 @@ type attachParams struct {
 }
 
 // AttachCommand creates the "server storage attach" command
-func AttachCommand(serverSvc service.Server, storageSvc service.Storage) commands.Command {
+func AttachCommand() commands.NewCommand {
 	return &attachCommand{
 		BaseCommand: commands.New("attach", "Attach a storage as a device to a server"),
-		serverSvc:   serverSvc,
-		storageSvc:  storageSvc,
 	}
 }
 
@@ -55,44 +55,42 @@ func (s *attachCommand) InitCommand() {
 	s.AddFlags(flagSet)
 }
 
-// MakeExecuteCommand implements Command.MakeExecuteCommand
-func (s *attachCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
+// Execute implements command.NewCommand
+func (s *attachCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
+	storageSvc := exec.Storage()
 
-		if s.params.StorageUUID == "" {
-			return nil, fmt.Errorf("storage is required")
-		}
-
-		strg, err := storage.SearchSingleStorage(s.params.StorageUUID, s.storageSvc)
-		if err != nil {
-			return nil, err
-		}
-		s.params.StorageUUID = strg.UUID
-
-		s.params.BootDisk = defaultAttachParams.BootDisk
-		if s.params.bootable {
-			s.params.BootDisk = 1
-		}
-
-		return server.Request{
-			BuildRequest: func(uuid string) interface{} {
-				req := s.params.AttachStorageRequest
-				req.ServerUUID = uuid
-				return &req
-			},
-			Service:    s.serverSvc,
-			ExactlyOne: true,
-			Handler: ui.HandleContext{
-				InteractiveUI: s.Config().InteractiveUI(),
-				MaxActions:    maxServerActions,
-				MessageFn: func(in interface{}) string {
-					req := in.(*request.AttachStorageRequest)
-					return fmt.Sprintf("Attaching storage %q to server %q", req.StorageUUID, req.ServerUUID)
-				},
-				Action: func(req interface{}) (interface{}, error) {
-					return s.storageSvc.AttachStorage(req.(*request.AttachStorageRequest))
-				},
-			},
-		}.Send(args)
+	if s.params.StorageUUID == "" {
+		return nil, fmt.Errorf("storage is required")
 	}
+
+	strg, err := storage.SearchSingleStorage(s.params.StorageUUID, storageSvc)
+	if err != nil {
+		return nil, err
+	}
+
+	s.params.StorageUUID = strg.UUID
+	s.params.BootDisk = defaultAttachParams.BootDisk
+
+	if s.params.bootable {
+		s.params.BootDisk = 1
+	}
+	req := s.params.AttachStorageRequest
+	req.ServerUUID = uuid
+
+	msg := fmt.Sprintf("Attaching storage %q to server %q", req.StorageUUID, req.ServerUUID)
+	logline := exec.NewLogEntry(msg)
+	logline.StartedNow()
+
+	res, err := storageSvc.AttachStorage(&req)
+
+	if err != nil {
+		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
+		logline.SetDetails(err.Error(), "error: ")
+		return nil, err
+	}
+
+	logline.SetMessage(fmt.Sprintf("%s: success", msg))
+	logline.MarkDone()
+
+	return output.Marshaled{Value: res}, nil
 }

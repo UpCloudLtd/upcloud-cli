@@ -6,6 +6,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
 	smock "github.com/UpCloudLtd/cli/internal/mock"
+	internal "github.com/UpCloudLtd/cli/internal/service"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
@@ -101,17 +102,20 @@ func TestAttachStorageCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mService := smock.Service{}
-			mService.On("GetServers", mock.Anything).Return(servers, nil)
+			conf := config.New()
+			mService := new(smock.Service)
 
+			conf.Service = internal.Wrapper{Service: mService}
+
+			mService.On("GetServers", mock.Anything).Return(servers, nil)
 			mService.On(targetMethod, &test.attacheReq).Return(&serverDetails, nil)
 			mService.On("GetStorages", mock.Anything).Return(storages, nil)
 
-			cc := commands.BuildCommand(AttachCommand(&mService, &mService), nil, config.New())
-			err := cc.SetFlags(test.args)
+			c := commands.BuildCommand(AttachCommand(), nil, conf)
+			err := c.SetFlags(test.args)
 			assert.NoError(t, err)
 
-			_, err = cc.MakeExecuteCommand()([]string{Server1.UUID})
+			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, mService), Server1.UUID)
 
 			if test.error != "" {
 				assert.Equal(t, test.error, err.Error())

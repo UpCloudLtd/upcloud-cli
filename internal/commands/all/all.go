@@ -10,6 +10,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands/router"
 	"github.com/UpCloudLtd/cli/internal/commands/server"
 	"github.com/UpCloudLtd/cli/internal/commands/serverfirewall"
+	"github.com/UpCloudLtd/cli/internal/commands/serverstorage"
 	"github.com/UpCloudLtd/cli/internal/commands/storage"
 	"github.com/UpCloudLtd/cli/internal/config"
 
@@ -40,9 +41,9 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	commands.BuildCommand(networkinterface.DeleteCommand(), networkInterfaceCommand.Cobra(), conf)
 
 	// // Server storage operations
-	// serverStorageCommand := commands.BuildCommand(serverstorage.BaseServerStorageCommand(), serverCommand, conf)
-	// commands.BuildCommand(serverstorage.AttachCommand(svc, svc), serverStorageCommand, conf)
-	// commands.BuildCommand(serverstorage.DetachCommand(svc, svc), serverStorageCommand, conf)
+	serverStorageCommand := commands.BuildCommand(serverstorage.BaseServerStorageCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(serverstorage.AttachCommand(), serverStorageCommand.Cobra(), conf)
+	commands.BuildCommand(serverstorage.DetachCommand(), serverStorageCommand.Cobra(), conf)
 
 	// // Server firewall operations
 	serverFirewallCommand := commands.BuildCommand(serverfirewall.BaseServerFirewallCommand(), serverCommand.Cobra(), conf)
