@@ -86,12 +86,6 @@ func (s *createCommand) Execute(exec commands.Executor, arg string) (output.Outp
 			}
 			ipAddresses = handled
 		}
-		// TODO: reimplement resolution of network names..
-		/*		resolvedUUID,err := s.CachingNetwork.Resolve(s.networkUUID)
-				if err != nil {
-					return nil, err
-				}
-				s.networkUUID = resolvedUUID*/
 		res, err := exec.Network().GetNetworkDetails(&request.GetNetworkDetailsRequest{UUID: s.networkUUID})
 		if err != nil {
 			return nil, fmt.Errorf("invalid network requested: %w", err)

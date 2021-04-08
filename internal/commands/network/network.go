@@ -77,25 +77,6 @@ func searchAllNetworks(terms []string, service service.Network, unique bool) ([]
 		func(in interface{}) string { return in.(*upcloud.Network).UUID })
 }
 
-/*
-TODO: REIMPLEMENT
-
-func getArgCompFn(s service.Network) func(toComplete string) ([]string, cobra.ShellCompDirective) {
-	return func(toComplete string) ([]string, cobra.ShellCompDirective) {
-		networks, err := s.GetNetworks()
-		if err != nil {
-			return nil, cobra.ShellCompDirectiveDefault
-		}
-		var vals []string
-		for _, v := range networks.Networks {
-			vals = append(vals, v.UUID, v.Name)
-		}
-		return commands.MatchStringPrefix(vals, toComplete, true), cobra.ShellCompDirectiveNoFileComp
-	}
-}
-
-*/
-
 // TODO: figure out a nicer way to do this..
 func handleNetwork(in string) (*upcloud.IPNetwork, error) {
 	result := &upcloud.IPNetwork{}
