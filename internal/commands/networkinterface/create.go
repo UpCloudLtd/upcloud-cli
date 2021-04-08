@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
@@ -22,6 +23,7 @@ type createCommand struct {
 	interfaceIndex    int
 	networkType       string
 	resolver.CachingServer
+	completion.Server
 }
 
 // CreateCommand creates the "network-interface create" command

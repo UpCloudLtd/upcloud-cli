@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/commands/server"
+	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
@@ -16,6 +17,7 @@ type deleteCommand struct {
 	*commands.BaseCommand
 	interfaceIndex int
 	resolver.CachingServer
+	completion.Server
 }
 
 // DeleteCommand creates the "network-interface delete" command
@@ -28,8 +30,6 @@ func DeleteCommand() commands.Command {
 // InitCommand implements Command.InitCommand
 func (s *deleteCommand) InitCommand() {
 	s.SetPositionalArgHelp(server.PositionalArgHelp)
-	// TODO: reimplement
-	// s.ArgCompletion(server.GetServerArgumentCompletionFunction(s.Config()))
 	fs := &pflag.FlagSet{}
 	fs.IntVar(&s.interfaceIndex, "index", 0, "Interface index.")
 	s.AddFlags(fs)

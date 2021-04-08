@@ -2,6 +2,7 @@ package networkinterface
 
 import (
 	"fmt"
+	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 
@@ -19,6 +20,7 @@ type modifyCommand struct {
 	ipAddresses       []string
 	newIndex          int
 	currentIndex      int
+	completion.Server
 }
 
 // ModifyCommand creates the "network-interface modify" command
@@ -31,8 +33,6 @@ func ModifyCommand() commands.Command {
 // InitCommand implements Command.InitCommand
 func (s *modifyCommand) InitCommand() {
 	s.SetPositionalArgHelp(server.PositionalArgHelp)
-	// TODO: reimplement
-	//	s.ArgCompletion(server.GetServerArgumentCompletionFunction(s.Config()))
 	fs := &pflag.FlagSet{}
 	fs.IntVar(&s.currentIndex, "index", s.currentIndex, "Index of the interface to modify.")
 	fs.IntVar(&s.newIndex, "new-index", s.newIndex, "Index of the interface to modify.")
