@@ -47,7 +47,7 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 		networkRows[i] = output.TableRow{network.UUID, network.Name, network.Router, network.Type, network.Zone}
 	}
 	return output.Combined{
-		output.CombinedSection{
+		&output.CombinedSection{
 			Key:   "",
 			Title: "Common",
 			Contents: output.Details{
@@ -60,7 +60,7 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 				},
 			},
 		},
-		output.CombinedSection{
+		&output.CombinedSection{
 			Key:   "networks",
 			Title: "Networks:",
 			Contents: output.Table{
