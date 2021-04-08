@@ -55,10 +55,10 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	commands.BuildCommand(storage.ListCommand(), storageCommand.Cobra(), conf)
 	commands.BuildCommand(storage.CreateCommand(), storageCommand.Cobra(), conf)
 	commands.BuildCommand(storage.ModifyCommand(), storageCommand.Cobra(), conf)
-	// commands.BuildCommand(storage.CloneCommand(), storageCommand.Cobra(), conf)
-	// commands.BuildCommand(storage.TemplatizeCommand(), storageCommand.Cobra(), conf)
+	commands.BuildCommand(storage.CloneCommand(), storageCommand.Cobra(), conf)
+	commands.BuildCommand(storage.TemplatizeCommand(), storageCommand.Cobra(), conf)
 	commands.BuildCommand(storage.DeleteCommand(), storageCommand.Cobra(), conf)
-	// commands.BuildCommand(storage.ImportCommand(), storageCommand.Cobra(), conf)
+	commands.BuildCommand(storage.ImportCommand(), storageCommand.Cobra(), conf)
 	commands.BuildCommand(storage.ShowCommand(), storageCommand.Cobra(), conf)
 
 	// backupCommand := commands.BuildCommand(storage.BackupCommand(), storageCommand, conf)
