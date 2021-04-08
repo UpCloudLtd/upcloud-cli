@@ -1,6 +1,7 @@
 package network
 
 import (
+	"github.com/UpCloudLtd/cli/internal/ui"
 	"testing"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
@@ -102,7 +103,7 @@ func createTable(networks []upcloud.Network) output.Table {
 	return output.Table{
 		HideHeader: false,
 		Columns: []output.TableColumn{
-			{Header: "UUID", Key: "uuid", Hidden: false},
+			{Header: "UUID", Key: "uuid", Hidden: false, Color: ui.DefaultUUUIDColours},
 			{Header: "Name", Key: "name", Hidden: false},
 			{Header: "Router", Key: "router", Hidden: false},
 			{Header: "Type", Key: "type", Hidden: false},

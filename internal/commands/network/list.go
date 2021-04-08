@@ -3,6 +3,7 @@ package network
 import (
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/pflag"
@@ -76,8 +77,6 @@ func (s *listCommand) Execute(exec commands.Executor, _ string) (output.Output, 
 	var rows []output.TableRow
 	for _, n := range filtered {
 		rows = append(rows, output.TableRow{
-			// TODO: reimplement
-			// ui.DefaultUUUIDColours.Sprint(n.UUID),
 			n.UUID,
 			n.Name,
 			n.Router,
@@ -87,7 +86,7 @@ func (s *listCommand) Execute(exec commands.Executor, _ string) (output.Output, 
 	}
 	return output.Table{
 		Columns: []output.TableColumn{
-			{Key: "uuid", Header: "UUID"},
+			{Key: "uuid", Header: "UUID", Color: ui.DefaultUUUIDColours},
 			{Key: "name", Header: "Name"},
 			{Key: "router", Header: "Router"},
 			{Key: "type", Header: "Type"},
