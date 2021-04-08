@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
@@ -20,6 +21,7 @@ type modifyCommand struct {
 	ipAddresses       []string
 	newIndex          int
 	currentIndex      int
+	resolver.CachingServer
 	completion.Server
 }
 
