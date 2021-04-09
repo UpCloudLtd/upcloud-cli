@@ -190,7 +190,6 @@ func TestServerHumanOutput(t *testing.T) {
     Port:     3000                    
     Password: aabbccdd                
 
-
 `
 
 	mService := smock.Service{}

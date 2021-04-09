@@ -85,7 +85,6 @@ func TestStorageHumanOutput(t *testing.T) {
 ──────────────────────────────────────
  012580a1-32a1-466e-a323-689ca16f2d43 
 
-
 `
 
 	mService := smock.Service{}

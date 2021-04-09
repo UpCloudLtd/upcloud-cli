@@ -62,7 +62,6 @@ func TestShowCommand(t *testing.T) {
 ────────────────────────────────────── ────────────── ────────────────────────────────────── ───────── ─────────
  ce6a9934-c0c6-4d84-9ad4-0611f5b95e79   test-network   79c0ad83-ac84-44f3-a2f8-06cbd524ee8c   utility   uk-lon1 
 
-
 `
 	mService := smock.Service{}
 	mService.On("GetRouters", mock.Anything).Return(&upcloud.Routers{Routers: []upcloud.Router{router}}, nil)

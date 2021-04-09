@@ -100,7 +100,6 @@ func TestShowCommand(t *testing.T) {
  0077fa3d-32db-4b09-9f5f-30d9e9afb568   server1   server1.example.com   started 
  0077fa3d-32db-4b09-9f5f-30d9e9afb569   server2   server2.example.com   stopped 
 
-
 `
 
 	cachedNetworks = nil

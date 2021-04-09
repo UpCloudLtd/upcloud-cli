@@ -151,7 +151,6 @@ func TestFirewallShowHumanOutput(t *testing.T) {
   
   Enabled yes 
 
-
 `
 
 	conf := config.New()

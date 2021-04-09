@@ -36,8 +36,7 @@ func TestShowCommand(t *testing.T) {
   Server UUID:  005ab220-7ff6-42c9-8615-e4c02eb4104e 
   MAC:          ee:1b:db:ca:6b:80                    
   Floating:     no                                   
-  Zone:         fi-hel1                              
-`
+  Zone:         fi-hel1                              `
 
 	svc := &smock.Service{}
 	conf := config.New()
