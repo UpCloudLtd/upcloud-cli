@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
@@ -21,12 +22,12 @@ func DeleteCommand() commands.NewCommand {
 type deleteCommand struct {
 	*commands.BaseCommand
 	resolver.CachingStorage
+	completion.Storage
 }
 
 // InitCommand implements Command.InitCommand
 func (s *deleteCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	s.ArgCompletion(getStorageArgumentCompletionFunction(s.Config().Service.Service))
 }
 
 // MaximumExecutions implements command.NewCommand

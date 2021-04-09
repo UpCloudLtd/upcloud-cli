@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/ui"
 
@@ -16,8 +17,8 @@ import (
 
 type modifyCommand struct {
 	*commands.BaseCommand
-	service service.Storage
-	params  modifyParams
+	completion.Storage
+	params modifyParams
 }
 
 type modifyParams struct {
@@ -51,7 +52,6 @@ func (s *modifyCommand) MaximumExecutions() int {
 // InitCommand implements Command.InitCommand
 func (s *modifyCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	s.ArgCompletion(getStorageArgumentCompletionFunction(s.service))
 	s.params = modifyParams{ModifyStorageRequest: request.ModifyStorageRequest{}}
 
 	flagSet := &pflag.FlagSet{}

@@ -6,7 +6,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
-	"github.com/spf13/cobra"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
 )
@@ -112,18 +111,4 @@ func (s storageRequest) send(args []string) (interface{}, error) {
 	}
 
 	return s.Handler.Handle(requests)
-}
-
-func getStorageArgumentCompletionFunction(s service.Storage) func(toComplete string) ([]string, cobra.ShellCompDirective) {
-	return func(toComplete string) ([]string, cobra.ShellCompDirective) {
-		storages, err := s.GetStorages(&request.GetStoragesRequest{})
-		if err != nil {
-			return nil, cobra.ShellCompDirectiveDefault
-		}
-		var vals []string
-		for _, v := range storages.Storages {
-			vals = append(vals, v.UUID, v.Title)
-		}
-		return commands.MatchStringPrefix(vals, toComplete, false), cobra.ShellCompDirectiveNoSpace | cobra.ShellCompDirectiveNoFileComp
-	}
 }

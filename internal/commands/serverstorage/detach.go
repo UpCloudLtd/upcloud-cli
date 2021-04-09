@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/commands/server"
+	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
@@ -16,6 +16,7 @@ import (
 type detachCommand struct {
 	*commands.BaseCommand
 	resolver.CachingServer
+	completion.Storage
 	params detachParams
 }
 
@@ -37,7 +38,6 @@ func DetachCommand() commands.NewCommand {
 // InitCommand implements Command.InitCommand
 func (s *detachCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	s.ArgCompletion(server.GetServerArgumentCompletionFunction(s.Config()))
 	s.params = detachParams{DetachStorageRequest: request.DetachStorageRequest{}}
 
 	flagSet := &pflag.FlagSet{}

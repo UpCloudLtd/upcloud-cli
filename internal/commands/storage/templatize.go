@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
@@ -15,6 +16,7 @@ import (
 type templatizeCommand struct {
 	*commands.BaseCommand
 	resolver.CachingStorage
+	completion.Storage
 	params templatizeParams
 }
 
@@ -37,7 +39,6 @@ var defaultTemplatizeParams = &templatizeParams{
 // InitCommand implements Command.InitCommand
 func (s *templatizeCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)
-	// s.ArgCompletion(getStorageArgumentCompletionFunction(s.service))
 	s.params = templatizeParams{TemplatizeStorageRequest: request.TemplatizeStorageRequest{}}
 
 	flagSet := &pflag.FlagSet{}
