@@ -82,10 +82,6 @@ func SearchSingleStorage(uuidOrTitle string, service service.Storage) (*upcloud.
 	return matchedResults[0], nil
 }
 
-func getStorageDetailsUUID(in interface{}) string {
-	return in.(*upcloud.StorageDetails).UUID
-}
-
 type storageRequest struct {
 	ExactlyOne   bool
 	BuildRequest func(storage string) (interface{}, error)

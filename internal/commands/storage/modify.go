@@ -43,6 +43,11 @@ func ModifyCommand() commands.NewCommand {
 	}
 }
 
+// MaximumExecutions implements command.NewCommand
+func (s *modifyCommand) MaximumExecutions() int {
+	return maxStorageActions
+}
+
 // InitCommand implements Command.InitCommand
 func (s *modifyCommand) InitCommand() {
 	s.SetPositionalArgHelp(positionalArgHelp)

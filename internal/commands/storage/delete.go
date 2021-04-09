@@ -29,6 +29,11 @@ func (s *deleteCommand) InitCommand() {
 	s.ArgCompletion(getStorageArgumentCompletionFunction(s.Config().Service.Service))
 }
 
+// MaximumExecutions implements command.NewCommand
+func (s *deleteCommand) MaximumExecutions() int {
+	return maxStorageActions
+}
+
 // Execute implements NewCommand.Execute
 func (s *deleteCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Storage()

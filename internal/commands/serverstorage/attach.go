@@ -55,6 +55,11 @@ func (s *attachCommand) InitCommand() {
 	s.AddFlags(flagSet)
 }
 
+// MaximumExecutions implements command.NewCommand
+func (s *attachCommand) MaximumExecutions() int {
+	return maxServerStorageActions
+}
+
 // Execute implements command.NewCommand
 func (s *attachCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	storageSvc := exec.Storage()

@@ -23,15 +23,15 @@ type detachParams struct {
 	request.DetachStorageRequest
 }
 
+var defaultDetachParams = &detachParams{
+	DetachStorageRequest: request.DetachStorageRequest{},
+}
+
 // DetachCommand creates the "server storage detach" command
 func DetachCommand() commands.NewCommand {
 	return &detachCommand{
 		BaseCommand: commands.New("detach", "Detaches a storage resource from a server"),
 	}
-}
-
-var defaultDetachParams = &detachParams{
-	DetachStorageRequest: request.DetachStorageRequest{},
 }
 
 // InitCommand implements Command.InitCommand
@@ -44,6 +44,11 @@ func (s *detachCommand) InitCommand() {
 	flagSet.StringVar(&s.params.Address, "address", defaultDetachParams.Address, "Detach the storage attached to this address.")
 
 	s.AddFlags(flagSet)
+}
+
+// MaximumExecutions implements command.NewCommand
+func (s *detachCommand) MaximumExecutions() int {
+	return maxServerStorageActions
 }
 
 // Execute implements command.NewCommand
