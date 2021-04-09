@@ -81,7 +81,8 @@ func TestListCommand(t *testing.T) {
 
 			cfg := config.New()
 			c := commands.BuildCommand(ListCommand(), nil, cfg)
-			err := c.SetFlags(test.flags)
+			err := c.Cobra().Flags().Parse(test.flags)
+
 			assert.NoError(t, err)
 
 			res, err := c.(commands.NewCommand).Execute(commands.NewExecutor(cfg, &mService), "")

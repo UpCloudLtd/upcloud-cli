@@ -70,7 +70,7 @@ func TestDetachCommand(t *testing.T) {
 			mService.On(targetMethod, &test.detachReq).Return(&details, nil)
 
 			c := commands.BuildCommand(DetachCommand(), nil, conf)
-			err := c.SetFlags(test.args)
+			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 
 			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, mService), Server1.UUID)

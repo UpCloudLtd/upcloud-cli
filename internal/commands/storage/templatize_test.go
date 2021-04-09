@@ -70,7 +70,7 @@ func TestTemplatizeCommand(t *testing.T) {
 			mService.On(targetMethod, &test.expected).Return(&details, nil)
 
 			c := commands.BuildCommand(TemplatizeCommand(), nil, conf)
-			err := c.SetFlags(test.args)
+			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 
 			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, mService), Storage2.UUID)

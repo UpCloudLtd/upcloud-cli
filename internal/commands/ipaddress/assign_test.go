@@ -75,7 +75,7 @@ func TestAssignCommand(t *testing.T) {
 			conf := config.New()
 
 			c := commands.BuildCommand(AssignCommand(), nil, conf)
-			err := c.SetFlags(test.flags)
+			err := c.Cobra().Flags().Parse(test.flags)
 			assert.NoError(t, err)
 
 			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, &mService), "")

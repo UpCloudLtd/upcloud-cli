@@ -96,7 +96,8 @@ func TestCreateCommand(t *testing.T) {
 			mService.On(targetMethod, &test.expected).Return(&upcloud.Network{}, nil)
 			conf := config.New()
 			c := commands.BuildCommand(CreateCommand(), nil, conf)
-			err := c.SetFlags(test.args)
+			err := c.Cobra().
+				Flags().Parse(test.args)
 			assert.NoError(t, err)
 
 			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, &mService), "")

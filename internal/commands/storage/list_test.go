@@ -119,7 +119,7 @@ func TestListStorages(t *testing.T) {
 			mService.On("GetStorages", mock.Anything).Return(&storages, nil)
 
 			c := commands.BuildCommand(ListCommand(), nil, config.New())
-			err := c.SetFlags(testcase.args)
+			err := c.Cobra().Flags().Parse(testcase.args)
 			assert.NoError(t, err)
 
 			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, mService), "")

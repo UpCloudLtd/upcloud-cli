@@ -66,7 +66,7 @@ func TestCreateBackupCommand(t *testing.T) {
 			mService.On(targetMethod, mock.Anything).Return(&details, nil)
 
 			c := commands.BuildCommand(CreateBackupCommand(), nil, conf)
-			err := c.SetFlags(test.args)
+			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 
 			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, mService), Storage2.UUID)

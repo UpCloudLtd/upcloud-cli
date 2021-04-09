@@ -54,7 +54,7 @@ func TestModifyCommand(t *testing.T) {
 			conf := config.New()
 
 			c := commands.BuildCommand(ModifyCommand(), nil, conf)
-			if err := c.SetFlags(test.flags); err != nil {
+			if err := c.Cobra().Flags().Parse(test.flags); err != nil {
 				t.Fatal(err)
 			}
 			_, err := c.(commands.NewCommand).Execute(commands.NewExecutor(conf, &mService), test.arg)

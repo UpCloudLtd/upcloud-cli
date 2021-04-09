@@ -77,7 +77,7 @@ func TestStopCommand(t *testing.T) {
 			mService.On(targetMethod, &test.stopReq).Return(&details, nil)
 
 			c := commands.BuildCommand(testCmd, nil, conf)
-			err := c.SetFlags(test.args)
+			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 
 			_, err = c.(commands.NewCommand).Execute(

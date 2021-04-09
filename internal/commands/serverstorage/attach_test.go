@@ -112,7 +112,7 @@ func TestAttachStorageCommand(t *testing.T) {
 			mService.On("GetStorages", mock.Anything).Return(storages, nil)
 
 			c := commands.BuildCommand(AttachCommand(), nil, conf)
-			err := c.SetFlags(test.args)
+			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 
 			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, mService), Server1.UUID)

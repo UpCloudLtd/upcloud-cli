@@ -55,7 +55,7 @@ func TestDeleteServerFirewallRuleCommand(t *testing.T) {
 
 			conf := config.New()
 			cc := commands.BuildCommand(DeleteCommand(), nil, conf)
-			err := cc.SetFlags(test.flags)
+			err := cc.Cobra().Flags().Parse(test.flags)
 			assert.NoError(t, err)
 
 			_, err = cc.(commands.NewCommand).Execute(commands.NewExecutor(conf, mService), Server1.UUID)

@@ -37,7 +37,7 @@ func TestDeleteCommand(t *testing.T) {
 			mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{n}}, nil)
 			conf := config.New()
 			c := commands.BuildCommand(DeleteCommand(), nil, conf)
-			err := c.SetFlags(test.flags)
+			err := c.Cobra().Flags().Parse(test.flags)
 			assert.NoError(t, err)
 
 			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, &mService), test.arg)

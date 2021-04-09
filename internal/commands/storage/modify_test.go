@@ -95,7 +95,7 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 			mService.On("GetStorageDetails", &request.GetStorageDetailsRequest{UUID: Storage1.UUID}).Return(&StorageDetails1, nil)
 
 			c := commands.BuildCommand(testCmd, nil, conf)
-			err := c.SetFlags(test1.args)
+			err := c.Cobra().Flags().Parse(test1.args)
 			assert.NoError(t, err)
 
 			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, mService), test1.storage.UUID)
@@ -145,7 +145,7 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 			mService.On("GetStorageDetails", &request.GetStorageDetailsRequest{UUID: Storage1.UUID}).Return(&StorageDetails1, nil)
 
 			c := commands.BuildCommand(testCmd, nil, config.New())
-			err := c.SetFlags(test2.args)
+			err := c.Cobra().Flags().Parse(test2.args)
 			assert.NoError(t, err)
 
 			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, mService), test2.storage.UUID)
@@ -212,7 +212,7 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 			mService.On("GetStorageDetails", &request.GetStorageDetailsRequest{UUID: Storage2.UUID}).Return(&StorageDetails2, nil)
 
 			c := commands.BuildCommand(testCmd, nil, config.New())
-			err := c.SetFlags(test3.args)
+			err := c.Cobra().Flags().Parse(test3.args)
 			assert.NoError(t, err)
 
 			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, mService), test3.storage.UUID)

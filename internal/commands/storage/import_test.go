@@ -111,7 +111,7 @@ func TestImportCommand(t *testing.T) {
 			mService.On("CreateStorage", mock.Anything).Return(&StorageDetails1, nil)
 
 			c := commands.BuildCommand(ImportCommand(), nil, conf)
-			err := c.SetFlags(test.args)
+			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 
 			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, mService), "")

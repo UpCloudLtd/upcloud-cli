@@ -86,7 +86,7 @@ func TestModifyCommand(t *testing.T) {
 			mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{n}}, nil)
 			conf := config.New()
 			c := commands.BuildCommand(ModifyCommand(), nil, conf)
-			err := c.SetFlags(test.flags)
+			err := c.Cobra().Flags().Parse(test.flags)
 			assert.NoError(t, err)
 
 			_, err = c.(commands.NewCommand).Execute(
