@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
@@ -22,6 +23,7 @@ func StopCommand() commands.NewCommand {
 
 type stopCommand struct {
 	*commands.BaseCommand
+	completion.Server
 	StopType string
 	resolver.CachingServer
 }
@@ -29,7 +31,6 @@ type stopCommand struct {
 // InitCommand implements Command.InitCommand
 func (s *stopCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetServerArgumentCompletionFunction(s.Config()))
 
 	//XXX: findout what to do with risky params (timeout actions)
 	flags := &pflag.FlagSet{}

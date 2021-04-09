@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
@@ -24,11 +25,11 @@ func ShowCommand() commands.NewCommand {
 type showCommand struct {
 	*commands.BaseCommand
 	resolver.CachingServer
+	completion.Server
 }
 
 func (s *showCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetServerArgumentCompletionFunction(s.Config()))
 }
 
 // Execute implements Command.MakeExecuteCommand

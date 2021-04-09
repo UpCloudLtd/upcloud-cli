@@ -5,6 +5,7 @@ import (
 
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/commands/storage"
+	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
@@ -16,6 +17,7 @@ import (
 type loadCommand struct {
 	*commands.BaseCommand
 	resolver.CachingServer
+	completion.Server
 	params loadParams
 }
 
@@ -37,7 +39,6 @@ var defaultLoadParams = &loadParams{
 // InitCommand implements Command.InitCommand
 func (s *loadCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetServerArgumentCompletionFunction(s.Config()))
 	s.params = loadParams{LoadCDROMRequest: request.LoadCDROMRequest{}}
 
 	flagSet := &pflag.FlagSet{}

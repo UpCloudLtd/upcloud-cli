@@ -5,6 +5,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/resolver"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/ui"
 
@@ -22,8 +23,9 @@ func ModifyCommand() commands.NewCommand {
 
 type modifyCommand struct {
 	*commands.BaseCommand
-	params modifyParams
 	resolver.CachingServer
+	completion.Server
+	params modifyParams
 }
 
 type modifyParams struct {
@@ -39,7 +41,6 @@ var defaultModifyParams = modifyParams{
 // InitCommand implements Command.InitCommand
 func (s *modifyCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetServerArgumentCompletionFunction(s.Config()))
 	s.params = modifyParams{ModifyServerRequest: request.ModifyServerRequest{}}
 	flags := &pflag.FlagSet{}
 	flags.StringVar(&s.params.BootOrder, "boot-order", defaultModifyParams.BootOrder, "The boot device order.")

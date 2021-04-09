@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
@@ -14,6 +15,7 @@ import (
 type ejectCommand struct {
 	*commands.BaseCommand
 	resolver.CachingServer
+	completion.Server
 	params ejectParams
 }
 
@@ -23,7 +25,6 @@ type ejectParams struct {
 
 func (s *ejectCommand) InitCommand() {
 	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetServerArgumentCompletionFunction(s.Config()))
 }
 
 // EjectCommand creates the "server eject" command
