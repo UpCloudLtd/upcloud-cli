@@ -97,7 +97,7 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 		})
 	}
 	return output.Combined{
-		&output.CombinedSection{
+		output.CombinedSection{
 			Key:   "rules",
 			Title: "Firewall rules",
 			Contents: output.Table{
@@ -112,7 +112,7 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 				Rows: fwRows,
 			},
 		},
-		&output.CombinedSection{
+		output.CombinedSection{
 			Contents: output.Details{Sections: []output.DetailSection{
 				{Rows: []output.DetailRow{
 					{Key: "enabled", Title: "Enabled", Value: server.Firewall == "on", Format: output.BoolFormat},

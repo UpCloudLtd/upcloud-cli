@@ -67,7 +67,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 	// }
 
 	// Storage details
-	storageSection := &output.CombinedSection{
+	storageSection := output.CombinedSection{
 		Contents: output.Details{
 			Sections: []output.DetailSection{
 				{
@@ -90,10 +90,13 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 		},
 	}
 
+	combined := output.Combined{
+		storageSection,
+	}
+
 	// Backups
-	var backupsConfigSection *output.CombinedSection
 	if storage.BackupRule != nil && storage.BackupRule.Interval != "" {
-		backupsConfigSection = &output.CombinedSection{
+		combined = append(combined, output.CombinedSection{
 			Contents: output.Details{
 				Sections: []output.DetailSection{
 					{
@@ -106,17 +109,15 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 					},
 				},
 			},
-		}
+		})
 	}
 
-	var backupsListSection *output.CombinedSection
 	if len(storage.BackupUUIDs) > 0 {
 		backupsListRows := []output.TableRow{}
 		for _, b := range storage.BackupUUIDs {
 			backupsListRows = append(backupsListRows, output.TableRow{b})
 		}
-
-		backupsListSection = &output.CombinedSection{
+		combined = append(combined, output.CombinedSection{
 			Key:   "available_backups",
 			Title: "Available Backups",
 			Contents: output.Table{
@@ -125,12 +126,8 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 				},
 				Rows: backupsListRows,
 			},
-		}
+		})
 	}
 
-	return output.Combined{
-		storageSection,
-		backupsConfigSection,
-		backupsListSection,
-	}, nil
+	return combined, nil
 }

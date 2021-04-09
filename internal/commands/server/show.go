@@ -63,29 +63,6 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 		memory := server.MemoryAmount / 1024
 		planOutput = fmt.Sprintf("%dxCPU-%dGB (custom)", server.CoreNumber, memory)
 	}
-	serverSection := &output.CombinedSection{
-		Contents: output.Details{
-			Sections: []output.DetailSection{
-				{
-					Title: "Common",
-					Rows: []output.DetailRow{
-						{Title: "UUID:", Key: "uuid", Value: server.UUID},
-						{Title: "Hostname:", Key: "hostname", Value: server.Hostname},
-						{Title: "Title:", Key: "title", Value: server.Title},
-						{Title: "Plan:", Key: "plan", Value: planOutput},
-						{Title: "Zone:", Key: "zone", Value: server.Zone},
-						{Title: "State:", Key: "state", Value: server.State, Color: commands.ServerStateColour(server.State)},
-						{Title: "Simple Backup:", Key: "simple_backup", Value: server.SimpleBackup},
-						{Title: "Licence:", Key: "licence", Value: server.License},
-						{Title: "Metadata:", Key: "metadata", Value: server.Metadata.String()},
-						{Title: "Timezone:", Key: "timezone", Value: server.Timezone},
-						{Title: "Host ID:", Key: "host_id", Value: server.Host},
-						{Title: "Tags:", Key: "tags", Value: strings.Join(server.Tags, ",")},
-					},
-				},
-			},
-		},
-	}
 
 	// Storage details
 	storageRows := []output.TableRow{}
@@ -107,23 +84,6 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 			strings.Join(flags, " "),
 		})
 	}
-
-	storageSection := &output.CombinedSection{
-		Key:   "storage",
-		Title: "Storage: (Flags: B = bootdisk, P = part of plan)",
-		Contents: output.Table{
-			Columns: []output.TableColumn{
-				{Key: "uuid", Header: "UUID", Color: ui.DefaultUUUIDColours},
-				{Key: "title", Header: "Title"},
-				{Key: "type", Header: "Type"},
-				{Key: "address", Header: "Address"},
-				{Key: "size", Header: "Size (GiB)"},
-				{Key: "flags", Header: "Flags"},
-			},
-			Rows: storageRows,
-		},
-	}
-
 	// Network details
 	nicRows := []output.TableRow{}
 	for _, nic := range server.Networking.Interfaces {
@@ -162,24 +122,63 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 		})
 	}
 
-	nicSection := &output.CombinedSection{
-		Key:   "nics",
-		Title: "NICs: (Flags: S = source IP filtering, B = bootable)",
-		Contents: output.Table{
-			Columns: []output.TableColumn{
-				{Key: "id", Header: "#"},
-				{Key: "type", Header: "Type"},
-				{Key: "ip_address", Header: "IP Address"},
-				{Key: "mac_address", Header: "MAC Address"},
-				{Key: "network", Header: "Network"},
-				{Key: "flags", Header: "Flags"},
+	combined := output.Combined{
+		output.CombinedSection{
+			Contents: output.Details{
+				Sections: []output.DetailSection{
+					{
+						Title: "Common",
+						Rows: []output.DetailRow{
+							{Title: "UUID:", Key: "uuid", Value: server.UUID},
+							{Title: "Hostname:", Key: "hostname", Value: server.Hostname},
+							{Title: "Title:", Key: "title", Value: server.Title},
+							{Title: "Plan:", Key: "plan", Value: planOutput},
+							{Title: "Zone:", Key: "zone", Value: server.Zone},
+							{Title: "State:", Key: "state", Value: server.State, Color: commands.ServerStateColour(server.State)},
+							{Title: "Simple Backup:", Key: "simple_backup", Value: server.SimpleBackup},
+							{Title: "Licence:", Key: "licence", Value: server.License},
+							{Title: "Metadata:", Key: "metadata", Value: server.Metadata.String()},
+							{Title: "Timezone:", Key: "timezone", Value: server.Timezone},
+							{Title: "Host ID:", Key: "host_id", Value: server.Host},
+							{Title: "Tags:", Key: "tags", Value: strings.Join(server.Tags, ",")},
+						},
+					},
+				},
 			},
-			Rows: nicRows,
+		},
+		output.CombinedSection{
+			Key:   "storage",
+			Title: "Storage: (Flags: B = bootdisk, P = part of plan)",
+			Contents: output.Table{
+				Columns: []output.TableColumn{
+					{Key: "uuid", Header: "UUID", Color: ui.DefaultUUUIDColours},
+					{Key: "title", Header: "Title"},
+					{Key: "type", Header: "Type"},
+					{Key: "address", Header: "Address"},
+					{Key: "size", Header: "Size (GiB)"},
+					{Key: "flags", Header: "Flags"},
+				},
+				Rows: storageRows,
+			},
+		},
+		output.CombinedSection{
+			Key:   "nics",
+			Title: "NICs: (Flags: S = source IP filtering, B = bootable)",
+			Contents: output.Table{
+				Columns: []output.TableColumn{
+					{Key: "id", Header: "#"},
+					{Key: "type", Header: "Type"},
+					{Key: "ip_address", Header: "IP Address"},
+					{Key: "mac_address", Header: "MAC Address"},
+					{Key: "network", Header: "Network"},
+					{Key: "flags", Header: "Flags"},
+				},
+				Rows: nicRows,
+			},
 		},
 	}
 
 	// Firewall rules
-	var fwSection *output.CombinedSection
 	if server.Firewall == "on" {
 		fwRows := []output.TableRow{}
 		for _, rule := range firewallRules.FirewallRules {
@@ -206,8 +205,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 				ui.ConcatStrings(rule.Family, rule.Protocol, rule.ICMPType),
 			})
 		}
-
-		fwSection = &output.CombinedSection{
+		combined = append(combined, output.CombinedSection{
 			Key:   "firewall",
 			Title: "Firewall Rules:",
 			Contents: output.Table{
@@ -223,13 +221,12 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 				},
 				Rows: fwRows,
 			},
-		}
+		})
 	}
 
 	// Remote access
-	var remoteSection *output.CombinedSection
 	if server.RemoteAccessEnabled.Bool() {
-		remoteSection = &output.CombinedSection{
+		combined = append(combined, output.CombinedSection{
 			Contents: output.Details{
 				Sections: []output.DetailSection{
 					{
@@ -243,14 +240,8 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 					},
 				},
 			},
-		}
+		})
 	}
 
-	return output.Combined{
-		serverSection,
-		storageSection,
-		nicSection,
-		fwSection,
-		remoteSection,
-	}, nil
+	return combined, nil
 }
