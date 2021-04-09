@@ -11,7 +11,8 @@ func Render(writer io.Writer, cfg *config.Config, commandOutput Output) (err err
 	var bytes []byte
 	switch {
 	case commandOutput == nil:
-		return nil
+		// NOP, just pass through empty bytes
+		break
 	case cfg.OutputHuman():
 		bytes, err = commandOutput.MarshalHuman()
 		if err != nil {
@@ -28,6 +29,8 @@ func Render(writer io.Writer, cfg *config.Config, commandOutput Output) (err err
 			return err
 		}
 	}
+	// add a final newline to the end. all sections should print just the top newline for themselves.
+	bytes = append(bytes, '\n')
 	if _, err := writer.Write(bytes); err != nil {
 		return err
 	}

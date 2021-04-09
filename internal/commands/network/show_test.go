@@ -89,12 +89,14 @@ func TestShowCommand(t *testing.T) {
     Zone:   uk-lon1                              
 
   IP Networks:
+
  Address      Family   DHCP   DHCP Def Router   DHCP DNS              
 ──────────── ──────── ────── ───────────────── ───────────────────────
  196.12.0.1   IPv4     yes    yes               196.12.0.3 196.12.0.4 
  196.15.0.1   IPv4     yes    no                196.15.0.3 196.15.0.4 
 
   Servers:
+
  UUID                                   Title     Hostname              State   
 ────────────────────────────────────── ───────── ───────────────────── ─────────
  0077fa3d-32db-4b09-9f5f-30d9e9afb568   server1   server1.example.com   started 

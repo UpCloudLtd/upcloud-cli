@@ -81,6 +81,7 @@ func TestStorageHumanOutput(t *testing.T) {
     Retention: 7     
 
   Available Backups
+
  UUID                                 
 ──────────────────────────────────────
  012580a1-32a1-466e-a323-689ca16f2d43 

@@ -142,6 +142,7 @@ func TestFirewallShowHumanOutput(t *testing.T) {
 	}
 
 	expected := `  Firewall rules
+
  #   Action   Source          Destination   Dir   Proto    
 ─── ──────── ─────────────── ───────────── ───── ──────────
  1   accept   192.168.1.1 →   127.0.0.1 →   in    IPv4/tcp 

@@ -15,17 +15,18 @@ var detailTests = []struct {
 	expectedErrorMessage string
 }{
 	{
-		name:               "no content",
-		sections:           []output.DetailSection{},
-		expectedJSONResult: "{}",
-		expectedYAMLResult: "{}\n", // TODO: is this what we want?
+		name:                "no content",
+		sections:            []output.DetailSection{},
+		expectedHumanResult: "\n",
+		expectedJSONResult:  "{}",
+		expectedYAMLResult:  "{}\n", // TODO: is this what we want?
 	},
 	{
 		name: "single section",
 		sections: []output.DetailSection{{Key: "foo", Title: "BAR", Rows: []output.DetailRow{
 			{Key: "baz", Title: "boz", Value: "thisistest"},
 		}}},
-		expectedHumanResult: "  \n  BAR\n    boz thisistest ",
+		expectedHumanResult: "  \n  BAR\n    boz thisistest \n",
 		expectedJSONResult:  "{\n  \"foo\": {\n    \"baz\": \"thisistest\"\n  }\n}",
 		expectedYAMLResult:  "foo:\n  baz: thisistest\n",
 	},

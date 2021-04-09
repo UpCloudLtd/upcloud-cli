@@ -147,7 +147,8 @@ func (s Table) MarshalHuman() ([]byte, error) {
 			t.AppendRow(arow)
 		}
 	}
-	return []byte(t.Render()), nil
+	// print one newline before and after to conform with details view (which is controlled by go-pretty)
+	return append([]byte{'\n'}, append([]byte(t.Render()), '\n')...), nil
 }
 
 // MarshalRawMap implements output.Output

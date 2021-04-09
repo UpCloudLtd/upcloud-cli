@@ -20,23 +20,24 @@ var renderTests = []struct {
 	{
 		name:                "none",
 		output:              output.None{},
-		expectedHumanResult: "",
-		expectedJSONResult:  "",
-		expectedYAMLResult:  "",
+		expectedHumanResult: "\n",
+		expectedJSONResult:  "\n",
+		expectedYAMLResult:  "\n",
 	},
 	{
 		name:                "marshaled",
 		output:              output.Marshaled{Value: "hello"},
-		expectedHumanResult: "", // marshaled should not output in human mode
-		expectedJSONResult:  `"hello"`,
-		expectedYAMLResult:  "hello\n",
+		expectedHumanResult: "\n", // marshaled should not output in human mode
+		expectedJSONResult: `"hello"
+`,
+		expectedYAMLResult: "hello\n\n",
 	},
 	{
 		name:                "nil output",
 		output:              nil,
-		expectedHumanResult: "",
-		expectedJSONResult:  "",
-		expectedYAMLResult:  "",
+		expectedHumanResult: "\n",
+		expectedJSONResult:  "\n",
+		expectedYAMLResult:  "\n",
 	},
 }
 

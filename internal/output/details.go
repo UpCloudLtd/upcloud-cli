@@ -103,7 +103,8 @@ func (d Details) MarshalHuman() ([]byte, error) {
 		l.AppendSection(sec.Title, dCommon.Render())
 
 	}
-	return []byte(l.Render()), nil
+	// add a newline at the end
+	return append([]byte(l.Render()), '\n'), nil
 }
 
 // MarshalRawMap implements output.Output

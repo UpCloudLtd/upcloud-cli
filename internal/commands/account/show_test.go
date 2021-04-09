@@ -42,7 +42,9 @@ func TestShowCommand(t *testing.T) {
     Public IPv4:                0 
     Public IPv6:              100 
     Storage HDD:            10240 
-    Storage SSD:            10240 `
+    Storage SSD:            10240 
+
+`
 
 	conf := config.New()
 	testCmd := ShowCommand()

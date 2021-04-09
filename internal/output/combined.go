@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/UpCloudLtd/cli/internal/ui"
 	"gopkg.in/yaml.v2"
 )
 
@@ -62,17 +63,21 @@ func flattenSections(m Combined) map[string]interface{} {
 // MarshalHuman returns output in a human-readable form
 func (m Combined) MarshalHuman() ([]byte, error) {
 	out := []byte{}
-	for _, sec := range m {
+	for i, sec := range m {
 		marshaled, err := sec.Contents.MarshalHuman()
 		if err != nil {
 			return nil, err
 		}
 		if _, ok := sec.Contents.(Details); !ok && sec.Title != "" {
-			// skip drawing title for details
-			out = append(out, []byte(fmt.Sprintf("  %v\n", sec.Title))...)
+			// skip drawing title for details, as details handles its own title drawing
+			// TODO: a bit confusing.. probably should refactor?
+			out = append(out, []byte(fmt.Sprintf("  %v\n", ui.DefaultHeaderColours.Sprint(sec.Title)))...)
 		}
 		out = append(out, marshaled...)
-		out = append(out, []byte("\n\n")...)
+		if i < len(m)-1 {
+			// dont add newline after the last section
+			out = append(out, []byte("\n")...)
+		}
 	}
 	return out, nil
 }

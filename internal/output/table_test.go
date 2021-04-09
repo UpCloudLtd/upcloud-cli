@@ -25,10 +25,12 @@ var tableTests = []struct {
 			{"1", "2"},
 			{3, 4},
 		},
-		expectedHumanResult: ` BB   DD 
+		expectedHumanResult: `
+ BB   DD 
 ──── ────
  1    2  
- 3    4  `,
+ 3    4  
+`,
 		expectedJSONResult: `[
   {
     "aa": "1",
