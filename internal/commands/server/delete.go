@@ -61,5 +61,5 @@ func (s *deleteCommand) Execute(exec commands.Executor, uuid string) (output.Out
 
 	logline.SetMessage(fmt.Sprintf("%s: done", msg))
 
-	return nil, nil
+	return output.None{}, nil
 }

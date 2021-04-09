@@ -66,5 +66,5 @@ func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Outp
 	logline.SetMessage(fmt.Sprintf("%s: done", msg))
 	logline.MarkDone()
 
-	return output.Marshaled{Value: nil}, nil
+	return output.None{}, nil
 }
