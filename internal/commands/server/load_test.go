@@ -92,7 +92,10 @@ func TestLoadCDROMCommand(t *testing.T) {
 			err := c.SetFlags(test.args)
 			assert.NoError(t, err)
 
-			_, err = c.MakeExecuteCommand()([]string{Server1.UUID})
+			_, err = c.(commands.NewCommand).Execute(
+				commands.NewExecutor(conf, mService),
+				Server1.UUID,
+			)
 
 			if test.error != "" {
 				if err == nil {

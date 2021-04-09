@@ -54,12 +54,11 @@ func TestEjectCDROMCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
+			CachedServers = nil
 			conf := config.New()
 			testCmd := EjectCommand()
 			mService := new(smock.Service)
 
-			CachedServers = nil
-			// storage.CachedStorages = nil
 			conf.Service = internal.Wrapper{Service: mService}
 			mService.On("GetServers", mock.Anything).Return(servers, nil)
 			mService.On(targetMethod, &test.ejectReq).Return(&details, nil)
@@ -68,7 +67,10 @@ func TestEjectCDROMCommand(t *testing.T) {
 			err := c.SetFlags(test.args)
 			assert.NoError(t, err)
 
-			_, err = c.MakeExecuteCommand()([]string{Server1.UUID})
+			_, err = c.(commands.NewCommand).Execute(
+				commands.NewExecutor(conf, mService),
+				Server1.UUID,
+			)
 
 			assert.Nil(t, err)
 			mService.AssertNumberOfCalls(t, targetMethod, 1)

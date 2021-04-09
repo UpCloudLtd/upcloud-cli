@@ -1,13 +1,19 @@
 package server
 
 import (
+	"fmt"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 )
 
 type ejectCommand struct {
 	*commands.BaseCommand
+	resolver.CachingServer
 	params ejectParams
 }
 
@@ -27,27 +33,26 @@ func EjectCommand() commands.Command {
 	}
 }
 
-// MakeExecuteCommand implements Command.MakeExecuteCommand
-func (s *ejectCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
-		serverSvc := s.Config().Service.Server()
-		storageSvc := s.Config().Service.Storage()
+func (s *ejectCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
+	svc := exec.Storage()
+	msg := fmt.Sprintf("Ejecting CD-ROM from %v", uuid)
+	logline := exec.NewLogEntry(msg)
 
-		return Request{
-			BuildRequest: func(uuid string) interface{} {
-				req := s.params.EjectCDROMRequest
-				req.ServerUUID = uuid
-				return &req
-			},
-			Service: serverSvc,
-			Handler: ui.HandleContext{
-				RequestID:  func(in interface{}) string { return in.(*request.EjectCDROMRequest).ServerUUID },
-				MaxActions: maxServerActions,
-				ActionMsg:  "Ejecting CD-ROM of server",
-				Action: func(req interface{}) (interface{}, error) {
-					return storageSvc.EjectCDROM(req.(*request.EjectCDROMRequest))
-				},
-			},
-		}.Send(args)
+	logline.StartedNow()
+	logline.SetMessage(fmt.Sprintf("%s: sending request", msg))
+
+	req := s.params.EjectCDROMRequest
+	req.ServerUUID = uuid
+
+	res, err := svc.EjectCDROM(&req)
+	if err != nil {
+		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
+		logline.SetDetails(err.Error(), "error: ")
+		return nil, err
 	}
+
+	logline.SetMessage(fmt.Sprintf("%s: request sent", msg))
+	logline.MarkDone()
+
+	return output.Marshaled{Value: res}, nil
 }
