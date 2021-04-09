@@ -73,6 +73,10 @@ func (m Combined) MarshalHuman() ([]byte, error) {
 			// TODO: a bit confusing.. probably should refactor?
 			out = append(out, []byte(fmt.Sprintf("  %v\n", ui.DefaultHeaderColours.Sprint(sec.Title)))...)
 		}
+		if _, ok := sec.Contents.(Table); ok {
+			// this is a table, indent it
+			marshaled = prefixLines(marshaled, "    ")
+		}
 		out = append(out, marshaled...)
 		if i < len(m)-1 {
 			// dont add newline after the last section
@@ -80,6 +84,18 @@ func (m Combined) MarshalHuman() ([]byte, error) {
 		}
 	}
 	return out, nil
+}
+
+func prefixLines(marshaled []byte, s string) (out []byte) {
+	padding := []byte(s)
+	for _, b := range marshaled {
+		if b == '\n' {
+			out = append(append(out, b), padding...)
+		} else {
+			out = append(out, b)
+		}
+	}
+	return
 }
 
 // MarshalRawMap implements output.Output

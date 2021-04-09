@@ -166,26 +166,26 @@ func TestServerHumanOutput(t *testing.T) {
 
   Storage: (Flags: B = bootdisk, P = part of plan)
 
- UUID                                   Title                             Type   Address    Size (GiB)   Flags 
-────────────────────────────────────── ───────────────────────────────── ────── ────────── ──────────── ───────
- 012580a1-32a1-466e-a323-689ca16f2d43   Storage for server1.example.com   disk   virtio:0           20   P     
-
+     UUID                                   Title                             Type   Address    Size (GiB)   Flags 
+    ────────────────────────────────────── ───────────────────────────────── ────── ────────── ──────────── ───────
+     012580a1-32a1-466e-a323-689ca16f2d43   Storage for server1.example.com   disk   virtio:0           20   P     
+    
   NICs: (Flags: S = source IP filtering, B = bootable)
 
- #   Type      IP Address                                            MAC Address         Network                                Flags 
-─── ───────── ───────────────────────────────────────────────────── ─────────────────── ────────────────────────────────────── ───────
- 1   public    IPv4: 94.237.0.207                                    de:ff:ff:ff:66:89   037fcf2a-6745-45dd-867e-f9479ea8c044         
- 2   utility   IPv4: 10.6.3.95 (f)                                   de:ff:ff:ff:ed:85   03000000-0000-4000-8045-000000000000         
- 3   public    IPv6: xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx    de:ff:ff:ff:cc:20   03c93fd8-cc60-4849-91b8-6e404b228e2a         
-
+     #   Type      IP Address                                            MAC Address         Network                                Flags 
+    ─── ───────── ───────────────────────────────────────────────────── ─────────────────── ────────────────────────────────────── ───────
+     1   public    IPv4: 94.237.0.207                                    de:ff:ff:ff:66:89   037fcf2a-6745-45dd-867e-f9479ea8c044         
+     2   utility   IPv4: 10.6.3.95 (f)                                   de:ff:ff:ff:ed:85   03000000-0000-4000-8045-000000000000         
+     3   public    IPv6: xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx    de:ff:ff:ff:cc:20   03c93fd8-cc60-4849-91b8-6e404b228e2a         
+    
   Firewall Rules:
 
- #   Direction   Action   Src IPAddress   Dest IPAddress   Src Port   Dest Port   Protocol      
-─── ─────────── ──────── ─────────────── ──────────────── ────────── ─────────── ───────────────
- 1   in          accept   Any             Any              Any        Any         IPv4/tcp      
- 2   out         drop     10.10.10.0 →    10.20.20.0       0 →        Any         IPv4/udp/icmp 
-                          10.10.10.99                      1024                                 
-
+     #   Direction   Action   Src IPAddress   Dest IPAddress   Src Port   Dest Port   Protocol      
+    ─── ─────────── ──────── ─────────────── ──────────────── ────────── ─────────── ───────────────
+     1   in          accept   Any             Any              Any        Any         IPv4/tcp      
+     2   out         drop     10.10.10.0 →    10.20.20.0       0 →        Any         IPv4/udp/icmp 
+                              10.10.10.99                      1024                                 
+    
   
   Remote Access
     Type:     vnc                     
