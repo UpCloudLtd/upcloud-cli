@@ -178,20 +178,19 @@ func commandMultiRunE(nc MultipleArgumentCommand, config *config.Config) func(cm
 					// we're done, update ui for the last time and render the results
 					executor.Update()
 					if len(results) > 1 {
-						resultList := []interface{}{}
+						resultList := make([]output.Output, len(results))
 						for i := 0; i < len(results); i++ {
 							if results[i].Error != nil {
-								resultList = append(resultList, results[i].Error)
+								resultList[i] = output.Error{Value: results[i].Error}
 							} else {
-								resultList = append(resultList, results[i].Result)
+								resultList[i] = results[i].Result
 							}
 						}
-						// TODO: this probably shouldnt be marshaled.. commands return marshaled output so this might need a special output?
-						return output.Render(os.Stdout, config, output.Marshaled{Value: resultList})
+						return output.Render(os.Stdout, config, resultList...)
 					}
 
 					if results[0].Error != nil {
-						return output.Render(os.Stdout, config, output.Marshaled{Value: results[0].Error})
+						return output.Render(os.Stdout, config, output.Error{Value: results[0].Error})
 					}
 					return output.Render(os.Stdout, config, results[0].Result)
 				}

@@ -9,38 +9,6 @@ import (
 	"testing"
 )
 
-var renderTests = []struct {
-	name                 string
-	output               output.Output
-	expectedHumanResult  string
-	expectedJSONResult   string
-	expectedYAMLResult   string
-	expectedErrorMessage string
-}{
-	{
-		name:                "none",
-		output:              output.None{},
-		expectedHumanResult: "\n",
-		expectedJSONResult:  "\n",
-		expectedYAMLResult:  "\n",
-	},
-	{
-		name:                "marshaled",
-		output:              output.Marshaled{Value: "hello"},
-		expectedHumanResult: "\n", // marshaled should not output in human mode
-		expectedJSONResult: `"hello"
-`,
-		expectedYAMLResult: "hello\n\n",
-	},
-	{
-		name:                "nil output",
-		output:              nil,
-		expectedHumanResult: "\n",
-		expectedJSONResult:  "\n",
-		expectedYAMLResult:  "\n",
-	},
-}
-
 type failWriter struct{}
 
 func (f failWriter) Write(_ []byte) (n int, err error) {
@@ -56,6 +24,30 @@ func TestRenderFailingWriter(t *testing.T) {
 }
 
 func TestRender(t *testing.T) {
+	var renderTests = []struct {
+		name                 string
+		output               output.Output
+		expectedHumanResult  string
+		expectedJSONResult   string
+		expectedYAMLResult   string
+		expectedErrorMessage string
+	}{
+		{
+			name:                "none",
+			output:              output.None{},
+			expectedHumanResult: "\n",
+			expectedJSONResult:  "\n",
+			expectedYAMLResult:  "\n",
+		},
+		{
+			name:                "marshaled",
+			output:              output.Marshaled{Value: "hello"},
+			expectedHumanResult: "\n", // marshaled should not output in human mode
+			expectedJSONResult: `"hello"
+`,
+			expectedYAMLResult: "hello\n",
+		},
+	}
 	for _, test := range renderTests {
 		t.Run(test.name, func(t *testing.T) {
 			out := new(bytes.Buffer)
