@@ -23,6 +23,7 @@ type Executor interface {
 	IPAddress() service.IpAddress
 	Account() service.Account
 	Plan() service.Plans
+	All() internal.AllServices
 }
 
 type executeResult struct {
@@ -87,6 +88,10 @@ func (e executorImpl) Account() service.Account {
 }
 
 func (e executorImpl) Plan() service.Plans {
+	return e.service
+}
+
+func (e executorImpl) All() internal.AllServices {
 	return e.service
 }
 

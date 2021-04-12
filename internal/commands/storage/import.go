@@ -3,116 +3,29 @@ package storage
 import (
 	"errors"
 	"fmt"
+	"github.com/UpCloudLtd/cli/internal/resolver"
+	"github.com/UpCloudLtd/cli/internal/ui"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"io"
 	"net/url"
 	"os"
 	"path/filepath"
 	"sync/atomic"
+	"time"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/output"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
 )
 
 // ImportCommand creates the "storage import" command
 func ImportCommand() commands.Command {
 	return &importCommand{
-		BaseCommand: commands.New("import", "Import a storage from external or local source"),
+		BaseCommand:  commands.New("import", "Import a storage from external or local source"),
+		createParams: newCreateParams(),
 	}
-}
-
-var defaultImportParams = &importParams{
-	CreateStorageImportRequest: request.CreateStorageImportRequest{},
-	createStorage:              newCreateParams(),
-	wait:                       true,
-}
-
-func newImportParams() importParams {
-	return importParams{
-		CreateStorageImportRequest: request.CreateStorageImportRequest{},
-		createStorage:              newCreateParams(),
-	}
-}
-
-type importParams struct {
-	request.CreateStorageImportRequest
-	createStorage             createParams
-	sourceLocation            string
-	existingStorageUUIDOrName string
-	wait                      bool
-
-	sourceFile      *os.File
-	sourceFileSize  int
-	existingStorage *upcloud.Storage
-}
-
-func (s *importParams) processParams(srv service.Storage) error {
-	if s.existingStorageUUIDOrName != "" {
-		if s.sourceLocation == "" {
-			return errors.New("source-location must be defined")
-		}
-		storage, err := searchStorage(&CachedStorages, srv, s.existingStorageUUIDOrName, true)
-		if err != nil {
-			return err
-		}
-		s.existingStorage = storage[0]
-		s.CreateStorageImportRequest.StorageUUID = storage[0].UUID
-	} else if s.sourceLocation == "" || s.createStorage.Zone == "" || s.createStorage.Title == "" {
-		return errors.New("source-location and either existing storage or both zone and title are required")
-	}
-	// Infer source type from source location
-	if s.Source == "" {
-		parsedURL, err := url.Parse(s.sourceLocation)
-		if err != nil || parsedURL.Scheme == "" || parsedURL.Scheme == "file" {
-			s.Source = upcloud.StorageImportSourceDirectUpload
-		} else {
-			s.Source = upcloud.StorageImportSourceHTTPImport
-		}
-	}
-	if s.Source == upcloud.StorageImportSourceDirectUpload {
-		f, err := os.Open(s.sourceLocation)
-		if err != nil {
-			return err
-		}
-		switch filepath.Ext(s.sourceLocation) {
-		case ".gz":
-			s.ContentType = "application/gzip"
-		case ".xz":
-			s.ContentType = "application/x-xz"
-		default:
-			s.ContentType = "application/octet-stream"
-		}
-		s.sourceFile = f
-		stat, err := f.Stat()
-		if err != nil {
-			return err
-		}
-		s.sourceFileSize = int(stat.Size())
-		if s.existingStorage != nil && float64(s.existingStorage.Size) < float64(stat.Size()/1024/1024/1024) {
-			return fmt.Errorf("the existing storage is too small for the file")
-		}
-		if s.existingStorage == nil && s.createStorage.Size != defaultCreateParams.Size &&
-			float64(s.createStorage.Size) < float64(stat.Size()/1024/1024/1024) {
-			return fmt.Errorf("the requested storage size is too small for the file")
-		}
-		// Infer created storage size from the file if default size is used
-		if s.existingStorage == nil && s.createStorage.Size == defaultCreateParams.Size &&
-			float64(stat.Size()/1024/1024/1024) > float64(defaultCreateParams.Size) {
-			s.createStorage.Size = int(float64(stat.Size() / 1024 / 1024 / 1024))
-		}
-	}
-	if s.Source == upcloud.StorageImportSourceHTTPImport {
-		_, err := url.Parse(s.sourceLocation)
-		if err != nil {
-			return err
-		}
-		s.SourceLocation = s.sourceLocation
-	}
-	return nil
 }
 
 type readerCounter struct {
@@ -127,208 +40,251 @@ func (s *readerCounter) Read(p []byte) (n int, err error) {
 	return
 }
 
-// TODO: re-add
-/*
 func (s *readerCounter) counter() int {
 	return int(atomic.LoadInt64(&s.read))
 }
-*/
+
 type importCommand struct {
 	*commands.BaseCommand
-	importParams importParams
-	flagSet      *pflag.FlagSet
-}
 
-func importFlags(fs *pflag.FlagSet, dst, def *importParams) {
-	fs.StringVar(&dst.sourceLocation, "source-location", def.sourceLocation, "Location of the source of the import. Can be a file or a URL.")
-	fs.StringVar(&dst.Source, "source-type", def.Source, fmt.Sprintf("Source type, is derived from source-location if not given. Available: %s,%s",
-		upcloud.StorageImportSourceHTTPImport,
-		upcloud.StorageImportSourceDirectUpload))
-	fs.StringVar(&dst.existingStorageUUIDOrName, "storage", def.existingStorageUUIDOrName, "Import to an existing storage. Storage must be large enough and must be undetached "+"or the server where the storage is attached must be in shutdown state.")
-	fs.BoolVar(&dst.wait, "wait", def.wait, fmt.Sprintf("Wait until the import finishes. Implied if source is set to %s",
-		upcloud.StorageImportSourceDirectUpload))
-	createFlags(fs, &dst.createStorage, defaultCreateParams)
+	sourceLocation            string
+	sourceType                string
+	sourceFile                *os.File
+	sourceFileSize            int
+	existingStorageUUIDOrName string
+	wait                      bool
+
+	storageUUID  string
+	createParams createParams
+
+	Resolver resolver.CachingStorage
 }
 
 // InitCommand implements Command.InitCommand
 func (s *importCommand) InitCommand() {
-	s.flagSet = &pflag.FlagSet{}
-	s.importParams = newImportParams()
-	importFlags(s.flagSet, &s.importParams, defaultImportParams)
-	s.AddFlags(s.flagSet)
+	flagSet := &pflag.FlagSet{}
+	flagSet.StringVar(&s.sourceLocation, "source-location", "", "Location of the source of the import. Can be a file or a URL.")
+	flagSet.StringVar(&s.sourceType, "source-type", "", fmt.Sprintf("Source type, is derived from source-location if not given. Available: %s,%s",
+		upcloud.StorageImportSourceHTTPImport,
+		upcloud.StorageImportSourceDirectUpload))
+	flagSet.StringVar(&s.existingStorageUUIDOrName, "storage", "", "Import to an existing storage. Storage must be large enough and must be undetached or the server where the storage is attached must be in shutdown state.")
+	flagSet.BoolVar(&s.wait, "wait", true, fmt.Sprintf("Wait until the import finishes. Implied if source is set to %s",
+		upcloud.StorageImportSourceDirectUpload))
+	applyCreateFlags(flagSet, &s.createParams, defaultCreateParams)
+	s.AddFlags(flagSet)
 }
 
 // Execute implements Command.MakeExecuteCommand
 func (s *importCommand) Execute(exec commands.Executor, _ string) (output.Output, error) {
 
 	svc := exec.Storage()
-	/*errorOrGenericError := func(err error) error {
-		// TODO: hmm??
-		// if s.Config().InteractiveUI() {
-		// 	 return errors.New("import failed")
-		// }
-		return err
-	}*/
-	if err := s.importParams.processParams(svc); err != nil {
-		return nil, err
+
+	var existingStorage *upcloud.Storage
+	if s.existingStorageUUIDOrName != "" {
+		// initialize resolver
+		// TODO: maybe this should be rethought?
+		_, err := s.Resolver.Get(exec.All())
+		if err != nil {
+			return nil, fmt.Errorf("cannot setup storage resolver: %w", err)
+		}
+		if s.sourceLocation == "" {
+			return nil, errors.New("source-location must be defined")
+		}
+		foundUUID, err := s.Resolver.Resolve(s.existingStorageUUIDOrName)
+		if err != nil {
+			return nil, fmt.Errorf("cannot resolve existing storage: %w", err)
+		}
+		cached, err := s.Resolver.GetCached(foundUUID)
+		if err != nil {
+			return nil, fmt.Errorf("cannot get existing storage: %w", err)
+		}
+		existingStorage = &cached
+		s.storageUUID = cached.UUID
+	} else if s.sourceLocation == "" || s.createParams.Zone == "" || s.createParams.Title == "" {
+		return nil, errors.New("source-location and either existing storage or both zone and title are required")
 	}
-	if s.importParams.existingStorage == nil {
-		if err := s.importParams.createStorage.processParams(); err != nil {
+
+	// Infer source type from source location
+	// TODO: is there any sense in passing this as a parameter?
+	// TODO: is there any sense that this is not the domain of the sdk?
+	if s.sourceType == "" {
+		parsedURL, err := url.Parse(s.sourceLocation)
+		if err != nil || parsedURL.Scheme == "" || parsedURL.Scheme == "file" {
+			s.sourceType = upcloud.StorageImportSourceDirectUpload
+		} else {
+			s.sourceType = upcloud.StorageImportSourceHTTPImport
+		}
+	}
+	var contentType string
+	if s.sourceType == upcloud.StorageImportSourceDirectUpload {
+		f, err := os.Open(s.sourceLocation)
+		if err != nil {
+			return nil, err
+		}
+		switch filepath.Ext(s.sourceLocation) {
+		case ".gz":
+			contentType = "application/gzip"
+		case ".xz":
+			contentType = "application/x-xz"
+		default:
+			contentType = "application/octet-stream"
+		}
+		s.sourceFile = f
+		stat, err := f.Stat()
+		if err != nil {
+			return nil, err
+		}
+		s.sourceFileSize = int(stat.Size())
+		fileSizeInGB := int(stat.Size() / 1024 / 1024 / 1024)
+		if existingStorage != nil && existingStorage.Size < fileSizeInGB {
+			return nil, fmt.Errorf("the existing storage is too small for the file")
+		}
+		if existingStorage == nil && s.createParams.Size != defaultCreateParams.Size &&
+			s.createParams.Size < fileSizeInGB {
+			return nil, fmt.Errorf("the requested storage size is too small for the file")
+		}
+		// Infer created storage size from the file if default size is used
+		if existingStorage == nil && s.createParams.Size == defaultCreateParams.Size &&
+			fileSizeInGB > defaultCreateParams.Size {
+			s.createParams.Size = fileSizeInGB
+		}
+	}
+	if s.sourceType == upcloud.StorageImportSourceHTTPImport {
+		_, err := url.Parse(s.sourceLocation)
+		if err != nil {
+			return nil, fmt.Errorf("invalid import url: %w", err)
+		}
+	}
+
+	if existingStorage == nil {
+		if err := s.createParams.processParams(); err != nil {
 			return nil, err
 		}
 	}
 
-	/*	var (
+	var (
 		createdStorage *upcloud.StorageDetails
-		workFlowErr    error
-	)*/
+	)
 
 	// Create storage
-	/*	handlerCreateStorage := func(idx int, e *ui.LogEntry) {
-		msg := fmt.Sprintf("Creating storage %q", s.importParams.createStorage.Title)
-		e.SetMessage(msg)
-		e.StartedNow()
-		details, err := svc.CreateStorage(&s.importParams.createStorage.CreateStorageRequest)
+	if existingStorage == nil {
+		msg := fmt.Sprintf("Creating storage %q", s.createParams.Title)
+		logline := exec.NewLogEntry(msg)
+		logline.StartedNow()
+		details, err := svc.CreateStorage(&s.createParams.CreateStorageRequest)
 		if err != nil {
-			e.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed", msg))
-			e.SetDetails(err.Error(), "error: ")
-			workFlowErr = err
-		} else {
-			e.SetMessage(fmt.Sprintf("%s: done", msg))
-			e.SetDetails(details.UUID, "UUID: ")
-			createdStorage = details
-			s.importParams.existingStorage = &details.Storage
+			logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed", msg))
+			logline.SetDetails(err.Error(), "error: ")
+			return nil, fmt.Errorf("import failed: %w", err)
 		}
-	}*/
-	if s.importParams.existingStorage == nil {
-		panic("REIMPLEMEMENT")
-		// TODO: reimplmement
-		/*ui.StartWorkQueue(ui.WorkQueueConfig{
-			NumTasks:           1,
-			MaxConcurrentTasks: 1,
-			EnableUI:           s.Config().InteractiveUI(),
-		}, handlerCreateStorage)
-		if workFlowErr != nil {
-			return nil, errorOrGenericError(workFlowErr)
-		}
-		s.importParams.CreateStorageImportRequest.StorageUUID = createdStorage.UUID*/
+		logline.SetMessage(fmt.Sprintf("%s: done", msg))
+		logline.SetDetails(details.UUID, "UUID: ")
+		logline.MarkDone()
+		createdStorage = details
+		existingStorage = &details.Storage
+		s.storageUUID = createdStorage.UUID
 	}
 
 	// Create import task
 	var createdStorageImport *upcloud.StorageImportDetails
-	/*	handlerImport := func(idx int, e *ui.LogEntry) {
-			msg := "Importing to storage"
-			e.SetMessage(msg)
-			e.StartedNow()
-			var err error
-			// Import from local file
-			if s.importParams.sourceFile != nil {
-				chDone := make(chan struct{})
-				var importErr error
-				reader := &readerCounter{source: s.importParams.sourceFile}
-				s.importParams.SourceLocation = reader
-				go func() {
-					createdStorageImport, importErr = svc.CreateStorageImport(
-						&s.importParams.CreateStorageImportRequest)
-					chDone <- struct{}{}
-				}()
-				wait := true
-				var prevRead int
-				sleepSecs := 2
-				for {
-					select {
-					case <-chDone:
-						err = importErr
-						wait = false
-					default:
+	if existingStorage != nil {
+		msg := fmt.Sprintf("importing to storage %v", existingStorage.UUID)
+		logline := exec.NewLogEntry(msg)
+		logline.StartedNow()
+		var err error
+		// Import from local file
+		if s.sourceFile != nil {
+			chDone := make(chan struct{})
+			var importErr error
+			reader := &readerCounter{source: s.sourceFile}
+			go func() {
+				createdStorageImport, importErr = svc.CreateStorageImport(
+					&request.CreateStorageImportRequest{
+						StorageUUID:    s.storageUUID,
+						ContentType:    contentType,
+						Source:         s.sourceType,
+						SourceLocation: reader,
+					})
+				chDone <- struct{}{}
+			}()
+			var prevRead int
+			sleepSecs := 2
+			sleepTicker := time.NewTicker(time.Duration(sleepSecs) * time.Second)
+		loop:
+			for {
+				select {
+				case <-chDone:
+					if importErr == nil {
+						logline.SetMessage(fmt.Sprintf("%s: done", msg))
+						break loop
 					}
+					return nil, fmt.Errorf("failed to import: %w", err)
+				case <-sleepTicker.C:
 					if read := reader.counter(); read > 0 {
-						e.SetMessage(fmt.Sprintf("%s: uploaded %.2f%% (%sbps)",
+						logline.SetMessage(fmt.Sprintf("%s: uploaded %.2f%% (%sbps)",
 							msg,
-							float64(read)/float64(s.importParams.sourceFileSize)*100,
+							float64(read)/float64(s.sourceFileSize)*100,
 							ui.AbbrevNum(uint(read-prevRead)*8/uint(sleepSecs)),
 						))
 						prevRead = read
 					}
-					if !wait {
-						if err == nil {
-							e.SetMessage(fmt.Sprintf("%s: done", msg))
+				}
+			}
+		} else {
+			// Import from http source
+			createdStorageImport, err = svc.CreateStorageImport(
+				&request.CreateStorageImportRequest{
+					StorageUUID:    s.storageUUID,
+					ContentType:    contentType,
+					Source:         s.sourceType,
+					SourceLocation: s.sourceLocation,
+				})
+			if err != nil {
+				return nil, fmt.Errorf("failed to import: %w", err)
+			}
+			logline.SetMessage(fmt.Sprintf("%s: http import queued", msg))
+			if s.wait {
+				var prevRead int
+				sleepSecs := 5
+				for {
+					details, importErr := svc.GetStorageImportDetails(&request.GetStorageImportDetailsRequest{
+						UUID: existingStorage.UUID,
+					})
+					switch {
+					case importErr != nil:
+						return nil, fmt.Errorf("can not get details: %w", importErr)
+					case details.ErrorCode != "":
+						return nil, fmt.Errorf("%s (%s)", details.ErrorMessage, details.ErrorCode)
+					case details.State == upcloud.StorageImportStateCancelled:
+						return nil, fmt.Errorf("%s: cancelled", msg)
+					case details.State == upcloud.StorageImportStateCompleted:
+						logline.SetMessage(fmt.Sprintf("%s: done", msg))
+						logline.MarkDone()
+						return output.Marshaled{Value: createdStorageImport}, nil
+					}
+					if read := details.ReadBytes; read > 0 {
+						if details.ClientContentLength > 0 {
+							logline.SetMessage(fmt.Sprintf("%s: downloaded %.2f%% (%sbps)",
+								msg,
+								float64(read)/float64(details.ClientContentLength)*100,
+								ui.AbbrevNum(uint(read-prevRead)*8/uint(sleepSecs)),
+							))
+							prevRead = read
+						} else {
+							logline.SetMessage(fmt.Sprintf("%s: downloaded %s (%sbps)",
+								msg,
+								ui.FormatBytes(read),
+								ui.AbbrevNum(uint(read-prevRead)*8/uint(sleepSecs)),
+							))
 						}
-						goto end
 					}
 					time.Sleep(time.Duration(sleepSecs) * time.Second)
 				}
-			}
-			// Import from http source
-			if s.importParams.sourceFile == nil {
-				createdStorageImport, err = svc.CreateStorageImport(
-					&s.importParams.CreateStorageImportRequest)
-				if err != nil {
-					goto end
-				}
-				e.SetMessage(fmt.Sprintf("%s: http import queued", msg))
-				if s.importParams.wait {
-					var prevRead int
-					sleepSecs := 5
-					for {
-						details, importErr := svc.GetStorageImportDetails(&request.GetStorageImportDetailsRequest{
-							UUID: s.importParams.existingStorage.UUID,
-						})
-						switch {
-						case importErr != nil:
-							err = importErr
-							goto end
-						case details.ErrorCode != "":
-							err = fmt.Errorf("%s (%s)", details.ErrorMessage, details.ErrorCode)
-							goto end
-						case details.State == upcloud.StorageImportStateCancelled:
-							err = fmt.Errorf("%s: cancelled", msg)
-							goto end
-						case details.State == upcloud.StorageImportStateCompleted:
-							e.SetMessage(fmt.Sprintf("%s: done", msg))
-							goto end
-						}
-						if read := details.ReadBytes; read > 0 {
-							if details.ClientContentLength > 0 {
-								e.SetMessage(fmt.Sprintf("%s: downloaded %.2f%% (%sbps)",
-									msg,
-									float64(read)/float64(details.ClientContentLength)*100,
-									ui.AbbrevNum(uint(read-prevRead)*8/uint(sleepSecs)),
-								))
-								prevRead = read
-							} else {
-								e.SetMessage(fmt.Sprintf("%s: downloaded %s (%sbps)",
-									msg,
-									ui.FormatBytes(read),
-									ui.AbbrevNum(uint(read-prevRead)*8/uint(sleepSecs)),
-								))
-							}
-						}
-						time.Sleep(time.Duration(sleepSecs) * time.Second)
-					}
-				}
-			}
-
-		end:
-			if err != nil {
-				e.SetMessage(ui.DefaultErrorColours.Sprintf("%s: failed", msg))
-				e.SetDetails(err.Error(), "error: ")
-				workFlowErr = err
+			} else {
+				logline.SetMessage(fmt.Sprintf("%s: http import request sent", msg))
+				logline.MarkDone()
 			}
 		}
-	*/
-	if s.importParams.existingStorage != nil {
-		panic("REIMPLEMEMENT")
-		// TODO: reimplmement
-		/*		ui.StartWorkQueue(ui.WorkQueueConfig{
-					NumTasks:           1,
-					MaxConcurrentTasks: 1,
-					EnableUI:           s.Config().InteractiveUI(),
-				}, handlerImport)
-				if workFlowErr != nil {
-					return nil, errorOrGenericError(workFlowErr)
-				}*/
 	}
-
-	return output.Marshaled{Value: createdStorageImport}, nil
+	return nil, fmt.Errorf("no storage to import to")
 }

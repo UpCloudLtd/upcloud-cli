@@ -63,7 +63,7 @@ type createCommand struct {
 	flagSet *pflag.FlagSet
 }
 
-func createFlags(fs *pflag.FlagSet, dst, def *createParams) {
+func applyCreateFlags(fs *pflag.FlagSet, dst, def *createParams) {
 	fs.StringVar(&dst.Title, "title", def.Title, "Storage title.")
 	fs.IntVar(&dst.Size, "size", def.Size, "Size of the storage in GiB.")
 	fs.StringVar(&dst.Zone, "zone", def.Zone, "Physical location of the storage. See zone listing for valid zones.")
@@ -77,7 +77,7 @@ func createFlags(fs *pflag.FlagSet, dst, def *createParams) {
 func (s *createCommand) InitCommand() {
 	s.flagSet = &pflag.FlagSet{}
 	s.params = newCreateParams()
-	createFlags(s.flagSet, &s.params, defaultCreateParams)
+	applyCreateFlags(s.flagSet, &s.params, defaultCreateParams)
 	s.AddFlags(s.flagSet)
 }
 

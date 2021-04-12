@@ -99,8 +99,6 @@ func TestImportCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			// TODO: remove this
-			t.SkipNow()
 			CachedStorages = nil
 			conf := config.New()
 			mService := new(smock.Service)
