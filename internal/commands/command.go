@@ -17,8 +17,9 @@ import (
 // New returns a BaseCommand that implements Command. It is used as a base to create custom commands from.
 func New(name, usage string) *BaseCommand {
 	return &BaseCommand{
-		name:  name,
-		cobra: &cobra.Command{Use: name, Short: usage},
+		cobra: &cobra.Command{
+			Use:   name,
+			Short: usage},
 	}
 }
 
@@ -266,7 +267,6 @@ func BuildCommand(child Command, parent *cobra.Command, config *config.Config) C
 // BaseCommand is the base type for all commands, implementing Command
 type BaseCommand struct {
 	cobra *cobra.Command
-	name  string
 }
 
 // MaximumExecutions return the max executed workers
