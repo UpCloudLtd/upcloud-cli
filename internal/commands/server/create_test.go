@@ -2,15 +2,26 @@ package server
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/commands/storage"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+	internal "github.com/UpCloudLtd/cli/internal/service"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
+)
+
+var (
+	Title1 = "mock-storage-title1"
+	Title2 = "mock-storage-title2"
+	UUID1  = "0127dfd6-3884-4079-a948-3a8881df1a7a"
+	UUID2  = "012bde1d-f0e7-4bb2-9f4a-74e1f2b49c07"
+	UUID3  = "012c61a6-b8f0-48c2-a63a-b4bf7d26a655"
 )
 
 func TestCreateServer(t *testing.T) {
@@ -311,28 +322,30 @@ func TestCreateServer(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			CachedServers = nil
+			conf := config.New()
+			testCmd := CreateCommand()
+			mService := new(smock.Service)
+
 			storage.CachedStorages = nil
+			conf.Service = internal.Wrapper{Service: mService}
+			mService.On("CreateServer", &test.createServerReq).Return(&serverDetailsMaint, nil)
+			mService.On("GetStorages", mock.Anything).Return(storages, nil)
 
-			mServerService := MockServerService{}
-			mServerService.On("CreateServer", &test.createServerReq).Return(&serverDetailsMaint, nil)
-			mServerService.On("GetServerDetails", &request.GetServerDetailsRequest{UUID: serverDetailsMaint.UUID}).Return(&serverDetailsStarted, nil)
-
-			mStorageService := MockStorageService{}
-			mStorageService.On("GetStorages", mock.Anything).Return(storages, nil)
-
-			cc := commands.BuildCommand(CreateCommand(&mServerService, &mStorageService), nil, config.New(viper.New()))
-			err := cc.SetFlags(test.args)
+			c := commands.BuildCommand(testCmd, nil, conf)
+			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 
-			_, err = cc.MakeExecuteCommand()([]string{})
+			_, err = c.(commands.NoArgumentCommand).ExecuteWithoutArguments(commands.NewExecutor(conf, mService))
 
 			if test.error != "" {
-				assert.Equal(t, test.error, err.Error())
+				if err == nil {
+					t.Errorf("expected error '%v', got nil", test.error)
+				} else {
+					assert.Equal(t, test.error, err.Error())
+				}
 			} else {
-				mStorageService.AssertNumberOfCalls(t, "GetStorages", 1)
-				mServerService.AssertNumberOfCalls(t, "CreateServer", 1)
-				mServerService.AssertNumberOfCalls(t, "GetServerDetails", 1)
+				mService.AssertNumberOfCalls(t, "GetStorages", 1)
+				mService.AssertNumberOfCalls(t, "CreateServer", 1)
 			}
 		})
 	}

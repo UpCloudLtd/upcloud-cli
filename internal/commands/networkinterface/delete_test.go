@@ -1,40 +1,35 @@
 package networkinterface
 
 import (
+	"testing"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/commands/server"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestDeleteCommand(t *testing.T) {
-	methodName := "DeleteNetworkInterface"
+	targetMethod := "DeleteNetworkInterface"
 
-	s := upcloud.Server{UUID: "97fbd082-30b0-11eb-adc1-0242ac120002", Title: "test-server"}
-	servers := upcloud.Servers{Servers: []upcloud.Server{s}}
+	server := upcloud.Server{UUID: "97fbd082-30b0-11eb-adc1-0242ac120002", Title: "test-server"}
+	servers := upcloud.Servers{Servers: []upcloud.Server{server}}
 
 	for _, test := range []struct {
 		name  string
-		args  []string
+		arg   string
 		flags []string
 		error string
 		req   request.DeleteNetworkInterfaceRequest
 	}{
 		{
 			name:  "delete network interface with UUID",
-			args:  []string{s.UUID},
+			arg:   server.UUID,
 			flags: []string{"--index", "4"},
-			req:   request.DeleteNetworkInterfaceRequest{ServerUUID: s.UUID, Index: 4},
-		},
-		{
-			name:  "delete network interface with title",
-			args:  []string{s.Title},
-			flags: []string{"--index", "4"},
-			req:   request.DeleteNetworkInterfaceRequest{ServerUUID: s.UUID, Index: 4},
+			req:   request.DeleteNetworkInterfaceRequest{ServerUUID: server.UUID, Index: 4},
 		},
 		{
 			name:  "server is missing",
@@ -43,27 +38,27 @@ func TestDeleteCommand(t *testing.T) {
 		},
 		{
 			name:  "index is missing",
-			args:  []string{s.UUID},
+			arg:   server.UUID,
 			error: "index is required",
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			server.CachedServers = nil
-			mns := MockNetworkService{}
-			mns.On(methodName, &test.req).Return(nil)
+			mService := smock.Service{}
+			mService.On(targetMethod, &test.req).Return(nil)
 
-			mss := server.MockServerService{}
-			mss.On("GetServers").Return(&servers, nil)
-			c := commands.BuildCommand(DeleteCommand(&mns, &mss), nil, config.New(viper.New()))
-			err := c.SetFlags(test.flags)
+			mService.On("GetServers").Return(&servers, nil)
+			conf := config.New()
+
+			c := commands.BuildCommand(DeleteCommand(), nil, conf)
+			err := c.Cobra().Flags().Parse(test.flags)
 			assert.NoError(t, err)
 
-			_, err = c.MakeExecuteCommand()(test.args)
+			_, err = c.(commands.SingleArgumentCommand).ExecuteSingleArgument(commands.NewExecutor(conf, &mService), test.arg)
 
 			if test.error != "" {
 				assert.Errorf(t, err, test.error)
 			} else {
-				mns.AssertNumberOfCalls(t, methodName, 1)
+				mService.AssertNumberOfCalls(t, targetMethod, 1)
 			}
 		})
 	}

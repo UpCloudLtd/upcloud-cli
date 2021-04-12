@@ -1,68 +1,68 @@
 package networkinterface
 
 import (
+	"errors"
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/commands/server"
+	"github.com/UpCloudLtd/cli/internal/completion"
+	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
 )
 
 type deleteCommand struct {
 	*commands.BaseCommand
-	networkSvc service.Network
-	serverSvc  service.Server
-	index      int
+	interfaceIndex int
+	resolver.CachingServer
+	completion.Server
 }
 
 // DeleteCommand creates the "network-interface delete" command
-func DeleteCommand(networkSvc service.Network, serverSvc service.Server) commands.Command {
+func DeleteCommand() commands.Command {
 	return &deleteCommand{
 		BaseCommand: commands.New("delete", "Delete a network interface"),
-		networkSvc:  networkSvc,
-		serverSvc:   serverSvc,
 	}
 }
 
 // InitCommand implements Command.InitCommand
 func (s *deleteCommand) InitCommand() {
-	s.SetPositionalArgHelp(server.PositionalArgHelp)
-	s.ArgCompletion(server.GetServerArgumentCompletionFunction(s.serverSvc))
 	fs := &pflag.FlagSet{}
-	fs.IntVar(&s.index, "index", 0, "Interface index.")
+	fs.IntVar(&s.interfaceIndex, "index", 0, "Interface index.")
 	s.AddFlags(fs)
 }
 
-// MakeExecuteCommand implements Command.MakeExecuteCommand
-func (s *deleteCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
+// MaximumExecutions implements Command.MaximumExecutions
+func (s *deleteCommand) MaximumExecutions() int {
+	return maxNetworkInterfaceActions
+}
 
-		if s.index == 0 {
-			return nil, fmt.Errorf("index is required")
-		}
-
-		return server.Request{
-			BuildRequest: func(uuid string) interface{} {
-				return &request.DeleteNetworkInterfaceRequest{
-					ServerUUID: uuid,
-					Index:      s.index,
-				}
-			},
-			Service:    s.serverSvc,
-			ExactlyOne: true,
-			Handler: ui.HandleContext{
-				MessageFn: func(in interface{}) string {
-					req := in.(*request.DeleteNetworkInterfaceRequest)
-					return fmt.Sprintf("Deleting network interface %d of server %q", req.Index, req.ServerUUID)
-				},
-				MaxActions:    maxNetworkInterfaceActions,
-				InteractiveUI: s.Config().InteractiveUI(),
-				Action: func(req interface{}) (interface{}, error) {
-					return nil, s.networkSvc.DeleteNetworkInterface(req.(*request.DeleteNetworkInterfaceRequest))
-				},
-			},
-		}.Send(args)
+// ExecuteSingleArgument implements commands.SingleArgumentCommand
+func (s *deleteCommand) ExecuteSingleArgument(exec commands.Executor, arg string) (output.Output, error) {
+	if s.interfaceIndex == 0 {
+		return nil, fmt.Errorf("interface index is required")
 	}
+	if arg == "" {
+		return nil, errors.New("single server uuid is required")
+	}
+	msg := fmt.Sprintf("Deleting network interface %d of server %s", s.interfaceIndex, arg)
+	logline := exec.NewLogEntry(msg)
+	logline.StartedNow()
+
+	err := exec.Network().DeleteNetworkInterface(&request.DeleteNetworkInterfaceRequest{
+		ServerUUID: arg,
+		Index:      s.interfaceIndex,
+	})
+
+	if err != nil {
+		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
+		logline.SetDetails(err.Error(), "error: ")
+		return nil, err
+	}
+
+	logline.SetMessage(fmt.Sprintf("%s: done", msg))
+	logline.MarkDone()
+
+	return output.None{}, nil
 }

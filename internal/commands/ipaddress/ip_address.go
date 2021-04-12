@@ -3,15 +3,12 @@ package ipaddress
 import (
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
-	"github.com/spf13/cobra"
 	"net"
 )
 
 const maxIPAddressActions = 10
-const positionalArgHelp = "<Address/PTRRecord...>"
 
 // BaseIPAddressCommand creates the base 'ip-address' command
 func BaseIPAddressCommand() commands.Command {
@@ -89,49 +86,4 @@ func searchIPAddresses(terms []string, service service.IpAddress, unique bool) (
 		}
 	}
 	return result, nil
-}
-
-// ipAddressRequest represents an internal ip address requests.
-type ipAddressRequest struct {
-	ExactlyOne   bool
-	BuildRequest func(uuid string) interface{}
-	Service      service.IpAddress
-	ui.HandleContext
-}
-
-// send executes the ip address modification request
-func (s ipAddressRequest) send(args []string) (interface{}, error) {
-	if s.ExactlyOne && len(args) != 1 {
-		return nil, fmt.Errorf("single ip address or ptr record is required")
-	}
-	if len(args) < 1 {
-		return nil, fmt.Errorf("at least one ip address or ptr record is required")
-	}
-
-	servers, err := searchIPAddresses(args, s.Service, true)
-	if err != nil {
-		return nil, err
-	}
-
-	var requests []interface{}
-	for _, server := range servers {
-		requests = append(requests, s.BuildRequest(server))
-	}
-
-	return s.Handle(requests)
-}
-
-// getArgCompFn returns the bash completion gunction for an ip address
-func getArgCompFn(s service.IpAddress) func(toComplete string) ([]string, cobra.ShellCompDirective) {
-	return func(toComplete string) ([]string, cobra.ShellCompDirective) {
-		ip, err := s.GetIPAddresses()
-		if err != nil {
-			return nil, cobra.ShellCompDirectiveDefault
-		}
-		var vals []string
-		for _, v := range ip.IPAddresses {
-			vals = append(vals, v.Address, v.PTRRecord)
-		}
-		return commands.MatchStringPrefix(vals, toComplete, true), cobra.ShellCompDirectiveNoFileComp
-	}
 }

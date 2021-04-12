@@ -2,13 +2,16 @@ package network
 
 import (
 	"bytes"
-	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/commands/server"
-	"github.com/UpCloudLtd/cli/internal/config"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/spf13/viper"
-	"github.com/stretchr/testify/assert"
+	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"testing"
+
+	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestShowCommand(t *testing.T) {
@@ -84,35 +87,47 @@ func TestShowCommand(t *testing.T) {
     Router: 79c0ad83-ac84-44f3-a2f8-06cbd524ee8c 
     Type:   utility                              
     Zone:   uk-lon1                              
-  
+
   IP Networks:
+
      Address      Family   DHCP   DHCP Def Router   DHCP DNS              
     ──────────── ──────── ────── ───────────────── ───────────────────────
      196.12.0.1   IPv4     yes    yes               196.12.0.3 196.12.0.4 
      196.15.0.1   IPv4     yes    no                196.15.0.3 196.15.0.4 
-  
-  Servers:
     
+  Servers:
+
      UUID                                   Title     Hostname              State   
     ────────────────────────────────────── ───────── ───────────────────── ─────────
      0077fa3d-32db-4b09-9f5f-30d9e9afb568   server1   server1.example.com   started 
      0077fa3d-32db-4b09-9f5f-30d9e9afb569   server2   server2.example.com   stopped 
+    
 `
 
 	cachedNetworks = nil
-	mns := MockNetworkService{}
-	mns.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{network}}, nil)
-	mss := server.MockServerService{}
-	mss.On("GetServers").Return(&upcloud.Servers{Servers: servers}, nil)
+	mService := smock.Service{}
+	mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{network}}, nil)
+	for _, server := range servers {
+		mService.On("GetServerDetails", &request.GetServerDetailsRequest{UUID: server.UUID}).Return(&upcloud.ServerDetails{Server: server}, nil)
+	}
 
-	command := commands.BuildCommand(ShowCommand(&mns, &mss), nil, config.New(viper.New()))
-	res, err := command.MakeExecuteCommand()([]string{network.UUID})
+	conf := config.New()
+	// force human output
+	conf.Viper().Set(config.KeyOutput, config.ValueOutputHuman)
+
+	command := commands.BuildCommand(ShowCommand(), nil, conf)
+
+	// get resolver to initialize command cache
+	_, err := command.(*showCommand).Get(&mService)
+	if err != nil {
+		t.Fatal(err)
+	}
+	res, err := command.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService), network.UUID)
 
 	assert.Nil(t, err)
 
-	buf := new(bytes.Buffer)
-	err = command.HandleOutput(buf, res)
-
-	assert.Nil(t, err)
+	buf := bytes.NewBuffer(nil)
+	err = output.Render(buf, conf, res)
+	assert.NoError(t, err)
 	assert.Equal(t, expected, buf.String())
 }

@@ -2,76 +2,89 @@ package account
 
 import (
 	"fmt"
+	"math"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
-	"github.com/jedib0t/go-pretty/v6/table"
-	"io"
+	"github.com/UpCloudLtd/cli/internal/output"
 )
 
 // ShowCommand creates the 'account show' command
-func ShowCommand(service service.Account) commands.Command {
+func ShowCommand() commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New("show", "Show account"),
-		service:     service,
 	}
 }
 
 type showCommand struct {
 	*commands.BaseCommand
-	service service.Account
 }
 
-// MakeExecuteCommand implements command.MakeExecuteCommand
-func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
-		account, err := s.service.GetAccount()
-		if err != nil {
-			return nil, err
-		}
-		return account, nil
+// ExecuteWithoutArguments implements commands.NoArgumentCommand
+func (s *showCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
+	svc := exec.Account()
+	account, err := svc.GetAccount()
+	if err != nil {
+		return nil, err
 	}
+	return output.Details{
+		Sections: []output.DetailSection{
+			{
+				Rows: []output.DetailRow{
+					{Title: "Username:", Key: "username", Value: account.UserName},
+					{Title: "Credits:", Key: "credits", Value: formatCredits(account.Credits)},
+				},
+			},
+			{
+				Title: "Resource Limits:", Key: "resource_limits", Rows: []output.DetailRow{
+					{
+						Title: "Cores:",
+						Key:   "cores",
+						Value: account.ResourceLimits.Cores,
+					},
+					{
+						Title: "Detached Floating IPs:",
+						Key:   "detached_floating_ips",
+						Value: account.ResourceLimits.DetachedFloatingIps,
+					},
+					{
+						Title: "Memory:",
+						Key:   "memory",
+						Value: account.ResourceLimits.Memory,
+					},
+					{
+						Title: "Networks:",
+						Key:   "networks",
+						Value: account.ResourceLimits.Networks,
+					},
+					{
+						Title: "Public IPv4:",
+						Key:   "public_ipv4",
+						Value: account.ResourceLimits.PublicIPv4,
+					},
+					{
+						Title: "Public IPv6:",
+						Key:   "public_ipv6",
+						Value: account.ResourceLimits.PublicIPv6,
+					},
+					{
+						Title: "Storage HDD:",
+						Key:   "storage_hdd",
+						Value: account.ResourceLimits.StorageHDD,
+					},
+					{
+						Title: "Storage SSD:",
+						Key:   "storage_ssd",
+						Value: account.ResourceLimits.StorageSSD,
+					},
+				},
+			},
+		},
+	}, nil
 }
 
-// HandleOutput implements command.HandleOutput
-func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
-	account := out.(*upcloud.Account)
-
-	var credits string
-
-	if account.Credits == 0.0 {
-		credits = "Denied"
-	} else {
-		credits = fmt.Sprintf("%.2f$", account.Credits/100)
+func formatCredits(credits float64) string {
+	if math.Abs(credits) < 0.001 {
+		return "Denied"
 	}
-
-	layout := ui.ListLayoutDefault
-	l := ui.NewListLayout(layout)
-	{
-		dCommon := ui.NewDetailsView()
-		dCommon.Append(
-			table.Row{"Username:", account.UserName},
-			table.Row{"Credits:", credits},
-		)
-		l.AppendSection("", dCommon.Render())
-	}
-
-	{
-		dCommon := ui.NewDetailsView()
-		dCommon.SetHeaderWidth(25)
-		dCommon.Append(
-			table.Row{"Cores:", account.ResourceLimits.Cores},
-			table.Row{"Detached Floating IPs:", account.ResourceLimits.DetachedFloatingIps},
-			table.Row{"Memory:", account.ResourceLimits.Memory},
-			table.Row{"Networks:", account.ResourceLimits.Networks},
-			table.Row{"Public IPv4:", account.ResourceLimits.PublicIPv4},
-			table.Row{"Public IPv6:", account.ResourceLimits.PublicIPv6},
-			table.Row{"Storage HDD:", account.ResourceLimits.StorageHDD},
-			table.Row{"Storage SSD:", account.ResourceLimits.StorageSSD},
-		)
-		l.AppendSection("Resource Limits:", dCommon.Render())
-	}
-	_, _ = fmt.Fprintln(writer, l.Render())
-	return nil
+	return fmt.Sprintf("%.2f$", credits/100)
 }

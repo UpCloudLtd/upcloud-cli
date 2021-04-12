@@ -3,35 +3,36 @@ package network
 import (
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/completion"
+	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
 )
 
 type modifyCommand struct {
 	*commands.BaseCommand
-	service  service.Network
-	req      request.ModifyNetworkRequest
 	networks []string
+	router   string
+	name     string
+	completion.Network
+	resolver.CachingNetwork
 }
 
 // ModifyCommand creates the "network modify" command
-func ModifyCommand(service service.Network) commands.Command {
+func ModifyCommand() commands.Command {
 	return &modifyCommand{
 		BaseCommand: commands.New("modify", "Modify a network"),
-		service:     service,
 	}
 }
 
 // InitCommand implements Command.InitCommand
 func (s *modifyCommand) InitCommand() {
-	s.SetPositionalArgHelp(positionalArgHelp)
-	s.ArgCompletion(getArgCompFn(s.service))
 	fs := &pflag.FlagSet{}
-	fs.StringVar(&s.req.Name, "name", s.req.Name, "Names the private network.")
-	fs.StringVar(&s.req.Router, "router", s.req.Router, "Change or clear the router attachment.")
+	fs.StringVar(&s.name, "name", "", "Set name of the private network.")
+	fs.StringVar(&s.router, "router", "", "Change or clear the router attachment.")
 	fs.StringArrayVar(&s.networks, "ip-network", s.networks, "The ip network with modified values. \n\n"+
 		"Fields \n"+
 		"  family: string \n"+
@@ -45,39 +46,40 @@ func (s *modifyCommand) InitCommand() {
 	s.AddFlags(fs) // TODO(ana): replace usage with examples once the refactor is done.
 }
 
-// MakeExecuteCommand implements Command.MakeExecuteCommand
-func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
-
-		var networks []upcloud.IPNetwork
-		for _, networkStr := range s.networks {
-			network, err := handleNetwork(networkStr)
-			if err != nil {
-				return nil, err
-			}
-			if network.Family == "" {
-				return nil, fmt.Errorf("family is required")
-			}
-			network.Address = ""
-			networks = append(networks, *network)
+// ExecuteSingleArgument implements commands.SingleArgumentCommand
+func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string) (output.Output, error) {
+	var networks []upcloud.IPNetwork
+	for _, networkStr := range s.networks {
+		network, err := handleNetwork(networkStr)
+		if err != nil {
+			return nil, err
 		}
-		s.req.IPNetworks = networks
-
-		return networkRequest{
-			BuildRequest: func(uuid string) interface{} {
-				s.req.UUID = uuid
-				return &s.req
-			},
-			Service: s.service,
-			HandleContext: ui.HandleContext{
-				RequestID:     func(in interface{}) string { return in.(*request.ModifyNetworkRequest).UUID },
-				MaxActions:    maxNetworkActions,
-				InteractiveUI: s.Config().InteractiveUI(),
-				ActionMsg:     "Modifying network",
-				Action: func(req interface{}) (interface{}, error) {
-					return s.service.ModifyNetwork(req.(*request.ModifyNetworkRequest))
-				},
-			},
-		}.send(args)
+		if network.Family == "" {
+			return nil, fmt.Errorf("family is required")
+		}
+		network.Address = ""
+		networks = append(networks, *network)
 	}
+
+	msg := fmt.Sprintf("modifying network %v", arg)
+	logline := exec.NewLogEntry(msg)
+
+	logline.StartedNow()
+	logline.SetMessage(fmt.Sprintf("%s: sending request", msg))
+
+	res, err := exec.Network().ModifyNetwork(&request.ModifyNetworkRequest{
+		UUID:       arg,
+		Name:       s.name,
+		Zone:       "", // TODO: should this be implemented?
+		Router:     s.router,
+		IPNetworks: networks,
+	})
+	if err != nil {
+		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
+		logline.SetDetails(err.Error(), "error: ")
+		return nil, err
+	}
+	logline.SetMessage(fmt.Sprintf("%s: success", msg))
+	logline.MarkDone()
+	return output.Marshaled{Value: res}, nil
 }

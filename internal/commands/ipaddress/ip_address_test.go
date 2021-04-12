@@ -1,37 +1,13 @@
 package ipaddress
 
 import (
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"testing"
+
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+	"github.com/stretchr/testify/assert"
 )
-
-type MockIPAddressService struct {
-	mock.Mock
-}
-
-func (m *MockIPAddressService) GetIPAddresses() (*upcloud.IPAddresses, error) {
-	args := m.Called()
-	return args[0].(*upcloud.IPAddresses), args.Error(1)
-}
-func (m *MockIPAddressService) GetIPAddressDetails(r *request.GetIPAddressDetailsRequest) (*upcloud.IPAddress, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.IPAddress), args.Error(1)
-}
-func (m *MockIPAddressService) AssignIPAddress(r *request.AssignIPAddressRequest) (*upcloud.IPAddress, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.IPAddress), args.Error(1)
-}
-func (m *MockIPAddressService) ModifyIPAddress(r *request.ModifyIPAddressRequest) (*upcloud.IPAddress, error) {
-	args := m.Called(r)
-	return args[0].(*upcloud.IPAddress), args.Error(1)
-}
-func (m *MockIPAddressService) ReleaseIPAddress(r *request.ReleaseIPAddressRequest) error {
-	args := m.Called(r)
-	return args.Error(0)
-}
 
 func TestGetFamily(t *testing.T) {
 	for _, test := range []struct {
@@ -160,10 +136,10 @@ func TestSearchStorage(t *testing.T) {
 	} {
 		t.Run(testcase.name, func(t *testing.T) {
 			cachedIPs = nil
-			mss := MockIPAddressService{}
-			mss.On("GetIPAddresses").Return(&IPAddresses, nil)
+			mService := smock.Service{}
+			mService.On("GetIPAddresses").Return(&IPAddresses, nil)
 
-			result, err := searchIPAddresses(testcase.args, &mss, testcase.unique)
+			result, err := searchIPAddresses(testcase.args, &mService, testcase.unique)
 
 			if testcase.errMsg == "" {
 				assert.Nil(t, err)
@@ -172,7 +148,7 @@ func TestSearchStorage(t *testing.T) {
 				assert.Nil(t, result)
 				assert.EqualError(t, err, testcase.errMsg)
 			}
-			mss.AssertNumberOfCalls(t, "GetIPAddresses", testcase.backendCalls)
+			mService.AssertNumberOfCalls(t, "GetIPAddresses", testcase.backendCalls)
 		})
 	}
 }

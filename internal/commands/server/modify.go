@@ -1,26 +1,31 @@
 package server
 
 import (
+	"fmt"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/completion"
+	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
 )
 
 // ModifyCommand creates the "server modify" command
-func ModifyCommand(service service.Server) commands.Command {
+func ModifyCommand() commands.Command {
 	return &modifyCommand{
 		BaseCommand: commands.New("modify", "Modifies the configuration of an existing server"),
-		service:     service,
 	}
 }
 
 type modifyCommand struct {
 	*commands.BaseCommand
-	service service.Server
-	params  modifyParams
+	params modifyParams
+	resolver.CachingServer
+	completion.Server
 }
 
 type modifyParams struct {
@@ -35,8 +40,6 @@ var defaultModifyParams = modifyParams{
 
 // InitCommand implements Command.InitCommand
 func (s *modifyCommand) InitCommand() {
-	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetServerArgumentCompletionFunction(s.service))
 	s.params = modifyParams{ModifyServerRequest: request.ModifyServerRequest{}}
 	flags := &pflag.FlagSet{}
 	flags.StringVar(&s.params.BootOrder, "boot-order", defaultModifyParams.BootOrder, "The boot device order.")
@@ -57,50 +60,51 @@ func (s *modifyCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
-// MakeExecuteCommand implements Command.MakeExecuteCommand
-func (s *modifyCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
+// Execute implements commands.MultipleArgumentCommand
+func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 
-		remoteAccess := new(upcloud.Boolean)
-		if err := remoteAccess.UnmarshalJSON([]byte(s.params.remoteAccessEnabled)); err != nil {
-			return nil, err
-		}
-		s.params.RemoteAccessEnabled = *remoteAccess
-
-		metadata := new(upcloud.Boolean)
-		if err := metadata.UnmarshalJSON([]byte(s.params.metadata)); err != nil {
-			return nil, err
-		}
-		s.params.Metadata = *metadata
-
-		switch s.params.Firewall {
-		case "true":
-			s.params.Firewall = "on"
-		case "false":
-			s.params.Firewall = "off"
-		}
-
-		if s.params.CoreNumber != 0 || s.params.MemoryAmount != 0 {
-			s.params.Plan = "custom" // Valid for all custom plans.
-		}
-
-		return Request{
-			BuildRequest: func(uuid string) interface{} {
-				req := s.params.ModifyServerRequest
-				req.UUID = uuid
-				return &req
-			},
-			Service: s.service,
-			Handler: ui.HandleContext{
-				RequestID:     func(in interface{}) string { return in.(*request.ModifyServerRequest).UUID },
-				ResultUUID:    getServerDetailsUUID,
-				InteractiveUI: s.Config().InteractiveUI(),
-				MaxActions:    maxServerActions,
-				ActionMsg:     "Modifying server",
-				Action: func(req interface{}) (interface{}, error) {
-					return s.service.ModifyServer(req.(*request.ModifyServerRequest))
-				},
-			},
-		}.Send(args)
+	remoteAccess := new(upcloud.Boolean)
+	if err := remoteAccess.UnmarshalJSON([]byte(s.params.remoteAccessEnabled)); err != nil {
+		return nil, err
 	}
+	s.params.RemoteAccessEnabled = *remoteAccess
+
+	metadata := new(upcloud.Boolean)
+	if err := metadata.UnmarshalJSON([]byte(s.params.metadata)); err != nil {
+		return nil, err
+	}
+	s.params.Metadata = *metadata
+
+	svc := exec.Server()
+
+	//XXX: should fix the SDK with the correct type
+	switch s.params.Firewall {
+	case "true":
+		s.params.Firewall = "on"
+	case "false":
+		s.params.Firewall = "off"
+	}
+
+	if s.params.CoreNumber != 0 || s.params.MemoryAmount != 0 {
+		s.params.Plan = "custom" // Valid for all custom plans.
+	}
+
+	msg := fmt.Sprintf("modifing server %v", uuid)
+	logline := exec.NewLogEntry(msg)
+
+	logline.StartedNow()
+
+	req := s.params.ModifyServerRequest
+	req.UUID = uuid
+	res, err := svc.ModifyServer(&req)
+	if err != nil {
+		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
+		logline.SetDetails(err.Error(), "error: ")
+		return nil, err
+	}
+
+	logline.SetMessage(fmt.Sprintf("%s: done", msg))
+	logline.MarkDone()
+
+	return output.Marshaled{Value: res}, nil
 }

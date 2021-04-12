@@ -1,69 +1,53 @@
 package ipaddress
 
 import (
-	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/completion"
+	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
-	"github.com/jedib0t/go-pretty/v6/table"
-	"io"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 )
 
 // ShowCommand creates the 'ip-address show' command
-func ShowCommand(service service.IpAddress) commands.Command {
+func ShowCommand() commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New("show", "Show current IP address"),
-		service:     service,
 	}
 }
 
 type showCommand struct {
 	*commands.BaseCommand
-	service service.IpAddress
+	completion.IPAddress
+	resolver.CachingIPAddress
 }
 
 // InitCommand implements Command.InitCommand
 func (s *showCommand) InitCommand() {
-	s.SetPositionalArgHelp(positionalArgHelp)
-	s.ArgCompletion(getArgCompFn(s.service))
 }
 
-// MakeExecuteCommand implements Command.MakeExecuteCommand
-func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
-		if len(args) != 1 {
-			return nil, fmt.Errorf("one ip address or PTR Record is required")
-		}
-		ip, err := searchIPAddress(args[0], s.service, true)
-		if err != nil {
-			return nil, err
-		}
-		return ip[0], nil
+func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
+	ipAddress, err := exec.IPAddress().GetIPAddressDetails(&request.GetIPAddressDetailsRequest{
+		Address: arg,
+	})
+	if err != nil {
+		return nil, err
 	}
-}
-
-// HandleOutput implements Command.HandleOutput
-func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
-	ip := out.(*upcloud.IPAddress)
-
-	layout := ui.ListLayoutDefault
-	l := ui.NewListLayout(layout)
-	{
-		dCommon := ui.NewDetailsView()
-		dCommon.Append(
-			table.Row{"Address:", ui.DefaultAddressColours.Sprint(ip.Address)},
-			table.Row{"Access:", ip.Access},
-			table.Row{"Family:", ip.Family},
-			table.Row{"Part of Plan:", ui.FormatBool(ip.PartOfPlan.Bool())},
-			table.Row{"PTR Record:", ip.PTRRecord},
-			table.Row{"Server UUID:", ui.DefaultUUUIDColours.Sprint(ip.ServerUUID)},
-			table.Row{"MAC:", ip.MAC},
-			table.Row{"Floating:", ui.FormatBool(ip.Floating.Bool())},
-			table.Row{"Zone:", ip.Zone},
-		)
-		l.AppendSection("", dCommon.Render())
-	}
-	_, _ = fmt.Fprintln(writer, l.Render())
-	return nil
+	return output.Details{
+		Sections: []output.DetailSection{
+			{
+				Rows: []output.DetailRow{
+					{Title: "Address:", Key: "address", Value: ipAddress.Address, Color: ui.DefaultAddressColours},
+					{Title: "Access:", Key: "access", Value: ipAddress.Access},
+					{Title: "Family:", Key: "access", Value: ipAddress.Family},
+					{Title: "Part of Plan:", Key: "access", Value: ipAddress.PartOfPlan, Format: output.BoolFormat},
+					{Title: "PTR Record:", Key: "access", Value: ipAddress.PTRRecord},
+					{Title: "Server UUID:", Key: "access", Value: ipAddress.ServerUUID},
+					{Title: "MAC:", Key: "credits", Value: ipAddress.MAC},
+					{Title: "Floating:", Key: "credits", Value: ipAddress.Floating, Format: output.BoolFormat},
+					{Title: "Zone:", Key: "zone", Value: ipAddress.Zone},
+				},
+			},
+		},
+	}, nil
 }

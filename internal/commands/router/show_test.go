@@ -2,13 +2,18 @@ package router
 
 import (
 	"bytes"
+	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"testing"
 )
 
 func TestShowCommand(t *testing.T) {
-
 	networks := []*upcloud.Network{
 		{
 			IPNetworks: upcloud.IPNetworkSlice{
@@ -39,31 +44,45 @@ func TestShowCommand(t *testing.T) {
 	}
 
 	router := upcloud.Router{
-		AttachedNetworks: nil,
-		Name:             "test-router",
-		Type:             "normal",
-		UUID:             "37f5d657-195c-4b5e-ad61-112945ad184b",
+		AttachedNetworks: upcloud.RouterNetworkSlice{
+			{NetworkUUID: networks[0].UUID},
+		},
+		Name: "test-router",
+		Type: "normal",
+		UUID: "37f5d657-195c-4b5e-ad61-112945ad184b",
 	}
 
 	expected := `  
-  Common
-    UUID: 37f5d657-195c-4b5e-ad61-112945ad184b 
-    Name: test-router                          
-    Type: normal                               
-  
+  UUID: 37f5d657-195c-4b5e-ad61-112945ad184b 
+  Name: test-router                          
+  Type: normal                               
+
   Networks:
-     UUID                                   Name           Router                                 Type      Zone    
-    ────────────────────────────────────── ────────────── ────────────────────────────────────── ───────── ─────────
-     ce6a9934-c0c6-4d84-9ad4-0611f5b95e79   test-network   79c0ad83-ac84-44f3-a2f8-06cbd524ee8c   utility   uk-lon1 
+
+     UUID                                   Name           Type      Zone    
+    ────────────────────────────────────── ────────────── ───────── ─────────
+     ce6a9934-c0c6-4d84-9ad4-0611f5b95e79   test-network   utility   uk-lon1 
+    
 `
+	mService := smock.Service{}
+	mService.On("GetRouters", mock.Anything).Return(&upcloud.Routers{Routers: []upcloud.Router{router}}, nil)
+	mService.On("GetNetworkDetails", mock.Anything).Return(networks[0], nil)
 
-	buf := new(bytes.Buffer)
-	command := ShowCommand(&MockNetworkService{})
-	err := command.HandleOutput(buf, &routerWithNetworks{
-		router:   &router,
-		networks: networks,
-	})
+	conf := config.New()
+	conf.Viper().Set(config.KeyOutput, config.ValueOutputHuman)
 
-	assert.Nil(t, err)
+	c := commands.BuildCommand(ShowCommand(), nil, conf)
+
+	// get resolver to trigger caching
+	_, err := c.(resolver.ResolutionProvider).Get(&mService)
+	assert.NoError(t, err)
+
+	res, err := c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService), router.UUID)
+	assert.NoError(t, err)
+
+	buf := bytes.NewBuffer(nil)
+	err = output.Render(buf, conf, res)
+	assert.NoError(t, err)
 	assert.Equal(t, expected, buf.String())
+
 }

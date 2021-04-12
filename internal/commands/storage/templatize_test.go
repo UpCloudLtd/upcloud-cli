@@ -1,18 +1,21 @@
 package storage
 
 import (
+	"testing"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+	internal "github.com/UpCloudLtd/cli/internal/service"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
 )
 
 func TestTemplatizeCommand(t *testing.T) {
-	methodName := "TemplatizeStorage"
+	targetMethod := "TemplatizeStorage"
 	var Storage1 = upcloud.Storage{
 		UUID:   UUID1,
 		Title:  Title1,
@@ -57,19 +60,24 @@ func TestTemplatizeCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mss := MockStorageService{}
-			mss.On("GetStorages", mock.Anything).Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2}}, nil)
-			mss.On(methodName, &test.expected).Return(&details, nil)
+			CachedStorages = nil
+			conf := config.New()
+			mService := new(smock.Service)
 
-			tc := commands.BuildCommand(TemplatizeCommand(&mss), nil, config.New(viper.New()))
-			err := tc.SetFlags(test.args)
+			conf.Service = internal.Wrapper{Service: mService}
+
+			mService.On("GetStorages", mock.Anything).Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2}}, nil)
+			mService.On(targetMethod, &test.expected).Return(&details, nil)
+
+			c := commands.BuildCommand(TemplatizeCommand(), nil, conf)
+			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 
-			_, err = tc.MakeExecuteCommand()([]string{Storage2.UUID})
+			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService), Storage2.UUID)
 			if test.error != "" {
 				assert.Errorf(t, err, "title is required")
 			} else {
-				mss.AssertNumberOfCalls(t, methodName, 1)
+				mService.AssertNumberOfCalls(t, targetMethod, 1)
 			}
 		})
 	}

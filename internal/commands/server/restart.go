@@ -1,87 +1,97 @@
 package server
 
 import (
+	"fmt"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/completion"
+	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
-	"strconv"
 	"time"
 )
 
 // RestartCommand creates the "server restart" command
-func RestartCommand(service service.Server) commands.Command {
+func RestartCommand() commands.Command {
 	return &restartCommand{
 		BaseCommand: commands.New("restart", "Restart a server"),
-		service:     service,
 	}
 }
 
 type restartCommand struct {
 	*commands.BaseCommand
-	service service.Server
-	params  restartParams
-}
-
-type restartParams struct {
-	request.RestartServerRequest
-	timeout int
-}
-
-var defaultRestartParams = &restartParams{
-	RestartServerRequest: request.RestartServerRequest{
-		StopType:      "soft",
-		TimeoutAction: "ignore",
-	},
-	timeout: 120,
+	resolver.CachingServer
+	completion.Server
+	WaitForServerToStart bool
+	StopType             string
+	TimeoutAction        string
+	Timeout              time.Duration
 }
 
 // InitCommand implements Command.InitCommand
 func (s *restartCommand) InitCommand() {
-	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetServerArgumentCompletionFunction(s.service))
-
-	s.params = restartParams{RestartServerRequest: request.RestartServerRequest{}}
 	flags := &pflag.FlagSet{}
 
-	flags.StringVar(&s.params.StopType, "stop-type", defaultRestartParams.StopType, "Restart type. Available: soft, hard")
-	flags.StringVar(&s.params.TimeoutAction, "timeout-action", defaultRestartParams.TimeoutAction, "Action to take if timeout limit is exceeded. Available: destroy, ignore")
-	flags.IntVar(&s.params.timeout, "timeout", defaultRestartParams.timeout, "Stop timeout in seconds. Available: 1-600")
-	flags.IntVar(&s.params.Host, "host", defaultRestartParams.Host, "Use this to restart the VM on a specific host. Refers to value from host attribute. Only available for private cloud hosts")
-
+	// TODO: reimplement? does not seem to make sense to automagically destroy
+	// servers if restart fails..
+	flags.StringVar(&s.StopType, "stop-type", defaultStopType, "Restart type. Available: soft, hard")
 	s.AddFlags(flags)
 }
 
-// MakeExecuteCommand implements Command.MakeExecuteCommand
-func (s *restartCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
+// MaximumExecutions implements Command.MaximumExecutions
+func (s *restartCommand) MaximumExecutions() int {
+	return maxServerActions
+}
 
-		timeout, err := time.ParseDuration(strconv.Itoa(s.params.timeout) + "s")
-		if err != nil {
+// Execute implements commands.MultipleArgumentCommand
+func (s *restartCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
+	svc := exec.Server()
+	msg := fmt.Sprintf("restarting server %v", uuid)
+	logline := exec.NewLogEntry(msg)
+
+	logline.StartedNow()
+	logline.SetMessage(fmt.Sprintf("%s: sending request", msg))
+
+	res, err := svc.RestartServer(&request.RestartServerRequest{
+		UUID:          uuid,
+		StopType:      s.StopType,
+		Timeout:       defaultRestartTimeout,
+		TimeoutAction: "ignore",
+	})
+	if err != nil {
+		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
+		logline.SetDetails(err.Error(), "error: ")
+		return nil, err
+	}
+	// TODO: reimplmement
+	/*	if s.Config().GlobalFlags.Wait {
+		// TODO: this seems to not work as expected as the backend will report
+		// started->maintenance->started->maintenance..
+		logline.SetMessage(fmt.Sprintf("%s: waiting to restart", msg))
+		if err := exec.WaitFor(
+			serverStateWaiter(uuid, upcloud.ServerStateMaintenance, msg, svc, logline),
+			s.Config().ClientTimeout(),
+		); err != nil {
 			return nil, err
 		}
-		s.params.Timeout = timeout
 
-		return Request{
-			BuildRequest: func(uuid string) interface{} {
-				req := s.params.RestartServerRequest
-				req.UUID = uuid
-				return &req
-			},
-			Service: s.service,
-			Handler: ui.HandleContext{
-				RequestID:     func(in interface{}) string { return in.(*request.RestartServerRequest).UUID },
-				InteractiveUI: s.Config().InteractiveUI(),
-				WaitMsg:       "restart request sent",
-				WaitFn:        waitForServer(s.service, upcloud.ServerStateStarted, s.Config().ClientTimeout()),
-				MaxActions:    maxServerActions,
-				ActionMsg:     "Restarting",
-				Action: func(req interface{}) (interface{}, error) {
-					return s.service.RestartServer(req.(*request.RestartServerRequest))
-				},
-			},
-		}.Send(args)
-	}
+		logline.SetMessage(fmt.Sprintf("%s: waiting to start", msg))
+		if err := exec.WaitFor(
+			serverStateWaiter(uuid, upcloud.ServerStateStarted, msg, svc, logline),
+			s.Config().ClientTimeout(),
+		); err != nil {
+			return nil, err
+		}
+
+		logline.SetMessage(fmt.Sprintf("%s: server restarted", msg))
+	} else {*/
+	logline.SetMessage(fmt.Sprintf("%s: request sent", msg))
+	//}
+
+	logline.MarkDone()
+
+	return output.Marshaled{Value: res}, nil
 }

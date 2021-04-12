@@ -1,119 +1,109 @@
 package network
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/commands/server"
+	"github.com/UpCloudLtd/cli/internal/completion"
+	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
-	"github.com/jedib0t/go-pretty/v6/table"
-	"io"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"strings"
 )
 
 // ShowCommand creates the "network show" command
-func ShowCommand(networkSvc service.Network, serverSvc service.Server) commands.Command {
+func ShowCommand() commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New("show", "Show network details"),
-		networkSvc:  networkSvc,
-		serverSvc:   serverSvc,
 	}
 }
 
 type showCommand struct {
 	*commands.BaseCommand
-	networkSvc service.Network
-	serverSvc  service.Server
+	resolver.CachingNetwork
+	completion.Network
 }
 
 func (s *showCommand) InitCommand() {
-	s.SetPositionalArgHelp(positionalArgHelp)
-	s.ArgCompletion(getArgCompFn(s.networkSvc))
 }
 
-type networkWithServers struct {
-	network *upcloud.Network
-	servers []*upcloud.Server
-}
-
-func (c *networkWithServers) MarshalJSON() ([]byte, error) {
-	return json.Marshal(c.network)
-}
-
-func (s *showCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
-		if len(args) != 1 {
-			return nil, fmt.Errorf("one network uuid or name is required")
-		}
-		n, err := SearchUniqueNetwork(args[0], s.networkSvc)
-		if err != nil {
-			return nil, err
-		}
-
-		var servers []*upcloud.Server
-		for _, networkServer := range n.Servers {
-			svr, err := server.SearchSingleServer(networkServer.ServerUUID, s.serverSvc)
-			if err != nil {
-				return nil, err
-			}
-			servers = append(servers, svr)
-		}
-
-		return &networkWithServers{network: n, servers: servers}, nil
+// Execute implements commands.MultipleArgumentCommand
+func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
+	network, err := s.CachingNetwork.GetCached(arg)
+	if err != nil {
+		return nil, err
 	}
-}
+	commonSection := output.CombinedSection{Key: "", Title: "", Contents: output.Details{
+		Sections: []output.DetailSection{
+			{
+				Title: "Common",
+				Rows: []output.DetailRow{
+					{Title: "UUID:", Key: "uuid", Value: network.UUID, Color: ui.DefaultUUUIDColours},
+					{Title: "Name:", Key: "name", Value: network.Name},
+					{Title: "Router:", Key: "router", Value: network.Router},
+					{Title: "Type:", Key: "type", Value: network.Type},
+					{Title: "Zone:", Key: "zone", Value: network.Zone},
+				},
+			},
+		},
+	},
+	}
 
-func (s *showCommand) HandleOutput(writer io.Writer, out interface{}) error {
-	networkWithServers := out.(*networkWithServers)
-	n := networkWithServers.network
-	servers := networkWithServers.servers
-
-	l := ui.NewListLayout(ui.ListLayoutDefault)
-
-	dCommon := ui.NewDetailsView()
-	dCommon.Append(
-		table.Row{"UUID:", ui.DefaultUUUIDColours.Sprint(n.UUID)},
-		table.Row{"Name:", n.Name},
-		table.Row{"Router:", n.Router},
-		table.Row{"Type:", n.Type},
-		table.Row{"Zone:", n.Zone},
-	)
-	l.AppendSection("Common", dCommon.Render())
-
-	if len(n.IPNetworks) > 0 {
-		tIPNetwork := ui.NewDataTable("Address", "Family", "DHCP", "DHCP Def Router", "DHCP DNS")
-		for _, nip := range n.IPNetworks {
-			tIPNetwork.Append(table.Row{
-				ui.DefaultAddressColours.Sprint(nip.Address),
+	networkRows := make([]output.TableRow, 0)
+	if len(network.IPNetworks) > 0 {
+		for _, nip := range network.IPNetworks {
+			networkRows = append(networkRows, output.TableRow{
+				nip.Address,
 				nip.Family,
-				ui.FormatBool(nip.DHCP.Bool()),
-				ui.FormatBool(nip.DHCPDefaultRoute.Bool()),
+				nip.DHCP.Bool(),
+				nip.DHCPDefaultRoute.Bool(),
 				strings.Join(nip.DHCPDns, " "),
 			})
 		}
-		l.AppendSection("IP Networks:", tIPNetwork.Render())
-	} else {
-		l.AppendSection("IP Networks:", "(no ip network found)")
 	}
+	networkSection := output.CombinedSection{
+		Key:   "ip_networks",
+		Title: "IP Networks:",
+		Contents: output.Table{
+			Columns: []output.TableColumn{
+				{Key: "address", Header: "Address", Color: ui.DefaultAddressColours},
+				{Key: "family", Header: "Family"},
+				{Key: "dhcp", Header: "DHCP", Format: output.BoolFormat},
+				{Key: "dhcp_default_route", Header: "DHCP Def Router", Format: output.BoolFormat},
+				{Key: "dhcp_dns", Header: "DHCP DNS"},
+			},
+			Rows: networkRows,
+		}}
 
-	if len(servers) > 0 {
-		tServers := ui.NewDataTable("UUID", "Title", "Hostname", "State")
-
-		for _, s := range servers {
-			tServers.Append(table.Row{
-				ui.DefaultUUUIDColours.Sprint(s.UUID),
-				s.Title,
-				s.Hostname,
-				commands.StateColour(s.State).Sprint(s.State),
-			})
+	serverRows := make([]output.TableRow, 0)
+	for _, server := range network.Servers {
+		fetched, err := exec.Server().GetServerDetails(&request.GetServerDetailsRequest{UUID: server.ServerUUID})
+		if err != nil {
+			return nil, fmt.Errorf("error getting server %v details: %w", server.ServerUUID, err)
 		}
-		l.AppendSection("Servers:", ui.WrapWithListLayout(tServers.Render(), ui.ListLayoutNestedTable).Render())
-	} else {
-		l.AppendSection("Servers:", "(no servers assigned to this network)")
+		serverRows = append(serverRows, output.TableRow{
+			fetched.UUID,
+			fetched.Title,
+			fetched.Hostname,
+			fetched.State,
+		})
 	}
+	serverSection := output.CombinedSection{
+		Key:   "servers",
+		Title: "Servers:",
+		Contents: output.Table{
+			Columns: []output.TableColumn{
+				{Header: "UUID", Key: "uuid", Color: ui.DefaultUUUIDColours},
+				{Header: "Title", Key: "title"},
+				{Header: "Hostname", Key: "hostname"},
+				{Header: "State", Key: "state"},
+			},
+			Rows: serverRows,
+		}}
 
-	_, _ = fmt.Fprintln(writer, l.Render())
-	return nil
+	return output.Combined{
+		commonSection,
+		networkSection,
+		serverSection,
+	}, nil
 }

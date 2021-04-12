@@ -1,18 +1,21 @@
 package server
 
 import (
+	internal "github.com/UpCloudLtd/cli/internal/service"
+	"testing"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
 )
 
 func TestModifyCommand(t *testing.T) {
-	methodName := "ModifyServer"
+	targetMethod := "ModifyServer"
 
 	var Server1 = upcloud.Server{
 		CoreNumber:   1,
@@ -98,17 +101,20 @@ func TestModifyCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			CachedServers = nil
-			mss := MockServerService{}
-			mss.On(methodName, &test.modifyCall).Return(&details, nil)
-			mss.On("GetServers", mock.Anything).Return(servers, nil)
-			mc := commands.BuildCommand(ModifyCommand(&mss), nil, config.New(viper.New()))
-			err := mc.SetFlags(test.args)
+			conf := config.New()
+			testCmd := ModifyCommand()
+			mService := new(smock.Service)
+
+			conf.Service = internal.Wrapper{Service: mService}
+			mService.On(targetMethod, &test.modifyCall).Return(&details, nil)
+			mService.On("GetServers", mock.Anything).Return(servers, nil)
+			c := commands.BuildCommand(testCmd, nil, conf)
+			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 
-			_, err = mc.MakeExecuteCommand()([]string{test.server.UUID})
+			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService), test.server.UUID)
 			assert.NoError(t, err)
-			mss.AssertNumberOfCalls(t, methodName, 1)
+			mService.AssertNumberOfCalls(t, targetMethod, 1)
 		})
 	}
 }

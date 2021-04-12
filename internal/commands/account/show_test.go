@@ -2,16 +2,16 @@ package account
 
 import (
 	"bytes"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+	"testing"
+
+	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/config"
+	"github.com/UpCloudLtd/cli/internal/output"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
-
-type MockAccountService struct{}
-
-func (m *MockAccountService) GetAccount() (*upcloud.Account, error) {
-	return nil, nil
-}
 
 func TestShowCommand(t *testing.T) {
 
@@ -43,12 +43,25 @@ func TestShowCommand(t *testing.T) {
     Public IPv6:              100 
     Storage HDD:            10240 
     Storage SSD:            10240 
+
 `
 
-	buf := new(bytes.Buffer)
-	command := ShowCommand(&MockAccountService{})
-	err := command.HandleOutput(buf, &account)
+	conf := config.New()
+	testCmd := ShowCommand()
+	mService := new(smock.Service)
 
-	assert.Nil(t, err)
+	mService.On("GetAccount").Return(&account, nil)
+	// force human output
+	conf.Viper().Set(config.KeyOutput, config.ValueOutputHuman)
+
+	command := commands.BuildCommand(testCmd, nil, conf)
+	out, err := command.(commands.NoArgumentCommand).ExecuteWithoutArguments(commands.NewExecutor(conf, mService))
+	assert.NoError(t, err)
+
+	buf := bytes.NewBuffer(nil)
+	err = output.Render(buf, conf, out)
+	assert.NoError(t, err)
 	assert.Equal(t, expected, buf.String())
+
+	mService.AssertNumberOfCalls(t, "GetAccount", 1)
 }

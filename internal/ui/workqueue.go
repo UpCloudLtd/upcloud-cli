@@ -21,7 +21,7 @@ func StartWorkQueue(cfg WorkQueueConfig, handler func(idx int, logEntry *LogEntr
 	if !cfg.EnableUI {
 		out = ioutil.Discard
 	}
-	log := NewLiveLog(out, liveLogDefaultConfig)
+	log := NewLiveLog(out, LiveLogDefaultConfig)
 
 	chDone := make(chan struct{}, cfg.NumTasks)
 	doWork := func(idx int) {

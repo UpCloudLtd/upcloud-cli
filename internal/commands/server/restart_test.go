@@ -1,14 +1,16 @@
 package server
 
 import (
+	internal "github.com/UpCloudLtd/cli/internal/service"
 	"testing"
-	"time"
+	// "time"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -40,9 +42,6 @@ func TestRestartCommand(t *testing.T) {
 		},
 	}
 
-	dur120, _ := time.ParseDuration("120s")
-	dur10, _ := time.ParseDuration("10s")
-
 	for _, test := range []struct {
 		name       string
 		args       []string
@@ -53,45 +52,42 @@ func TestRestartCommand(t *testing.T) {
 			args: []string{},
 			restartReq: request.RestartServerRequest{
 				UUID:          Server1.UUID,
-				StopType:      "soft",
-				Timeout:       dur120,
-				TimeoutAction: "ignore",
-				Host:          0,
+				StopType:      defaultStopType,
+				Timeout:       defaultRestartTimeout,
+				TimeoutAction: defaultRestartTimeoutAction,
 			},
 		},
 		{
 			name: "flags mapped to the correct field",
 			args: []string{
 				"--stop-type", "hard",
-				"--timeout-action", "destroy",
-				"--timeout", "10",
-				"--host", "1234",
 			},
 			restartReq: request.RestartServerRequest{
 				UUID:          Server1.UUID,
 				StopType:      "hard",
-				Timeout:       dur10,
-				TimeoutAction: "destroy",
-				Host:          1234,
+				Timeout:       defaultRestartTimeout,
+				TimeoutAction: defaultRestartTimeoutAction,
 			},
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			CachedServers = nil
+			conf := config.New()
+			testCmd := RestartCommand()
+			mService := new(smock.Service)
 
-			mServerService := MockServerService{}
-			mServerService.On("GetServers", mock.Anything).Return(servers, nil)
-			mServerService.On("GetServerDetails", &request.GetServerDetailsRequest{UUID: Server1.UUID}).Return(&details2, nil)
-			mServerService.On(methodName, &test.restartReq).Return(&details, nil)
+			conf.Service = internal.Wrapper{Service: mService}
+			mService.On("GetServers", mock.Anything).Return(servers, nil)
+			mService.On("GetServerDetails", &request.GetServerDetailsRequest{UUID: Server1.UUID}).Return(&details2, nil)
+			mService.On(methodName, &test.restartReq).Return(&details, nil)
 
-			c := commands.BuildCommand(RestartCommand(&mServerService), nil, config.New(viper.New()))
-			err := c.SetFlags(test.args)
+			c := commands.BuildCommand(testCmd, nil, conf)
+			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 
-			_, err = c.MakeExecuteCommand()([]string{Server1.UUID})
+			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService), Server1.UUID)
 			assert.NoError(t, err)
 
-			mServerService.AssertNumberOfCalls(t, methodName, 1)
+			mService.AssertNumberOfCalls(t, methodName, 1)
 		})
 	}
 }

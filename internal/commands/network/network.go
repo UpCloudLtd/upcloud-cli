@@ -3,28 +3,25 @@ package network
 import (
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/ui"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
-	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"strings"
 )
 
 const maxNetworkActions = 10
-const positionalArgHelp = "<UUID/Name...>"
 
 // BaseNetworkCommand creates the base "network" command
 func BaseNetworkCommand() commands.Command {
-	return &networkCommand{commands.New("network", "Manage network")}
+	return &networkCommand{
+		BaseCommand: commands.New("network", "Manage network"),
+	}
 }
 
 type networkCommand struct {
 	*commands.BaseCommand
-}
-
-func getNetworkUUID(in interface{}) string {
-	return in.(*upcloud.Network).UUID
+	resolver.CachingNetwork
 }
 
 // SearchUniqueNetwork returns exactly one network with name or uuid matching *term*
@@ -79,48 +76,7 @@ func searchAllNetworks(terms []string, service service.Network, unique bool) ([]
 		func(in interface{}) string { return in.(*upcloud.Network).UUID })
 }
 
-type networkRequest struct {
-	ExactlyOne    bool
-	BuildRequest  func(uuid string) interface{}
-	Service       service.Network
-	HandleContext ui.HandleContext
-}
-
-func (s networkRequest) send(args []string) (interface{}, error) {
-	if s.ExactlyOne && len(args) != 1 {
-		return nil, fmt.Errorf("single network uuid or name is required")
-	}
-	if len(args) < 1 {
-		return nil, fmt.Errorf("at least one network uuid or name is required")
-	}
-
-	servers, err := searchAllNetworks(args, s.Service, true)
-	if err != nil {
-		return nil, err
-	}
-
-	var requests []interface{}
-	for _, server := range servers {
-		requests = append(requests, s.BuildRequest(server))
-	}
-
-	return s.HandleContext.Handle(requests)
-}
-
-func getArgCompFn(s service.Network) func(toComplete string) ([]string, cobra.ShellCompDirective) {
-	return func(toComplete string) ([]string, cobra.ShellCompDirective) {
-		networks, err := s.GetNetworks()
-		if err != nil {
-			return nil, cobra.ShellCompDirectiveDefault
-		}
-		var vals []string
-		for _, v := range networks.Networks {
-			vals = append(vals, v.UUID, v.Name)
-		}
-		return commands.MatchStringPrefix(vals, toComplete, true), cobra.ShellCompDirectiveNoFileComp
-	}
-}
-
+// TODO: figure out a nicer way to do this..
 func handleNetwork(in string) (*upcloud.IPNetwork, error) {
 	result := &upcloud.IPNetwork{}
 	var dhcp string

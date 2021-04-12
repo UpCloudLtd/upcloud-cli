@@ -1,20 +1,21 @@
 package serverstorage
 
 import (
+	"testing"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/commands/server"
-	"github.com/UpCloudLtd/cli/internal/commands/storage"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+	internal "github.com/UpCloudLtd/cli/internal/service"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
 )
 
 func TestDetachCommand(t *testing.T) {
-	methodName := "DetachStorage"
+	targetMethod := "DetachStorage"
 
 	var Server1 = upcloud.Server{
 		CoreNumber:   1,
@@ -60,25 +61,25 @@ func TestDetachCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			server.CachedServers = nil
-			storage.CachedStorages = nil
+			conf := config.New()
+			mService := new(smock.Service)
 
-			mServerService := server.MockServerService{}
-			mServerService.On("GetServers", mock.Anything).Return(servers, nil)
+			conf.Service = internal.Wrapper{Service: mService}
 
-			mStorageService := MockStorageService{}
-			mStorageService.On(methodName, &test.detachReq).Return(&details, nil)
+			mService.On("GetServers", mock.Anything).Return(servers, nil)
+			mService.On(targetMethod, &test.detachReq).Return(&details, nil)
 
-			tc := commands.BuildCommand(DetachCommand(&mServerService, &mStorageService), nil, config.New(viper.New()))
-			err := tc.SetFlags(test.args)
+			c := commands.BuildCommand(DetachCommand(), nil, conf)
+			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 
-			_, err = tc.MakeExecuteCommand()([]string{Server1.UUID})
+			_, err = c.(commands.SingleArgumentCommand).ExecuteSingleArgument(commands.NewExecutor(conf, mService), Server1.UUID)
 
 			if test.error != "" {
+				assert.Error(t, err)
 				assert.Equal(t, test.error, err.Error())
 			} else {
-				mStorageService.AssertNumberOfCalls(t, methodName, 1)
+				mService.AssertNumberOfCalls(t, targetMethod, 1)
 			}
 		})
 	}

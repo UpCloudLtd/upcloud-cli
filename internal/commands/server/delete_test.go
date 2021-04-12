@@ -1,18 +1,21 @@
 package server
 
 import (
+	"testing"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+	internal "github.com/UpCloudLtd/cli/internal/service"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
 )
 
 func TestDeleteServerCommand(t *testing.T) {
-	deleteServer := "DeleteServer"
-	deleteServerAndStorages := "DeleteServerAndStorages"
+	deleteServerMethod := "DeleteServer"
+	deleteServerAndStoragesMethod := "DeleteServerAndStorages"
 
 	var Server1 = upcloud.Server{
 		CoreNumber:   1,
@@ -53,24 +56,26 @@ func TestDeleteServerCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mss := MockServerService{}
-			mss.On(deleteServer, mock.Anything).Return(nil, nil)
-			mss.On(deleteServerAndStorages, mock.Anything).Return(nil, nil)
-			mss.On("GetServers", mock.Anything).Return(servers, nil)
+			conf := config.New()
+			testCmd := DeleteCommand()
+			mService := new(smock.Service)
 
-			tc := commands.BuildCommand(DeleteCommand(&mss), nil, config.New(viper.New()))
-			err := tc.SetFlags(test.args)
+			conf.Service = internal.Wrapper{Service: mService}
+			mService.On(deleteServerMethod, mock.Anything).Return(nil, nil)
+			mService.On(deleteServerAndStoragesMethod, mock.Anything).Return(nil, nil)
+			mService.On("GetServers", mock.Anything).Return(servers, nil)
+
+			c := commands.BuildCommand(testCmd, nil, conf)
+			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 
-			results, err := tc.MakeExecuteCommand()([]string{Server1.UUID})
-			for _, result := range results.([]interface{}) {
-				assert.Nil(t, result)
-			}
+			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService), Server1.UUID)
+			assert.Nil(t, err)
 
 			assert.Nil(t, err)
 
-			mss.AssertNumberOfCalls(t, deleteServer, test.deleteServCalls)
-			mss.AssertNumberOfCalls(t, deleteServerAndStorages, test.deleteServStorageCalls)
+			mService.AssertNumberOfCalls(t, deleteServerMethod, test.deleteServCalls)
+			mService.AssertNumberOfCalls(t, deleteServerAndStoragesMethod, test.deleteServStorageCalls)
 		})
 	}
 }

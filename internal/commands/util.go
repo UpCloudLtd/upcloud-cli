@@ -68,8 +68,8 @@ func SearchResources(
 	return result, nil
 }
 
-// StateColour is a helper mapping states to colors
-func StateColour(state string) text.Colors {
+// ServerStateColour is a helper mapping states to colors
+func ServerStateColour(state string) text.Colors {
 	switch state {
 	case upcloud.ServerStateStarted:
 		return text.Colors{text.FgGreen}
@@ -82,8 +82,25 @@ func StateColour(state string) text.Colors {
 	}
 }
 
+func StorageStateColor(state string) text.Colors {
+	switch state {
+	case upcloud.StorageStateOnline, upcloud.StorageStateSyncing:
+		return text.Colors{text.FgGreen}
+	case upcloud.StorageStateError:
+		return text.Colors{text.FgHiRed, text.Bold}
+	case upcloud.StorageStateMaintenance:
+		return text.Colors{text.FgYellow}
+	case upcloud.StorageStateCloning, upcloud.StorageStateBackuping:
+		return text.Colors{text.FgHiMagenta, text.Bold}
+	default:
+		return text.Colors{text.FgHiBlack}
+	}
+}
+
 // BoolFromString parses a string and returns *upcloud.Boolean
 func BoolFromString(b string) (*upcloud.Boolean, error) {
+	// TODO: why does this return a pointer? this should (eventually) not be needed as tristate flags
+	// should be handled much more easily than with this approach
 	var result upcloud.Boolean
 	switch b {
 	case "true":

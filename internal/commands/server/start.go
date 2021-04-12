@@ -1,81 +1,64 @@
 package server
 
 import (
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
-	"github.com/spf13/pflag"
-	"strconv"
-	"time"
+	"fmt"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/completion"
+	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
+
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 )
 
 // StartCommand creates the "server start" command
-func StartCommand(service service.Server) commands.Command {
+func StartCommand() commands.Command {
 	return &startCommand{
 		BaseCommand: commands.New("start", "Start a server"),
-		service:     service,
 	}
 }
 
 type startCommand struct {
 	*commands.BaseCommand
-	service service.Server
-	params  startParams
-}
-
-type startParams struct {
-	request.StartServerRequest
-	timeout int
-}
-
-var defaultStartParams = &startParams{
-	StartServerRequest: request.StartServerRequest{},
-	timeout:            120,
+	completion.Server
+	resolver.CachingServer
 }
 
 // InitCommand implements Command.InitCommand
 func (s *startCommand) InitCommand() {
-	s.SetPositionalArgHelp(PositionalArgHelp)
-	s.ArgCompletion(GetServerArgumentCompletionFunction(s.service))
-
-	flags := &pflag.FlagSet{}
-	flags.IntVar(&s.params.AvoidHost, "avoid-host", defaultStartParams.AvoidHost, "Avoid specific host when starting a server.")
-	flags.IntVar(&s.params.Host, "host", defaultStartParams.Host, "Start server on a specific host. Note that this is generally available for private clouds only.")
-	flags.IntVar(&s.params.timeout, "timeout", defaultStartParams.timeout, "Stop timeout in seconds. Available: 1-600")
-	s.AddFlags(flags)
 }
 
-// MakeExecuteCommand implements Command.MakeExecuteCommand
-func (s *startCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
+// Execute implements commands.MultipleArgumentCommand
+func (s *startCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
+	svc := exec.Server()
+	msg := fmt.Sprintf("starting server %v", uuid)
+	logline := exec.NewLogEntry(msg)
 
-		timeout, err := time.ParseDuration(strconv.Itoa(s.params.timeout) + "s")
-		if err != nil {
+	logline.StartedNow()
+	logline.SetMessage(fmt.Sprintf("%s: sending request", msg))
+
+	res, err := svc.StartServer(&request.StartServerRequest{
+		UUID: uuid,
+	})
+	if err != nil {
+		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
+		logline.SetDetails(err.Error(), "error: ")
+		return nil, err
+	}
+	// TODO: reimplmement
+	/*	if s.Config().GlobalFlags.Wait {
+		logline.SetMessage(fmt.Sprintf("%s: waiting to start", msg))
+		if err := exec.WaitFor(serverStateWaiter(uuid, upcloud.ServerStateStarted, msg, svc, logline), s.Config().ClientTimeout()); err != nil {
 			return nil, err
 		}
-		s.params.Timeout = timeout
 
-		return Request{
-			BuildRequest: func(uuid string) interface{} {
-				req := s.params.StartServerRequest
-				req.UUID = uuid
-				return &req
-			},
-			Service: s.service,
-			Handler: ui.HandleContext{
-				RequestID:     func(in interface{}) string { return in.(*request.StartServerRequest).UUID },
-				InteractiveUI: s.Config().InteractiveUI(),
-				MaxActions:    maxServerActions,
-				WaitMsg:       "starting server",
-				WaitFn:        waitForServer(s.service, upcloud.ServerStateStarted, s.Config().ClientTimeout()),
-				ActionMsg:     "Starting",
-				Action: func(req interface{}) (interface{}, error) {
-					return s.service.StartServer(req.(*request.StartServerRequest))
-				},
-			},
-		}.Send(args)
-	}
+		logline.SetMessage(fmt.Sprintf("%s: server started", msg))
+	} else {*/
+	logline.SetMessage(fmt.Sprintf("%s: request sent", msg))
+	//}
+
+	logline.MarkDone()
+
+	return output.Marshaled{Value: res}, nil
 }

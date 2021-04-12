@@ -2,22 +2,21 @@ package storage
 
 import (
 	"fmt"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"time"
+
+	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/cli/internal/ui"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/pflag"
-
-	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/ui"
 )
 
 // CreateCommand creates the "storage create" command
-func CreateCommand(service service.Storage) commands.Command {
+func CreateCommand() commands.Command {
 	return &createCommand{
 		BaseCommand: commands.New("create", "Create a storage"),
-		service:     service,
 	}
 }
 
@@ -33,7 +32,11 @@ var defaultCreateParams = &createParams{
 }
 
 func newCreateParams() createParams {
-	return createParams{CreateStorageRequest: request.CreateStorageRequest{BackupRule: &upcloud.BackupRule{}}}
+	return createParams{
+		CreateStorageRequest: request.CreateStorageRequest{
+			BackupRule: &upcloud.BackupRule{},
+		},
+	}
 }
 
 type createParams struct {
@@ -56,12 +59,11 @@ func (s *createParams) processParams() error {
 
 type createCommand struct {
 	*commands.BaseCommand
-	service service.Storage
 	params  createParams
 	flagSet *pflag.FlagSet
 }
 
-func createFlags(fs *pflag.FlagSet, dst, def *createParams) {
+func applyCreateFlags(fs *pflag.FlagSet, dst, def *createParams) {
 	fs.StringVar(&dst.Title, "title", def.Title, "Storage title.")
 	fs.IntVar(&dst.Size, "size", def.Size, "Size of the storage in GiB.")
 	fs.StringVar(&dst.Zone, "zone", def.Zone, "Physical location of the storage. See zone listing for valid zones.")
@@ -75,31 +77,35 @@ func createFlags(fs *pflag.FlagSet, dst, def *createParams) {
 func (s *createCommand) InitCommand() {
 	s.flagSet = &pflag.FlagSet{}
 	s.params = newCreateParams()
-	createFlags(s.flagSet, &s.params, defaultCreateParams)
+	applyCreateFlags(s.flagSet, &s.params, defaultCreateParams)
 	s.AddFlags(s.flagSet)
 }
 
-// MakeExecuteCommand implements Command.MakeExecuteCommand
-func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
+// ExecuteWithoutArguments implements commands.NoArgumentCommand
+func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
+	svc := exec.Storage()
 
-		if s.params.Size == 0 || s.params.Zone == "" || s.params.Title == "" {
-			return nil, fmt.Errorf("size, title and zone are required")
-		}
-
-		if err := s.params.processParams(); err != nil {
-			return nil, err
-		}
-
-		return ui.HandleContext{
-			RequestID:     func(in interface{}) string { return in.(*request.CreateStorageRequest).Title },
-			ResultUUID:    getStorageDetailsUUID,
-			InteractiveUI: s.Config().InteractiveUI(),
-			MaxActions:    maxStorageActions,
-			ActionMsg:     "Creating storage",
-			Action: func(req interface{}) (interface{}, error) {
-				return s.service.CreateStorage(req.(*request.CreateStorageRequest))
-			},
-		}.Handle(commands.ToArray(&s.params.CreateStorageRequest))
+	if s.params.Size == 0 || s.params.Zone == "" || s.params.Title == "" {
+		return nil, fmt.Errorf("size, title and zone are required")
 	}
+
+	if err := s.params.processParams(); err != nil {
+		return nil, err
+	}
+
+	msg := "creating storage"
+	logline := exec.NewLogEntry(msg)
+	logline.StartedNow()
+
+	res, err := svc.CreateStorage(&s.params.CreateStorageRequest)
+	if err != nil {
+		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
+		logline.SetDetails(err.Error(), "error: ")
+		return nil, err
+	}
+
+	logline.SetMessage(fmt.Sprintf("%s: success", msg))
+	logline.MarkDone()
+
+	return output.Marshaled{Value: res}, nil
 }

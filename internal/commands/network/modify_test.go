@@ -1,17 +1,19 @@
 package network
 
 import (
+	"testing"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestModifyCommand(t *testing.T) {
-	methodName := "ModifyNetwork"
+	targetMethod := "ModifyNetwork"
 
 	n := upcloud.Network{
 		UUID:   "9abccbe8-8d47-40dd-a5af-c6598f38b11b",
@@ -79,19 +81,23 @@ func TestModifyCommand(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			cachedNetworks = nil
-			mns := MockNetworkService{}
-			mns.On(methodName, &test.expected).Return(&upcloud.Network{}, nil)
-			mns.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{n}}, nil)
-			c := commands.BuildCommand(ModifyCommand(&mns), nil, config.New(viper.New()))
-			err := c.SetFlags(test.flags)
+			mService := smock.Service{}
+			mService.On(targetMethod, &test.expected).Return(&upcloud.Network{}, nil)
+			mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{n}}, nil)
+			conf := config.New()
+			c := commands.BuildCommand(ModifyCommand(), nil, conf)
+			err := c.Cobra().Flags().Parse(test.flags)
 			assert.NoError(t, err)
 
-			_, err = c.MakeExecuteCommand()([]string{n.Name})
+			_, err = c.(commands.SingleArgumentCommand).ExecuteSingleArgument(
+				commands.NewExecutor(conf, &mService),
+				n.UUID,
+			)
 
 			if err != nil {
-				assert.Equal(t, test.error, err.Error())
+				assert.EqualError(t, err, test.error)
 			} else {
-				mns.AssertNumberOfCalls(t, methodName, 1)
+				mService.AssertNumberOfCalls(t, targetMethod, 1)
 			}
 		})
 	}

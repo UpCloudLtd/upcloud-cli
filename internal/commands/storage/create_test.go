@@ -1,33 +1,26 @@
 package storage
 
 import (
+	"testing"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+	internal "github.com/UpCloudLtd/cli/internal/service"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestCreateCommand(t *testing.T) {
-	methodName := "CreateStorage"
+	targetMethod := "CreateStorage"
 	var Storage1 = upcloud.Storage{
 		UUID:   UUID1,
 		Title:  Title1,
 		Access: "private",
 		State:  "maintenance",
 		Type:   "backup",
-		Zone:   "fi-hel1",
-		Size:   40,
-		Tier:   "maxiops",
-	}
-	var Storage2 = upcloud.Storage{
-		UUID:   UUID2,
-		Title:  Title2,
-		Access: "private",
-		State:  "online",
-		Type:   "normal",
 		Zone:   "fi-hel1",
 		Size:   40,
 		Tier:   "maxiops",
@@ -110,18 +103,22 @@ func TestCreateCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mss := MockStorageService{}
-			mss.On(methodName, &test.expected).Return(&details, nil)
+			conf := config.New()
+			testCmd := CreateCommand()
+			mService := new(smock.Service)
 
-			tc := commands.BuildCommand(CreateCommand(&mss), nil, config.New(viper.New()))
-			err := tc.SetFlags(test.args)
+			conf.Service = internal.Wrapper{Service: mService}
+			mService.On(targetMethod, &test.expected).Return(&details, nil)
+
+			c := commands.BuildCommand(testCmd, nil, config.New())
+			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 
-			_, err = tc.MakeExecuteCommand()([]string{Storage2.UUID})
+			_, err = c.(commands.NoArgumentCommand).ExecuteWithoutArguments(commands.NewExecutor(conf, mService))
 			if test.error != "" {
 				assert.Errorf(t, err, test.error)
 			} else {
-				mss.AssertNumberOfCalls(t, methodName, 1)
+				mService.AssertNumberOfCalls(t, targetMethod, 1)
 			}
 		})
 	}

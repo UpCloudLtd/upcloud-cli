@@ -2,18 +2,23 @@ package storage
 
 import (
 	"fmt"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/cli/internal/completion"
+	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
 )
 
 type cloneCommand struct {
 	*commands.BaseCommand
-	service service.Storage
-	params  cloneParams
+	resolver.CachingStorage
+	completion.Storage
+	params cloneParams
 }
 
 type cloneParams struct {
@@ -21,10 +26,9 @@ type cloneParams struct {
 }
 
 // CloneCommand creates the "storage clone" command
-func CloneCommand(service service.Storage) commands.Command {
+func CloneCommand() commands.Command {
 	return &cloneCommand{
 		BaseCommand: commands.New("clone", "Clone a storage"),
-		service:     service,
 	}
 }
 
@@ -36,8 +40,6 @@ var defaultCloneParams = &cloneParams{
 
 // InitCommand implements Command.InitCommand
 func (s *cloneCommand) InitCommand() {
-	s.SetPositionalArgHelp(positionalArgHelp)
-	s.ArgCompletion(getStorageArgumentCompletionFunction(s.service))
 	s.params = cloneParams{CloneStorageRequest: request.CloneStorageRequest{}}
 
 	flagSet := &pflag.FlagSet{}
@@ -48,31 +50,31 @@ func (s *cloneCommand) InitCommand() {
 	s.AddFlags(flagSet)
 }
 
-// MakeExecuteCommand implements Command.MakeExecuteCommand
-func (s *cloneCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
+// Execute implements commands.MultipleArgumentCommand
+func (s *cloneCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 
-		if s.params.Zone == "" || s.params.Title == "" {
-			return nil, fmt.Errorf("title and zone are required")
-		}
-
-		return storageRequest{
-			BuildRequest: func(uuid string) (interface{}, error) {
-				req := s.params.CloneStorageRequest
-				req.UUID = uuid
-				return &req, nil
-			},
-			Service: s.service,
-			Handler: ui.HandleContext{
-				RequestID:     func(in interface{}) string { return in.(*request.CloneStorageRequest).UUID },
-				ResultUUID:    getStorageDetailsUUID,
-				InteractiveUI: s.Config().InteractiveUI(),
-				MaxActions:    maxStorageActions,
-				ActionMsg:     "Cloning storage",
-				Action: func(req interface{}) (interface{}, error) {
-					return s.service.CloneStorage(req.(*request.CloneStorageRequest))
-				},
-			},
-		}.send(args)
+	if s.params.Zone == "" || s.params.Title == "" {
+		return nil, fmt.Errorf("title and zone are required")
 	}
+
+	svc := exec.Storage()
+	req := s.params.CloneStorageRequest
+	req.UUID = uuid
+
+	msg := fmt.Sprintf("Cloning storage %v", uuid)
+	logline := exec.NewLogEntry(msg)
+
+	logline.StartedNow()
+
+	res, err := svc.CloneStorage(&req)
+	if err != nil {
+		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
+		logline.SetDetails(err.Error(), "error: ")
+		return nil, err
+	}
+
+	logline.SetMessage(fmt.Sprintf("%s: success", msg))
+	logline.MarkDone()
+
+	return output.Marshaled{Value: res}, nil
 }

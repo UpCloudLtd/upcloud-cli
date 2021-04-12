@@ -1,45 +1,46 @@
 package networkinterface
 
 import (
+	"testing"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/commands/server"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestModifyCommand(t *testing.T) {
-	methodName := "ModifyNetworkInterface"
+	targetMethod := "ModifyNetworkInterface"
 
-	s := upcloud.Server{UUID: "c4cb35bc-3fb5-4cce-9951-79cab2225417"}
-	servers := upcloud.Servers{Servers: []upcloud.Server{s}}
+	server := upcloud.Server{UUID: "c4cb35bc-3fb5-4cce-9951-79cab2225417"}
+	servers := upcloud.Servers{Servers: []upcloud.Server{server}}
 	network := upcloud.Network{UUID: "aa39e313-d908-418a-a959-459699bdc83a", Name: "test-network"}
 	networks := upcloud.Networks{Networks: []upcloud.Network{network}}
 
 	for _, test := range []struct {
 		name  string
-		args  []string
+		flags []string
 		error string
 		req   request.ModifyNetworkInterfaceRequest
 	}{
 		{
 			name:  "index is missing",
-			args:  []string{},
+			flags: []string{},
 			error: "index is required",
 		},
 		{
 			name: "index is present, using default values",
-			args: []string{
+			flags: []string{
 				"--index", "4",
 			},
-			req: request.ModifyNetworkInterfaceRequest{CurrentIndex: 4, ServerUUID: s.UUID},
+			req: request.ModifyNetworkInterfaceRequest{CurrentIndex: 4, ServerUUID: server.UUID},
 		},
 		{
 			name: "index is present, all values modified",
-			args: []string{
+			flags: []string{
 				"--index", "4",
 				"--new-index", "5",
 				"--bootable", "false",
@@ -47,7 +48,7 @@ func TestModifyCommand(t *testing.T) {
 				"--ip-addresses", "127.0.0.2,127.0.0.3,127.0.0.4",
 			},
 			req: request.ModifyNetworkInterfaceRequest{
-				ServerUUID:        s.UUID,
+				ServerUUID:        server.UUID,
 				CurrentIndex:      4,
 				NewIndex:          5,
 				Bootable:          upcloud.FromBool(false),
@@ -61,24 +62,23 @@ func TestModifyCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			server.CachedServers = nil
+			mService := smock.Service{}
+			mService.On("GetNetworks").Return(&networks, nil)
+			mService.On(targetMethod, &test.req).Return(&upcloud.Interface{}, nil)
 
-			mns := MockNetworkService{}
-			mns.On("GetNetworks").Return(&networks, nil)
-			mns.On(methodName, &test.req).Return(&upcloud.Interface{}, nil)
+			mService.On("GetServers").Return(&servers, nil)
+			conf := config.New()
 
-			mss := server.MockServerService{}
-			mss.On("GetServers").Return(&servers, nil)
-			c := commands.BuildCommand(ModifyCommand(&mns, &mss), nil, config.New(viper.New()))
-			err := c.SetFlags(test.args)
+			c := commands.BuildCommand(ModifyCommand(), nil, conf)
+			err := c.Cobra().Flags().Parse(test.flags)
 			assert.NoError(t, err)
 
-			_, err = c.MakeExecuteCommand()([]string{s.UUID})
+			_, err = c.(commands.SingleArgumentCommand).ExecuteSingleArgument(commands.NewExecutor(conf, &mService), server.UUID)
 
 			if test.error != "" {
 				assert.Errorf(t, err, test.error)
 			} else {
-				mns.AssertNumberOfCalls(t, methodName, 1)
+				mService.AssertNumberOfCalls(t, targetMethod, 1)
 			}
 		})
 	}

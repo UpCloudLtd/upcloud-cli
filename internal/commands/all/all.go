@@ -6,92 +6,109 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands/ipaddress"
 	"github.com/UpCloudLtd/cli/internal/commands/network"
 	"github.com/UpCloudLtd/cli/internal/commands/networkinterface"
+	"github.com/UpCloudLtd/cli/internal/commands/root"
 	"github.com/UpCloudLtd/cli/internal/commands/router"
 	"github.com/UpCloudLtd/cli/internal/commands/server"
 	"github.com/UpCloudLtd/cli/internal/commands/serverfirewall"
 	"github.com/UpCloudLtd/cli/internal/commands/serverstorage"
 	"github.com/UpCloudLtd/cli/internal/commands/storage"
 	"github.com/UpCloudLtd/cli/internal/config"
-	"github.com/UpCloudLtd/cli/internal/upapi"
+
+	"github.com/spf13/cobra"
 )
 
 // BuildCommands is the main function that sets up the commands provided by upctl.
-func BuildCommands(mainCommand commands.Command, mainConfig *config.Config) {
-	cfgFn := func() *config.Config { return config.New(mainConfig.Viper()) }
-	svc := upapi.Service(cfgFn())
+func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 
 	// Servers
-	serverCommand := commands.BuildCommand(server.BaseServerCommand(), mainCommand, cfgFn())
-	commands.BuildCommand(server.ListCommand(svc), serverCommand, cfgFn())
-	commands.BuildCommand(server.PlanListCommand(), serverCommand, cfgFn())
-	commands.BuildCommand(server.ShowCommand(svc, svc), serverCommand, cfgFn())
-	commands.BuildCommand(server.StartCommand(svc), serverCommand, cfgFn())
-	commands.BuildCommand(server.RestartCommand(svc), serverCommand, cfgFn())
-	commands.BuildCommand(server.StopCommand(svc), serverCommand, cfgFn())
-	commands.BuildCommand(server.CreateCommand(svc, svc), serverCommand, cfgFn())
-	commands.BuildCommand(server.ModifyCommand(svc), serverCommand, cfgFn())
-	commands.BuildCommand(server.LoadCommand(svc, svc), serverCommand, cfgFn())
-	commands.BuildCommand(server.EjectCommand(svc, svc), serverCommand, cfgFn())
-	commands.BuildCommand(server.DeleteCommand(svc), serverCommand, cfgFn())
+	serverCommand := commands.BuildCommand(server.BaseServerCommand(), rootCmd, conf)
+	commands.BuildCommand(server.ListCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(server.PlanListCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(server.ShowCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(server.StartCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(server.RestartCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(server.StopCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(server.CreateCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(server.ModifyCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(server.LoadCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(server.EjectCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(server.DeleteCommand(), serverCommand.Cobra(), conf)
 
-	// Server storage operations
-	serverStorageCommand := commands.BuildCommand(serverstorage.BaseServerStorageCommand(), serverCommand, cfgFn())
-	commands.BuildCommand(serverstorage.AttachCommand(svc, svc), serverStorageCommand, cfgFn())
-	commands.BuildCommand(serverstorage.DetachCommand(svc, svc), serverStorageCommand, cfgFn())
+	// Server Network Interfaces
+	networkInterfaceCommand := commands.BuildCommand(networkinterface.BaseNetworkInterfaceCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(networkinterface.CreateCommand(), networkInterfaceCommand.Cobra(), conf)
+	commands.BuildCommand(networkinterface.ModifyCommand(), networkInterfaceCommand.Cobra(), conf)
+	commands.BuildCommand(networkinterface.DeleteCommand(), networkInterfaceCommand.Cobra(), conf)
 
-	// Server firewall operations
-	serverFirewallCommand := commands.BuildCommand(serverfirewall.BaseServerFirewallCommand(), serverCommand, cfgFn())
-	commands.BuildCommand(serverfirewall.CreateCommand(svc, svc), serverFirewallCommand, cfgFn())
-	commands.BuildCommand(serverfirewall.DeleteCommand(svc, svc), serverFirewallCommand, cfgFn())
-	commands.BuildCommand(serverfirewall.ShowCommand(svc, svc), serverFirewallCommand, cfgFn())
+	// // Server storage operations
+	serverStorageCommand := commands.BuildCommand(serverstorage.BaseServerStorageCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(serverstorage.AttachCommand(), serverStorageCommand.Cobra(), conf)
+	commands.BuildCommand(serverstorage.DetachCommand(), serverStorageCommand.Cobra(), conf)
+
+	// // Server firewall operations
+	serverFirewallCommand := commands.BuildCommand(serverfirewall.BaseServerFirewallCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(serverfirewall.CreateCommand(), serverFirewallCommand.Cobra(), conf)
+	commands.BuildCommand(serverfirewall.DeleteCommand(), serverFirewallCommand.Cobra(), conf)
+	commands.BuildCommand(serverfirewall.ShowCommand(), serverFirewallCommand.Cobra(), conf)
 
 	// Storages
-	storageCommand := commands.BuildCommand(storage.BaseStorageCommand(), mainCommand, cfgFn())
-	commands.BuildCommand(storage.ListCommand(svc), storageCommand, cfgFn())
-	commands.BuildCommand(storage.CreateCommand(svc), storageCommand, cfgFn())
-	commands.BuildCommand(storage.ModifyCommand(svc), storageCommand, cfgFn())
-	commands.BuildCommand(storage.CloneCommand(svc), storageCommand, cfgFn())
-	commands.BuildCommand(storage.TemplatizeCommand(svc), storageCommand, cfgFn())
-	commands.BuildCommand(storage.DeleteCommand(svc), storageCommand, cfgFn())
-	commands.BuildCommand(storage.ImportCommand(svc), storageCommand, cfgFn())
-	commands.BuildCommand(storage.ShowCommand(svc, svc), storageCommand, cfgFn())
+	storageCommand := commands.BuildCommand(storage.BaseStorageCommand(), rootCmd, conf)
+	commands.BuildCommand(storage.ListCommand(), storageCommand.Cobra(), conf)
+	commands.BuildCommand(storage.CreateCommand(), storageCommand.Cobra(), conf)
+	commands.BuildCommand(storage.ModifyCommand(), storageCommand.Cobra(), conf)
+	commands.BuildCommand(storage.CloneCommand(), storageCommand.Cobra(), conf)
+	commands.BuildCommand(storage.TemplatizeCommand(), storageCommand.Cobra(), conf)
+	commands.BuildCommand(storage.DeleteCommand(), storageCommand.Cobra(), conf)
+	commands.BuildCommand(storage.ImportCommand(), storageCommand.Cobra(), conf)
+	commands.BuildCommand(storage.ShowCommand(), storageCommand.Cobra(), conf)
 
-	backupCommand := commands.BuildCommand(storage.BackupCommand(), storageCommand, cfgFn())
-	commands.BuildCommand(storage.CreateBackupCommand(svc), backupCommand, cfgFn())
-	commands.BuildCommand(storage.RestoreBackupCommand(svc), backupCommand, cfgFn())
+	backupCommand := commands.BuildCommand(storage.BackupCommand(), storageCommand.Cobra(), conf)
+	commands.BuildCommand(storage.CreateBackupCommand(), backupCommand.Cobra(), conf)
+	commands.BuildCommand(storage.RestoreBackupCommand(), backupCommand.Cobra(), conf)
 
-	// IP Addresses
-	ipAddressCommand := commands.BuildCommand(ipaddress.BaseIPAddressCommand(), mainCommand, cfgFn())
-	commands.BuildCommand(ipaddress.ListCommand(svc), ipAddressCommand, cfgFn())
-	commands.BuildCommand(ipaddress.ShowCommand(svc), ipAddressCommand, cfgFn())
-	commands.BuildCommand(ipaddress.ModifyCommand(svc), ipAddressCommand, cfgFn())
-	commands.BuildCommand(ipaddress.AssignCommand(svc, svc), ipAddressCommand, cfgFn())
-	commands.BuildCommand(ipaddress.RemoveCommand(svc), ipAddressCommand, cfgFn())
+	// // IP Addresses
+	ipAddressCommand := commands.BuildCommand(ipaddress.BaseIPAddressCommand(), rootCmd, conf)
+	commands.BuildCommand(ipaddress.ListCommand(), ipAddressCommand.Cobra(), conf)
+	commands.BuildCommand(ipaddress.ShowCommand(), ipAddressCommand.Cobra(), conf)
+	commands.BuildCommand(ipaddress.ModifyCommand(), ipAddressCommand.Cobra(), conf)
+	commands.BuildCommand(ipaddress.AssignCommand(), ipAddressCommand.Cobra(), conf)
+	commands.BuildCommand(ipaddress.RemoveCommand(), ipAddressCommand.Cobra(), conf)
 
 	// Networks
-	networkCommand := commands.BuildCommand(network.BaseNetworkCommand(), mainCommand, cfgFn())
-	commands.BuildCommand(network.CreateCommand(svc), networkCommand, cfgFn())
-	commands.BuildCommand(network.ListCommand(svc), networkCommand, cfgFn())
-	commands.BuildCommand(network.ShowCommand(svc, svc), networkCommand, cfgFn())
-	commands.BuildCommand(network.ModifyCommand(svc), networkCommand, cfgFn())
-	commands.BuildCommand(network.DeleteCommand(svc), networkCommand, cfgFn())
-
-	// Network Interfaces
-	networkInterfaceCommand := commands.BuildCommand(networkinterface.BaseNetworkInterfaceCommand(), serverCommand, cfgFn())
-	commands.BuildCommand(networkinterface.CreateCommand(svc, svc), networkInterfaceCommand, cfgFn())
-	commands.BuildCommand(networkinterface.ModifyCommand(svc, svc), networkInterfaceCommand, cfgFn())
-	commands.BuildCommand(networkinterface.DeleteCommand(svc, svc), networkInterfaceCommand, cfgFn())
+	networkCommand := commands.BuildCommand(network.BaseNetworkCommand(), rootCmd, conf)
+	commands.BuildCommand(network.CreateCommand(), networkCommand.Cobra(), conf)
+	commands.BuildCommand(network.ListCommand(), networkCommand.Cobra(), conf)
+	commands.BuildCommand(network.ShowCommand(), networkCommand.Cobra(), conf)
+	commands.BuildCommand(network.ModifyCommand(), networkCommand.Cobra(), conf)
+	commands.BuildCommand(network.DeleteCommand(), networkCommand.Cobra(), conf)
 
 	// Routers
-	routerCommand := commands.BuildCommand(router.BaseRouterCommand(), mainCommand, cfgFn())
-	commands.BuildCommand(router.CreateCommand(svc), routerCommand, cfgFn())
-	commands.BuildCommand(router.ListCommand(svc), routerCommand, cfgFn())
-	commands.BuildCommand(router.ShowCommand(svc), routerCommand, cfgFn())
-	commands.BuildCommand(router.ModifyCommand(svc), routerCommand, cfgFn())
-	commands.BuildCommand(router.DeleteCommand(svc), routerCommand, cfgFn())
+	routerCommand := commands.BuildCommand(router.BaseRouterCommand(), rootCmd, conf)
+	commands.BuildCommand(router.CreateCommand(), routerCommand.Cobra(), conf)
+	commands.BuildCommand(router.ListCommand(), routerCommand.Cobra(), conf)
+	commands.BuildCommand(router.ShowCommand(), routerCommand.Cobra(), conf)
+	commands.BuildCommand(router.ModifyCommand(), routerCommand.Cobra(), conf)
+	commands.BuildCommand(router.DeleteCommand(), routerCommand.Cobra(), conf)
 
 	// Account
-	accountCommand := commands.BuildCommand(account.BaseAccountCommand(), mainCommand, cfgFn())
-	commands.BuildCommand(account.ShowCommand(svc), accountCommand, cfgFn())
+	accountCommand := commands.BuildCommand(account.BaseAccountCommand(), rootCmd, conf)
+	commands.BuildCommand(account.ShowCommand(), accountCommand.Cobra(), conf)
 
+	// Misc
+	commands.BuildCommand(
+		&root.CompletionCommand{
+			BaseCommand: commands.New(
+				"completion",
+				"Generates shell completion",
+			),
+		}, rootCmd, conf,
+	)
+	commands.BuildCommand(
+		&root.VersionCommand{
+			BaseCommand: commands.New(
+				"version",
+				"Display software infomation",
+			),
+		}, rootCmd, conf,
+	)
 }

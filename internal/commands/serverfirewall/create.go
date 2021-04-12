@@ -3,132 +3,159 @@ package serverfirewall
 import (
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/commands/server"
+	"github.com/UpCloudLtd/cli/internal/completion"
+	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/m7shapan/cidr"
 	"github.com/spf13/pflag"
 )
 
 type createCommand struct {
 	*commands.BaseCommand
-	serverSvc   service.Server
-	firewallSvc service.Firewall
-	params      createParams
+	direction            string
+	family               string
+	action               string
+	position             int
+	protocol             string
+	icmpType             string
+	destinationIPBlock   string
+	destinationPortStart string
+	destinationPortEnd   string
+	sourceIPBlock        string
+	sourcePortStart      string
+	sourcePortEnd        string
+	comment              string
+	completion.Server
+	resolver.CachingServer
 }
 
 // CreateCommand creates the "server filewall create" command
-func CreateCommand(serverSvc service.Server, firewallSvc service.Firewall) commands.Command {
+func CreateCommand() commands.Command {
 	return &createCommand{
 		BaseCommand: commands.New("create", "Create a new firewall rule"),
-		serverSvc:   serverSvc,
-		firewallSvc: firewallSvc,
 	}
 }
 
-var (
-	defaultCreateParams = request.CreateFirewallRuleRequest{}
-)
-
-type createParams struct {
-	request.CreateFirewallRuleRequest
-	DestIPBlock string
-	SrcIPBlock  string
+// MaximumExecutions implements Command.MaximumExecutions
+func (s *createCommand) MaximumExecutions() int {
+	return 10
 }
 
 // InitCommand implements Command.InitCommand
 func (s *createCommand) InitCommand() {
 	flagSet := &pflag.FlagSet{}
 
-	def := defaultCreateParams
-
-	flagSet.StringVar(&s.params.Direction, "direction", def.FirewallRule.Direction, "Rule direction. Available: in / out")
-	flagSet.StringVar(&s.params.Action, "action", def.FirewallRule.Action, "Rule action. Available: accept / drop")
-	flagSet.StringVar(&s.params.Family, "family", def.FirewallRule.Family, "IP family. Available: IPv4, IPv6")
-	flagSet.IntVar(&s.params.Position, "position", def.Position, "Position in relation to other rules. Available: 1-1000")
-	flagSet.StringVar(&s.params.Protocol, "protocol", def.Protocol, "Protocol. Available: tcp, udp, icmp")
-	flagSet.StringVar(&s.params.ICMPType, "icmp-type", def.ICMPType, "ICMP type. Available: 0-255")
-	flagSet.StringVar(&s.params.DestIPBlock, "dest-ipaddress-block", "", "Destination IP address block.")
-	flagSet.StringVar(&s.params.DestinationPortStart, "destination-port-start", def.DestinationPortStart, "Destination port range start. Available: 1-65535")
-	flagSet.StringVar(&s.params.DestinationPortEnd, "destination-port-end", def.DestinationPortEnd, "Destination port range end.")
-	flagSet.StringVar(&s.params.SrcIPBlock, "src-ipaddress-block", "", "Source IP address block.")
-	flagSet.StringVar(&s.params.SourcePortStart, "source-port-start", def.SourcePortStart, "Source port range start.")
-	flagSet.StringVar(&s.params.SourcePortEnd, "source-port-end", def.SourcePortEnd, "Destination port range end.")
-	flagSet.StringVar(&s.params.Comment, "comment", def.Comment, "Freeform comment that can include 0-250 characters.")
+	flagSet.StringVar(&s.direction, "direction", "", "Rule direction. Available: in / out")
+	flagSet.StringVar(&s.action, "action", "", "Rule action. Available: accept / drop")
+	flagSet.StringVar(&s.family, "family", "", "IP family. Available: IPv4, IPv6")
+	flagSet.IntVar(&s.position, "position", 0, "Position in relation to other rules. Available: 1-1000")
+	flagSet.StringVar(&s.protocol, "protocol", "", "Protocol. Available: tcp, udp, icmp")
+	flagSet.StringVar(&s.icmpType, "icmp-type", "", "ICMP type. Available: 0-255")
+	flagSet.StringVar(&s.destinationIPBlock, "dest-ipaddress-block", "", "Destination IP address block.")
+	flagSet.StringVar(&s.destinationPortStart, "destination-port-start", "", "Destination port range start. Available: 1-65535")
+	flagSet.StringVar(&s.destinationPortEnd, "destination-port-end", "", "Destination port range end.")
+	flagSet.StringVar(&s.sourceIPBlock, "src-ipaddress-block", "", "Source IP address block.")
+	flagSet.StringVar(&s.sourcePortStart, "source-port-start", "", "Source port range start.")
+	flagSet.StringVar(&s.sourcePortEnd, "source-port-end", "", "Destination port range end.")
+	flagSet.StringVar(&s.comment, "comment", "", "Freeform comment that can include 0-250 characters.")
 
 	s.AddFlags(flagSet)
 }
 
-// MakeExecuteCommand implements Command.MakeExecuteCommand
-func (s *createCommand) MakeExecuteCommand() func(args []string) (interface{}, error) {
-	return func(args []string) (interface{}, error) {
+// Execute implements commands.MultipleArgumentCommand
+func (s *createCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
+	if s.direction == "" {
+		return nil, fmt.Errorf("direction is required")
+	}
 
-		if s.params.Direction == "" {
-			return nil, fmt.Errorf("direction is required")
-		}
+	if s.action == "" {
+		return nil, fmt.Errorf("action is required")
+	}
 
-		if s.params.Action == "" {
-			return nil, fmt.Errorf("action is required")
-		}
+	if s.family == "" {
+		return nil, fmt.Errorf("family (IPv4/IPv6) is required")
+	}
 
-		if s.params.Family == "" {
-			return nil, fmt.Errorf("family (IPv4/IPv6) is required")
-		}
+	if s.family != "IPv4" && s.family != "IPv6" {
+		return nil, fmt.Errorf("invalid family, use either IPv4 or IPv6")
+	}
 
-		if s.params.Family != "IPv4" && s.params.Family != "IPv6" {
-			return nil, fmt.Errorf("invalid family, use either IPv4 or IPv6")
-		}
+	if s.destinationPortStart == "" && s.destinationPortEnd != "" {
+		return nil, fmt.Errorf("destination-port-start is required if destination-port-end is set")
+	}
 
-		NetDst, err := cidr.ParseCIDR(s.params.DestIPBlock)
+	if s.destinationPortEnd == "" && s.destinationPortStart != "" {
+		return nil, fmt.Errorf("destination-port-end is required if destination-port-start is set")
+	}
+
+	if s.sourcePortStart == "" && s.sourcePortEnd != "" {
+		return nil, fmt.Errorf("source-port-start is required if source-port-end is set")
+	}
+
+	if s.sourcePortEnd == "" && s.sourcePortStart != "" {
+		return nil, fmt.Errorf("source-port-end is required if source-port-start is set")
+	}
+
+	var (
+		destinationNetwork      *cidr.ParsedCIDR
+		sourceNetwork           *cidr.ParsedCIDR
+		destinationAddressStart string
+		destinationAddressEnd   string
+		sourceAddressStart      string
+		sourceAddressEnd        string
+		err                     error
+	)
+	if s.destinationIPBlock != "" {
+		destinationNetwork, err = cidr.ParseCIDR(s.destinationIPBlock)
 		if err != nil {
 			return nil, fmt.Errorf("dest-ipaddress-block parse error: %s", err)
 		}
-		s.params.DestinationAddressStart = NetDst.FirstIP.String()
-		s.params.DestinationAddressEnd = NetDst.LastIP.String()
-
-		if s.params.DestinationPortStart == "" && s.params.DestinationPortEnd != "" {
-			return nil, fmt.Errorf("destination-port-start is required if destination-port-end is set")
-		}
-
-		if s.params.DestinationPortEnd == "" && s.params.DestinationPortStart != "" {
-			return nil, fmt.Errorf("destination-port-end is required if destination-port-start is set")
-		}
-
-		NetSrc, err := cidr.ParseCIDR(s.params.SrcIPBlock)
+		destinationAddressStart = destinationNetwork.FirstIP.String()
+		destinationAddressEnd = destinationNetwork.LastIP.String()
+	}
+	if s.sourceIPBlock != "" {
+		sourceNetwork, err = cidr.ParseCIDR(s.sourceIPBlock)
 		if err != nil {
 			return nil, fmt.Errorf("src-ipaddress-block parse error: %s", err)
 		}
-		s.params.SourceAddressStart = NetSrc.FirstIP.String()
-		s.params.SourceAddressEnd = NetSrc.LastIP.String()
-
-		if s.params.SourcePortStart == "" && s.params.SourcePortEnd != "" {
-			return nil, fmt.Errorf("source-port-start is required if source-port-end is set")
-		}
-
-		if s.params.SourcePortEnd == "" && s.params.SourcePortStart != "" {
-			return nil, fmt.Errorf("source-port-end is required if source-port-start is set")
-		}
-
-		return server.Request{
-			BuildRequest: func(uuid string) interface{} {
-				req := s.params.CreateFirewallRuleRequest
-				req.ServerUUID = uuid
-				return &req
-			},
-			Service:    s.serverSvc,
-			ExactlyOne: true,
-			Handler: ui.HandleContext{
-				InteractiveUI: s.Config().InteractiveUI(),
-				MaxActions:    10,
-				MessageFn: func(in interface{}) string {
-					req := in.(*request.CreateFirewallRuleRequest)
-					return fmt.Sprintf("Creating firewall rule for server %q", req.ServerUUID)
-				},
-				Action: func(req interface{}) (interface{}, error) {
-					return s.firewallSvc.CreateFirewallRule(req.(*request.CreateFirewallRuleRequest))
-				},
-			},
-		}.Send(args)
+		sourceAddressStart = sourceNetwork.FirstIP.String()
+		sourceAddressEnd = sourceNetwork.LastIP.String()
 	}
+
+	msg := fmt.Sprintf("creating firewall rule for server %v", arg)
+	logline := exec.NewLogEntry(msg)
+	logline.StartedNow()
+	res, err := exec.Firewall().CreateFirewallRule(&request.CreateFirewallRuleRequest{
+		ServerUUID: arg,
+		FirewallRule: upcloud.FirewallRule{
+			Action:                  s.action,
+			Comment:                 s.comment,
+			DestinationAddressStart: destinationAddressStart,
+			DestinationAddressEnd:   destinationAddressEnd,
+			DestinationPortStart:    s.destinationPortStart,
+			DestinationPortEnd:      s.destinationPortEnd,
+			Direction:               s.direction,
+			Family:                  s.family,
+			ICMPType:                s.icmpType,
+			Position:                s.position,
+			Protocol:                s.protocol,
+			SourceAddressStart:      sourceAddressStart,
+			SourceAddressEnd:        sourceAddressEnd,
+			SourcePortStart:         s.sourcePortStart,
+			SourcePortEnd:           s.sourcePortEnd,
+		},
+	})
+	if err != nil {
+		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
+		logline.SetDetails(err.Error(), "error: ")
+		return nil, err
+	}
+	logline.SetMessage(fmt.Sprintf("%s: done", msg))
+	logline.MarkDone()
+
+	return output.Marshaled{Value: res}, nil
+
 }

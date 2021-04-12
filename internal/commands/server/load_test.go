@@ -1,19 +1,21 @@
 package server
 
 import (
+	internal "github.com/UpCloudLtd/cli/internal/service"
+	"testing"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/commands/storage"
 	"github.com/UpCloudLtd/cli/internal/config"
+	smock "github.com/UpCloudLtd/cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
 )
 
 func TestLoadCDROMCommand(t *testing.T) {
-	methodName := "LoadCDROM"
+	targetMethod := "LoadCDROM"
 
 	var Server1 = upcloud.Server{
 		CoreNumber:   1,
@@ -75,26 +77,33 @@ func TestLoadCDROMCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			CachedServers = nil
-			storage.CachedStorages = nil
+			conf := config.New()
+			testCmd := LoadCommand()
+			mService := new(smock.Service)
 
-			mServerService := MockServerService{}
-			mServerService.On("GetServers", mock.Anything).Return(servers, nil)
+			conf.Service = internal.Wrapper{Service: mService}
 
-			mStorageService := MockStorageService{}
-			mStorageService.On(methodName, &test.loadReq).Return(&details, nil)
-			mStorageService.On("GetStorages", mock.Anything).Return(storages, nil)
+			mService.On("GetServers", mock.Anything).Return(servers, nil)
+			mService.On("GetStorages", mock.Anything).Return(storages, nil)
+			mService.On(targetMethod, &test.loadReq).Return(&details, nil)
 
-			cc := commands.BuildCommand(LoadCommand(&mServerService, &mStorageService), nil, config.New(viper.New()))
-			err := cc.SetFlags(test.args)
+			c := commands.BuildCommand(testCmd, nil, conf)
+			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 
-			_, err = cc.MakeExecuteCommand()([]string{Server1.UUID})
+			_, err = c.(commands.MultipleArgumentCommand).Execute(
+				commands.NewExecutor(conf, mService),
+				Server1.UUID,
+			)
 
 			if test.error != "" {
-				assert.Equal(t, test.error, err.Error())
+				if err == nil {
+					t.Errorf("expected error '%v', got nil", test.error)
+				} else {
+					assert.Equal(t, test.error, err.Error())
+				}
 			} else {
-				mStorageService.AssertNumberOfCalls(t, methodName, 1)
+				mService.AssertNumberOfCalls(t, targetMethod, 1)
 			}
 		})
 	}
