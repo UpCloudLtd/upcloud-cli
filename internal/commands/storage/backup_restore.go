@@ -53,5 +53,5 @@ func (s *restoreBackupCommand) Execute(exec commands.Executor, uuid string) (out
 	logline.SetMessage(fmt.Sprintf("%s: success", msg))
 	logline.MarkDone()
 
-	return nil, nil
+	return output.None{}, nil
 }
