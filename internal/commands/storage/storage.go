@@ -2,7 +2,6 @@ package storage
 
 import (
 	"fmt"
-	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
@@ -60,15 +59,6 @@ func searchStorage(storagesPtr *[]upcloud.Storage, service service.Storage, uuid
 	return matched, nil
 }
 
-func searchAllStorages(terms []string, service service.Storage, unique bool) ([]string, error) {
-	return commands.SearchResources(
-		terms,
-		func(id string) (interface{}, error) {
-			return searchStorage(&CachedStorages, service, id, unique)
-		},
-		func(in interface{}) string { return in.(*upcloud.Storage).UUID })
-}
-
 // SearchSingleStorage returns exactly one storage where title or uuid matches uuidOrTitle
 // TODO: remove the cross-command dependencies
 func SearchSingleStorage(uuidOrTitle string, service service.Storage) (*upcloud.Storage, error) {
@@ -77,36 +67,4 @@ func SearchSingleStorage(uuidOrTitle string, service service.Storage) (*upcloud.
 		return nil, err
 	}
 	return matchedResults[0], nil
-}
-
-type storageRequest struct {
-	ExactlyOne   bool
-	BuildRequest func(storage string) (interface{}, error)
-	Service      service.Storage
-	Handler      ui.Handler
-}
-
-func (s storageRequest) send(args []string) (interface{}, error) {
-	if s.ExactlyOne && len(args) != 1 {
-		return nil, fmt.Errorf("single storage uuid is required")
-	}
-	if len(args) < 1 {
-		return nil, fmt.Errorf("at least one storage uuid is required")
-	}
-
-	storages, err := searchAllStorages(args, s.Service, true)
-	if err != nil {
-		return nil, err
-	}
-
-	var requests []interface{}
-	for _, storage := range storages {
-		req, err := s.BuildRequest(storage)
-		if err != nil {
-			return nil, err
-		}
-		requests = append(requests, req)
-	}
-
-	return s.Handler.Handle(requests)
 }
