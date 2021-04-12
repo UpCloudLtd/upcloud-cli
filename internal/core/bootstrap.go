@@ -32,6 +32,13 @@ func BuildRootCmd(_ []string, conf *config.Config) cobra.Command {
 				return fmt.Errorf("cannot load configuration: %w", err)
 			}
 
+			// Validate viper output binding too
+			if conf.Output() != config.ValueOutputHuman &&
+				conf.Output() != config.ValueOutputJSON &&
+				conf.Output() != config.ValueOutputYAML {
+				return fmt.Errorf("Output format '%v' not accepted", conf.Output())
+			}
+
 			return nil
 		},
 
