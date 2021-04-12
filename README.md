@@ -40,12 +40,29 @@ sudo chmod +x /usr/local/bin/upctl
 upctl -h
 ```
 
-### macOS & Linux
+Setting up bash completion requires a few commands more.
+
+```bash
+brew install bash-completion
+sudo upctl completion bash > /usr/local/etc/bash_completion.d/upctl
+echo "[ -f /usr/local/etc/bash_completion ] && . /usr/local/etc/bash_completion" >> ~/.bash_profile
+. /usr/local/etc/bash_completion
+```
+
+###  Linux
 
 ```bash
 sudo curl -o /usr/local/bin/upctl https://github.com/UpCloudLtd/upcloud-cli/releases/download/v<VERSION>/upctl-v<VERSION>-linux-amd64
 sudo chmod +x /usr/local/bin/upctl
 upctl -h
+```
+
+Bash completion can also be set up with some extra commands. You should adapt this for your package manager.
+```bash
+sudo apt install bash-completion
+sudo upctl completion bash > /etc/bash_completion.d/upctl
+echo "[ -f /etc/bash_completion ] && . /etc/bash_completion" >> ~/.bash_profile
+. /etc/bash_completion
 ```
 
 ### Windows
