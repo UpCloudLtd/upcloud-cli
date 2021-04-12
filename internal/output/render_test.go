@@ -18,7 +18,7 @@ func (f failWriter) Write(_ []byte) (n int, err error) {
 func TestRenderFailingWriter(t *testing.T) {
 	fw := failWriter{}
 	cfg := config.New()
-	cfg.Top().Viper().Set(config.KeyOutput, "human")
+	cfg.Viper().Set(config.KeyOutput, "human")
 	err := output.Render(fw, cfg, output.None{})
 	assert.EqualError(t, err, "MOCKERROR")
 }
@@ -53,17 +53,17 @@ func TestRender(t *testing.T) {
 			out := new(bytes.Buffer)
 			cfg := config.New()
 
-			cfg.Top().Viper().Set(config.KeyOutput, "human")
+			cfg.Viper().Set(config.KeyOutput, "human")
 			err := output.Render(out, cfg, test.output)
 			validateOutput(t, test.expectedHumanResult, test.expectedErrorMessage, out.Bytes(), err)
 			out.Truncate(0)
 
-			cfg.Top().Viper().Set(config.KeyOutput, "json")
+			cfg.Viper().Set(config.KeyOutput, "json")
 			err = output.Render(out, cfg, test.output)
 			validateOutput(t, test.expectedJSONResult, test.expectedErrorMessage, out.Bytes(), err)
 			out.Truncate(0)
 
-			cfg.Top().Viper().Set(config.KeyOutput, "yaml")
+			cfg.Viper().Set(config.KeyOutput, "yaml")
 			err = output.Render(out, cfg, test.output)
 			validateOutput(t, test.expectedYAMLResult, test.expectedErrorMessage, out.Bytes(), err)
 		})

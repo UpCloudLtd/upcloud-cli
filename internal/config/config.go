@@ -58,7 +58,6 @@ type GlobalFlags struct {
 // Config holds the configuration for running upctl
 type Config struct {
 	viper   *viper.Viper
-	ns      string
 	flagSet *pflag.FlagSet
 	// TODO: remove this after refactored
 	Service     internal.Wrapper
@@ -102,31 +101,19 @@ func (s *Config) Viper() *viper.Viper {
 	return s.viper
 }
 
-// SetNamespace sets the configuration namespace
-func (s *Config) SetNamespace(ns string) {
-	s.ns = ns
-}
-
 // IsSet return true if the key is set in the current namespace
 func (s *Config) IsSet(key string) bool {
-	return s.viper.IsSet(s.prependNs(key))
+	return s.viper.IsSet(key)
 }
 
 // Get return the value of the key in the current namespace
 func (s *Config) Get(key string) interface{} {
-	return s.viper.Get(s.prependNs(key))
+	return s.viper.Get(key)
 }
 
 // GetString is a convenience method of getting a configuration value in the current namespace as a string
 func (s *Config) GetString(key string) string {
-	return s.viper.GetString(s.prependNs(key))
-}
-
-// Top returns a *copy* of the Config with no namespace
-func (s *Config) Top() *Config {
-	clone := *s
-	clone.SetNamespace("")
-	return &clone
+	return s.viper.GetString(key)
 }
 
 // FlagByKey returns pflag.Flag associated with a key in config
@@ -155,16 +142,9 @@ func (s *Config) ConfigBindFlagSet(flags *pflag.FlagSet) {
 		panic("Nil flagset")
 	}
 	flags.VisitAll(func(flag *pflag.Flag) {
-		_ = s.viper.BindPFlag(s.prependNs(flag.Name), flag)
+		_ = s.viper.BindPFlag(flag.Name, flag)
 		// s.flagSet.AddFlag(flag)
 	})
-}
-
-func (s *Config) prependNs(key string) string {
-	if s.ns == "" {
-		return key
-	}
-	return fmt.Sprintf("%s.%s", s.ns, key)
 }
 
 // Commonly used keys as accessors
@@ -198,16 +178,16 @@ func (t *transport) RoundTrip(req *http.Request) (*http.Response, error) {
 
 // CreateService creates a new service instance and puts in the conf struct
 func (s *Config) CreateService() (internal.AllServices, error) {
-	username := s.Top().GetString("username")
-	password := s.Top().GetString("password")
+	username := s.GetString("username")
+	password := s.GetString("password")
 
 	if username == "" || password == "" {
 		// nb. this might give silghtly unexpected results on OS X, as xdg.ConfigHome points to ~/Library/Application Support
 		// while we really use/prefer/document ~/.config - which does work on osx as well but won't be displayed here.
 		// TODO: fix this?
 		configDetails := fmt.Sprintf("default location %s", filepath.Join(xdg.ConfigHome, "upctl.yaml"))
-		if s.Top().GetString("config") != "" {
-			configDetails = fmt.Sprintf("used %s", s.Top().GetString("config"))
+		if s.GetString("config") != "" {
+			configDetails = fmt.Sprintf("used %s", s.GetString("config"))
 		}
 		return nil, fmt.Errorf("user credentials not found, these must be set in config file (%s) or via environment variables", configDetails)
 	}

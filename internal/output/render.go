@@ -26,7 +26,7 @@ func Render(writer io.Writer, cfg *config.Config, commandOutputs ...Output) (err
 		// add a final newline to the end. all sections should print just the top newline for themselves.
 		buffer.Write([]byte{'\n'})
 		output = buffer.Bytes()
-	case cfg.Top().IsSet(config.KeyOutput) && cfg.Output() == config.ValueOutputJSON:
+	case cfg.IsSet(config.KeyOutput) && cfg.Output() == config.ValueOutputJSON:
 		var jsonOutput []json.RawMessage
 		for _, commandOutput := range commandOutputs {
 			if _, ok := commandOutput.(None); !ok {
@@ -47,7 +47,7 @@ func Render(writer io.Writer, cfg *config.Config, commandOutputs ...Output) (err
 			return err
 		}
 		output = append(output, '\n')
-	case cfg.Top().IsSet(config.KeyOutput) && cfg.Output() == config.ValueOutputYAML:
+	case cfg.IsSet(config.KeyOutput) && cfg.Output() == config.ValueOutputYAML:
 		var yamlOutput []string
 		for _, commandOutput := range commandOutputs {
 			if _, ok := commandOutput.(None); !ok {

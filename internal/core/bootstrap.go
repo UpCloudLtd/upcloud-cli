@@ -62,6 +62,7 @@ func BuildRootCmd(_ []string, conf *config.Config) cobra.Command {
 		"Wait for the command to be completed",
 	)
 
+	// XXX: Apply viper value to the help as default
 	// Add flags
 	flags.VisitAll(func(flag *pflag.Flag) {
 		rootCmd.PersistentFlags().AddFlag(flag)

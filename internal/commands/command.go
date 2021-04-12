@@ -215,10 +215,13 @@ func BuildCommand(child Command, parent *cobra.Command, config *config.Config) C
 		parent.AddCommand(child.Cobra())
 	}
 
-	// TODO: taken out, do we need this?
-	// if nsCmd, ok := child.(namespace); ok {
-	//   config.SetNamespace(child.Namespace())
-	// }
+	// XXX: Maybe put back the viper default flags value to child commands
+	// params?  It is was implemented back in
+	// 5ece0e1b31df5d542546d81bbf2472c2e97aadff
+	// How does it work:
+	// A common viper instance can be shared for all commands, each flags has
+	// the format Name:
+	// Parent.Child1...Childn.FlagName
 
 	// Init
 	child.InitCommand()
@@ -257,21 +260,6 @@ func BuildCommand(child Command, parent *cobra.Command, config *config.Config) C
 		}
 	}
 
-	// Apply viper value to the help
-	curHelp := child.Cobra().HelpFunc()
-	child.Cobra().SetHelpFunc(func(cCmd *cobra.Command, args []string) {
-		child.Cobra().Flags().VisitAll(func(f *pflag.Flag) {
-			// TODO: reimplement
-			/*config.SetNamespace(child.Namespace())
-
-			if !child.Config().IsSet(f.Name) {
-				return
-			}
-			f.DefValue = child.Config().GetString(f.Name)*/
-		})
-		curHelp(cCmd, args)
-	})
-
 	return child
 }
 
@@ -291,10 +279,10 @@ func (s *BaseCommand) AddFlags(flags *pflag.FlagSet) {
 	if flags == nil {
 		panic("Nil flagset")
 	}
+
 	flags.VisitAll(func(flag *pflag.Flag) {
 		s.Cobra().Flags().AddFlag(flag)
 	})
-	//	s.config.ConfigBindFlagSet(flags)
 }
 
 // InitCommand can be overriden to handle flag registration.
