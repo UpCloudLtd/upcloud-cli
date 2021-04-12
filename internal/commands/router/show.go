@@ -39,7 +39,11 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 	}
 	networkRows := make([]output.TableRow, len(networks))
 	for i, network := range networks {
-		networkRows[i] = output.TableRow{network.UUID, network.Name, network.Router, network.Type, network.Zone}
+		networkRows[i] = output.TableRow{
+			network.UUID,
+			network.Name,
+			network.Type,
+			network.Zone}
 	}
 	return output.Combined{
 		output.CombinedSection{
@@ -62,7 +66,6 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 				Columns: []output.TableColumn{
 					{Key: "uuid", Header: "UUID", Color: ui.DefaultUUUIDColours},
 					{Key: "name", Header: "Name"},
-					{Key: "router", Header: "Router", Color: ui.DefaultUUUIDColours},
 					{Key: "type", Header: "Type"},
 					{Key: "zone", Header: "Zone"},
 				},

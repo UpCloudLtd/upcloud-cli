@@ -59,9 +59,9 @@ func TestShowCommand(t *testing.T) {
 
   Networks:
 
-     UUID                                   Name           Router                                 Type      Zone    
-    ────────────────────────────────────── ────────────── ────────────────────────────────────── ───────── ─────────
-     ce6a9934-c0c6-4d84-9ad4-0611f5b95e79   test-network   79c0ad83-ac84-44f3-a2f8-06cbd524ee8c   utility   uk-lon1 
+     UUID                                   Name           Type      Zone    
+    ────────────────────────────────────── ────────────── ───────── ─────────
+     ce6a9934-c0c6-4d84-9ad4-0611f5b95e79   test-network   utility   uk-lon1 
     
 `
 	mService := smock.Service{}

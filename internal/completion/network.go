@@ -2,6 +2,7 @@ package completion
 
 import (
 	"github.com/UpCloudLtd/cli/internal/service"
+
 	"github.com/spf13/cobra"
 )
 
@@ -16,6 +17,7 @@ func (s Network) CompleteArgument(svc service.AllServices, toComplete string) ([
 		return None(toComplete)
 	}
 	var vals []string
+	// XXX: filter networks as it include all public/private prefixes
 	for _, v := range networks.Networks {
 		vals = append(vals, v.UUID, v.Name)
 	}
