@@ -27,8 +27,6 @@ func ModifyCommand() commands.Command {
 
 // InitCommand implements Command.InitCommand
 func (s *modifyCommand) InitCommand() {
-	// TODO: reimplmement
-	// s.SetPositionalArgHelp(positionalArgHelp)
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.name, "name", "", "New router name.")
 	s.AddFlags(fs)

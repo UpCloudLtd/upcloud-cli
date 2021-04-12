@@ -43,8 +43,6 @@ var defaultAttachParams = &attachParams{
 
 // InitCommand implements Command.InitCommand
 func (s *attachCommand) InitCommand() {
-	// TODO: reimplmement
-	// s.SetPositionalArgHelp(positionalArgHelp)
 	s.params = attachParams{AttachStorageRequest: request.AttachStorageRequest{}}
 
 	flagSet := &pflag.FlagSet{}

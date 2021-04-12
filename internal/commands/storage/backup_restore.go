@@ -15,7 +15,7 @@ import (
 type restoreBackupCommand struct {
 	*commands.BaseCommand
 	resolver.CachingStorage
-	completion.Server
+	completion.Storage
 	params restoreBackupParams
 }
 
@@ -32,9 +32,6 @@ func RestoreBackupCommand() commands.Command {
 
 // InitCommand implements Command.InitCommand
 func (s *restoreBackupCommand) InitCommand() {
-	// TODO: reimplmement
-	// s.SetPositionalArgHelp(positionalArgHelp)
-	// s.ArgCompletion(getStorageArgumentCompletionFunction(s.service))
 }
 
 // Execute implements command.Command

@@ -33,9 +33,6 @@ type restartCommand struct {
 
 // InitCommand implements Command.InitCommand
 func (s *restartCommand) InitCommand() {
-	// TODO: reimplmement
-	// s.SetPositionalArgHelp(PositionalArgHelp)
-
 	flags := &pflag.FlagSet{}
 
 	// TODO: reimplement? does not seem to make sense to automagically destroy

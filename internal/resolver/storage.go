@@ -6,7 +6,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 )
 
-// CachingServer implements resolver for servers, caching the results
+// CachingStorage implements resolver for storages, caching the results
 type CachingStorage struct{}
 
 // make sure we implement the ResolutionProvider interface
@@ -35,4 +35,9 @@ func (s CachingStorage) Get(svc internal.AllServices) (Resolver, error) {
 
 		return "", NotFoundError(arg)
 	}, nil
+}
+
+// PositionalArgumentHelp implements resolver.ResolutionProvider
+func (s CachingStorage) PositionalArgumentHelp() string {
+	return "<UUID/Title...>"
 }

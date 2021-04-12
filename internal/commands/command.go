@@ -162,7 +162,14 @@ func BuildCommand(child Command, parent *cobra.Command, config *config.Config) C
 			return cp.CompleteArgument(svc, toComplete)
 		}
 	}
-	// Run
+	if rp, ok := child.(resolver.ResolutionProvider); ok {
+		child.Cobra().Use = fmt.Sprintf("%s %s", child.Cobra().Name(), rp.PositionalArgumentHelp())
+	} else {
+		// not sure if we really need this?
+		child.Cobra().Use = child.Cobra().Name()
+	}
+
+	// Set run
 	child.Cobra().RunE = commandRunE(child, config)
 
 	// Apply viper value to the help

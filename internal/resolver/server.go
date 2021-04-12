@@ -32,3 +32,8 @@ func (s CachingServer) Get(svc internal.AllServices) (Resolver, error) {
 		return "", NotFoundError(arg)
 	}, nil
 }
+
+// PositionalArgumentHelp implements resolver.ResolutionProvider
+func (s CachingServer) PositionalArgumentHelp() string {
+	return "<UUID/Title/Hostname...>"
+}

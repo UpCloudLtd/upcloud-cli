@@ -33,8 +33,6 @@ func ModifyCommand() commands.Command {
 
 // InitCommand implements Command.InitCommand
 func (s *modifyCommand) InitCommand() {
-	// TODO: reimplmement
-	// s.SetPositionalArgHelp(server.PositionalArgHelp)
 	fs := &pflag.FlagSet{}
 	fs.IntVar(&s.currentIndex, "index", s.currentIndex, "Index of the interface to modify.")
 	fs.IntVar(&s.newIndex, "new-index", s.newIndex, "Index of the interface to modify.")

@@ -27,8 +27,6 @@ type startCommand struct {
 
 // InitCommand implements Command.InitCommand
 func (s *startCommand) InitCommand() {
-	// TODO: reimplmement
-	// s.SetPositionalArgHelp(PositionalArgHelp)
 }
 
 func (s *startCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {

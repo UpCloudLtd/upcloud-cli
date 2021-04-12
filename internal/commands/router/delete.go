@@ -25,8 +25,6 @@ func DeleteCommand() commands.Command {
 
 // InitCommand implements Command.InitCommand
 func (s *deleteCommand) InitCommand() {
-	// TODO: reimplmement
-	// s.SetPositionalArgHelp(positionalArgHelp)
 }
 
 // MaximumExecutions implements Command.MaximumExecutions

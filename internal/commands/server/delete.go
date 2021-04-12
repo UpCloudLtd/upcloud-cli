@@ -29,8 +29,6 @@ type deleteCommand struct {
 
 // InitCommand implements Command.InitCommand
 func (s *deleteCommand) InitCommand() {
-	// TODO: reimplmement
-	// s.SetPositionalArgHelp(PositionalArgHelp)
 	flags := &pflag.FlagSet{}
 	flags.BoolVar(&s.deleteStorages, "delete-storages", false, "Delete storages that are attached to the server.")
 	s.AddFlags(flags)

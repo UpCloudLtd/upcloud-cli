@@ -50,3 +50,8 @@ func (s *CachingRouter) GetCached(uuid string) (upcloud.Router, error) {
 	}
 	return upcloud.Router{}, NotFoundError(uuid)
 }
+
+// PositionalArgumentHelp implements resolver.ResolutionProvider
+func (s *CachingRouter) PositionalArgumentHelp() string {
+	return "<UUID/Name...>"
+}

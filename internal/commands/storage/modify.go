@@ -2,6 +2,7 @@ package storage
 
 import (
 	"fmt"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/completion"
@@ -18,6 +19,7 @@ import (
 type modifyCommand struct {
 	*commands.BaseCommand
 	completion.Storage
+	resolver.CachingStorage
 	params modifyParams
 }
 
@@ -51,8 +53,6 @@ func (s *modifyCommand) MaximumExecutions() int {
 
 // InitCommand implements Command.InitCommand
 func (s *modifyCommand) InitCommand() {
-	// TODO: reimplmement
-	// s.SetPositionalArgHelp(positionalArgHelp)
 	s.params = modifyParams{ModifyStorageRequest: request.ModifyStorageRequest{}}
 
 	flagSet := &pflag.FlagSet{}

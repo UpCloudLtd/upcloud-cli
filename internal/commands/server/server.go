@@ -10,10 +10,6 @@ import (
 const (
 	minStorageSize   = 10
 	maxServerActions = 10
-	// PositionalArgHelp is the helper string for server arguments
-	// TODO: remove the cross-command dependencies
-	PositionalArgHelp = "<UUID/Title/Hostname...>"
-
 	// Server state related consts
 	defaultStopType             = request.ServerStopTypeSoft
 	defaultRestartTimeout       = time.Duration(120) * time.Second

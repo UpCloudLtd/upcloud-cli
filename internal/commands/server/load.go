@@ -38,8 +38,6 @@ var defaultLoadParams = &loadParams{
 
 // InitCommand implements Command.InitCommand
 func (s *loadCommand) InitCommand() {
-	// TODO: reimplmement
-	// s.SetPositionalArgHelp(PositionalArgHelp)
 	s.params = loadParams{LoadCDROMRequest: request.LoadCDROMRequest{}}
 
 	flagSet := &pflag.FlagSet{}

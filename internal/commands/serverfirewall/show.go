@@ -31,8 +31,6 @@ type showCommand struct {
 
 // InitCommand implements Command.InitCommand
 func (s *showCommand) InitCommand() {
-	// TODO: reimplement
-	//	s.SetPositionalArgHelp(positionalArgHelp)
 }
 
 type fwRuleAddress struct {

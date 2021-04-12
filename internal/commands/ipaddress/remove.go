@@ -6,6 +6,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 )
@@ -13,6 +14,7 @@ import (
 type removeCommand struct {
 	*commands.BaseCommand
 	completion.IPAddress
+	resolver.CachingIPAddress
 }
 
 // RemoveCommand creates the 'ip-address remove' command
@@ -30,8 +32,6 @@ func (s *removeCommand) MaximumExecutions() int {
 
 // InitCommand implements Command.MakeExecuteCommand
 func (s *removeCommand) InitCommand() {
-	// TODO: reimplmement
-	// s.SetPositionalArgHelp(positionalArgHelp)
 }
 
 // Execute implements Command.Execute

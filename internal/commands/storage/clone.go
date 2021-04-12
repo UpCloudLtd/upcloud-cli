@@ -40,9 +40,6 @@ var defaultCloneParams = &cloneParams{
 
 // InitCommand implements Command.InitCommand
 func (s *cloneCommand) InitCommand() {
-	// TODO: reimplmement
-	// s.SetPositionalArgHelp(positionalArgHelp)
-	// s.ArgCompletion(getStorageArgumentCompletionFunction(s.service))
 	s.params = cloneParams{CloneStorageRequest: request.CloneStorageRequest{}}
 
 	flagSet := &pflag.FlagSet{}

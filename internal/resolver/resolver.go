@@ -8,4 +8,5 @@ type Resolver func(arg string) (uuid string, err error)
 // ResolutionProvider is an interface for commands that provide resolution, either custom or the built-in ones
 type ResolutionProvider interface {
 	Get(svc service.AllServices) (Resolver, error)
+	PositionalArgumentHelp() string
 }

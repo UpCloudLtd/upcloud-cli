@@ -6,8 +6,6 @@ import (
 
 const (
 	maxServerStorageActions = 10
-	// TODO: re-add
-	// positionalArgHelp       = "<UUID/Title/Hostname...>"
 )
 
 // BaseServerStorageCommand creates the base "server storage" command

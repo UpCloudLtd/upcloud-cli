@@ -4,6 +4,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 )
@@ -18,12 +19,11 @@ func ShowCommand() commands.Command {
 type showCommand struct {
 	*commands.BaseCommand
 	completion.IPAddress
+	resolver.CachingIPAddress
 }
 
 // InitCommand implements Command.InitCommand
 func (s *showCommand) InitCommand() {
-	// TODO: reimplmement
-	// s.SetPositionalArgHelp(positionalArgHelp)
 }
 
 func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {

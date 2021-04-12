@@ -32,3 +32,8 @@ func (s CachingIPAddress) Get(svc internal.AllServices) (Resolver, error) {
 		return "", NotFoundError(arg)
 	}, nil
 }
+
+// PositionalArgumentHelp implements resolver.ResolutionProvider
+func (s CachingIPAddress) PositionalArgumentHelp() string {
+	return "<Address/PTRRecord...>"
+}

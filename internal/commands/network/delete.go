@@ -5,6 +5,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 )
@@ -12,6 +13,7 @@ import (
 type deleteCommand struct {
 	*commands.BaseCommand
 	completion.Network
+	resolver.CachingNetwork
 }
 
 // DeleteCommand creates the 'network delete' command
@@ -23,8 +25,6 @@ func DeleteCommand() commands.Command {
 
 // InitCommand implements Command.InitCommand
 func (s *deleteCommand) InitCommand() {
-	// TODO: reimplmement
-	// s.SetPositionalArgHelp(positionalArgHelp)
 }
 
 // Execute implements Command.Execute

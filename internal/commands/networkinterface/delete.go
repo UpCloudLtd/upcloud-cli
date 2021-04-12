@@ -28,8 +28,6 @@ func DeleteCommand() commands.Command {
 
 // InitCommand implements Command.InitCommand
 func (s *deleteCommand) InitCommand() {
-	// TODO: reimplmement
-	// s.SetPositionalArgHelp(server.PositionalArgHelp)
 	fs := &pflag.FlagSet{}
 	fs.IntVar(&s.interfaceIndex, "index", 0, "Interface index.")
 	s.AddFlags(fs)

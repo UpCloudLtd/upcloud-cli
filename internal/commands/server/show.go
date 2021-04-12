@@ -29,8 +29,6 @@ type showCommand struct {
 }
 
 func (s *showCommand) InitCommand() {
-	// TODO: reimplmement
-	// s.SetPositionalArgHelp(PositionalArgHelp)
 }
 
 // Execute implements Command.MakeExecuteCommand

@@ -37,8 +37,6 @@ func DetachCommand() commands.Command {
 
 // InitCommand implements Command.InitCommand
 func (s *detachCommand) InitCommand() {
-	// TODO: reimplmement
-	// s.SetPositionalArgHelp(positionalArgHelp)
 	s.params = detachParams{DetachStorageRequest: request.DetachStorageRequest{}}
 
 	flagSet := &pflag.FlagSet{}

@@ -63,3 +63,8 @@ func (s *CachingNetwork) Resolve(arg string) (resolved string, err error) {
 	return networkMatcher(s.cached)(arg)
 
 }
+
+// PositionalArgumentHelp implements resolver.ResolutionProvider
+func (s *CachingNetwork) PositionalArgumentHelp() string {
+	return "<UUID/Name...>"
+}

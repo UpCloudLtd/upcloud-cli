@@ -38,8 +38,6 @@ var defaultTemplatizeParams = &templatizeParams{
 
 // InitCommand implements Command.InitCommand
 func (s *templatizeCommand) InitCommand() {
-	// TODO: reimplmement
-	// s.SetPositionalArgHelp(positionalArgHelp)
 	s.params = templatizeParams{TemplatizeStorageRequest: request.TemplatizeStorageRequest{}}
 
 	flagSet := &pflag.FlagSet{}

@@ -152,8 +152,6 @@ func importFlags(fs *pflag.FlagSet, dst, def *importParams) {
 
 // InitCommand implements Command.InitCommand
 func (s *importCommand) InitCommand() {
-	// TODO: reimplmement
-	// s.SetPositionalArgHelp(positionalArgHelp)
 	s.flagSet = &pflag.FlagSet{}
 	s.importParams = newImportParams()
 	importFlags(s.flagSet, &s.importParams, defaultImportParams)

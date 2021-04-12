@@ -13,12 +13,9 @@ import (
 var (
 	maxStorageActions = 10
 	// CachedStorages stores the cached list of storages in order to not hit the service more than once
-	// TODO: remove the cross-command dependencies
+	// TODO: refactor
 	CachedStorages []upcloud.Storage
 )
-
-// TODO: re-add
-// const positionalArgHelp = "<UUID or Title...>"
 
 // BaseStorageCommand creates the base "storage" command
 func BaseStorageCommand() commands.Command {

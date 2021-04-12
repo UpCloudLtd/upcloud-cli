@@ -27,8 +27,6 @@ type deleteCommand struct {
 
 // InitCommand implements Command.InitCommand
 func (s *deleteCommand) InitCommand() {
-	// TODO: reimplmement
-	// s.SetPositionalArgHelp(positionalArgHelp)
 }
 
 // MaximumExecutions implements command.Command

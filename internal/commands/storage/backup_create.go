@@ -16,7 +16,7 @@ import (
 type createBackupCommand struct {
 	*commands.BaseCommand
 	resolver.CachingStorage
-	completion.Server
+	completion.Storage
 	params createBackupParams
 }
 
@@ -37,9 +37,6 @@ var defaultCreateBackupParams = &createBackupParams{
 
 // InitCommand implements Command.InitCommand
 func (s *createBackupCommand) InitCommand() {
-	// TODO: reimplmement
-	// s.SetPositionalArgHelp(positionalArgHelp)
-	// s.ArgCompletion(getStorageArgumentCompletionFunction(s.service))
 	s.params = createBackupParams{CreateBackupRequest: request.CreateBackupRequest{}}
 
 	flagSet := &pflag.FlagSet{}

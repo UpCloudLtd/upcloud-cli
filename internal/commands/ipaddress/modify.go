@@ -29,8 +29,6 @@ func ModifyCommand() commands.Command {
 
 // InitCommand implements Command.InitCommand
 func (s *modifyCommand) InitCommand() {
-	// TODO: reimplmement
-	// s.SetPositionalArgHelp(positionalArgHelp)
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.mac, "mac", "", "MAC address of server interface to attach floating IP to.")
 	fs.StringVar(&s.ptrrecord, "ptr-record", "", "A fully qualified domain name.")
