@@ -124,7 +124,7 @@ func setBackupFields(storageUUID string, p modifyParams, service service.Storage
 	return nil
 }
 
-// Execute implements command.Command
+// Execute implements commands.MultipleArgumentCommand
 func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Storage()
 	msg := fmt.Sprintf("modifing storage %v", uuid)

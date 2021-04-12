@@ -50,8 +50,8 @@ func (s *detachCommand) MaximumExecutions() int {
 	return maxServerStorageActions
 }
 
-// Execute implements command.Command
-func (s *detachCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
+// ExecuteSingleArgument implements command.SingleArgumentCommand
+func (s *detachCommand) ExecuteSingleArgument(exec commands.Executor, uuid string) (output.Output, error) {
 	storageSvc := exec.Storage()
 
 	if s.params.Address == "" {

@@ -34,6 +34,7 @@ func (s *deleteCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
+// Execute implements commands.MultipleArgumentCommand
 func (s *deleteCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Server()
 	msg := fmt.Sprintf("deleting server %v", uuid)

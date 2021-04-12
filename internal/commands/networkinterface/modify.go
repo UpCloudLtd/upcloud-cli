@@ -48,8 +48,8 @@ func (s *modifyCommand) MaximumExecutions() int {
 	return maxNetworkInterfaceActions
 }
 
-// Execute implements command.Command
-func (s *modifyCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
+// ExecuteSingleArgument implements commands.SingleArgumentCommand
+func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string) (output.Output, error) {
 	if s.currentIndex == 0 {
 		return nil, fmt.Errorf("index is required")
 	}

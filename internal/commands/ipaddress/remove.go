@@ -1,7 +1,6 @@
 package ipaddress
 
 import (
-	"errors"
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/completion"
@@ -34,11 +33,8 @@ func (s *removeCommand) MaximumExecutions() int {
 func (s *removeCommand) InitCommand() {
 }
 
-// Execute implements Command.Execute
+// Execute implements commands.MultipleArgumentCommand
 func (s *removeCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
-	if arg == "" {
-		return nil, errors.New("need ip address to remove")
-	}
 	msg := fmt.Sprintf("removing ip-address %v", arg)
 	logline := exec.NewLogEntry(msg)
 

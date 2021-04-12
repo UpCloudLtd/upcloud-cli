@@ -32,11 +32,8 @@ func (s *deleteCommand) InitCommand() {
 	s.AddFlags(flagSet)
 }
 
-// Execute implements Command.Execute
+// Execute implements commands.MultipleArgumentCommand
 func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
-	if arg == "" {
-		return nil, fmt.Errorf("server is required")
-	}
 	if s.rulePosition == 0 {
 		return nil, fmt.Errorf("position is required")
 	}

@@ -34,8 +34,8 @@ func (s *listCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
-// Execute implements command.Command
-func (s *listCommand) Execute(exec commands.Executor, _ string) (output.Output, error) {
+// ExecuteWithoutArguments implements commands.NoArgumentCommand
+func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	routers, err := exec.Network().GetRouters()
 	if err != nil {
 		return nil, err

@@ -27,7 +27,7 @@ func DeleteCommand() commands.Command {
 func (s *deleteCommand) InitCommand() {
 }
 
-// Execute implements Command.Execute
+// Execute implements commands.MultipleArgumentCommand
 func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	svc := exec.Network()
 	msg := fmt.Sprintf("deleting network %v", arg)

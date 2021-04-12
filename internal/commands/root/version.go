@@ -12,7 +12,7 @@ type VersionCommand struct {
 	*commands.BaseCommand
 }
 
-// Execute implements command.Command
+// Execute implements commands.MultipleArgumentCommand
 func (s *VersionCommand) Execute(_ commands.Executor, _ string) (output.Output, error) {
 	return output.Details{Sections: []output.DetailSection{
 		{Rows: []output.DetailRow{

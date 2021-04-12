@@ -42,8 +42,8 @@ func (s *listCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
-// Execute implements command.Command
-func (s *listCommand) Execute(exec commands.Executor, _ string) (output.Output, error) {
+// ExecuteWithoutArguments implements commands.NoArgumentCommand
+func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	svc := exec.Storage()
 
 	storageList, err := svc.GetStorages(&request.GetStoragesRequest{})

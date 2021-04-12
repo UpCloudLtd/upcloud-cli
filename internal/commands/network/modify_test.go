@@ -89,7 +89,7 @@ func TestModifyCommand(t *testing.T) {
 			err := c.Cobra().Flags().Parse(test.flags)
 			assert.NoError(t, err)
 
-			_, err = c.(commands.MultipleArgumentCommand).Execute(
+			_, err = c.(commands.SingleArgumentCommand).ExecuteSingleArgument(
 				commands.NewExecutor(conf, &mService),
 				n.UUID,
 			)

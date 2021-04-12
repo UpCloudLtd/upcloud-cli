@@ -46,6 +46,7 @@ func (s *loadCommand) InitCommand() {
 	s.AddFlags(flagSet)
 }
 
+// Execute implements commands.MultipleArgumentCommand
 func (s *loadCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Storage()
 

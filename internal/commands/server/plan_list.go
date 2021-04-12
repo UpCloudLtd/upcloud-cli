@@ -16,7 +16,8 @@ type planListCommand struct {
 	*commands.BaseCommand
 }
 
-func (s *planListCommand) Execute(exec commands.Executor, _ string) (output.Output, error) {
+// ExecuteWithoutArguments implements commands.NoArgumentCommand
+func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	svc := exec.Plan()
 	plans, err := svc.GetPlans()
 	if err != nil {

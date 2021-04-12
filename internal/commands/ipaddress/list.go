@@ -25,8 +25,8 @@ func (s *listCommand) InitCommand() {
 	//	s.AddFlags(flags)
 }
 
-// Execute implements Command.Execute
-func (s *listCommand) Execute(exec commands.Executor, _ string) (output.Output, error) {
+// ExecuteWithoutArguments implements commands.NoArgumentCommand
+func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	ips, err := exec.IPAddress().GetIPAddresses()
 	if err != nil {
 		return nil, err

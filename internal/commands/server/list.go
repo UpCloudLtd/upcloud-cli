@@ -18,8 +18,8 @@ type listCommand struct {
 	*commands.BaseCommand
 }
 
-// Execute implements command.Command
-func (s *listCommand) Execute(exec commands.Executor, _ string) (output.Output, error) {
+// ExecuteWithoutArguments implements commands.NoArgumentCommand
+func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	svc := exec.Server()
 	servers, err := svc.GetServers()
 	if err != nil {

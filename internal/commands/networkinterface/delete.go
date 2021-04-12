@@ -38,8 +38,8 @@ func (s *deleteCommand) MaximumExecutions() int {
 	return maxNetworkInterfaceActions
 }
 
-// Execute implements command.Command
-func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
+// ExecuteSingleArgument implements commands.SingleArgumentCommand
+func (s *deleteCommand) ExecuteSingleArgument(exec commands.Executor, arg string) (output.Output, error) {
 	if s.interfaceIndex == 0 {
 		return nil, fmt.Errorf("interface index is required")
 	}

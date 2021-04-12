@@ -45,7 +45,7 @@ func (s *createBackupCommand) InitCommand() {
 	s.AddFlags(flagSet)
 }
 
-// Execute implements command.Command
+// Execute implements commands.MultipleArgumentCommand
 func (s *createBackupCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Storage()
 

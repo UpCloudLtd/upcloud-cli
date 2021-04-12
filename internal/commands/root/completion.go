@@ -12,7 +12,7 @@ type CompletionCommand struct {
 	*commands.BaseCommand
 }
 
-// Execute implements command.Command
+// Execute implements commands.MultipleArgumentCommand
 func (s *CompletionCommand) Execute(_ commands.Executor, arg string) (output.Output, error) {
 	if arg == "" {
 		return nil, fmt.Errorf("shell name is requred")

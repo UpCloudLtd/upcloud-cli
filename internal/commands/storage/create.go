@@ -81,8 +81,8 @@ func (s *createCommand) InitCommand() {
 	s.AddFlags(s.flagSet)
 }
 
-// Execute implements command.Command
-func (s *createCommand) Execute(exec commands.Executor, _ string) (output.Output, error) {
+// ExecuteWithoutArguments implements commands.NoArgumentCommand
+func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	svc := exec.Storage()
 
 	if s.params.Size == 0 || s.params.Zone == "" || s.params.Title == "" {

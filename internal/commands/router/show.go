@@ -1,7 +1,6 @@
 package router
 
 import (
-	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/output"
@@ -28,11 +27,8 @@ type showCommand struct {
 func (s *showCommand) InitCommand() {
 }
 
-// ExecuteSingleArgument implements command.SingleArgumentCommand
-func (s *showCommand) ExecuteSingleArgument(exec commands.Executor, arg string) (output.Output, error) {
-	if arg == "" {
-		return nil, fmt.Errorf("one router uuid or name is required")
-	}
+// Execute implements commands.MultipleArgumentCommand
+func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	router, err := s.CachingRouter.GetCached(arg)
 	if err != nil {
 		return nil, err

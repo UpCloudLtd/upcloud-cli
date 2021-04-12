@@ -50,7 +50,7 @@ func (s *cloneCommand) InitCommand() {
 	s.AddFlags(flagSet)
 }
 
-// Execute implements Command.MakeExecuteCommand
+// Execute implements commands.MultipleArgumentCommand
 func (s *cloneCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 
 	if s.params.Zone == "" || s.params.Title == "" {

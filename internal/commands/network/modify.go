@@ -1,7 +1,6 @@
 package network
 
 import (
-	"errors"
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/completion"
@@ -47,11 +46,8 @@ func (s *modifyCommand) InitCommand() {
 	s.AddFlags(fs) // TODO(ana): replace usage with examples once the refactor is done.
 }
 
-// Execute implements Command.Execute
-func (s *modifyCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
-	if arg == "" {
-		return nil, errors.New("need network to modify")
-	}
+// ExecuteSingleArgument implements commands.SingleArgumentCommand
+func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string) (output.Output, error) {
 	var networks []upcloud.IPNetwork
 	for _, networkStr := range s.networks {
 		network, err := handleNetwork(networkStr)

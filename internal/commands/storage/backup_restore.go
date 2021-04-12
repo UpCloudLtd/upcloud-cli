@@ -34,7 +34,7 @@ func RestoreBackupCommand() commands.Command {
 func (s *restoreBackupCommand) InitCommand() {
 }
 
-// Execute implements command.Command
+// Execute implements commands.MultipleArgumentCommand
 func (s *restoreBackupCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	msg := fmt.Sprintf("restoring backup %v", uuid)
 	logline := exec.NewLogEntry(msg)

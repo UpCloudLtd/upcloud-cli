@@ -46,7 +46,7 @@ type fwProto struct {
 	ICMPType string `json:"icmptype,omitempty"`
 }
 
-// Execute implements Command.Execute
+// Execute implements commands.MultipleArgumentCommand
 func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	// TODO(aakso): implement prompting with readline support
 	if arg == "" {

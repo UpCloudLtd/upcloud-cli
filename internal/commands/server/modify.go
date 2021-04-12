@@ -60,7 +60,7 @@ func (s *modifyCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
-// Execute implements command.Command
+// Execute implements commands.MultipleArgumentCommand
 func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 
 	remoteAccess := new(upcloud.Boolean)

@@ -71,7 +71,7 @@ func commandNoneRunE(nc NoArgumentCommand, config *config.Config) func(cmd *cobr
 
 func commandSingleRunE(nc SingleArgumentCommand, config *config.Config) func(cmd *cobra.Command, args []string) error {
 	return func(cmd *cobra.Command, args []string) error {
-		if len(args) != 1 {
+		if len(args) != 1 || args[0] == "" {
 			return fmt.Errorf("exactly 1 argument is required")
 		}
 		svc, err := config.CreateService()

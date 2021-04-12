@@ -33,6 +33,7 @@ func EjectCommand() commands.Command {
 	}
 }
 
+// Execute implements commands.MultipleArgumentCommand
 func (s *ejectCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Storage()
 	msg := fmt.Sprintf("Ejecting CD-ROM from %v", uuid)

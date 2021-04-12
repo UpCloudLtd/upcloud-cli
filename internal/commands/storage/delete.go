@@ -34,7 +34,7 @@ func (s *deleteCommand) MaximumExecutions() int {
 	return maxStorageActions
 }
 
-// Execute implements Command.Execute
+// Execute implements commands.MultipleArgumentCommand
 func (s *deleteCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Storage()
 	msg := fmt.Sprintf("deleting storage %v", uuid)

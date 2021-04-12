@@ -65,11 +65,8 @@ func (s *createCommand) InitCommand() {
 	s.AddFlags(flagSet)
 }
 
+// Execute implements commands.MultipleArgumentCommand
 func (s *createCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
-	if arg == "" {
-		return nil, fmt.Errorf("server is required")
-	}
-
 	if s.direction == "" {
 		return nil, fmt.Errorf("direction is required")
 	}

@@ -37,11 +37,6 @@ func TestCreateFirewallRuleCommand(t *testing.T) {
 		error       string
 	}{
 		{
-			name:  "Empty arg",
-			flags: []string{},
-			error: "server is required",
-		},
-		{
 			name:  "Empty info",
 			flags: []string{},
 			arg:   Server1.UUID,

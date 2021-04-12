@@ -46,7 +46,7 @@ func (s *templatizeCommand) InitCommand() {
 	s.AddFlags(flagSet)
 }
 
-// Execute implements Command.MakeExecuteCommand
+// Execute implements commands.MultipleArgumentCommand
 func (s *templatizeCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 
 	if s.params.Title == "" {

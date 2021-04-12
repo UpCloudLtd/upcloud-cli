@@ -32,11 +32,8 @@ func (s *modifyCommand) InitCommand() {
 	s.AddFlags(fs)
 }
 
-// Execute implements command.Command
-func (s *modifyCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
-	if arg == "" {
-		return nil, fmt.Errorf("router is required")
-	}
+// ExecuteSingleArgument implements commands.SingleArgumentCommand
+func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string) (output.Output, error) {
 	if s.name == "" {
 		return nil, fmt.Errorf("name is required")
 	}

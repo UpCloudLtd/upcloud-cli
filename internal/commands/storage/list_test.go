@@ -122,7 +122,7 @@ func TestListStorages(t *testing.T) {
 			err := c.Cobra().Flags().Parse(testcase.args)
 			assert.NoError(t, err)
 
-			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService), "")
+			_, err = c.(commands.NoArgumentCommand).ExecuteWithoutArguments(commands.NewExecutor(conf, mService))
 			assert.NoError(t, err)
 
 			mService.AssertNumberOfCalls(t, "GetStorages", 1)

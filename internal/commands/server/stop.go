@@ -35,6 +35,7 @@ func (s *stopCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
+// Execute implements commands.MultipleArgumentCommand
 func (s *stopCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Server()
 	msg := fmt.Sprintf("stoping server %v", uuid)

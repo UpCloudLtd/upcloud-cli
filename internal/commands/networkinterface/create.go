@@ -56,7 +56,7 @@ func (s *createCommand) MaximumExecutions() int {
 	return maxNetworkInterfaceActions
 }
 
-// ExecuteSingleArgument implements command.SingleArgumentCommand
+// ExecuteSingleArgument implements commands.SingleArgumentCommand
 func (s *createCommand) ExecuteSingleArgument(exec commands.Executor, arg string) (output.Output, error) {
 	ipAddresses := []request.CreateNetworkInterfaceIPAddress{}
 	if s.networkUUID == "" {

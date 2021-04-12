@@ -40,7 +40,7 @@ func (s *modifyCommand) MaximumExecutions() int {
 	return maxIPAddressActions
 }
 
-// Execute implements Command.Execute
+// Execute implements commands.MultipleArgumentCommand
 func (s *modifyCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	if arg == "" {
 		return nil, errors.New("need ip address to modify")

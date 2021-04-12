@@ -28,7 +28,7 @@ type showCommand struct {
 func (s *showCommand) InitCommand() {
 }
 
-// Execute implements Command.MakeExecuteCommand
+// Execute implements commands.MultipleArgumentCommand
 func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	// var (
 	// wg sync.WaitGroup

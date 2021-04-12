@@ -32,7 +32,7 @@ func (s *deleteCommand) MaximumExecutions() int {
 	return maxRouterActions
 }
 
-// Execute implements command.Command
+// Execute implements commands.MultipleArgumentCommand
 func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	msg := fmt.Sprintf("Deleting router %s", arg)
 	logline := exec.NewLogEntry(msg)
