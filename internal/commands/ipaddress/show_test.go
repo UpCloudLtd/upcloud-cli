@@ -49,7 +49,7 @@ func TestShowCommand(t *testing.T) {
 	conf.Viper().Set(config.KeyOutput, config.ValueOutputHuman)
 
 	command := commands.BuildCommand(ShowCommand(), nil, conf)
-	out, err := command.(commands.NewCommand).Execute(commands.NewExecutor(conf, svc), ipAddress.Address)
+	out, err := command.(commands.Command).Execute(commands.NewExecutor(conf, svc), ipAddress.Address)
 	assert.NoError(t, err)
 
 	buf := bytes.NewBuffer(nil)

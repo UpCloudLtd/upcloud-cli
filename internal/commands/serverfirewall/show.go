@@ -31,7 +31,8 @@ type showCommand struct {
 
 // InitCommand implements Command.InitCommand
 func (s *showCommand) InitCommand() {
-	s.SetPositionalArgHelp(positionalArgHelp)
+	// TODO: reimplement
+	//	s.SetPositionalArgHelp(positionalArgHelp)
 }
 
 type fwRuleAddress struct {
@@ -47,7 +48,7 @@ type fwProto struct {
 	ICMPType string `json:"icmptype,omitempty"`
 }
 
-// Execute implements NewCommand.Execute
+// Execute implements Command.Execute
 func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	// TODO(aakso): implement prompting with readline support
 	if arg == "" {

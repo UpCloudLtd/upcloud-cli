@@ -115,9 +115,10 @@ func TestAttachStorageCommand(t *testing.T) {
 			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 
-			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, mService), Server1.UUID)
+			_, err = c.(commands.Command).Execute(commands.NewExecutor(conf, mService), Server1.UUID)
 
 			if test.error != "" {
+				assert.Error(t, err)
 				assert.Equal(t, test.error, err.Error())
 			} else {
 				mService.AssertNumberOfCalls(t, targetMethod, 1)

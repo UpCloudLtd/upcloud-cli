@@ -55,7 +55,7 @@ func TestShowCommand(t *testing.T) {
 	conf.Viper().Set(config.KeyOutput, config.ValueOutputHuman)
 
 	command := commands.BuildCommand(testCmd, nil, conf)
-	out, err := command.(commands.NewCommand).Execute(commands.NewExecutor(conf, mService), "")
+	out, err := command.(commands.Command).Execute(commands.NewExecutor(conf, mService), "")
 	assert.NoError(t, err)
 
 	buf := bytes.NewBuffer(nil)

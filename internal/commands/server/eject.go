@@ -24,7 +24,8 @@ type ejectParams struct {
 }
 
 func (s *ejectCommand) InitCommand() {
-	s.SetPositionalArgHelp(PositionalArgHelp)
+	// TODO: reimplmement
+	// s.SetPositionalArgHelp(PositionalArgHelp)
 }
 
 // EjectCommand creates the "server eject" command

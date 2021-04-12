@@ -99,7 +99,7 @@ func TestCreateCommand(t *testing.T) {
 			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 
-			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, &mService), "")
+			_, err = c.(commands.Command).Execute(commands.NewExecutor(conf, &mService), "")
 
 			if err != nil {
 				assert.Equal(t, test.error, err.Error())

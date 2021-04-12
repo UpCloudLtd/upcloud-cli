@@ -25,10 +25,11 @@ type showCommand struct {
 }
 
 func (s *showCommand) InitCommand() {
-	s.SetPositionalArgHelp(positionalArgHelp)
+	// TODO: reimplmement
+	// s.SetPositionalArgHelp(positionalArgHelp)
 }
 
-// Execute implements NewCommand.Execute
+// Execute implements Command.Execute
 func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	network, err := s.CachingNetwork.GetCached(arg)
 	if err != nil {

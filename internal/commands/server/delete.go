@@ -2,10 +2,10 @@ package server
 
 import (
 	"fmt"
+	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/resolver"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/ui"
 
@@ -14,7 +14,7 @@ import (
 )
 
 // DeleteCommand creates the "server delete" command
-func DeleteCommand() commands.NewCommand {
+func DeleteCommand() commands.Command {
 	return &deleteCommand{
 		BaseCommand: commands.New("delete", "Delete a server"),
 	}
@@ -29,7 +29,8 @@ type deleteCommand struct {
 
 // InitCommand implements Command.InitCommand
 func (s *deleteCommand) InitCommand() {
-	s.SetPositionalArgHelp(PositionalArgHelp)
+	// TODO: reimplmement
+	// s.SetPositionalArgHelp(PositionalArgHelp)
 	flags := &pflag.FlagSet{}
 	flags.BoolVar(&s.deleteStorages, "delete-storages", false, "Delete storages that are attached to the server.")
 	s.AddFlags(flags)

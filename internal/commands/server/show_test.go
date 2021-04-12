@@ -211,7 +211,7 @@ func TestServerHumanOutput(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	res, err := command.(commands.NewCommand).Execute(commands.NewExecutor(conf, &mService), uuid)
+	res, err := command.(commands.Command).Execute(commands.NewExecutor(conf, &mService), uuid)
 
 	assert.Nil(t, err)
 

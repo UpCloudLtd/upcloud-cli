@@ -17,7 +17,8 @@ var (
 	CachedStorages []upcloud.Storage
 )
 
-const positionalArgHelp = "<UUID or Title...>"
+// TODO: re-add
+// const positionalArgHelp = "<UUID or Title...>"
 
 // BaseStorageCommand creates the base "storage" command
 func BaseStorageCommand() commands.Command {

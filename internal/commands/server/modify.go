@@ -2,11 +2,11 @@ package server
 
 import (
 	"fmt"
-	"github.com/UpCloudLtd/cli/internal/resolver"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
@@ -15,7 +15,7 @@ import (
 )
 
 // ModifyCommand creates the "server modify" command
-func ModifyCommand() commands.NewCommand {
+func ModifyCommand() commands.Command {
 	return &modifyCommand{
 		BaseCommand: commands.New("modify", "Modifies the configuration of an existing server"),
 	}
@@ -23,9 +23,9 @@ func ModifyCommand() commands.NewCommand {
 
 type modifyCommand struct {
 	*commands.BaseCommand
+	params modifyParams
 	resolver.CachingServer
 	completion.Server
-	params modifyParams
 }
 
 type modifyParams struct {
@@ -40,7 +40,8 @@ var defaultModifyParams = modifyParams{
 
 // InitCommand implements Command.InitCommand
 func (s *modifyCommand) InitCommand() {
-	s.SetPositionalArgHelp(PositionalArgHelp)
+	// TODO: reimplmement
+	// s.SetPositionalArgHelp(PositionalArgHelp)
 	s.params = modifyParams{ModifyServerRequest: request.ModifyServerRequest{}}
 	flags := &pflag.FlagSet{}
 	flags.StringVar(&s.params.BootOrder, "boot-order", defaultModifyParams.BootOrder, "The boot device order.")
@@ -61,7 +62,7 @@ func (s *modifyCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
-// Execute implements command.NewCommand
+// Execute implements command.Command
 func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 
 	remoteAccess := new(upcloud.Boolean)

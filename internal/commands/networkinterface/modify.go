@@ -8,7 +8,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/commands/server"
 	"github.com/UpCloudLtd/cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/pflag"
@@ -34,7 +33,8 @@ func ModifyCommand() commands.Command {
 
 // InitCommand implements Command.InitCommand
 func (s *modifyCommand) InitCommand() {
-	s.SetPositionalArgHelp(server.PositionalArgHelp)
+	// TODO: reimplmement
+	// s.SetPositionalArgHelp(server.PositionalArgHelp)
 	fs := &pflag.FlagSet{}
 	fs.IntVar(&s.currentIndex, "index", s.currentIndex, "Index of the interface to modify.")
 	fs.IntVar(&s.newIndex, "new-index", s.newIndex, "Index of the interface to modify.")
@@ -45,12 +45,12 @@ func (s *modifyCommand) InitCommand() {
 	s.AddFlags(fs) // TODO(ana): replace usage with examples once the refactor is done.
 }
 
-// MaximumExecutions implements NewCommand.MaximumExecutions
+// MaximumExecutions implements Command.MaximumExecutions
 func (s *modifyCommand) MaximumExecutions() int {
 	return maxNetworkInterfaceActions
 }
 
-// Execute implements command.NewCommand
+// Execute implements command.Command
 func (s *modifyCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	if s.currentIndex == 0 {
 		return nil, fmt.Errorf("index is required")

@@ -85,7 +85,7 @@ func TestListCommand(t *testing.T) {
 
 			assert.NoError(t, err)
 
-			res, err := c.(commands.NewCommand).Execute(commands.NewExecutor(cfg, &mService), "")
+			res, err := c.(commands.Command).Execute(commands.NewExecutor(cfg, &mService), "")
 
 			assert.Nil(t, err)
 			assert.Equal(t, createTable(test.expected), res)

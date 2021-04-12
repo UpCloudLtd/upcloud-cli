@@ -8,7 +8,7 @@ import (
 )
 
 // ListCommand creates the "server list" command
-func ListCommand() commands.NewCommand {
+func ListCommand() commands.Command {
 	return &listCommand{
 		BaseCommand: commands.New("list", "List current servers"),
 	}
@@ -18,7 +18,7 @@ type listCommand struct {
 	*commands.BaseCommand
 }
 
-// Execute implements command.NewCommand
+// Execute implements command.Command
 func (s *listCommand) Execute(exec commands.Executor, _ string) (output.Output, error) {
 	svc := exec.Server()
 	servers, err := svc.GetServers()

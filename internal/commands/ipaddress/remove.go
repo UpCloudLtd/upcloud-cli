@@ -23,17 +23,18 @@ func RemoveCommand() commands.Command {
 	}
 }
 
-// MaximumExecutions implements NewCommand.MaximumExecutions
+// MaximumExecutions implements Command.MaximumExecutions
 func (s *removeCommand) MaximumExecutions() int {
 	return maxIPAddressActions
 }
 
 // InitCommand implements Command.MakeExecuteCommand
 func (s *removeCommand) InitCommand() {
-	s.SetPositionalArgHelp(positionalArgHelp)
+	// TODO: reimplmement
+	// s.SetPositionalArgHelp(positionalArgHelp)
 }
 
-// Execute implements NewCommand.Execute
+// Execute implements Command.Execute
 func (s *removeCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	if arg == "" {
 		return nil, errors.New("need ip address to remove")

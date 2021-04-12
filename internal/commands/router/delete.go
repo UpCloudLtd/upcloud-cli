@@ -25,15 +25,16 @@ func DeleteCommand() commands.Command {
 
 // InitCommand implements Command.InitCommand
 func (s *deleteCommand) InitCommand() {
-	s.SetPositionalArgHelp(positionalArgHelp)
+	// TODO: reimplmement
+	// s.SetPositionalArgHelp(positionalArgHelp)
 }
 
-// MaximumExecutions implements NewCommand.MaximumExecutions
+// MaximumExecutions implements Command.MaximumExecutions
 func (s *deleteCommand) MaximumExecutions() int {
 	return maxRouterActions
 }
 
-// Execute implements command.NewCommand
+// Execute implements command.Command
 func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	msg := fmt.Sprintf("Deleting router %s", arg)
 	logline := exec.NewLogEntry(msg)

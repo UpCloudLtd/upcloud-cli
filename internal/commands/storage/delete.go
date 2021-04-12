@@ -13,7 +13,7 @@ import (
 )
 
 // DeleteCommand creates the "storage delete" command
-func DeleteCommand() commands.NewCommand {
+func DeleteCommand() commands.Command {
 	return &deleteCommand{
 		BaseCommand: commands.New("delete", "Delete a storage"),
 	}
@@ -27,15 +27,16 @@ type deleteCommand struct {
 
 // InitCommand implements Command.InitCommand
 func (s *deleteCommand) InitCommand() {
-	s.SetPositionalArgHelp(positionalArgHelp)
+	// TODO: reimplmement
+	// s.SetPositionalArgHelp(positionalArgHelp)
 }
 
-// MaximumExecutions implements command.NewCommand
+// MaximumExecutions implements command.Command
 func (s *deleteCommand) MaximumExecutions() int {
 	return maxStorageActions
 }
 
-// Execute implements NewCommand.Execute
+// Execute implements Command.Execute
 func (s *deleteCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Storage()
 	msg := fmt.Sprintf("deleting storage %v", uuid)

@@ -14,7 +14,7 @@ import (
 )
 
 // CreateCommand creates the "storage create" command
-func CreateCommand() commands.NewCommand {
+func CreateCommand() commands.Command {
 	return &createCommand{
 		BaseCommand: commands.New("create", "Create a storage"),
 	}
@@ -81,7 +81,7 @@ func (s *createCommand) InitCommand() {
 	s.AddFlags(s.flagSet)
 }
 
-// Execute implements command.NewCommand
+// Execute implements command.Command
 func (s *createCommand) Execute(exec commands.Executor, _ string) (output.Output, error) {
 	svc := exec.Storage()
 

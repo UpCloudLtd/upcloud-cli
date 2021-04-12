@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/commands/server"
 	"github.com/UpCloudLtd/cli/internal/completion"
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/resolver"
@@ -29,18 +28,19 @@ func DeleteCommand() commands.Command {
 
 // InitCommand implements Command.InitCommand
 func (s *deleteCommand) InitCommand() {
-	s.SetPositionalArgHelp(server.PositionalArgHelp)
+	// TODO: reimplmement
+	// s.SetPositionalArgHelp(server.PositionalArgHelp)
 	fs := &pflag.FlagSet{}
 	fs.IntVar(&s.interfaceIndex, "index", 0, "Interface index.")
 	s.AddFlags(fs)
 }
 
-// MaximumExecutions implements NewCommand.MaximumExecutions
+// MaximumExecutions implements Command.MaximumExecutions
 func (s *deleteCommand) MaximumExecutions() int {
 	return maxNetworkInterfaceActions
 }
 
-// Execute implements command.NewCommand
+// Execute implements command.Command
 func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	if s.interfaceIndex == 0 {
 		return nil, fmt.Errorf("interface index is required")

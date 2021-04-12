@@ -9,7 +9,9 @@ import (
 )
 
 const maxIPAddressActions = 10
-const positionalArgHelp = "<Address/PTRRecord...>"
+
+// TODO: re-add
+// const positionalArgHelp = "<Address/PTRRecord...>"
 
 // BaseIPAddressCommand creates the base 'ip-address' command
 func BaseIPAddressCommand() commands.Command {

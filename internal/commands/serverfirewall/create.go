@@ -39,7 +39,7 @@ func CreateCommand() commands.Command {
 	}
 }
 
-// MaximumExecutions implements NewCommand.MaximumExecutions
+// MaximumExecutions implements Command.MaximumExecutions
 func (s *createCommand) MaximumExecutions() int {
 	return 10
 }

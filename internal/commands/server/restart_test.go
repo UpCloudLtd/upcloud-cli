@@ -71,7 +71,6 @@ func TestRestartCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			CachedServers = nil
 			conf := config.New()
 			testCmd := RestartCommand()
 			mService := new(smock.Service)
@@ -85,7 +84,7 @@ func TestRestartCommand(t *testing.T) {
 			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 
-			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, mService), Server1.UUID)
+			_, err = c.(commands.Command).Execute(commands.NewExecutor(conf, mService), Server1.UUID)
 			assert.NoError(t, err)
 
 			mService.AssertNumberOfCalls(t, methodName, 1)

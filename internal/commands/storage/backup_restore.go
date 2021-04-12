@@ -15,7 +15,7 @@ import (
 type restoreBackupCommand struct {
 	*commands.BaseCommand
 	resolver.CachingStorage
-	completion.Storage
+	completion.Server
 	params restoreBackupParams
 }
 
@@ -24,7 +24,7 @@ type restoreBackupParams struct {
 }
 
 // RestoreBackupCommand creates the "storage backup restore" command
-func RestoreBackupCommand() commands.NewCommand {
+func RestoreBackupCommand() commands.Command {
 	return &restoreBackupCommand{
 		BaseCommand: commands.New("restore", "Restore backup of a storage"),
 	}
@@ -32,10 +32,12 @@ func RestoreBackupCommand() commands.NewCommand {
 
 // InitCommand implements Command.InitCommand
 func (s *restoreBackupCommand) InitCommand() {
-	s.SetPositionalArgHelp(positionalArgHelp)
+	// TODO: reimplmement
+	// s.SetPositionalArgHelp(positionalArgHelp)
+	// s.ArgCompletion(getStorageArgumentCompletionFunction(s.service))
 }
 
-// Execute implements command.NewCommand
+// Execute implements command.Command
 func (s *restoreBackupCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	msg := fmt.Sprintf("restoring backup %v", uuid)
 	logline := exec.NewLogEntry(msg)

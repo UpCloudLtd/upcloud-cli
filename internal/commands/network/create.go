@@ -20,7 +20,7 @@ type createCommand struct {
 }
 
 // make sure we implemnet the interface
-var _ commands.NewCommand = &createCommand{}
+var _ commands.Command = &createCommand{}
 
 // CreateCommand creates the 'network create' command
 func CreateCommand() commands.Command {
@@ -49,7 +49,7 @@ func (s *createCommand) InitCommand() {
 	s.AddFlags(fs) // TODO(ana): replace usage with examples once the refactor is done.
 }
 
-// MaximumExecutions implements NewCommand.MaximumExecutions
+// MaximumExecutions implements Command.MaximumExecutions
 func (s *createCommand) MaximumExecutions() int {
 	return maxNetworkActions
 }
@@ -83,7 +83,7 @@ func (s *createCommand) buildRequest() (*request.CreateNetworkRequest, error) {
 	}, nil
 }
 
-// Execute implements NewCommand.Execute
+// Execute implements Command.Execute
 func (s *createCommand) Execute(exec commands.Executor, _ string) (output.Output, error) {
 
 	// TODO: should we, for example, accept name as the first argument instead of as a flag?

@@ -77,7 +77,7 @@ func TestShowCommand(t *testing.T) {
 	_, err := c.(resolver.ResolutionProvider).Get(&mService)
 	assert.NoError(t, err)
 
-	res, err := c.(commands.NewCommand).Execute(commands.NewExecutor(conf, &mService), router.UUID)
+	res, err := c.(commands.Command).Execute(commands.NewExecutor(conf, &mService), router.UUID)
 	assert.NoError(t, err)
 
 	buf := bytes.NewBuffer(nil)

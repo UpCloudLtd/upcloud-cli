@@ -19,7 +19,7 @@ import (
 )
 
 // CreateCommand creates the "server create" command
-func CreateCommand() commands.NewCommand {
+func CreateCommand() commands.Command {
 	return &createCommand{
 		BaseCommand: commands.New("create", "Create a server"),
 	}
@@ -312,8 +312,8 @@ func (s *createCommand) Execute(exec commands.Executor, _ string) (output.Output
 		logline.SetDetails(err.Error(), "error: ")
 		return nil, err
 	}
-
-	if s.Config().GlobalFlags.Wait {
+	// TODO: reimplmement
+	/*	if exec.Config().GlobalFlags.Wait {
 
 		logline.SetMessage(fmt.Sprintf("%s: waiting to start", msg))
 		if err := exec.WaitFor(
@@ -322,9 +322,9 @@ func (s *createCommand) Execute(exec commands.Executor, _ string) (output.Output
 		); err != nil {
 			return nil, err
 		}
-	} else {
-		logline.SetMessage(fmt.Sprintf("%s: request sent", msg))
-	}
+	} else {*/
+	logline.SetMessage(fmt.Sprintf("%s: request sent", msg))
+	//}
 
 	logline.SetMessage(fmt.Sprintf("%s: done", msg))
 	logline.MarkDone()

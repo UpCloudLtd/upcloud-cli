@@ -122,7 +122,7 @@ func TestShowCommand(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	res, err := command.(commands.NewCommand).Execute(commands.NewExecutor(conf, &mService), network.UUID)
+	res, err := command.(commands.Command).Execute(commands.NewExecutor(conf, &mService), network.UUID)
 
 	assert.Nil(t, err)
 

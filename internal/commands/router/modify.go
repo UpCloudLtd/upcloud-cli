@@ -27,13 +27,14 @@ func ModifyCommand() commands.Command {
 
 // InitCommand implements Command.InitCommand
 func (s *modifyCommand) InitCommand() {
-	s.SetPositionalArgHelp(positionalArgHelp)
+	// TODO: reimplmement
+	// s.SetPositionalArgHelp(positionalArgHelp)
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.name, "name", "", "New router name.")
 	s.AddFlags(fs)
 }
 
-// Execute implements command.NewCommand
+// Execute implements command.Command
 func (s *modifyCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	if arg == "" {
 		return nil, fmt.Errorf("router is required")

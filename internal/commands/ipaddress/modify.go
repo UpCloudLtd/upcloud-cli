@@ -29,19 +29,20 @@ func ModifyCommand() commands.Command {
 
 // InitCommand implements Command.InitCommand
 func (s *modifyCommand) InitCommand() {
-	s.SetPositionalArgHelp(positionalArgHelp)
+	// TODO: reimplmement
+	// s.SetPositionalArgHelp(positionalArgHelp)
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.mac, "mac", "", "MAC address of server interface to attach floating IP to.")
 	fs.StringVar(&s.ptrrecord, "ptr-record", "", "A fully qualified domain name.")
 	s.AddFlags(fs)
 }
 
-// MaximumExecutions implements NewCommand.MaximumExecutions
+// MaximumExecutions implements Command.MaximumExecutions
 func (s *modifyCommand) MaximumExecutions() int {
 	return maxIPAddressActions
 }
 
-// Execute implements NewCommand.Execute
+// Execute implements Command.Execute
 func (s *modifyCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	if arg == "" {
 		return nil, errors.New("need ip address to modify")

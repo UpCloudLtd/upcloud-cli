@@ -9,14 +9,13 @@ import (
 	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
 
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/pflag"
 	"time"
 )
 
 // RestartCommand creates the "server restart" command
-func RestartCommand() commands.NewCommand {
+func RestartCommand() commands.Command {
 	return &restartCommand{
 		BaseCommand: commands.New("restart", "Restart a server"),
 	}
@@ -34,7 +33,8 @@ type restartCommand struct {
 
 // InitCommand implements Command.InitCommand
 func (s *restartCommand) InitCommand() {
-	s.SetPositionalArgHelp(PositionalArgHelp)
+	// TODO: reimplmement
+	// s.SetPositionalArgHelp(PositionalArgHelp)
 
 	flags := &pflag.FlagSet{}
 
@@ -44,12 +44,12 @@ func (s *restartCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
-// MaximumExecutions implements NewCommand.MaximumExecutions
+// MaximumExecutions implements Command.MaximumExecutions
 func (s *restartCommand) MaximumExecutions() int {
 	return maxServerActions
 }
 
-// Execute implements NewCommand.Execute
+// Execute implements Command.Execute
 func (s *restartCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Server()
 	msg := fmt.Sprintf("restarting server %v", uuid)
@@ -69,8 +69,8 @@ func (s *restartCommand) Execute(exec commands.Executor, uuid string) (output.Ou
 		logline.SetDetails(err.Error(), "error: ")
 		return nil, err
 	}
-
-	if s.Config().GlobalFlags.Wait {
+	// TODO: reimplmement
+	/*	if s.Config().GlobalFlags.Wait {
 		// TODO: this seems to not work as expected as the backend will report
 		// started->maintenance->started->maintenance..
 		logline.SetMessage(fmt.Sprintf("%s: waiting to restart", msg))
@@ -90,9 +90,9 @@ func (s *restartCommand) Execute(exec commands.Executor, uuid string) (output.Ou
 		}
 
 		logline.SetMessage(fmt.Sprintf("%s: server restarted", msg))
-	} else {
-		logline.SetMessage(fmt.Sprintf("%s: request sent", msg))
-	}
+	} else {*/
+	logline.SetMessage(fmt.Sprintf("%s: request sent", msg))
+	//}
 
 	logline.MarkDone()
 

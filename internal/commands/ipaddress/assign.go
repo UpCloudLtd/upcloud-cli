@@ -47,8 +47,8 @@ func (s *assignCommand) InitCommand() {
 	s.AddFlags(fs)
 }
 
-// Execute implements NewCommand.Execute
-func (s *assignCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
+// Execute implements Command.Execute
+func (s *assignCommand) Execute(exec commands.Executor, _ string) (output.Output, error) {
 	if s.floating && s.zone == "" && s.mac == "" {
 		return nil, fmt.Errorf("MAC or zone is required for floating IP")
 	}

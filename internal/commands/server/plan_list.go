@@ -6,7 +6,7 @@ import (
 )
 
 // PlanListCommand creates the "server plans" command
-func PlanListCommand() commands.NewCommand {
+func PlanListCommand() commands.Command {
 	return &planListCommand{
 		BaseCommand: commands.New("plans", "List server plans"),
 	}

@@ -12,8 +12,8 @@ type CompletionCommand struct {
 	*commands.BaseCommand
 }
 
-// Execute implements command.NewCommand
-func (s *CompletionCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
+// Execute implements command.Command
+func (s *CompletionCommand) Execute(_ commands.Executor, arg string) (output.Output, error) {
 	if arg == "" {
 		return nil, fmt.Errorf("shell name is requred")
 	}

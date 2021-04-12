@@ -17,7 +17,7 @@ import (
 type attachCommand struct {
 	*commands.BaseCommand
 	resolver.CachingServer
-	completion.Storage
+	completion.Server
 	params attachParams
 }
 
@@ -27,7 +27,7 @@ type attachParams struct {
 }
 
 // AttachCommand creates the "server storage attach" command
-func AttachCommand() commands.NewCommand {
+func AttachCommand() commands.Command {
 	return &attachCommand{
 		BaseCommand: commands.New("attach", "Attach a storage as a device to a server"),
 	}
@@ -43,7 +43,8 @@ var defaultAttachParams = &attachParams{
 
 // InitCommand implements Command.InitCommand
 func (s *attachCommand) InitCommand() {
-	s.SetPositionalArgHelp(positionalArgHelp)
+	// TODO: reimplmement
+	// s.SetPositionalArgHelp(positionalArgHelp)
 	s.params = attachParams{AttachStorageRequest: request.AttachStorageRequest{}}
 
 	flagSet := &pflag.FlagSet{}
@@ -55,12 +56,12 @@ func (s *attachCommand) InitCommand() {
 	s.AddFlags(flagSet)
 }
 
-// MaximumExecutions implements command.NewCommand
+// MaximumExecutions implements command.Command
 func (s *attachCommand) MaximumExecutions() int {
 	return maxServerStorageActions
 }
 
-// Execute implements command.NewCommand
+// Execute implements command.Command
 func (s *attachCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	storageSvc := exec.Storage()
 

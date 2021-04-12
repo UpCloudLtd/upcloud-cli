@@ -28,12 +28,12 @@ func (s *createCommand) InitCommand() {
 	s.AddFlags(fs)
 }
 
-// MaximumExecutions implements NewCommand.MaximumExecutions
+// MaximumExecutions implements Command.MaximumExecutions
 func (s *createCommand) MaximumExecutions() int {
 	return maxRouterActions
 }
 
-// Execute implements command.NewCommand
+// Execute implements command.Command
 func (s *createCommand) Execute(exec commands.Executor, _ string) (output.Output, error) {
 	// TODO: should this be a regular argument?
 	if s.name == "" {

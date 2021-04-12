@@ -6,7 +6,8 @@ import (
 
 const (
 	maxServerStorageActions = 10
-	positionalArgHelp       = "<UUID/Title/Hostname...>"
+	// TODO: re-add
+	// positionalArgHelp       = "<UUID/Title/Hostname...>"
 )
 
 // BaseServerStorageCommand creates the base "server storage" command
@@ -17,8 +18,3 @@ func BaseServerStorageCommand() commands.Command {
 type serverStorageCommand struct {
 	*commands.BaseCommand
 }
-
-// A lot of stuff being imported from /commands/server.
-// Because storage server was originally refactored out
-// from there and makes sense not to duplicate the code here.
-// TODO: is this still relevant???

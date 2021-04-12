@@ -98,7 +98,7 @@ func TestCreateFirewallRuleCommand(t *testing.T) {
 			err := cc.Cobra().Flags().Parse(test.flags)
 			assert.NoError(t, err)
 
-			_, err = cc.(commands.NewCommand).Execute(commands.NewExecutor(conf, &mService), test.arg)
+			_, err = cc.(commands.Command).Execute(commands.NewExecutor(conf, &mService), test.arg)
 			if test.error != "" {
 				assert.Error(t, err)
 				assert.Equal(t, test.error, err.Error())

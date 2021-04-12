@@ -52,12 +52,12 @@ func (s *createCommand) InitCommand() {
 	s.AddFlags(fs) // TODO(ana): replace usage with examples once the refactor is done.
 }
 
-// MaximumExecutions implements NewCommand.MaximumExecutions
+// MaximumExecutions implements Command.MaximumExecutions
 func (s *createCommand) MaximumExecutions() int {
 	return maxNetworkInterfaceActions
 }
 
-// Execute implements command.NewCommand
+// Execute implements command.Command
 func (s *createCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	if arg == "" {
 		return nil, errors.New("single server uuid is required")

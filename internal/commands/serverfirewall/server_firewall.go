@@ -5,7 +5,8 @@ import (
 )
 
 const (
-	positionalArgHelp = "<server/UUID/firewall_rule>"
+// TODO: re-add
+// positionalArgHelp = "<server/UUID/firewall_rule>"
 )
 
 // BaseServerFirewallCommand is the root command for all 'server firewall' commands

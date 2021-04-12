@@ -32,7 +32,7 @@ func (s *deleteCommand) InitCommand() {
 	s.AddFlags(flagSet)
 }
 
-// Execute implements NewCommand.Execute
+// Execute implements Command.Execute
 func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	if arg == "" {
 		return nil, fmt.Errorf("server is required")

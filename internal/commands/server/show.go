@@ -16,7 +16,7 @@ import (
 )
 
 // ShowCommand creates the "server show" command
-func ShowCommand() commands.NewCommand {
+func ShowCommand() commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New("show", "Show server details"),
 	}
@@ -29,7 +29,8 @@ type showCommand struct {
 }
 
 func (s *showCommand) InitCommand() {
-	s.SetPositionalArgHelp(PositionalArgHelp)
+	// TODO: reimplmement
+	// s.SetPositionalArgHelp(PositionalArgHelp)
 }
 
 // Execute implements Command.MakeExecuteCommand

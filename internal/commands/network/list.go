@@ -10,7 +10,7 @@ import (
 )
 
 // ListCommand creates the "network list" command
-func ListCommand() commands.NewCommand {
+func ListCommand() commands.Command {
 	return &listCommand{
 		BaseCommand: commands.New("list", "List networks, by default private networks only"),
 	}
@@ -18,12 +18,10 @@ func ListCommand() commands.NewCommand {
 
 type listCommand struct {
 	*commands.BaseCommand
-	columnKeys     []string
-	visibleColumns []string
-	zone           string
-	all            bool
-	public         bool
-	utility        bool
+	zone    string
+	all     bool
+	public  bool
+	utility bool
 }
 
 func (s *listCommand) MaximumExecutions() int {
@@ -38,11 +36,12 @@ func (s *listCommand) InitCommand() {
 	flags.BoolVar(&s.public, "public", false, "Show public networks instead of private networks.")
 	flags.BoolVar(&s.utility, "utility", false, "Show utility networks instead of private networks.")
 	//	flags.BoolVar(&s.private, "private", true, "Show private networks (default).")
-	s.AddVisibleColumnsFlag(flags, &s.visibleColumns, s.columnKeys, s.visibleColumns)
+	// TODO: reimplmement
+	// s.AddVisibleColumnsFlag(flags, &s.visibleColumns, s.columnKeys, s.visibleColumns)
 	s.AddFlags(flags)
 }
 
-// Execute implements command.NewCommand
+// Execute implements command.Command
 func (s *listCommand) Execute(exec commands.Executor, _ string) (output.Output, error) {
 	svc := exec.Network()
 	var networks *upcloud.Networks

@@ -23,10 +23,11 @@ func DeleteCommand() commands.Command {
 
 // InitCommand implements Command.InitCommand
 func (s *deleteCommand) InitCommand() {
-	s.SetPositionalArgHelp(positionalArgHelp)
+	// TODO: reimplmement
+	// s.SetPositionalArgHelp(positionalArgHelp)
 }
 
-// Execute implements NewCommand.Execute
+// Execute implements Command.Execute
 func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	svc := exec.Network()
 	msg := fmt.Sprintf("deleting network %v", arg)

@@ -8,11 +8,9 @@ import (
 	"os"
 	"path/filepath"
 	"sync/atomic"
-	"time"
 
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/output"
-	"github.com/UpCloudLtd/cli/internal/ui"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
@@ -21,7 +19,7 @@ import (
 )
 
 // ImportCommand creates the "storage import" command
-func ImportCommand() commands.NewCommand {
+func ImportCommand() commands.Command {
 	return &importCommand{
 		BaseCommand: commands.New("import", "Import a storage from external or local source"),
 	}
@@ -129,10 +127,12 @@ func (s *readerCounter) Read(p []byte) (n int, err error) {
 	return
 }
 
+// TODO: re-add
+/*
 func (s *readerCounter) counter() int {
 	return int(atomic.LoadInt64(&s.read))
 }
-
+*/
 type importCommand struct {
 	*commands.BaseCommand
 	importParams importParams
@@ -152,7 +152,8 @@ func importFlags(fs *pflag.FlagSet, dst, def *importParams) {
 
 // InitCommand implements Command.InitCommand
 func (s *importCommand) InitCommand() {
-	s.SetPositionalArgHelp(positionalArgHelp)
+	// TODO: reimplmement
+	// s.SetPositionalArgHelp(positionalArgHelp)
 	s.flagSet = &pflag.FlagSet{}
 	s.importParams = newImportParams()
 	importFlags(s.flagSet, &s.importParams, defaultImportParams)
@@ -163,12 +164,13 @@ func (s *importCommand) InitCommand() {
 func (s *importCommand) Execute(exec commands.Executor, _ string) (output.Output, error) {
 
 	svc := exec.Storage()
-	errorOrGenericError := func(err error) error {
-		if s.Config().InteractiveUI() {
-			return errors.New("import failed")
-		}
+	/*errorOrGenericError := func(err error) error {
+		// TODO: hmm??
+		// if s.Config().InteractiveUI() {
+		// 	 return errors.New("import failed")
+		// }
 		return err
-	}
+	}*/
 	if err := s.importParams.processParams(svc); err != nil {
 		return nil, err
 	}
@@ -178,13 +180,13 @@ func (s *importCommand) Execute(exec commands.Executor, _ string) (output.Output
 		}
 	}
 
-	var (
+	/*	var (
 		createdStorage *upcloud.StorageDetails
 		workFlowErr    error
-	)
+	)*/
 
 	// Create storage
-	handlerCreateStorage := func(idx int, e *ui.LogEntry) {
+	/*	handlerCreateStorage := func(idx int, e *ui.LogEntry) {
 		msg := fmt.Sprintf("Creating storage %q", s.importParams.createStorage.Title)
 		e.SetMessage(msg)
 		e.StartedNow()
@@ -199,9 +201,11 @@ func (s *importCommand) Execute(exec commands.Executor, _ string) (output.Output
 			createdStorage = details
 			s.importParams.existingStorage = &details.Storage
 		}
-	}
+	}*/
 	if s.importParams.existingStorage == nil {
-		ui.StartWorkQueue(ui.WorkQueueConfig{
+		panic("REIMPLEMEMENT")
+		// TODO: reimplmement
+		/*ui.StartWorkQueue(ui.WorkQueueConfig{
 			NumTasks:           1,
 			MaxConcurrentTasks: 1,
 			EnableUI:           s.Config().InteractiveUI(),
@@ -209,120 +213,123 @@ func (s *importCommand) Execute(exec commands.Executor, _ string) (output.Output
 		if workFlowErr != nil {
 			return nil, errorOrGenericError(workFlowErr)
 		}
-		s.importParams.CreateStorageImportRequest.StorageUUID = createdStorage.UUID
+		s.importParams.CreateStorageImportRequest.StorageUUID = createdStorage.UUID*/
 	}
 
 	// Create import task
 	var createdStorageImport *upcloud.StorageImportDetails
-	handlerImport := func(idx int, e *ui.LogEntry) {
-		msg := "Importing to storage"
-		e.SetMessage(msg)
-		e.StartedNow()
-		var err error
-		// Import from local file
-		if s.importParams.sourceFile != nil {
-			chDone := make(chan struct{})
-			var importErr error
-			reader := &readerCounter{source: s.importParams.sourceFile}
-			s.importParams.SourceLocation = reader
-			go func() {
-				createdStorageImport, importErr = svc.CreateStorageImport(
-					&s.importParams.CreateStorageImportRequest)
-				chDone <- struct{}{}
-			}()
-			wait := true
-			var prevRead int
-			sleepSecs := 2
-			for {
-				select {
-				case <-chDone:
-					err = importErr
-					wait = false
-				default:
-				}
-				if read := reader.counter(); read > 0 {
-					e.SetMessage(fmt.Sprintf("%s: uploaded %.2f%% (%sbps)",
-						msg,
-						float64(read)/float64(s.importParams.sourceFileSize)*100,
-						ui.AbbrevNum(uint(read-prevRead)*8/uint(sleepSecs)),
-					))
-					prevRead = read
-				}
-				if !wait {
-					if err == nil {
-						e.SetMessage(fmt.Sprintf("%s: done", msg))
-					}
-					goto end
-				}
-				time.Sleep(time.Duration(sleepSecs) * time.Second)
-			}
-		}
-		// Import from http source
-		if s.importParams.sourceFile == nil {
-			createdStorageImport, err = svc.CreateStorageImport(
-				&s.importParams.CreateStorageImportRequest)
-			if err != nil {
-				goto end
-			}
-			e.SetMessage(fmt.Sprintf("%s: http import queued", msg))
-			if s.importParams.wait {
+	/*	handlerImport := func(idx int, e *ui.LogEntry) {
+			msg := "Importing to storage"
+			e.SetMessage(msg)
+			e.StartedNow()
+			var err error
+			// Import from local file
+			if s.importParams.sourceFile != nil {
+				chDone := make(chan struct{})
+				var importErr error
+				reader := &readerCounter{source: s.importParams.sourceFile}
+				s.importParams.SourceLocation = reader
+				go func() {
+					createdStorageImport, importErr = svc.CreateStorageImport(
+						&s.importParams.CreateStorageImportRequest)
+					chDone <- struct{}{}
+				}()
+				wait := true
 				var prevRead int
-				sleepSecs := 5
+				sleepSecs := 2
 				for {
-					details, importErr := svc.GetStorageImportDetails(&request.GetStorageImportDetailsRequest{
-						UUID: s.importParams.existingStorage.UUID,
-					})
-					switch {
-					case importErr != nil:
+					select {
+					case <-chDone:
 						err = importErr
-						goto end
-					case details.ErrorCode != "":
-						err = fmt.Errorf("%s (%s)", details.ErrorMessage, details.ErrorCode)
-						goto end
-					case details.State == upcloud.StorageImportStateCancelled:
-						err = fmt.Errorf("%s: cancelled", msg)
-						goto end
-					case details.State == upcloud.StorageImportStateCompleted:
-						e.SetMessage(fmt.Sprintf("%s: done", msg))
-						goto end
+						wait = false
+					default:
 					}
-					if read := details.ReadBytes; read > 0 {
-						if details.ClientContentLength > 0 {
-							e.SetMessage(fmt.Sprintf("%s: downloaded %.2f%% (%sbps)",
-								msg,
-								float64(read)/float64(details.ClientContentLength)*100,
-								ui.AbbrevNum(uint(read-prevRead)*8/uint(sleepSecs)),
-							))
-							prevRead = read
-						} else {
-							e.SetMessage(fmt.Sprintf("%s: downloaded %s (%sbps)",
-								msg,
-								ui.FormatBytes(read),
-								ui.AbbrevNum(uint(read-prevRead)*8/uint(sleepSecs)),
-							))
+					if read := reader.counter(); read > 0 {
+						e.SetMessage(fmt.Sprintf("%s: uploaded %.2f%% (%sbps)",
+							msg,
+							float64(read)/float64(s.importParams.sourceFileSize)*100,
+							ui.AbbrevNum(uint(read-prevRead)*8/uint(sleepSecs)),
+						))
+						prevRead = read
+					}
+					if !wait {
+						if err == nil {
+							e.SetMessage(fmt.Sprintf("%s: done", msg))
 						}
+						goto end
 					}
 					time.Sleep(time.Duration(sleepSecs) * time.Second)
 				}
 			}
-		}
+			// Import from http source
+			if s.importParams.sourceFile == nil {
+				createdStorageImport, err = svc.CreateStorageImport(
+					&s.importParams.CreateStorageImportRequest)
+				if err != nil {
+					goto end
+				}
+				e.SetMessage(fmt.Sprintf("%s: http import queued", msg))
+				if s.importParams.wait {
+					var prevRead int
+					sleepSecs := 5
+					for {
+						details, importErr := svc.GetStorageImportDetails(&request.GetStorageImportDetailsRequest{
+							UUID: s.importParams.existingStorage.UUID,
+						})
+						switch {
+						case importErr != nil:
+							err = importErr
+							goto end
+						case details.ErrorCode != "":
+							err = fmt.Errorf("%s (%s)", details.ErrorMessage, details.ErrorCode)
+							goto end
+						case details.State == upcloud.StorageImportStateCancelled:
+							err = fmt.Errorf("%s: cancelled", msg)
+							goto end
+						case details.State == upcloud.StorageImportStateCompleted:
+							e.SetMessage(fmt.Sprintf("%s: done", msg))
+							goto end
+						}
+						if read := details.ReadBytes; read > 0 {
+							if details.ClientContentLength > 0 {
+								e.SetMessage(fmt.Sprintf("%s: downloaded %.2f%% (%sbps)",
+									msg,
+									float64(read)/float64(details.ClientContentLength)*100,
+									ui.AbbrevNum(uint(read-prevRead)*8/uint(sleepSecs)),
+								))
+								prevRead = read
+							} else {
+								e.SetMessage(fmt.Sprintf("%s: downloaded %s (%sbps)",
+									msg,
+									ui.FormatBytes(read),
+									ui.AbbrevNum(uint(read-prevRead)*8/uint(sleepSecs)),
+								))
+							}
+						}
+						time.Sleep(time.Duration(sleepSecs) * time.Second)
+					}
+				}
+			}
 
-	end:
-		if err != nil {
-			e.SetMessage(ui.DefaultErrorColours.Sprintf("%s: failed", msg))
-			e.SetDetails(err.Error(), "error: ")
-			workFlowErr = err
+		end:
+			if err != nil {
+				e.SetMessage(ui.DefaultErrorColours.Sprintf("%s: failed", msg))
+				e.SetDetails(err.Error(), "error: ")
+				workFlowErr = err
+			}
 		}
-	}
+	*/
 	if s.importParams.existingStorage != nil {
-		ui.StartWorkQueue(ui.WorkQueueConfig{
-			NumTasks:           1,
-			MaxConcurrentTasks: 1,
-			EnableUI:           s.Config().InteractiveUI(),
-		}, handlerImport)
-		if workFlowErr != nil {
-			return nil, errorOrGenericError(workFlowErr)
-		}
+		panic("REIMPLEMEMENT")
+		// TODO: reimplmement
+		/*		ui.StartWorkQueue(ui.WorkQueueConfig{
+					NumTasks:           1,
+					MaxConcurrentTasks: 1,
+					EnableUI:           s.Config().InteractiveUI(),
+				}, handlerImport)
+				if workFlowErr != nil {
+					return nil, errorOrGenericError(workFlowErr)
+				}*/
 	}
 
 	return output.Marshaled{Value: createdStorageImport}, nil

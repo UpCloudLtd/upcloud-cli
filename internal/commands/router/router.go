@@ -11,7 +11,9 @@ import (
 var cachedRouters []upcloud.Router
 
 const maxRouterActions = 10
-const positionalArgHelp = "<UUID/Name...>"
+
+// TODO: re-add
+// const positionalArgHelp = "<UUID/Name...>"
 
 // BaseRouterCommand creates the base "router" command
 func BaseRouterCommand() commands.Command {

@@ -26,10 +26,11 @@ type showCommand struct {
 
 // InitCommand implements Command.InitCommand
 func (s *showCommand) InitCommand() {
-	s.SetPositionalArgHelp(positionalArgHelp)
+	// TODO: reimplmement
+	// s.SetPositionalArgHelp(positionalArgHelp)
 }
 
-// Execute implements command.NewCommand
+// Execute implements command.Command
 func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	if arg == "" {
 		return nil, fmt.Errorf("one router uuid or name is required")

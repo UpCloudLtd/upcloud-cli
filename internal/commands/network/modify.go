@@ -29,7 +29,8 @@ func ModifyCommand() commands.Command {
 
 // InitCommand implements Command.InitCommand
 func (s *modifyCommand) InitCommand() {
-	s.SetPositionalArgHelp(positionalArgHelp)
+	// TODO: reimplmement
+	// s.SetPositionalArgHelp(positionalArgHelp)
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.name, "name", "", "Set name of the private network.")
 	fs.StringVar(&s.router, "router", "", "Change or clear the router attachment.")
@@ -46,7 +47,7 @@ func (s *modifyCommand) InitCommand() {
 	s.AddFlags(fs) // TODO(ana): replace usage with examples once the refactor is done.
 }
 
-// Execute implements NewCommand.Execute
+// Execute implements Command.Execute
 func (s *modifyCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	if arg == "" {
 		return nil, errors.New("need network to modify")

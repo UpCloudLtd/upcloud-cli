@@ -168,7 +168,7 @@ func TestFirewallShowHumanOutput(t *testing.T) {
 	conf.Viper().Set(config.KeyOutput, config.ValueOutputHuman)
 
 	command := commands.BuildCommand(testCmd, nil, conf)
-	out, err := command.(commands.NewCommand).Execute(commands.NewExecutor(conf, mService), serverDetails.UUID)
+	out, err := command.(commands.Command).Execute(commands.NewExecutor(conf, mService), serverDetails.UUID)
 	assert.NoError(t, err)
 
 	buf := bytes.NewBuffer(nil)

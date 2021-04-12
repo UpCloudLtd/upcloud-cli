@@ -9,13 +9,12 @@ import (
 	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
 
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/pflag"
 )
 
 // StopCommand creates the "server stop" command
-func StopCommand() commands.NewCommand {
+func StopCommand() commands.Command {
 	return &stopCommand{
 		BaseCommand: commands.New("stop", "Stop a server"),
 	}
@@ -23,14 +22,15 @@ func StopCommand() commands.NewCommand {
 
 type stopCommand struct {
 	*commands.BaseCommand
-	completion.Server
 	StopType string
 	resolver.CachingServer
+	completion.Server
 }
 
 // InitCommand implements Command.InitCommand
 func (s *stopCommand) InitCommand() {
-	s.SetPositionalArgHelp(PositionalArgHelp)
+	// TODO: reimplmement
+	// s.SetPositionalArgHelp(PositionalArgHelp)
 
 	//XXX: findout what to do with risky params (timeout actions)
 	flags := &pflag.FlagSet{}
@@ -56,16 +56,17 @@ func (s *stopCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 		return nil, err
 	}
 
-	if s.Config().GlobalFlags.Wait {
+	// TODO: reimplmement
+	/*if s.Config().GlobalFlags.Wait {
 		logline.SetMessage(fmt.Sprintf("%s: waiting to stop", msg))
 		if err := exec.WaitFor(serverStateWaiter(uuid, upcloud.ServerStateStopped, msg, svc, logline), s.Config().ClientTimeout()); err != nil {
 			return nil, err
 		}
 
 		logline.SetMessage(fmt.Sprintf("%s: server stoped", msg))
-	} else {
-		logline.SetMessage(fmt.Sprintf("%s: request sent", msg))
-	}
+	} else {*/
+	logline.SetMessage(fmt.Sprintf("%s: request sent", msg))
+	//}
 
 	logline.MarkDone()
 

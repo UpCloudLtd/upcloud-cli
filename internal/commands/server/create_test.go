@@ -16,6 +16,14 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+var (
+	Title1 = "mock-storage-title1"
+	Title2 = "mock-storage-title2"
+	UUID1  = "0127dfd6-3884-4079-a948-3a8881df1a7a"
+	UUID2  = "012bde1d-f0e7-4bb2-9f4a-74e1f2b49c07"
+	UUID3  = "012c61a6-b8f0-48c2-a63a-b4bf7d26a655"
+)
+
 func TestCreateServer(t *testing.T) {
 
 	var Storage1 = upcloud.Storage{
@@ -318,7 +326,6 @@ func TestCreateServer(t *testing.T) {
 			testCmd := CreateCommand()
 			mService := new(smock.Service)
 
-			CachedServers = nil
 			storage.CachedStorages = nil
 			conf.Service = internal.Wrapper{Service: mService}
 			mService.On("CreateServer", &test.createServerReq).Return(&serverDetailsMaint, nil)
@@ -328,7 +335,7 @@ func TestCreateServer(t *testing.T) {
 			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 
-			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, mService), "")
+			_, err = c.(commands.Command).Execute(commands.NewExecutor(conf, mService), "")
 
 			if test.error != "" {
 				if err == nil {

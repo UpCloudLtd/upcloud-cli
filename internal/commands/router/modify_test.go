@@ -57,7 +57,7 @@ func TestModifyCommand(t *testing.T) {
 			if err := c.Cobra().Flags().Parse(test.flags); err != nil {
 				t.Fatal(err)
 			}
-			_, err := c.(commands.NewCommand).Execute(commands.NewExecutor(conf, &mService), test.arg)
+			_, err := c.(commands.Command).Execute(commands.NewExecutor(conf, &mService), test.arg)
 
 			if test.error != "" {
 				assert.Errorf(t, err, test.error)

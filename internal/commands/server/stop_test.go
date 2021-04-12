@@ -66,7 +66,6 @@ func TestStopCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			CachedServers = nil
 			conf := config.New()
 			testCmd := StopCommand()
 			mService := new(smock.Service)
@@ -80,7 +79,7 @@ func TestStopCommand(t *testing.T) {
 			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 
-			_, err = c.(commands.NewCommand).Execute(
+			_, err = c.(commands.Command).Execute(
 				commands.NewExecutor(conf, mService),
 				Server1.UUID,
 			)

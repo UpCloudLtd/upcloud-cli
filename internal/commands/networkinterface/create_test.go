@@ -139,7 +139,7 @@ func TestCreateCommand(t *testing.T) {
 			err := c.Cobra().Flags().Parse(test.flags)
 			assert.NoError(t, err)
 
-			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, &mService), server.UUID)
+			_, err = c.(commands.Command).Execute(commands.NewExecutor(conf, &mService), server.UUID)
 
 			if test.error != "" {
 				assert.Errorf(t, err, test.error)

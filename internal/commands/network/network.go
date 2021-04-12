@@ -11,7 +11,9 @@ import (
 )
 
 const maxNetworkActions = 10
-const positionalArgHelp = "<UUID/Name...>"
+
+// TODO: re-add
+// const positionalArgHelp = "<UUID/Name...>"
 
 // BaseNetworkCommand creates the base "network" command
 func BaseNetworkCommand() commands.Command {

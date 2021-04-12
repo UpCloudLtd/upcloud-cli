@@ -105,7 +105,6 @@ func TestModifyCommand(t *testing.T) {
 			testCmd := ModifyCommand()
 			mService := new(smock.Service)
 
-			CachedServers = nil
 			conf.Service = internal.Wrapper{Service: mService}
 			mService.On(targetMethod, &test.modifyCall).Return(&details, nil)
 			mService.On("GetServers", mock.Anything).Return(servers, nil)
@@ -113,7 +112,7 @@ func TestModifyCommand(t *testing.T) {
 			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 
-			_, err = c.(commands.NewCommand).Execute(commands.NewExecutor(conf, mService), test.server.UUID)
+			_, err = c.(commands.Command).Execute(commands.NewExecutor(conf, mService), test.server.UUID)
 			assert.NoError(t, err)
 			mService.AssertNumberOfCalls(t, targetMethod, 1)
 		})

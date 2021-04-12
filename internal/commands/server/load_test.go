@@ -81,7 +81,6 @@ func TestLoadCDROMCommand(t *testing.T) {
 			testCmd := LoadCommand()
 			mService := new(smock.Service)
 
-			CachedServers = nil
 			conf.Service = internal.Wrapper{Service: mService}
 
 			mService.On("GetServers", mock.Anything).Return(servers, nil)
@@ -92,7 +91,7 @@ func TestLoadCDROMCommand(t *testing.T) {
 			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 
-			_, err = c.(commands.NewCommand).Execute(
+			_, err = c.(commands.Command).Execute(
 				commands.NewExecutor(conf, mService),
 				Server1.UUID,
 			)

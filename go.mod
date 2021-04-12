@@ -7,7 +7,6 @@ require (
 	github.com/adrg/xdg v0.3.2
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
-	github.com/ghodss/yaml v1.0.0
 	github.com/hashicorp/go-cleanhttp v0.5.1
 	github.com/jedib0t/go-pretty/v6 v6.0.5
 	github.com/kr/text v0.2.0 // indirect

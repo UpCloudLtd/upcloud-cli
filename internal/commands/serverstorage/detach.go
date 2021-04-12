@@ -16,7 +16,7 @@ import (
 type detachCommand struct {
 	*commands.BaseCommand
 	resolver.CachingServer
-	completion.Storage
+	completion.Server
 	params detachParams
 }
 
@@ -29,7 +29,7 @@ var defaultDetachParams = &detachParams{
 }
 
 // DetachCommand creates the "server storage detach" command
-func DetachCommand() commands.NewCommand {
+func DetachCommand() commands.Command {
 	return &detachCommand{
 		BaseCommand: commands.New("detach", "Detaches a storage resource from a server"),
 	}
@@ -37,7 +37,8 @@ func DetachCommand() commands.NewCommand {
 
 // InitCommand implements Command.InitCommand
 func (s *detachCommand) InitCommand() {
-	s.SetPositionalArgHelp(positionalArgHelp)
+	// TODO: reimplmement
+	// s.SetPositionalArgHelp(positionalArgHelp)
 	s.params = detachParams{DetachStorageRequest: request.DetachStorageRequest{}}
 
 	flagSet := &pflag.FlagSet{}
@@ -46,12 +47,12 @@ func (s *detachCommand) InitCommand() {
 	s.AddFlags(flagSet)
 }
 
-// MaximumExecutions implements command.NewCommand
+// MaximumExecutions implements command.Command
 func (s *detachCommand) MaximumExecutions() int {
 	return maxServerStorageActions
 }
 
-// Execute implements command.NewCommand
+// Execute implements command.Command
 func (s *detachCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	storageSvc := exec.Storage()
 

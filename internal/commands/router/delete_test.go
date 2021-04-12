@@ -42,7 +42,7 @@ func TestDeleteCommand(t *testing.T) {
 
 			c := commands.BuildCommand(DeleteCommand(), nil, conf)
 
-			_, err := c.(commands.NewCommand).Execute(commands.NewExecutor(conf, &mService), test.arg)
+			_, err := c.(commands.Command).Execute(commands.NewExecutor(conf, &mService), test.arg)
 
 			if test.error != "" {
 				assert.Errorf(t, err, test.error)
