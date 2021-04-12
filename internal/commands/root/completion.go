@@ -5,21 +5,21 @@ import (
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/cli/internal/resolver"
 )
 
 // CompletionCommand creates shell completion scripts
 type CompletionCommand struct {
 	*commands.BaseCommand
+	resolver.CompletionResolver
 }
 
-// Execute implements commands.MultipleArgumentCommand
-func (s *CompletionCommand) Execute(_ commands.Executor, arg string) (output.Output, error) {
-	if arg == "" {
-		return nil, fmt.Errorf("shell name is requred")
-	}
+// ExecuteSingleArgument implements commands.SingleArgumentCommand
+func (s *CompletionCommand) ExecuteSingleArgument(_ commands.Executor, arg string) (output.Output, error) {
 	if arg == "bash" {
 		completion := new(bytes.Buffer)
 		err := s.Cobra().Root().GenBashCompletion(completion)
+
 		return output.Raw(completion.Bytes()), err
 	}
 
