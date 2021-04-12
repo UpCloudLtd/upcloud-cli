@@ -91,7 +91,7 @@ func TestLoadCDROMCommand(t *testing.T) {
 			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 
-			_, err = c.(commands.Command).Execute(
+			_, err = c.(commands.MultipleArgumentCommand).Execute(
 				commands.NewExecutor(conf, mService),
 				Server1.UUID,
 			)

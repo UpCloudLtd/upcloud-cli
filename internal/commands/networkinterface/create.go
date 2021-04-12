@@ -1,7 +1,6 @@
 package networkinterface
 
 import (
-	"errors"
 	"fmt"
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/completion"
@@ -57,11 +56,8 @@ func (s *createCommand) MaximumExecutions() int {
 	return maxNetworkInterfaceActions
 }
 
-// Execute implements command.Command
-func (s *createCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
-	if arg == "" {
-		return nil, errors.New("single server uuid is required")
-	}
+// ExecuteSingleArgument implements command.SingleArgumentCommand
+func (s *createCommand) ExecuteSingleArgument(exec commands.Executor, arg string) (output.Output, error) {
 	ipAddresses := []request.CreateNetworkInterfaceIPAddress{}
 	if s.networkUUID == "" {
 		ipAddresses = request.CreateNetworkInterfaceIPAddressSlice{{Family: s.family}}

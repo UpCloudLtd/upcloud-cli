@@ -22,12 +22,30 @@ func New(name, usage string) *BaseCommand {
 	}
 }
 
-// Command is a new container for commands, currently still including the old interface until we can deprecate it
+// Command is the base command type for all commands.
 type Command interface {
 	InitCommand()
-	Execute(exec Executor, arg string) (output.Output, error)
-	MaximumExecutions() int
 	CobraCommand
+}
+
+// NoArgumentCommand is a command that does not care about the positional arguments.
+type NoArgumentCommand interface {
+	Command
+	ExecuteWithoutArguments(exec Executor) (output.Output, error)
+}
+
+// SingleArgumentCommand is a command that accepts exactly one positional argument.
+type SingleArgumentCommand interface {
+	Command
+	ExecuteSingleArgument(exec Executor, arg string) (output.Output, error)
+}
+
+// MultipleArgumentCommand is a command that can accept multiple positional arguments,
+// each of which will result in a (parallel) call to Execute() with the argument.
+type MultipleArgumentCommand interface {
+	Command
+	MaximumExecutions() int
+	Execute(exec Executor, arg string) (output.Output, error)
 }
 
 // CobraCommand is an interface for commands that can refer back to their base cobra.Command
@@ -35,7 +53,59 @@ type CobraCommand interface {
 	Cobra() *cobra.Command
 }
 
-func commandRunE(nc Command, config *config.Config) func(cmd *cobra.Command, args []string) error {
+func commandNoneRunE(nc NoArgumentCommand, config *config.Config) func(cmd *cobra.Command, args []string) error {
+	return func(cmd *cobra.Command, args []string) error {
+		svc, err := config.CreateService()
+		if err != nil {
+			return fmt.Errorf("cannot create service: %w", err)
+		}
+
+		executor := NewExecutor(config, svc)
+		res, err := nc.ExecuteWithoutArguments(executor)
+		if err != nil {
+			return output.Render(os.Stdout, config, output.Marshaled{Value: err})
+		}
+		return output.Render(os.Stdout, config, res)
+	}
+}
+
+func commandSingleRunE(nc SingleArgumentCommand, config *config.Config) func(cmd *cobra.Command, args []string) error {
+	return func(cmd *cobra.Command, args []string) error {
+		if len(args) != 1 {
+			return fmt.Errorf("exactly 1 argument is required")
+		}
+		svc, err := config.CreateService()
+		if err != nil {
+			return fmt.Errorf("cannot create service: %w", err)
+		}
+
+		executor := NewExecutor(config, svc)
+
+		var argumentResolver resolver.Resolver
+		if resolve, ok := nc.(resolver.ResolutionProvider); ok {
+			argumentResolver, err = resolve.Get(svc)
+			if err != nil {
+				return fmt.Errorf("cannot create resolver: %w", err)
+			}
+		}
+		var executeArgument = args[0]
+		if argumentResolver != nil {
+			if res, err := argumentResolver(args[0]); err == nil {
+				executeArgument = res
+			} else {
+				executor.NewLogEntry(fmt.Sprintf("invalid argument: %v", err))
+				return fmt.Errorf("cannot map argument '%v': %w", args[0], err)
+			}
+		}
+		res, err := nc.ExecuteSingleArgument(executor, executeArgument)
+		if err != nil {
+			return output.Render(os.Stdout, config, output.Marshaled{Value: err})
+		}
+		return output.Render(os.Stdout, config, res)
+	}
+}
+
+func commandMultiRunE(nc MultipleArgumentCommand, config *config.Config) func(cmd *cobra.Command, args []string) error {
 	return func(cmd *cobra.Command, args []string) error {
 		svc, err := config.CreateService()
 		if err != nil {
@@ -170,7 +240,20 @@ func BuildCommand(child Command, parent *cobra.Command, config *config.Config) C
 	}
 
 	// Set run
-	child.Cobra().RunE = commandRunE(child, config)
+	switch typedChild := child.(type) {
+	case NoArgumentCommand:
+		child.Cobra().RunE = commandNoneRunE(typedChild, config)
+	case SingleArgumentCommand:
+		child.Cobra().RunE = commandSingleRunE(typedChild, config)
+	case MultipleArgumentCommand:
+		child.Cobra().RunE = commandMultiRunE(typedChild, config)
+	default:
+		// no execution found on this command, eg. most likely an 'organizational' command
+		// so just show usage
+		child.Cobra().RunE = func(cmd *cobra.Command, args []string) error {
+			return cmd.Usage()
+		}
+	}
 
 	// Apply viper value to the help
 	curHelp := child.Cobra().HelpFunc()
@@ -194,11 +277,6 @@ func BuildCommand(child Command, parent *cobra.Command, config *config.Config) C
 type BaseCommand struct {
 	cobra *cobra.Command
 	name  string
-}
-
-// Execute implements commands.Command
-func (s *BaseCommand) Execute(_ Executor, _ string) (output.Output, error) {
-	return output.None{}, nil
 }
 
 // MaximumExecutions return the max executed workers

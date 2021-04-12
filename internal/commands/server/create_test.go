@@ -335,7 +335,7 @@ func TestCreateServer(t *testing.T) {
 			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 
-			_, err = c.(commands.Command).Execute(commands.NewExecutor(conf, mService), "")
+			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService), "")
 
 			if test.error != "" {
 				if err == nil {

@@ -84,7 +84,7 @@ func TestRestartCommand(t *testing.T) {
 			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 
-			_, err = c.(commands.Command).Execute(commands.NewExecutor(conf, mService), Server1.UUID)
+			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService), Server1.UUID)
 			assert.NoError(t, err)
 
 			mService.AssertNumberOfCalls(t, methodName, 1)

@@ -74,8 +74,8 @@ func (s *importCommand) InitCommand() {
 	s.AddFlags(flagSet)
 }
 
-// Execute implements Command.MakeExecuteCommand
-func (s *importCommand) Execute(exec commands.Executor, _ string) (output.Output, error) {
+// ExecuteWithoutArguments implements commands.NoArgumentCommand
+func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 
 	svc := exec.Storage()
 

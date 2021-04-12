@@ -28,8 +28,8 @@ type showCommand struct {
 func (s *showCommand) InitCommand() {
 }
 
-// Execute implements command.Command
-func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
+// ExecuteSingleArgument implements command.SingleArgumentCommand
+func (s *showCommand) ExecuteSingleArgument(exec commands.Executor, arg string) (output.Output, error) {
 	if arg == "" {
 		return nil, fmt.Errorf("one router uuid or name is required")
 	}

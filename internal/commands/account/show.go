@@ -19,7 +19,8 @@ type showCommand struct {
 	*commands.BaseCommand
 }
 
-func (s *showCommand) Execute(exec commands.Executor, _ string) (output.Output, error) {
+// ExecuteWithoutArguments implements commands.NoArgumentCommand
+func (s *showCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	svc := exec.Account()
 	account, err := svc.GetAccount()
 	if err != nil {
