@@ -107,6 +107,9 @@ func commandSingleRunE(nc SingleArgumentCommand, config *config.Config) func(cmd
 
 func commandMultiRunE(nc MultipleArgumentCommand, config *config.Config) func(cmd *cobra.Command, args []string) error {
 	return func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 || args[0] == "" {
+			return fmt.Errorf("at least one argument is required")
+		}
 		svc, err := config.CreateService()
 		if err != nil {
 			return fmt.Errorf("cannot create service: %w", err)
