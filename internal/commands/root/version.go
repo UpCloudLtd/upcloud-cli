@@ -1,10 +1,11 @@
 package root
 
 import (
+	"runtime"
+
 	"github.com/UpCloudLtd/cli/internal/commands"
 	"github.com/UpCloudLtd/cli/internal/config"
 	"github.com/UpCloudLtd/cli/internal/output"
-	"runtime"
 )
 
 // VersionCommand reports the current version of upctl
@@ -12,11 +13,11 @@ type VersionCommand struct {
 	*commands.BaseCommand
 }
 
-// Execute implements commands.MultipleArgumentCommand
-func (s *VersionCommand) Execute(_ commands.Executor, _ string) (output.Output, error) {
+// ExecuteWithoutArguments implements commands.NoArgumentCommand
+func (s *VersionCommand) ExecuteWithoutArguments(_ commands.Executor) (output.Output, error) {
 	return output.Details{Sections: []output.DetailSection{
 		{Rows: []output.DetailRow{
-			{Title: "upctl version", Key: "version", Value: config.Version},
+			{Title: "Version", Key: "version", Value: config.Version},
 			{Title: "Build date:", Key: "build_date", Value: config.BuildDate},
 			{Title: "Built with:", Key: "built_with", Value: runtime.Version()},
 		},
