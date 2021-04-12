@@ -6,6 +6,7 @@ import (
 	"github.com/UpCloudLtd/cli/internal/output"
 	"github.com/UpCloudLtd/cli/internal/resolver"
 	"github.com/UpCloudLtd/cli/internal/ui"
+	"strings"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 )
@@ -64,6 +65,10 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 	// }
 
 	// Storage details
+	attachedToServer := "N/A"
+	if len(storage.ServerUUIDs) > 0 {
+		attachedToServer = strings.Join(storage.ServerUUIDs, ", \n")
+	}
 	storageSection := output.CombinedSection{
 		Contents: output.Details{
 			Sections: []output.DetailSection{
@@ -77,7 +82,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 						{Title: "Size:", Key: "size", Value: storage.Size},
 						{Title: "Tier:", Key: "tier", Value: storage.Tier},
 						{Title: "Zone:", Key: "zone", Value: storage.Zone},
-						{Title: "Server:", Key: "zone", Value: storage.ServerUUIDs[0]},
+						{Title: "Server:", Key: "zone", Value: attachedToServer},
 						{Title: "Origin:", Key: "origin", Value: storage.Origin, Color: ui.DefaultUUUIDColours},
 						{Title: "Created:", Key: "created", Value: storage.Created},
 						{Title: "Licence:", Key: "licence", Value: storage.License},
