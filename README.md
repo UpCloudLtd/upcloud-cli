@@ -13,8 +13,8 @@ to control your resources from the command line or any compatible interface.
 Download the appropriate binary from the
 [Releases](https://github.com/UpCloudLtd/upcloud-cli/releases) page.
 
-Create a `.upctl` (yaml) config file with user credentials into your home
-directory or the current directory.
+Create a `upctl.yaml` config file with user credentials into your home
+directory's .config dir ($HOME/.config/upctl.yaml) or the current directory.
 
 ```yaml
 username: upcloud_username
