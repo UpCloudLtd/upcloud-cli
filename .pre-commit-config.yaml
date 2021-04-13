@@ -6,7 +6,7 @@ repos:
       # - id: go-vet
       - id: go-lint
       - id: golangci-lint # implies go-vet, https://golangci-lint.run/usage/linters
-      - id: go-critic
+      # - id: go-critic # moved to be ran by golangci-lint, in order to configure
       - id: go-unit-tests
       - id: go-build
       - id: go-mod-tidy

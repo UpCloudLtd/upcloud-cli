@@ -2,8 +2,6 @@ package commands
 
 import (
 	"fmt"
-	"os"
-	"time"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
@@ -54,159 +52,6 @@ type CobraCommand interface {
 	Cobra() *cobra.Command
 }
 
-func commandNoneRunE(nc NoArgumentCommand, config *config.Config) func(cmd *cobra.Command, args []string) error {
-	return func(cmd *cobra.Command, args []string) error {
-		svc, err := config.CreateService()
-		if err != nil {
-			return fmt.Errorf("cannot create service: %w", err)
-		}
-
-		executor := NewExecutor(config, svc)
-		res, err := nc.ExecuteWithoutArguments(executor)
-		if err != nil {
-			return output.Render(os.Stdout, config, output.Marshaled{Value: err})
-		}
-		return output.Render(os.Stdout, config, res)
-	}
-}
-
-func commandSingleRunE(nc SingleArgumentCommand, config *config.Config) func(cmd *cobra.Command, args []string) error {
-	return func(cmd *cobra.Command, args []string) error {
-		if len(args) != 1 || args[0] == "" {
-			return fmt.Errorf("exactly 1 argument is required")
-		}
-		svc, err := config.CreateService()
-		if err != nil {
-			return fmt.Errorf("cannot create service: %w", err)
-		}
-
-		executor := NewExecutor(config, svc)
-
-		var argumentResolver resolver.Resolver
-		if resolve, ok := nc.(resolver.ResolutionProvider); ok {
-			argumentResolver, err = resolve.Get(svc)
-			if err != nil {
-				return fmt.Errorf("cannot create resolver: %w", err)
-			}
-		}
-		var executeArgument = args[0]
-		if argumentResolver != nil {
-			if res, err := argumentResolver(args[0]); err == nil {
-				executeArgument = res
-			} else {
-				executor.NewLogEntry(fmt.Sprintf("invalid argument: %v", err))
-				return fmt.Errorf("cannot map argument '%v': %w", args[0], err)
-			}
-		}
-		res, err := nc.ExecuteSingleArgument(executor, executeArgument)
-		if err != nil {
-			return output.Render(os.Stdout, config, output.Marshaled{Value: err})
-		}
-		return output.Render(os.Stdout, config, res)
-	}
-}
-
-func commandMultiRunE(nc MultipleArgumentCommand, config *config.Config) func(cmd *cobra.Command, args []string) error {
-	return func(cmd *cobra.Command, args []string) error {
-		if len(args) < 1 || args[0] == "" {
-			return fmt.Errorf("at least one argument is required")
-		}
-		svc, err := config.CreateService()
-		if err != nil {
-			return fmt.Errorf("cannot create service: %w", err)
-		}
-
-		executor := NewExecutor(config, svc)
-
-		var argumentResolver resolver.Resolver
-		if resolve, ok := nc.(resolver.ResolutionProvider); ok {
-			argumentResolver, err = resolve.Get(svc)
-			if err != nil {
-				return fmt.Errorf("cannot create resolver: %w", err)
-			}
-		}
-
-		returnChan := make(chan executeResult)
-		workerCount := nc.MaximumExecutions()
-		workerQueue := make(chan int, workerCount)
-
-		// push initial workers into the worker queue
-		for n := 0; n < workerCount; n++ {
-			workerQueue <- n
-		}
-
-		// make a copy of the original args to pass into the workers
-		argQueue := args
-		if len(argQueue) == 0 {
-			// no argument commands *still* need to run so trigger a single execution with "" as the argument
-			argQueue = []string{""}
-		}
-
-		results := make([]executeResult, 0, len(args))
-		renderTicker := time.NewTicker(100 * time.Millisecond)
-
-		for {
-			select {
-			case workerID := <-workerQueue:
-				// got an idle worker
-				if len(argQueue) == 0 {
-					// we are out of arguments to process, just let the worker exit
-					break
-				}
-				arg := argQueue[0]
-				argQueue = argQueue[1:]
-				// trigger execution in a goroutine
-				go func(index int, argument string) {
-					defer func() {
-						// return worker to queue when exiting
-						workerQueue <- workerID
-					}()
-					executeArgument := argument
-					if argumentResolver != nil {
-						if res, err := argumentResolver(argument); err == nil {
-							executeArgument = res
-						} else {
-							executor.NewLogEntry(fmt.Sprintf("invalid argument: %v", err))
-							returnChan <- executeResult{Job: index, Error: fmt.Errorf("cannot map argument '%v': %w", argument, err)}
-							return
-						}
-					}
-					res, err := nc.Execute(executor, executeArgument)
-					// return result
-					returnChan <- executeResult{Job: index, Result: res, Error: err}
-				}(workerID, arg)
-			case res := <-returnChan:
-				// got a result from a worker
-				results = append(results, res)
-				if len(results) >= len(args) {
-					// we're done, update ui for the last time and render the results
-					executor.Update()
-					if len(results) > 1 {
-						resultList := make([]output.Output, len(results))
-						for i := 0; i < len(results); i++ {
-							if results[i].Error != nil {
-								resultList[i] = output.Error{Value: results[i].Error}
-							} else {
-								resultList[i] = results[i].Result
-							}
-						}
-						return output.Render(os.Stdout, config, resultList...)
-					}
-
-					if results[0].Error != nil {
-						return output.Render(os.Stdout, config, output.Error{Value: results[0].Error})
-					}
-					return output.Render(os.Stdout, config, results[0].Result)
-				}
-			case <-renderTicker.C:
-				if config.InteractiveUI() {
-					executor.Update()
-				}
-			}
-		}
-	}
-}
-
 // BuildCommand sets up a Command with the specified config and adds it to Cobra
 func BuildCommand(child Command, parent *cobra.Command, config *config.Config) Command {
 	child.Cobra().Flags().SortFlags = false
@@ -246,20 +91,7 @@ func BuildCommand(child Command, parent *cobra.Command, config *config.Config) C
 	}
 
 	// Set run
-	switch typedChild := child.(type) {
-	case NoArgumentCommand:
-		child.Cobra().RunE = commandNoneRunE(typedChild, config)
-	case SingleArgumentCommand:
-		child.Cobra().RunE = commandSingleRunE(typedChild, config)
-	case MultipleArgumentCommand:
-		child.Cobra().RunE = commandMultiRunE(typedChild, config)
-	default:
-		// no execution found on this command, eg. most likely an 'organizational' command
-		// so just show usage
-		child.Cobra().RunE = func(cmd *cobra.Command, args []string) error {
-			return cmd.Usage()
-		}
-	}
+	child.Cobra().RunE = commandRunE(child, config)
 
 	return child
 }
