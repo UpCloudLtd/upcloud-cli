@@ -2,13 +2,14 @@ package commands
 
 import (
 	"fmt"
-	"github.com/UpCloudLtd/cli/internal/config"
-	"github.com/UpCloudLtd/cli/internal/output"
-	"github.com/UpCloudLtd/cli/internal/resolver"
-	internal "github.com/UpCloudLtd/cli/internal/service"
-	"github.com/spf13/cobra"
 	"os"
 	"time"
+
+	"github.com/UpCloudLtd/upcloud-cli/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
+	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
+	"github.com/spf13/cobra"
 )
 
 func commandRunE(command Command, config *config.Config) func(cmd *cobra.Command, args []string) error {
