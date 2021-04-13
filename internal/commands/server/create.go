@@ -313,21 +313,8 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		logline.SetDetails(err.Error(), "error: ")
 		return nil, err
 	}
-	// TODO: reimplmement
-	/*	if exec.Config().GlobalFlags.Wait {
 
-		logline.SetMessage(fmt.Sprintf("%s: waiting to start", msg))
-		if err := exec.WaitFor(
-			serverStateWaiter(res.UUID, upcloud.ServerStateStarted, msg, serverSvc, logline),
-			s.Config().ClientTimeout(),
-		); err != nil {
-			return nil, err
-		}
-	} else {*/
 	logline.SetMessage(fmt.Sprintf("%s: request sent", msg))
-	//}
-
-	logline.SetMessage(fmt.Sprintf("%s: done", msg))
 	logline.MarkDone()
 
 	return output.Marshaled{Value: res}, nil

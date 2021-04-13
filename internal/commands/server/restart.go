@@ -66,31 +66,8 @@ func (s *restartCommand) Execute(exec commands.Executor, uuid string) (output.Ou
 		logline.SetDetails(err.Error(), "error: ")
 		return nil, err
 	}
-	// TODO: reimplmement
-	/*	if s.Config().GlobalFlags.Wait {
-		// TODO: this seems to not work as expected as the backend will report
-		// started->maintenance->started->maintenance..
-		logline.SetMessage(fmt.Sprintf("%s: waiting to restart", msg))
-		if err := exec.WaitFor(
-			serverStateWaiter(uuid, upcloud.ServerStateMaintenance, msg, svc, logline),
-			s.Config().ClientTimeout(),
-		); err != nil {
-			return nil, err
-		}
 
-		logline.SetMessage(fmt.Sprintf("%s: waiting to start", msg))
-		if err := exec.WaitFor(
-			serverStateWaiter(uuid, upcloud.ServerStateStarted, msg, svc, logline),
-			s.Config().ClientTimeout(),
-		); err != nil {
-			return nil, err
-		}
-
-		logline.SetMessage(fmt.Sprintf("%s: server restarted", msg))
-	} else {*/
 	logline.SetMessage(fmt.Sprintf("%s: request sent", msg))
-	//}
-
 	logline.MarkDone()
 
 	return output.Marshaled{Value: res}, nil

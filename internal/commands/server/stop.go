@@ -54,18 +54,7 @@ func (s *stopCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 		return nil, err
 	}
 
-	// TODO: reimplmement
-	/*if s.Config().GlobalFlags.Wait {
-		logline.SetMessage(fmt.Sprintf("%s: waiting to stop", msg))
-		if err := exec.WaitFor(serverStateWaiter(uuid, upcloud.ServerStateStopped, msg, svc, logline), s.Config().ClientTimeout()); err != nil {
-			return nil, err
-		}
-
-		logline.SetMessage(fmt.Sprintf("%s: server stoped", msg))
-	} else {*/
 	logline.SetMessage(fmt.Sprintf("%s: request sent", msg))
-	//}
-
 	logline.MarkDone()
 
 	return output.Marshaled{Value: res}, nil
