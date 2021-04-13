@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/commands/storage"
-	"github.com/UpCloudLtd/cli/internal/config"
-	smock "github.com/UpCloudLtd/cli/internal/mock"
-	internal "github.com/UpCloudLtd/cli/internal/service"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/storage"
+	"github.com/UpCloudLtd/upcloud-cli/internal/config"
+	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
+	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"

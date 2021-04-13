@@ -5,10 +5,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/UpCloudLtd/cli/internal/completion"
-	"github.com/UpCloudLtd/cli/internal/config"
-	"github.com/UpCloudLtd/cli/internal/output"
-	"github.com/UpCloudLtd/cli/internal/resolver"
+	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"

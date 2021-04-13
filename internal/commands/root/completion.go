@@ -3,9 +3,9 @@ package root
 import (
 	"bytes"
 	"fmt"
-	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/output"
-	"github.com/UpCloudLtd/cli/internal/resolver"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 )
 
 // CompletionCommand creates shell completion scripts

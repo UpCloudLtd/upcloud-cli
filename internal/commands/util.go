@@ -3,7 +3,7 @@ package commands
 import (
 	"encoding/csv"
 	"fmt"
-	"github.com/UpCloudLtd/cli/internal/validation"
+	"github.com/UpCloudLtd/upcloud-cli/internal/validation"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"reflect"

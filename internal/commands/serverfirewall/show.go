@@ -2,10 +2,10 @@ package serverfirewall
 
 import (
 	"fmt"
-	"github.com/UpCloudLtd/cli/internal/completion"
-	"github.com/UpCloudLtd/cli/internal/output"
-	"github.com/UpCloudLtd/cli/internal/resolver"
-	"github.com/UpCloudLtd/cli/internal/ui"
+	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
+	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/jedib0t/go-pretty/v6/text"
@@ -13,7 +13,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 )
 
 // ShowCommand is the 'server firewall show' command, displaying firewall details

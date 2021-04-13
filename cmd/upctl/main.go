@@ -3,9 +3,9 @@ package main
 import (
 	"os"
 
-	"github.com/UpCloudLtd/cli/internal/commands/all"
-	"github.com/UpCloudLtd/cli/internal/config"
-	"github.com/UpCloudLtd/cli/internal/core"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/all"
+	"github.com/UpCloudLtd/upcloud-cli/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/internal/core"
 )
 
 // BootstrapCLI is the CLI entrypoint

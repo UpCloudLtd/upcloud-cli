@@ -1,7 +1,7 @@
 package serverfirewall
 
 import (
-	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 )
 
 // BaseServerFirewallCommand is the root command for all 'server firewall' commands

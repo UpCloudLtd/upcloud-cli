@@ -1,4 +1,4 @@
-module github.com/UpCloudLtd/cli
+module github.com/UpCloudLtd/upcloud-cli
 
 go 1.13
 

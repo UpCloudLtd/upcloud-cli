@@ -3,8 +3,8 @@ package server
 import (
 	"fmt"
 
-	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 )
 
 // ListCommand creates the "server list" command

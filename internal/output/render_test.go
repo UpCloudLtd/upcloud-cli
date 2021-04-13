@@ -3,8 +3,8 @@ package output_test
 import (
 	"bytes"
 	"errors"
-	"github.com/UpCloudLtd/cli/internal/config"
-	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

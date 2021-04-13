@@ -2,8 +2,8 @@ package resolver_test
 
 import (
 	"errors"
-	smock "github.com/UpCloudLtd/cli/internal/mock"
-	"github.com/UpCloudLtd/cli/internal/resolver"
+	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
+	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/stretchr/testify/assert"
 	"testing"

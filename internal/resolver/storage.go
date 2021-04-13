@@ -2,7 +2,7 @@ package resolver
 
 import (
 	"errors"
-	internal "github.com/UpCloudLtd/cli/internal/service"
+	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
