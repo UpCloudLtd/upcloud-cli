@@ -18,6 +18,7 @@ func commandRunE(command Command, config *config.Config) func(cmd *cobra.Command
 		return func(cmd *cobra.Command, args []string) error {
 			// need to pass in fake arguments here, to actually trigger execution
 			return execute(typedCommand, config, []string{""}, 1,
+				// FIXME: these bits panic go-critic unlambda check, figure out why and report upstream
 				func(exec Executor, fake string) (output.Output, error) {
 					return typedCommand.ExecuteWithoutArguments(exec)
 				})
@@ -28,6 +29,7 @@ func commandRunE(command Command, config *config.Config) func(cmd *cobra.Command
 			if len(args) != 1 || args[0] == "" {
 				return fmt.Errorf("exactly 1 argument is required")
 			}
+			// FIXME: these bits panic go-critic unlambda check, figure out why and report upstream
 			return execute(typedCommand, config, args, 1, func(exec Executor, arg string) (output.Output, error) {
 				return typedCommand.ExecuteSingleArgument(exec, arg)
 			})
@@ -38,6 +40,7 @@ func commandRunE(command Command, config *config.Config) func(cmd *cobra.Command
 			if len(args) < 1 {
 				return fmt.Errorf("at least one argument is required")
 			}
+			// FIXME: these bits panic go-critic unlambda check, figure out why and report upstream
 			return execute(typedCommand, config, args, typedCommand.MaximumExecutions(), func(exec Executor, arg string) (output.Output, error) {
 				return typedCommand.Execute(exec, arg)
 			})
