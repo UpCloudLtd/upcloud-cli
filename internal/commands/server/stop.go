@@ -29,10 +29,11 @@ type stopCommand struct {
 
 // InitCommand implements Command.InitCommand
 func (s *stopCommand) InitCommand() {
-	//XXX: findout what to do with risky params (timeout actions)
 	flags := &pflag.FlagSet{}
 	flags.StringVar(&s.StopType, "type", defaultStopType, "The type of stop operation. Available: soft, hard")
 	s.AddFlags(flags)
+
+	s.AddExamples("upctl server stop hostname.example\nupctl server stop hostname.example --type hard")
 }
 
 // Execute implements commands.MultipleArgumentCommand
@@ -54,17 +55,7 @@ func (s *stopCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 		return nil, err
 	}
 
-	// TODO: reimplmement
-	/*if s.Config().GlobalFlags.Wait {
-		logline.SetMessage(fmt.Sprintf("%s: waiting to stop", msg))
-		if err := exec.WaitFor(serverStateWaiter(uuid, upcloud.ServerStateStopped, msg, svc, logline), s.Config().ClientTimeout()); err != nil {
-			return nil, err
-		}
-
-		logline.SetMessage(fmt.Sprintf("%s: server stoped", msg))
-	} else {*/
 	logline.SetMessage(fmt.Sprintf("%s: request sent", msg))
-	//}
 
 	logline.MarkDone()
 

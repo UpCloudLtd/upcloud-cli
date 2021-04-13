@@ -239,6 +239,8 @@ func (s *createCommand) InitCommand() {
 	fs.StringVar(&s.params.RemoteAccessType, "remote-access-type", def.RemoteAccessType, "Set a remote access type. Available: vnc, spice")
 	fs.StringVar(&s.params.RemoteAccessPassword, "remote-access-password", def.RemoteAccessPassword, "Defines the remote access password.")
 	s.AddFlags(fs)
+
+	s.AddExamples("upctl server create --hostname server.example --zone es-mad1 --ssh-keys ~/.ssh/id_rsa.pub\nupctl server create --hostname server2.example --zone us-nyc1 --plan 6xCPU-16GB --os \"My own template\" --network family=IPv4,type=public")
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand

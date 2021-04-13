@@ -44,6 +44,8 @@ func (s *loadCommand) InitCommand() {
 	flagSet.StringVar(&s.params.StorageUUID, "storage", defaultLoadParams.StorageUUID, "The UUID of the storage to be loaded in the CD-ROM device.")
 
 	s.AddFlags(flagSet)
+
+	s.AddExamples("upctl server load hostname.example --storage 010be0b0-2238-430e-a46f-b48961ff47c6")
 }
 
 // Execute implements commands.MultipleArgumentCommand

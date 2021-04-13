@@ -285,6 +285,11 @@ func (s *BaseCommand) AddFlags(flags *pflag.FlagSet) {
 	})
 }
 
+// AddExamples adds example commands to be shown in the command help
+func (s *BaseCommand) AddExamples(example string) {
+	s.Cobra().Example = example
+}
+
 // InitCommand can be overriden to handle flag registration.
 // A hook to handle flag registration.
 // The config values are not available during this hook. Register a cobra hook to use them. You can set defaults though.

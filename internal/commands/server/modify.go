@@ -58,6 +58,8 @@ func (s *modifyCommand) InitCommand() {
 	flags.StringVar(&s.params.RemoteAccessPassword, "remote-access-password", defaultModifyParams.RemoteAccessPassword, "The remote access password.")
 
 	s.AddFlags(flags)
+
+	s.AddExamples("upctl server modify hostname.example --metadata on --plan 8xCPU-32GB")
 }
 
 // Execute implements commands.MultipleArgumentCommand

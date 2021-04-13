@@ -32,6 +32,8 @@ func (s *deleteCommand) InitCommand() {
 	flags := &pflag.FlagSet{}
 	flags.BoolVar(&s.deleteStorages, "delete-storages", false, "Delete storages that are attached to the server.")
 	s.AddFlags(flags)
+
+	s.AddExamples("upctl server delete hostname.example\nupctl server delete 00e02f58-cb19-4e7a-ba7f-410aba0b7a98 --delete-storages")
 }
 
 // Execute implements commands.MultipleArgumentCommand
