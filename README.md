@@ -6,20 +6,34 @@
 to control your resources from the command line or any compatible interface.
 
 ```bash
-UpCloud command line client
+upctl a CLI tool for managing your UpCloud services.
 
 Usage:
+upctl [flags]
 upctl [command]
 
 Available Commands:
 account     Manage account
-completion  Generate shell completion code
-defaults    Generate defaults
+completion  Generates shell completion
+help        Help about any command
 ip-address  Manage ip address
 network     Manage network
 router      Manage router
 server      Manage servers
 storage     Manage storages
+version     Display software infomation
+
+Options:
+  -t, --client-timeout duration   CLI timeout when using interactive mode on some commands
+                                  Default: 1m0s
+
+  --colours bool                  Use terminal colours (supported: auto, true, false)
+                                  Default: true
+
+  --config string                 Config file
+
+  -o, --output string             Output format (supported: json, yaml and human)
+                                  Default: human
 
 Use "upctl [command] --help" for more information about a command.
 ```
@@ -142,6 +156,11 @@ Note: Storage size is in GB.
 upctl server storage attach <SERVER-UUID> --storage <STORAGE-UUID>
 ```
 
+## Documentation
+
+The detailed documentation can be found [here](docs/upctl.md)
+
+
 ## Contributing
 
 Contributions from the community are much appreciated! Please note that all features using our
@@ -165,14 +184,15 @@ Use `make` to build and test the CLI. Makefile help can be found:
 
 ```
 $ make help
-build             Build program binary for current os/arch
-build-all         Build all targets
-build-linux       Build program binary for linux x86_64
-build-darwin      Build program binary for darwin x86_64
-build-windows     Build program binary for windows x86_64
-test              Run tests
-fmt               Run gofmt on all source files
-clean             Cleanup everything
+build                Build program binary for current os/arch
+doc                  Build documentation (markdown)
+build-all            Build all targets
+build-linux          Build program binary for linux x86_64
+build-darwin         Build program binary for darwin x86_64
+build-windows        Build program binary for windows x86_64
+test                 Run tests
+fmt                  Run gofmt on all source files
+clean                Cleanup everything
 ```
 
 ### Requirements

@@ -2,6 +2,7 @@
 
 GO       = go
 CLI      = upctl
+DOC_GEN  = doc-gen
 MODULE   = $(shell env GO111MODULE=on $(GO) list -m)
 DATE    ?= $(shell date +%FT%T%z)
 VERSION ?= $(shell git describe --tags --always --dirty --match=v* 2> /dev/null || \
@@ -12,10 +13,11 @@ TESTPKGS = $(shell env GO111MODULE=on $(GO) list -f \
 			$(PKGS))
 
 BIN_DIR         = $(CURDIR)/bin
-BIN             = $(CLI)
-BIN_LINUX       = $(BIN)-$(VERSION)-linux-amd64
-BIN_DARWIN      = $(BIN)-$(VERSION)-darwin-amd64
-BIN_WINDOWS     = $(BIN)-$(VERSION)-windows-amd64.exe
+CLI_BIN         = $(CLI)
+DOC_GEN_BIN     = $(DOC_GEN)
+BIN_LINUX       = $(CLI_BIN)-$(VERSION)-linux-amd64
+BIN_DARWIN      = $(CLI_BIN)-$(VERSION)-darwin-amd64
+BIN_WINDOWS     = $(CLI_BIN)-$(VERSION)-windows-amd64.exe
 
 
 V = 0
@@ -28,7 +30,13 @@ build: fmt | $(BIN_DIR) ; $(info building executable for the current target…) 
 	$Q $(GO) build \
 		-tags release \
 		-ldflags '-X $(MODULE)/internal/config.Version=$(VERSION) -X $(MODULE)/internal/config.BuildDate=$(DATE)' \
-		-o $(BIN_DIR)/$(BIN) cmd/$(CLI)/main.go
+		-o $(BIN_DIR)/$(CLI_BIN) cmd/$(CLI)/main.go
+
+doc: $(BIN_DIR) ; $(info building documentation generator ) @ ## Build documentation (markdown)
+	$Q $(GO) build \
+		-tags release \
+		-ldflags '-X $(MODULE)/internal/config.Version=$(VERSION) -X $(MODULE)/internal/config.BuildDate=$(DATE)' \
+		-o $(BIN_DIR)/$(DOC_GEN_BIN) cmd/$(DOC_GEN)/main.go
 
 .PHONY: build-all
 build-all: build-linux build-darwin build-windows ## Build all targets
@@ -72,7 +80,7 @@ $(BIN_DIR):
 
 .PHONY: clean
 clean: ; $(info cleaning…)	@ ## Cleanup everything
-	@rm -rf $(BIN)
+	@rm -rf $(BIN_DIR)
 
 .PHONY: help
 help:
