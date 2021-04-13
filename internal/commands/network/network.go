@@ -2,8 +2,8 @@ package network
 
 import (
 	"fmt"
-	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/resolver"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"

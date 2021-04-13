@@ -2,12 +2,12 @@ package server
 
 import (
 	"fmt"
-	"github.com/UpCloudLtd/cli/internal/completion"
-	"github.com/UpCloudLtd/cli/internal/resolver"
+	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 
-	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/output"
-	"github.com/UpCloudLtd/cli/internal/ui"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/pflag"

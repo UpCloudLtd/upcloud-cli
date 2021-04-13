@@ -7,7 +7,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/UpCloudLtd/cli/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 )
 
 // Render renders commandOutput to writer using cfg to configure the output.

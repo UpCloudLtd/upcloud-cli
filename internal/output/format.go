@@ -2,7 +2,7 @@ package output
 
 import (
 	"fmt"
-	"github.com/UpCloudLtd/cli/internal/ui"
+	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/jedib0t/go-pretty/v6/text"
 )

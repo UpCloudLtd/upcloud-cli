@@ -8,7 +8,7 @@ import (
 
 	"github.com/jedib0t/go-pretty/v6/text"
 
-	"github.com/UpCloudLtd/cli/internal/terminal"
+	"github.com/UpCloudLtd/upcloud-cli/internal/terminal"
 )
 
 var (

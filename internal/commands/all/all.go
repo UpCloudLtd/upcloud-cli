@@ -1,18 +1,18 @@
 package all
 
 import (
-	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/commands/account"
-	"github.com/UpCloudLtd/cli/internal/commands/ipaddress"
-	"github.com/UpCloudLtd/cli/internal/commands/network"
-	"github.com/UpCloudLtd/cli/internal/commands/networkinterface"
-	"github.com/UpCloudLtd/cli/internal/commands/root"
-	"github.com/UpCloudLtd/cli/internal/commands/router"
-	"github.com/UpCloudLtd/cli/internal/commands/server"
-	"github.com/UpCloudLtd/cli/internal/commands/serverfirewall"
-	"github.com/UpCloudLtd/cli/internal/commands/serverstorage"
-	"github.com/UpCloudLtd/cli/internal/commands/storage"
-	"github.com/UpCloudLtd/cli/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/account"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/ipaddress"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/network"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/networkinterface"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/root"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/router"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/server"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/serverfirewall"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/serverstorage"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/storage"
+	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 
 	"github.com/spf13/cobra"
 )

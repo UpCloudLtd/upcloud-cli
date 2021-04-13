@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	internal "github.com/UpCloudLtd/cli/internal/service"
-	"github.com/UpCloudLtd/cli/internal/terminal"
+	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
+	"github.com/UpCloudLtd/upcloud-cli/internal/terminal"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/client"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"

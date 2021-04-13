@@ -3,7 +3,7 @@ package server
 import (
 	"time"
 
-	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 )
 

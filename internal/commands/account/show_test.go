@@ -2,12 +2,12 @@ package account
 
 import (
 	"bytes"
-	smock "github.com/UpCloudLtd/cli/internal/mock"
+	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	"testing"
 
-	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/config"
-	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/stretchr/testify/assert"

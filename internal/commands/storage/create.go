@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/output"
-	"github.com/UpCloudLtd/cli/internal/ui"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"

@@ -3,7 +3,7 @@ package network
 import (
 	"testing"
 
-	smock "github.com/UpCloudLtd/cli/internal/mock"
+	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/stretchr/testify/assert"

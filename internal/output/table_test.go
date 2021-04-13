@@ -1,7 +1,7 @@
 package output_test
 
 import (
-	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

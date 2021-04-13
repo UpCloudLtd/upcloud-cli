@@ -1,8 +1,8 @@
 package server
 
 import (
-	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 )
 
 // PlanListCommand creates the "server plans" command

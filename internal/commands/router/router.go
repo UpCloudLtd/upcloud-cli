@@ -1,7 +1,7 @@
 package router
 
 import (
-	"github.com/UpCloudLtd/cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 )
 
 const maxRouterActions = 10

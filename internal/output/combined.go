@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/UpCloudLtd/cli/internal/ui"
+	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 	"gopkg.in/yaml.v2"
 )
 

@@ -3,9 +3,9 @@ package root
 import (
 	"runtime"
 
-	"github.com/UpCloudLtd/cli/internal/commands"
-	"github.com/UpCloudLtd/cli/internal/config"
-	"github.com/UpCloudLtd/cli/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 )
 
 // VersionCommand reports the current version of upctl

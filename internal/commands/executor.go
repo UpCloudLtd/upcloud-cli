@@ -2,10 +2,10 @@ package commands
 
 import (
 	"fmt"
-	"github.com/UpCloudLtd/cli/internal/config"
-	"github.com/UpCloudLtd/cli/internal/output"
-	internal "github.com/UpCloudLtd/cli/internal/service"
-	"github.com/UpCloudLtd/cli/internal/ui"
+	"github.com/UpCloudLtd/upcloud-cli/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/internal/output"
+	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
+	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"os"
 	"time"
