@@ -16,7 +16,7 @@ import (
 // DeleteCommand creates the "server delete" command
 func DeleteCommand() commands.Command {
 	return &deleteCommand{
-		BaseCommand: commands.New("delete", "Delete a server"),
+		BaseCommand: commands.New("delete", "Delete a server", ""),
 	}
 }
 

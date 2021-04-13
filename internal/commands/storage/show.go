@@ -14,7 +14,7 @@ import (
 // ShowCommand creates the "storage show" command
 func ShowCommand() commands.Command {
 	return &showCommand{
-		BaseCommand: commands.New("show", "Show storage details"),
+		BaseCommand: commands.New("show", "Show storage details", ""),
 	}
 }
 

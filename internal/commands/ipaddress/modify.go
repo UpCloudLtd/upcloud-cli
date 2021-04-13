@@ -23,7 +23,7 @@ type modifyCommand struct {
 // ModifyCommand creates the 'ip-address modify' command
 func ModifyCommand() commands.Command {
 	return &modifyCommand{
-		BaseCommand: commands.New("modify", "Modify an IP address"),
+		BaseCommand: commands.New("modify", "Modify an IP address", ""),
 	}
 }
 

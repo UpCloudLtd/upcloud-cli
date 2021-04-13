@@ -12,7 +12,9 @@ const maxIPAddressActions = 10
 
 // BaseIPAddressCommand creates the base 'ip-address' command
 func BaseIPAddressCommand() commands.Command {
-	return &ipAddressCommand{commands.New("ip-address", "Manage ip address")}
+	return &ipAddressCommand{
+		commands.New("ip-address", "Manage ip address", ""),
+	}
 }
 
 type ipAddressCommand struct {

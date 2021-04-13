@@ -22,7 +22,7 @@ import (
 // CreateCommand creates the "server create" command
 func CreateCommand() commands.Command {
 	return &createCommand{
-		BaseCommand: commands.New("create", "Create a server"),
+		BaseCommand: commands.New("create", "Create a server", ""),
 	}
 }
 

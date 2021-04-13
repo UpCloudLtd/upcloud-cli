@@ -26,7 +26,7 @@ type restoreBackupParams struct {
 // RestoreBackupCommand creates the "storage backup restore" command
 func RestoreBackupCommand() commands.Command {
 	return &restoreBackupCommand{
-		BaseCommand: commands.New("restore", "Restore backup of a storage"),
+		BaseCommand: commands.New("restore", "Restore backup of a storage", ""),
 	}
 }
 

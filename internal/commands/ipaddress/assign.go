@@ -26,7 +26,7 @@ type assignCommand struct {
 // AssignCommand creates the 'ip-address assign' command
 func AssignCommand() commands.Command {
 	return &assignCommand{
-		BaseCommand: commands.New("assign", "Assign an ip address"),
+		BaseCommand: commands.New("assign", "Assign an ip address", ""),
 	}
 }
 

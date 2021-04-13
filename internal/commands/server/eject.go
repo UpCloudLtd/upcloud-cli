@@ -29,7 +29,7 @@ func (s *ejectCommand) InitCommand() {
 // EjectCommand creates the "server eject" command
 func EjectCommand() commands.Command {
 	return &ejectCommand{
-		BaseCommand: commands.New("eject", "Eject a CD-ROM from the server"),
+		BaseCommand: commands.New("eject", "Eject a CD-ROM from the server", ""),
 	}
 }
 

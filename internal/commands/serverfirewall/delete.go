@@ -21,7 +21,11 @@ type deleteCommand struct {
 // DeleteCommand creates the "server firewall delete" command
 func DeleteCommand() commands.Command {
 	return &deleteCommand{
-		BaseCommand: commands.New("delete", "Removes a firewall rule from a server. Firewall rules must be removed individually. The positions of remaining firewall rules will be adjusted after a rule is removed."),
+		BaseCommand: commands.New(
+			"delete",
+			"Removes a firewall rule from a server. Firewall rules must be removed individually. The positions of remaining firewall rules will be adjusted after a rule is removed.",
+			"",
+		),
 	}
 }
 

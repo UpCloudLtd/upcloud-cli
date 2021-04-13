@@ -21,7 +21,7 @@ type modifyCommand struct {
 // ModifyCommand creates the "router modify" command
 func ModifyCommand() commands.Command {
 	return &modifyCommand{
-		BaseCommand: commands.New("modify", "Modify a router"),
+		BaseCommand: commands.New("modify", "Modify a router", ""),
 	}
 }
 

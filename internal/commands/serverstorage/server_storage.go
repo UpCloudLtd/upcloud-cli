@@ -10,7 +10,7 @@ const (
 
 // BaseServerStorageCommand creates the base "server storage" command
 func BaseServerStorageCommand() commands.Command {
-	return &serverStorageCommand{commands.New("storage", "Manage server storages")}
+	return &serverStorageCommand{commands.New("storage", "Manage server storages", "")}
 }
 
 type serverStorageCommand struct {

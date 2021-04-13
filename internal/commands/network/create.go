@@ -25,7 +25,7 @@ var _ commands.Command = &createCommand{}
 // CreateCommand creates the 'network create' command
 func CreateCommand() commands.Command {
 	return &createCommand{
-		BaseCommand: commands.New("create", "Create a network"),
+		BaseCommand: commands.New("create", "Create a network", ""),
 	}
 }
 

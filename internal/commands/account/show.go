@@ -11,7 +11,7 @@ import (
 // ShowCommand creates the 'account show' command
 func ShowCommand() commands.Command {
 	return &showCommand{
-		BaseCommand: commands.New("show", "Show account"),
+		BaseCommand: commands.New("show", "Show account", ""),
 	}
 }
 

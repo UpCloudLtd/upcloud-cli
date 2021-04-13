@@ -17,7 +17,7 @@ import (
 // RestartCommand creates the "server restart" command
 func RestartCommand() commands.Command {
 	return &restartCommand{
-		BaseCommand: commands.New("restart", "Restart a server"),
+		BaseCommand: commands.New("restart", "Restart a server", ""),
 	}
 }
 

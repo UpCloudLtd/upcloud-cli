@@ -29,7 +29,7 @@ type attachParams struct {
 // AttachCommand creates the "server storage attach" command
 func AttachCommand() commands.Command {
 	return &attachCommand{
-		BaseCommand: commands.New("attach", "Attach a storage as a device to a server"),
+		BaseCommand: commands.New("attach", "Attach a storage as a device to a server", ""),
 	}
 }
 
