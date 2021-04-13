@@ -10,7 +10,7 @@ import (
 // ListCommand creates the "server list" command
 func ListCommand() commands.Command {
 	return &listCommand{
-		BaseCommand: commands.New("list", "List current servers"),
+		BaseCommand: commands.New("list", "List current servers", ""),
 	}
 }
 

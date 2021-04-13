@@ -9,7 +9,7 @@ import (
 // ListCommand creates the "ip-address list" command
 func ListCommand() commands.Command {
 	return &listCommand{
-		BaseCommand: commands.New("list", "List IP addresses"),
+		BaseCommand: commands.New("list", "List IP addresses", ""),
 	}
 }
 

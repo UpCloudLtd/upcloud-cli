@@ -12,7 +12,7 @@ import (
 // ShowCommand creates the 'ip-address show' command
 func ShowCommand() commands.Command {
 	return &showCommand{
-		BaseCommand: commands.New("show", "Show current IP address"),
+		BaseCommand: commands.New("show", "Show current IP address", ""),
 	}
 }
 

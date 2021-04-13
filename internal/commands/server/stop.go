@@ -16,7 +16,7 @@ import (
 // StopCommand creates the "server stop" command
 func StopCommand() commands.Command {
 	return &stopCommand{
-		BaseCommand: commands.New("stop", "Stop a server"),
+		BaseCommand: commands.New("stop", "Stop a server", ""),
 	}
 }
 

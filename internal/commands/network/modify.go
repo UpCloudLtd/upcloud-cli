@@ -24,7 +24,7 @@ type modifyCommand struct {
 // ModifyCommand creates the "network modify" command
 func ModifyCommand() commands.Command {
 	return &modifyCommand{
-		BaseCommand: commands.New("modify", "Modify a network"),
+		BaseCommand: commands.New("modify", "Modify a network", ""),
 	}
 }
 

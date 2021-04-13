@@ -6,6 +6,12 @@ Display software infomation
 upctl version [flags]
 ```
 
+### Examples
+
+```
+upctl version
+```
+
 ### Options
 
 ```

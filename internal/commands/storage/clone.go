@@ -28,7 +28,7 @@ type cloneParams struct {
 // CloneCommand creates the "storage clone" command
 func CloneCommand() commands.Command {
 	return &cloneCommand{
-		BaseCommand: commands.New("clone", "Clone a storage"),
+		BaseCommand: commands.New("clone", "Clone a storage", ""),
 	}
 }
 

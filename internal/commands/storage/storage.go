@@ -18,7 +18,9 @@ var (
 
 // BaseStorageCommand creates the base "storage" command
 func BaseStorageCommand() commands.Command {
-	return &storageCommand{commands.New("storage", "Manage storages")}
+	return &storageCommand{
+		commands.New("storage", "Manage storages", ""),
+	}
 }
 
 type storageCommand struct {

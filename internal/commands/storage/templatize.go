@@ -28,7 +28,7 @@ type templatizeParams struct {
 // TODO: figure out consistent naming, one way or the other.
 func TemplatizeCommand() commands.Command {
 	return &templatizeCommand{
-		BaseCommand: commands.New("templatise", "Templatise a storage"),
+		BaseCommand: commands.New("templatise", "Templatise a storage", ""),
 	}
 }
 

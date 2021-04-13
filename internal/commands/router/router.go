@@ -8,7 +8,9 @@ const maxRouterActions = 10
 
 // BaseRouterCommand creates the base "router" command
 func BaseRouterCommand() commands.Command {
-	return &routerCommand{commands.New("router", "Manage router")}
+	return &routerCommand{
+		commands.New("router", "Manage router", ""),
+	}
 }
 
 type routerCommand struct {

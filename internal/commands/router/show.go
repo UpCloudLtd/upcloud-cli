@@ -13,7 +13,7 @@ import (
 // ShowCommand creates the "router show" command
 func ShowCommand() commands.Command {
 	return &showCommand{
-		BaseCommand: commands.New("show", "Show current router"),
+		BaseCommand: commands.New("show", "Show current router", ""),
 	}
 }
 

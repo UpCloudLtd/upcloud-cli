@@ -6,6 +6,12 @@ Generates shell completion
 upctl completion <bash> [flags]
 ```
 
+### Examples
+
+```
+upctl completion bash
+```
+
 ### Options
 
 ```

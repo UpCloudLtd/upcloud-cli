@@ -16,7 +16,7 @@ import (
 // CreateCommand creates the "storage create" command
 func CreateCommand() commands.Command {
 	return &createCommand{
-		BaseCommand: commands.New("create", "Create a storage"),
+		BaseCommand: commands.New("create", "Create a storage", ""),
 	}
 }
 

@@ -15,7 +15,7 @@ import (
 // StartCommand creates the "server start" command
 func StartCommand() commands.Command {
 	return &startCommand{
-		BaseCommand: commands.New("start", "Start a server"),
+		BaseCommand: commands.New("start", "Start a server", ""),
 	}
 }
 

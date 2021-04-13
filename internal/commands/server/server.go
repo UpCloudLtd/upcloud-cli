@@ -19,7 +19,7 @@ const (
 // BaseServerCommand crestes the base "server" command
 func BaseServerCommand() commands.Command {
 	return &serverCommand{
-		commands.New("server", "Manage servers"),
+		commands.New("server", "Manage servers", ""),
 	}
 }
 

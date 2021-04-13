@@ -28,7 +28,7 @@ type loadParams struct {
 // LoadCommand creates the "server load" command
 func LoadCommand() commands.Command {
 	return &loadCommand{
-		BaseCommand: commands.New("load", "Load a CD-ROM into the server"),
+		BaseCommand: commands.New("load", "Load a CD-ROM into the server", ""),
 	}
 }
 

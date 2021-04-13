@@ -31,7 +31,7 @@ var defaultDetachParams = &detachParams{
 // DetachCommand creates the "server storage detach" command
 func DetachCommand() commands.Command {
 	return &detachCommand{
-		BaseCommand: commands.New("detach", "Detaches a storage resource from a server"),
+		BaseCommand: commands.New("detach", "Detaches a storage resource from a server", ""),
 	}
 }
 

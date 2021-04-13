@@ -17,7 +17,7 @@ import (
 // ModifyCommand creates the "server modify" command
 func ModifyCommand() commands.Command {
 	return &modifyCommand{
-		BaseCommand: commands.New("modify", "Modifies the configuration of an existing server"),
+		BaseCommand: commands.New("modify", "Modifies the configuration of an existing server", ""),
 	}
 }
 

@@ -15,7 +15,7 @@ import (
 // DeleteCommand creates the "storage delete" command
 func DeleteCommand() commands.Command {
 	return &deleteCommand{
-		BaseCommand: commands.New("delete", "Delete a storage"),
+		BaseCommand: commands.New("delete", "Delete a storage", ""),
 	}
 }
 
