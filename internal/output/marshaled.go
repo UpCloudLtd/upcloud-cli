@@ -7,14 +7,14 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// Marshaled implements output.Command for a return value that is only displayed as raw marshaled in JSON and YAML
+// OnlyMarshaled implements output.Command for a return value that is only displayed as raw marshaled in JSON and YAML
 // eg. most 'state change' commands
-type Marshaled struct {
+type OnlyMarshaled struct {
 	Value interface{}
 }
 
 // MarshalJSON implements json.Marshaler and output.Output
-func (d Marshaled) MarshalJSON() ([]byte, error) {
+func (d OnlyMarshaled) MarshalJSON() ([]byte, error) {
 	if errValue, ok := d.Value.(error); ok {
 		return json.MarshalIndent(map[string]interface{}{
 			"error": errValue.Error(),
@@ -25,7 +25,7 @@ func (d Marshaled) MarshalJSON() ([]byte, error) {
 
 // MarshalYAML implements output.Output, it marshals the value and returns the YAML as []byte
 // nb. does *not* implement yaml.Marshaler
-func (d Marshaled) MarshalYAML() ([]byte, error) {
+func (d OnlyMarshaled) MarshalYAML() ([]byte, error) {
 	if errValue, ok := d.Value.(error); ok {
 		return yaml.Marshal(map[string]interface{}{
 			"error": errValue.Error(),
@@ -35,9 +35,9 @@ func (d Marshaled) MarshalYAML() ([]byte, error) {
 }
 
 // MarshalHuman implements output.Output
-// For Marshaled outputs, we dont return anything in humanized output as it's assumed the log output is what the user
+// For OnlyMarshaled outputs, we dont return anything in humanized output as it's assumed the log output is what the user
 // wants and it is down to the command itself to provide that.
-func (d Marshaled) MarshalHuman() ([]byte, error) {
+func (d OnlyMarshaled) MarshalHuman() ([]byte, error) {
 	if errValue, ok := d.Value.(error); ok {
 		return []byte(fmt.Sprintf("ERROR: %v", errValue)), nil
 	}
@@ -45,6 +45,6 @@ func (d Marshaled) MarshalHuman() ([]byte, error) {
 }
 
 // MarshalRawMap implements output.Output
-func (d Marshaled) MarshalRawMap() (map[string]interface{}, error) {
+func (d OnlyMarshaled) MarshalRawMap() (map[string]interface{}, error) {
 	return nil, errors.New("marshaled should not be used as part of multiple output, raw output is undefined")
 }

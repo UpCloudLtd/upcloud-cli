@@ -41,7 +41,7 @@ func TestRender(t *testing.T) {
 		},
 		{
 			name:                "marshaled",
-			output:              output.Marshaled{Value: "hello"},
+			output:              output.OnlyMarshaled{Value: "hello"},
 			expectedHumanResult: "\n", // marshaled should not output in human mode
 			expectedJSONResult: `"hello"
 `,

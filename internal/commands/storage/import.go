@@ -260,7 +260,7 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 					case details.State == upcloud.StorageImportStateCompleted:
 						logline.SetMessage(fmt.Sprintf("%s: done", msg))
 						logline.MarkDone()
-						return output.Marshaled{Value: createdStorageImport}, nil
+						return output.OnlyMarshaled{Value: createdStorageImport}, nil
 					}
 					if read := details.ReadBytes; read > 0 {
 						if details.ClientContentLength > 0 {
