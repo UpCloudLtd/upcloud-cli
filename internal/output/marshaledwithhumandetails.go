@@ -3,18 +3,18 @@ package output
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"gopkg.in/yaml.v2"
 )
 
-// OnlyMarshaled implements output.Command for a return value that is only displayed as raw marshaled in JSON and YAML
+// MarshaledWithHumanDetails implements output.Command for a return value that is only displayed as raw marshaled in JSON and YAML
 // eg. most 'state change' commands
-type OnlyMarshaled struct {
-	Value interface{}
+type MarshaledWithHumanDetails struct {
+	Value   interface{}
+	Details []DetailRow
 }
 
 // MarshalJSON implements json.Marshaler and output.Output
-func (d OnlyMarshaled) MarshalJSON() ([]byte, error) {
+func (d MarshaledWithHumanDetails) MarshalJSON() ([]byte, error) {
 	if errValue, ok := d.Value.(error); ok {
 		return json.MarshalIndent(map[string]interface{}{
 			"error": errValue.Error(),
@@ -25,7 +25,7 @@ func (d OnlyMarshaled) MarshalJSON() ([]byte, error) {
 
 // MarshalYAML implements output.Output, it marshals the value and returns the YAML as []byte
 // nb. does *not* implement yaml.Marshaler
-func (d OnlyMarshaled) MarshalYAML() ([]byte, error) {
+func (d MarshaledWithHumanDetails) MarshalYAML() ([]byte, error) {
 	if errValue, ok := d.Value.(error); ok {
 		return yaml.Marshal(map[string]interface{}{
 			"error": errValue.Error(),
@@ -35,16 +35,14 @@ func (d OnlyMarshaled) MarshalYAML() ([]byte, error) {
 }
 
 // MarshalHuman implements output.Output
-// For OnlyMarshaled outputs, we dont return anything in humanized output as it's assumed the log output is what the user
-// wants and it is down to the command itself to provide that.
-func (d OnlyMarshaled) MarshalHuman() ([]byte, error) {
-	if errValue, ok := d.Value.(error); ok {
-		return []byte(fmt.Sprintf("ERROR: %v", errValue)), nil
-	}
-	return []byte{}, nil
+// For MarshaledWithHumanDetails outputs, we return *only* the details part in humanized output
+func (d MarshaledWithHumanDetails) MarshalHuman() ([]byte, error) {
+	return Details{Sections: []DetailSection{
+		{Rows: d.Details},
+	}}.MarshalHuman()
 }
 
 // MarshalRawMap implements output.Output
-func (d OnlyMarshaled) MarshalRawMap() (map[string]interface{}, error) {
+func (d MarshaledWithHumanDetails) MarshalRawMap() (map[string]interface{}, error) {
 	return nil, errors.New("marshaled should not be used as part of multiple output, raw output is undefined")
 }

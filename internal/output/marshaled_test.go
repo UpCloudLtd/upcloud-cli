@@ -43,7 +43,7 @@ var marshaledTests = []struct {
 func TestMarshaled(t *testing.T) {
 	for _, test := range marshaledTests {
 		t.Run(test.name, func(t *testing.T) {
-			input := output.Marshaled{Value: test.marshalValue}
+			input := output.OnlyMarshaled{Value: test.marshalValue}
 			if test.expectedErrorMessage == "" {
 				bytes, err := input.MarshalHuman()
 				assert.NoError(t, err)

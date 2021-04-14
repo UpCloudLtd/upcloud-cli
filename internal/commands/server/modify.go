@@ -106,5 +106,5 @@ func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Out
 	logline.SetMessage(fmt.Sprintf("%s: done", msg))
 	logline.MarkDone()
 
-	return output.Marshaled{Value: res}, nil
+	return output.OnlyMarshaled{Value: res}, nil
 }

@@ -85,5 +85,5 @@ func (s *assignCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	}
 	logline.SetMessage(fmt.Sprintf("%s: success", msg))
 	logline.MarkDone()
-	return output.Marshaled{Value: res}, nil
+	return output.OnlyMarshaled{Value: res}, nil
 }

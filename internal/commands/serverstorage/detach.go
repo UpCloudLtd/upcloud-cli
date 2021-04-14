@@ -76,5 +76,5 @@ func (s *detachCommand) ExecuteSingleArgument(exec commands.Executor, uuid strin
 	logline.SetMessage(fmt.Sprintf("%s: success", msg))
 	logline.MarkDone()
 
-	return output.Marshaled{Value: res}, nil
+	return output.OnlyMarshaled{Value: res}, nil
 }

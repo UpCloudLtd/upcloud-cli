@@ -70,5 +70,5 @@ func (s *restartCommand) Execute(exec commands.Executor, uuid string) (output.Ou
 	logline.SetMessage(fmt.Sprintf("%s: request sent", msg))
 	logline.MarkDone()
 
-	return output.Marshaled{Value: res}, nil
+	return output.OnlyMarshaled{Value: res}, nil
 }

@@ -50,5 +50,5 @@ func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 	logline.SetMessage(fmt.Sprintf("%s: done", msg))
 	logline.MarkDone()
 
-	return output.Marshaled{Value: res}, nil
+	return output.OnlyMarshaled{Value: res}, nil
 }
