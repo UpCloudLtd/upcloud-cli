@@ -46,18 +46,8 @@ func (s *startCommand) Execute(exec commands.Executor, uuid string) (output.Outp
 		logline.SetDetails(err.Error(), "error: ")
 		return nil, err
 	}
-	// TODO: reimplmement
-	/*	if s.Config().GlobalFlags.Wait {
-		logline.SetMessage(fmt.Sprintf("%s: waiting to start", msg))
-		if err := exec.WaitFor(serverStateWaiter(uuid, upcloud.ServerStateStarted, msg, svc, logline), s.Config().ClientTimeout()); err != nil {
-			return nil, err
-		}
 
-		logline.SetMessage(fmt.Sprintf("%s: server started", msg))
-	} else {*/
 	logline.SetMessage(fmt.Sprintf("%s: request sent", msg))
-	//}
-
 	logline.MarkDone()
 
 	return output.Marshaled{Value: res}, nil
