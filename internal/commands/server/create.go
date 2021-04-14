@@ -3,6 +3,7 @@ package server
 import (
 	"bufio"
 	"fmt"
+	"github.com/jedib0t/go-pretty/v6/text"
 	"os"
 	"strings"
 
@@ -317,5 +318,19 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	logline.SetMessage(fmt.Sprintf("%s: request sent", msg))
 	logline.MarkDone()
 
-	return output.OnlyMarshaled{Value: res}, nil
+	return output.MarshaledWithHumanDetails{Value: res, Details: []output.DetailRow{
+		{Title: "UUID", Value: res.UUID, Color: ui.DefaultUUUIDColours},
+		{Title: "IP Addresses", Value: res.IPAddresses, Format: formatIPAddresses},
+	}}, nil
+}
+
+func formatIPAddresses(val interface{}) (text.Colors, string, error) {
+	if ipAddresses, ok := val.(upcloud.IPAddressSlice); ok {
+		strs := make([]string, len(ipAddresses))
+		for i, ipa := range ipAddresses {
+			strs[i] = ipa.Address
+		}
+		return nil, strings.Join(strs, ",\n"), nil
+	}
+	return nil, fmt.Sprint(val), nil
 }
