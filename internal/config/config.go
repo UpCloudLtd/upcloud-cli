@@ -94,10 +94,7 @@ func (s *Config) Load() error {
 
 	v.Set("config", v.ConfigFileUsed())
 
-	if s.GlobalFlags.Debug {
-		log.Debug("Load cli", "User config after loading and setting up service")
-		v.Debug()
-	}
+	log.Debug("Config: Load()", "Viper config logs", v.AllSettings())
 	return nil
 
 }
