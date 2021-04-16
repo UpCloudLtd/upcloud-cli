@@ -128,7 +128,7 @@ brews:
       owner: UpCloudLtd
       name: homebrew-tap
       # Optionally a token can be provided, if it differs from the token provided to GoReleaser
-      # token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
 
     # Allows you to set a custom download strategy. Note that you'll need
     # to implement the strategy and add it to your tap repository.
