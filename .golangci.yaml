@@ -1,0 +1,8 @@
+linters-settings:
+  gocritic:
+    disabled-checks:
+      # TODO: re-enable after figuring out why runcommand fails on go-critic..
+      - unlambda
+linters:
+  enable:
+    - gocritic
