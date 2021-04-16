@@ -98,7 +98,7 @@ nfpms:
       rpm:
         replacements:
           amd64: x86_64
-          name_template: "{{ .ProjectName }}-{{ .Version }}.{{ .Arch }}"
+        name_template: "{{ .ProjectName }}-{{ .Version }}.{{ .Arch }}"
 
     # Custon configuration applied only to the RPM packager.
     rpm:
@@ -127,7 +127,7 @@ brews:
     # Gitea is not supported yet, but the support coming
     tap:
       owner: UpCloudLtd
-      name: homebrew-upcloud-cli
+      name: homebrew-tap
       # Optionally a token can be provided, if it differs from the token provided to GoReleaser
       # token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
 
@@ -165,7 +165,7 @@ brews:
     # If set to auto, the release will not be uploaded to the homebrew tap
     # in case there is an indicator for prerelease in the tag e.g. v1.0.0-rc1
     # Default is false.
-    skip_upload: true
+    # skip_upload: true
 
     # Custom block for brew.
     # Can be used to specify alternate downloads for devel or head releases.
