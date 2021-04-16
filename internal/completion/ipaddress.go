@@ -10,6 +10,9 @@ import (
 type IPAddress struct {
 }
 
+// make sure IPAddress implements the interface
+var _ Provider = IPAddress{}
+
 // CompleteArgument implements completion.Provider
 func (s IPAddress) CompleteArgument(svc service.AllServices, toComplete string) ([]string, cobra.ShellCompDirective) {
 	fmt.Println(svc.GetIPAddresses())
