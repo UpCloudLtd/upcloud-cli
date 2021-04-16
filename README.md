@@ -58,7 +58,7 @@ yay -S upcloud-cli
 
 ## Other distros
 
-Use the package corresponding to your distro, example Debian like:
+Use the package corresponding to your distro (deb, rpm, apk), example Debian like:
 
 ```bash
 sudo curl -o upcloud.deb https://github.com/kaminek/upcloud-cli/releases/download/v<VERSION>/upcloud-cli-<VERSION>_amd64.deb
