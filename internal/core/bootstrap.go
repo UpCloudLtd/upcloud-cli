@@ -41,8 +41,6 @@ func BuildRootCmd(_ []string, conf *config.Config) cobra.Command {
 
 			return nil
 		},
-
-		Run: func(cmd *cobra.Command, args []string) {},
 	}
 
 	rootCmd.BashCompletionFunction = commands.CustomBashCompletionFunc(rootCmd.Use)
