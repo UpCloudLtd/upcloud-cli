@@ -1,0 +1,188 @@
+# Make sure to check the documentation at http://goreleaser.com
+#
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+      - GO_MODULE_NAME=github.com/UpCloudLtd/upcloud-cli
+    goos:
+      - linux
+      - windows
+      - darwin
+      - freebsd
+    goarch:
+      - amd64
+      - arm64
+    main: ./cmd/upctl/main.go
+    binary: upctl
+    flags:
+      - -v
+    ldflags:
+      - -s -w
+      - -X {{.Env.GO_MODULE_NAME}}/internal/config.Version={{.Version}}
+      - -X {{.Env.GO_MODULE_NAME}}/internal/config.BuildDate={{.Date}}
+
+archives:
+  -
+    replacements:
+      386: i386
+      amd64: x86_64
+    format_overrides:
+      - goos: windows
+        format: zip
+
+checksum:
+  name_template: 'checksums.txt'
+
+snapshot:
+  name_template: "{{ .Tag }}-next"
+
+changelog:
+  sort: asc
+
+nfpms:
+  -
+    # Name of the package.
+    # Defaults to `ProjectName`.
+    package_name: upcloud-cli
+
+    # You can change the file name of the package.
+    # Default: `{{ .PackageName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}{{ if .Mips }}_{{ .Mips }}{{ end }}`
+    file_name_template: "{{ .ProjectName }}-{{ .Version }}_{{ .Arch }}"
+
+    # Replacements for GOOS and GOARCH in the package name.
+    # Keys should be valid GOOSs or GOARCHs.
+    # Values are the respective replacements.
+    # Default is empty.
+    replacements:
+      386: 32-bit
+      darwin: macOS
+
+    # Your app's vendor.
+    # Default is empty.
+    vendor: UpCloudLtd.
+    # Your app's homepage.
+    # Default is empty.
+    homepage: https://upcloud.com/
+
+    # Your app's maintainer (probably you).
+    # Default is empty.
+    maintainer: UpCloud team <contact@upcloud.com>
+
+    # Your app's description.
+    # Default is empty.
+    description: CLI tool for managing UpCloud services.
+
+    # Your app's license.
+    # Default is empty.
+    license: MIT
+
+    # Formats to be generated.
+    formats:
+      - apk
+      - deb
+      - rpm
+
+    # Packages your package depends on.
+    # dependencies:
+    #   - bash-completion
+
+    # Packages your package recommends installing.
+    recommends:
+      - bash-completion
+
+    overrides:
+      rpm:
+        replacements:
+          amd64: x86_64
+
+    # Custon configuration applied only to the RPM packager.
+    rpm:
+      # The package group. This option is deprecated by most distros
+      # but required by old distros like CentOS 5 / EL 5 and earlier.
+      group: Unspecified
+
+      # # Compression algorithm.
+      # compression: lzma
+
+    # Custom configuration applied only to the Deb packager.
+    deb:
+      # Custom deb special files.
+
+brews:
+  -
+    # GOARM to specify which 32-bit arm version to use if there are multiple versions
+    # from the build section. Brew formulas support atm only one 32-bit version.
+    # Default is 6 for all artifacts or each id if there a multiple versions.
+    goarm: 6
+
+    # NOTE: make sure the url_template, the token and given repo (github or gitlab) owner and name are from the
+    # same kind. We will probably unify this in the next major version like it is done with scoop.
+
+    # GitHub/GitLab repository to push the formula to
+    # Gitea is not supported yet, but the support coming
+    tap:
+      owner: UpCloudLtd
+      name: homebrew-tap
+      # Optionally a token can be provided, if it differs from the token provided to GoReleaser
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+
+    # Allows you to set a custom download strategy. Note that you'll need
+    # to implement the strategy and add it to your tap repository.
+    # Example: https://docs.brew.sh/Formula-Cookbook#specifying-the-download-strategy-explicitly
+    # Default is empty.
+    # download_strategy: CurlDownloadStrategy.
+
+    # Git author used to commit to the repository.
+    # Defaults are shown.
+    commit_author:
+      name: goreleaserbot
+      email: goreleaser@carlosbecker.com
+
+    # Folder inside the repository to put the formula.
+    # Default is the root folder.
+    folder: Formula
+
+    # Your app's homepage.
+    # Default is empty.
+    homepage: "https://upcloud.com/"
+
+    # Your app's description.
+    # Default is empty.
+    description: "CLI tool for managing UpCloud services."
+
+    # SPDX identifier of your app's license.
+    # Default is empty.
+    license: "MIT"
+
+    # Setting this will prevent goreleaser to actually try to commit the updated
+    # formula - instead, the formula file will be stored on the dist folder only,
+    # leaving the responsibility of publishing it to the user.
+    # If set to auto, the release will not be uploaded to the homebrew tap
+    # in case there is an indicator for prerelease in the tag e.g. v1.0.0-rc1
+    # Default is false.
+    # skip_upload: true
+
+    # Custom block for brew.
+    # Can be used to specify alternate downloads for devel or head releases.
+    # Default is empty.
+    custom_block: |
+      head "https://github.com/UpCloudLtd/upcloud-cli.git"
+
+    # Packages your package depends on.
+    dependencies:
+      - name: bash-completion
+        type: optional
+
+    # Custom install script for brew.
+    install: |
+      bin.install "upctl"
+      #
+    # So you can `brew test` your formula.
+    # Default is empty.
+    test: |
+      system "#{bin}/upctl version"
+

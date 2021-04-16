@@ -8,34 +8,23 @@ if [ "$#" -ne 1 ]; then
     exit 1
 fi
 
-PKG_VERSION=$1
+PKG_VERSION="${1:1}"
 PKG_HASH="SKIP"
 
 cat > PKGBUILD <<EOF
-pkgname=upctl
+pkgname=upcloud-cli
 pkgver=${PKG_VERSION}
 pkgrel=1
 pkgdesc="upctl - a CLI tool for managing UpCloud services."
 arch=('x86_64')
 url="https://upcloud.com"
 license=('Apache')
-makedepends=('go' 'git')
-source=("https://github.com/UpCloudLtd/\$pkgname/archive/\${pkgver}.tar.gz")
+source=("https://github.com/kaminek/\${pkgname}/releases/download/v\${pkgver}/\${pkgname}_\${pkgver}_linux_x86_64.tar.gz")
 sha256sums=('${PKG_HASH}')
 
-build() {
-  cd "\$pkgname-\$pkgver"
-  make build
-}
-
-check() {
-  cd "\$pkgname-\$pkgver"
-  make test
-}
-
 package() {
-    cd "\$pkgname-\$pkgver"
-    install -Dm755 bin/upctl "\$pkgdir/usr/local/bin/upctl"
+    cd "\$pkgname_\$pkgver_linux_x86_64"
+    install -Dm755 upctl "\$pkgdir/usr/local/bin/upctl"
 }
 EOF
 

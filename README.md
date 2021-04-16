@@ -35,8 +35,8 @@ To use upctl, download the upctl binary from the
 ### macOS
 
 ```bash
-sudo curl -o /usr/local/bin/upctl https://github.com/UpCloudLtd/upcloud-cli/releases/download/v<VERSION>/upctl-v<VERSION>-darwin-amd64
-sudo chmod +x /usr/local/bin/upctl
+brew tap UpCloudLtd/tap
+brew install upcloud-cli
 upctl -h
 ```
 
@@ -51,8 +51,17 @@ echo "[ -f /usr/local/etc/bash_completion ] && . /usr/local/etc/bash_completion"
 
 ###  Linux
 
+## AUR
+```
+yay -S upcloud-cli
+```
+
+## Other distros
+
+Use the package corresponding to your distro (deb, rpm, apk), example Debian like:
+
 ```bash
-sudo curl -o /usr/local/bin/upctl https://github.com/UpCloudLtd/upcloud-cli/releases/download/v<VERSION>/upctl-v<VERSION>-linux-amd64
+sudo curl -o upcloud.deb https://github.com/kaminek/upcloud-cli/releases/download/v<VERSION>/upcloud-cli-<VERSION>_amd64.deb
 sudo chmod +x /usr/local/bin/upctl
 upctl -h
 ```
@@ -67,7 +76,8 @@ echo "[ -f /etc/bash_completion ] && . /etc/bash_completion" >> ~/.bash_profile
 
 ### Windows
 ```bash
-Invoke-WebRequest -Uri "https://github.com/UpCloudLtd/upcloud-cli/releases/download/v<VERSION>/upctl-v<VERSION>-windows-amd64" -OutFile "upctl.exe"
+Invoke-WebRequest -Uri "https://github.com/UpCloudLtd/upcloud-cli/releases/download/v<VERSION>/upcloud-cli-<VERSION>_windows_x86_64.zip" -OutFile "upcloud-cli.zip"
+unzip upcloud-cli.zip
 upctl.exe -h
 ```
 
