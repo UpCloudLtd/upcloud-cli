@@ -1,6 +1,7 @@
 package completion
 
 import (
+	"fmt"
 	"github.com/UpCloudLtd/upcloud-cli/internal/service"
 	"github.com/spf13/cobra"
 )
@@ -11,6 +12,7 @@ type IPAddress struct {
 
 // CompleteArgument implements completion.Provider
 func (s IPAddress) CompleteArgument(svc service.AllServices, toComplete string) ([]string, cobra.ShellCompDirective) {
+	fmt.Println(svc.GetIPAddresses())
 	ipAddresses, err := svc.GetIPAddresses()
 	if err != nil {
 		return None(toComplete)
