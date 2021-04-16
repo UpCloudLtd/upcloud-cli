@@ -9,51 +9,40 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
-	"github.com/spf13/cobra"
 )
 
-func commandRunE(command Command, config *config.Config) func(cmd *cobra.Command, args []string) error {
-
+func commandRunE(command Command, service internal.AllServices, config *config.Config, args []string) error {
 	switch typedCommand := command.(type) {
 	case NoArgumentCommand:
-		return func(cmd *cobra.Command, args []string) error {
-			// need to pass in fake arguments here, to actually trigger execution
-			return execute(typedCommand, config, []string{""}, 1,
-				// FIXME: these bits panic go-critic unlambda check, figure out why and report upstream
-				func(exec Executor, fake string) (output.Output, error) {
-					return typedCommand.ExecuteWithoutArguments(exec)
-				})
-		}
+		// need to pass in fake arguments here, to actually trigger execution
+		return execute(typedCommand, service, config, []string{""}, 1,
+			// FIXME: these bits panic go-critic unlambda check, figure out why and report upstream
+			func(exec Executor, fake string) (output.Output, error) {
+				return typedCommand.ExecuteWithoutArguments(exec)
+			})
 	case SingleArgumentCommand:
-		return func(cmd *cobra.Command, args []string) error {
-			// make sure we have an argument
-			if len(args) != 1 || args[0] == "" {
-				return fmt.Errorf("exactly 1 argument is required")
-			}
-			// FIXME: these bits panic go-critic unlambda check, figure out why and report upstream
-			return execute(typedCommand, config, args, 1, func(exec Executor, arg string) (output.Output, error) {
-				return typedCommand.ExecuteSingleArgument(exec, arg)
-			})
+		// make sure we have an argument
+		if len(args) != 1 || args[0] == "" {
+			return fmt.Errorf("exactly 1 argument is required")
 		}
+		// FIXME: these bits panic go-critic unlambda check, figure out why and report upstream
+		return execute(typedCommand, service, config, args, 1, func(exec Executor, arg string) (output.Output, error) {
+			return typedCommand.ExecuteSingleArgument(exec, arg)
+		})
 	case MultipleArgumentCommand:
-		return func(cmd *cobra.Command, args []string) error {
-			// make sure we have arguments
-			if len(args) < 1 {
-				return fmt.Errorf("at least one argument is required")
-			}
-			// FIXME: these bits panic go-critic unlambda check, figure out why and report upstream
-			return execute(typedCommand, config, args, typedCommand.MaximumExecutions(), func(exec Executor, arg string) (output.Output, error) {
-				return typedCommand.Execute(exec, arg)
-			})
+		// make sure we have arguments
+		if len(args) < 1 {
+			return fmt.Errorf("at least one argument is required")
 		}
+		// FIXME: these bits panic go-critic unlambda check, figure out why and report upstream
+		return execute(typedCommand, service, config, args, typedCommand.MaximumExecutions(), func(exec Executor, arg string) (output.Output, error) {
+			return typedCommand.Execute(exec, arg)
+		})
 	default:
 		// no execution found on this command, eg. most likely an 'organizational' command
 		// so just show usage
-		return func(cmd *cobra.Command, args []string) error {
-			return cmd.Usage()
-		}
+		return command.Cobra().Usage()
 	}
-
 }
 
 func render(config *config.Config, results []executeResult) error {
@@ -91,11 +80,7 @@ func resolveArguments(nc Command, svc internal.AllServices, args []string) (out 
 	return
 }
 
-func execute(command Command, config *config.Config, args []string, parallelRuns int, executeCommand func(exec Executor, arg string) (output.Output, error)) error {
-	svc, err := config.CreateService()
-	if err != nil {
-		return fmt.Errorf("cannot create service: %w", err)
-	}
+func execute(command Command, svc internal.AllServices, config *config.Config, args []string, parallelRuns int, executeCommand func(exec Executor, arg string) (output.Output, error)) error {
 	executor := NewExecutor(config, svc)
 	resolvedArgs, err := resolveArguments(command, svc, args)
 	if err != nil {

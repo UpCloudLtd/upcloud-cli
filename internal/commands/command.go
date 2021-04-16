@@ -91,7 +91,13 @@ func BuildCommand(child Command, parent *cobra.Command, config *config.Config) C
 	}
 
 	// Set run
-	child.Cobra().RunE = commandRunE(child, config)
+	child.Cobra().RunE = func(cmd *cobra.Command, args []string) error {
+		service, err := config.CreateService()
+		if err != nil {
+			return fmt.Errorf("cannot create service: %w", err)
+		}
+		return commandRunE(child, service, config, args)
+	}
 
 	return child
 }
