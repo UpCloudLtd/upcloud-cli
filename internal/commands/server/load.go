@@ -31,7 +31,8 @@ func LoadCommand() commands.Command {
 		BaseCommand: commands.New(
 			"load",
 			"Load a CD-ROM into the server",
-			"upctl server load my_server4 --storage 01000000-0000-4000-8000-000080030101"),
+			"upctl server load my_server4 --storage 01000000-0000-4000-8000-000080030101",
+		),
 	}
 }
 
