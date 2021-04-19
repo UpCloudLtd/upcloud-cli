@@ -3,8 +3,8 @@ name: documentation
 on:
   push:
     branches:
-      - "main"
-      - "test-doc-generator"
+      - "master"
+      - "test-doc-generator" # for testing
 
 jobs:
   update-documentation:
@@ -16,7 +16,7 @@ jobs:
         ref: ${{ github.head_ref }}
 
     - name: Regenerate documentation
-      uses: make doc
+      run: make doc
 
     - uses: stefanzweifel/git-auto-commit-action@v4
       with:
