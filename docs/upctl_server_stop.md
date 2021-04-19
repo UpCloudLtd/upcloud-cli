@@ -6,6 +6,13 @@ Stop a server
 upctl server stop <UUID/Title/Hostname...> [flags]
 ```
 
+### Examples
+
+```
+upctl server stop my_server
+upctl server stop my_server1 my_server2upctl server stop 00cbe2f3-4cf9-408b-afee-bd340e13cdd8
+```
+
 ### Options
 
 ```

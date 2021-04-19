@@ -11,6 +11,7 @@ upctl server show <UUID/Title/Hostname...> [flags]
 ```
 upctl server show 21aeb3b7-cd89-4123-a376-559b0e75be8b
 upctl server show myhostname
+upctl server show my_server1 my_server2
 ```
 
 ### Options

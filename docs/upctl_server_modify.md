@@ -6,6 +6,14 @@ Modifies the configuration of an existing server
 upctl server modify <UUID/Title/Hostname...> [flags]
 ```
 
+### Examples
+
+```
+upctl server modify 00bb4617-c592-4b32-b869-35a60b323b18 --plan 1xCPU-1GB
+upctl server modify my_server1 my_server2 --plan 1xCPU-2GB
+upctl server modify myapp --hostname superapp
+```
+
 ### Options
 
 ```
