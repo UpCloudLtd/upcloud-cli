@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 
@@ -15,8 +16,14 @@ import (
 
 // DeleteCommand creates the "server delete" command
 func DeleteCommand() commands.Command {
+	examples := fmt.Sprint(
+		"upctl delete my_server\n",
+		"upctl delete my_server1 my_server2\n",
+		"upctl delete 00cbe2f3-4cf9-408b-afee-bd340e13cdd8",
+	)
+
 	return &deleteCommand{
-		BaseCommand: commands.New("delete", "Delete a server", ""),
+		BaseCommand: commands.New("delete", "Delete a server", examples),
 	}
 }
 
