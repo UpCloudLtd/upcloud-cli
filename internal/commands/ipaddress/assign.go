@@ -2,6 +2,7 @@ package ipaddress
 
 import (
 	"fmt"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
@@ -41,8 +42,8 @@ func (s *assignCommand) InitCommand() {
 	fs.StringVar(&s.access, "access", defaultAccess, "Is address for utility or public network.")
 	fs.StringVar(&s.family, "family", defaultFamily, "The address family of new IP address.")
 	fs.StringVar(&s.serverUUID, "server", "", "The server the ip address is assigned to.")
-	fs.StringVar(&s.mac, "mac", "", "MAC address of server interface to assign address to. Required for non-floating addresses.")
-	fs.StringVar(&s.zone, "zone", "", "Zone of address, required when assigning a detached floating IP address.")
+	fs.StringVar(&s.mac, "mac", "", "MAC address of server interface to assign address to. Required for detached floating IP address if zone is not specified.")
+	fs.StringVar(&s.zone, "zone", "", "Zone of address. Required for detached floating IP address if MAC address is not speficied.")
 	fs.BoolVar(&s.floating, "floating", false, "Whether the address to be assigned is a floating one.")
 	s.AddFlags(fs)
 }
