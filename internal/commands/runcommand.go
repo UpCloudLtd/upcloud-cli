@@ -12,10 +12,11 @@ import (
 )
 
 func commandRunE(command Command, service internal.AllServices, config *config.Config, args []string) error {
+	executor := NewExecutor(config, service)
 	switch typedCommand := command.(type) {
 	case NoArgumentCommand:
 		// need to pass in fake arguments here, to actually trigger execution
-		results, err := execute(typedCommand, service, config, []string{""}, 1,
+		results, err := execute(typedCommand, executor, []string{""}, 1,
 			// FIXME: this bit panics go-critic unlambda check, figure out why and report upstream
 			func(exec Executor, fake string) (output.Output, error) {
 				return typedCommand.ExecuteWithoutArguments(exec)
@@ -29,7 +30,7 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 		if len(args) != 1 || args[0] == "" {
 			return fmt.Errorf("exactly 1 argument is required")
 		}
-		results, err := execute(typedCommand, service, config, args, 1, typedCommand.ExecuteSingleArgument)
+		results, err := execute(typedCommand, executor, args, 1, typedCommand.ExecuteSingleArgument)
 		if err != nil {
 			return err
 		}
@@ -39,7 +40,7 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 		if len(args) < 1 {
 			return fmt.Errorf("at least one argument is required")
 		}
-		results, err := execute(typedCommand, service, config, args, typedCommand.MaximumExecutions(), typedCommand.Execute)
+		results, err := execute(typedCommand, executor, args, typedCommand.MaximumExecutions(), typedCommand.Execute)
 		if err != nil {
 			return err
 		}
@@ -86,9 +87,8 @@ func resolveArguments(nc Command, svc internal.AllServices, args []string) (out 
 	return
 }
 
-func execute(command Command, svc internal.AllServices, config *config.Config, args []string, parallelRuns int, executeCommand func(exec Executor, arg string) (output.Output, error)) ([]executeResult, error) {
-	executor := NewExecutor(config, svc)
-	resolvedArgs, err := resolveArguments(command, svc, args)
+func execute(command Command, executor Executor, args []string, parallelRuns int, executeCommand func(exec Executor, arg string) (output.Output, error)) ([]executeResult, error) {
+	resolvedArgs, err := resolveArguments(command, executor.All(), args)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create resolver: %w", err)
 	}
