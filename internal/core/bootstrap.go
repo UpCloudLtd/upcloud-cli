@@ -55,7 +55,7 @@ func BuildRootCmd(_ []string, conf *config.Config) cobra.Command {
 	)
 	flags.BoolVar(
 		&conf.GlobalFlags.Colors, "colours", true,
-		"Use terminal colours (supported: auto, true, false)",
+		"Use terminal colours",
 	)
 	flags.DurationVarP(
 		&conf.GlobalFlags.ClientTimeout, "client-timeout", "t",
