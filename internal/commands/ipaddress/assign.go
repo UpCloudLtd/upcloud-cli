@@ -32,8 +32,8 @@ func AssignCommand() commands.Command {
 			"Assign an ip address",
 			"upctl ip-address assign --server 00038afc-d526-4148-af0e-d2f1eeaded9b",
 			"upctl ip-address assign --server 00944977-89ce-4d10-89c3-bb5ba482e48d --family IPv6",
-			"upctl ip-address assign --server 00944977-89ce-4d10-89c3-bb5ba482e48d --floating true --zone pl-waw1",
-			"upctl ip-address assign --server 00b78f8b-521d-4ffb-8baa-adf96c7b8f45 --floating true --mac d6:0e:4a:6f:11:8f",
+			"upctl ip-address assign --server 00944977-89ce-4d10-89c3-bb5ba482e48d --floating --zone pl-waw1",
+			"upctl ip-address assign --server 00b78f8b-521d-4ffb-8baa-adf96c7b8f45 --floating --mac d6:0e:4a:6f:11:8f",
 		),
 	}
 }
