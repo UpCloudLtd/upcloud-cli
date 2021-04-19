@@ -68,6 +68,8 @@ type importCommand struct {
 func (s *importCommand) InitCommand() {
 	flagSet := &pflag.FlagSet{}
 	flagSet.StringVar(&s.sourceLocation, "source-location", "", "Location of the source of the import. Can be a file or a URL.")
+	// TODO: is this flag actually required? Could we not just figure it out depending on the location?
+	// eg. if there's a file with the name given in location, use direct upload, otherwise validate url and use http import?
 	flagSet.StringVar(&s.sourceType, "source-type", "", fmt.Sprintf("Source type, is derived from source-location if not given. Available: %s,%s",
 		upcloud.StorageImportSourceHTTPImport,
 		upcloud.StorageImportSourceDirectUpload))

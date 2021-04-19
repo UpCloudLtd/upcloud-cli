@@ -27,7 +27,7 @@ func (s *listCommand) InitCommand() {
 	//	s.header = table.Row{"UUID", "Name", "Type"}
 	flags := &pflag.FlagSet{}
 	flags.BoolVar(&s.allRouters, "all", false, "Show all routers.")
-	flags.BoolVar(&s.normalRouters, "normal", true, "Show normal routers (default).")
+	flags.BoolVar(&s.normalRouters, "normal", true, "Show normal routers.")
 	flags.BoolVar(&s.serviceRouters, "service", false, "Show service routers.")
 	// TODO: reimplement
 	// 	s.AddVisibleColumnsFlag(flags, &s.visibleColumns, s.columnKeys, s.visibleColumns)

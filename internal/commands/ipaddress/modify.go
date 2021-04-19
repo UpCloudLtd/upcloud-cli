@@ -31,7 +31,7 @@ func ModifyCommand() commands.Command {
 func (s *modifyCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.mac, "mac", "", "MAC address of server interface to attach floating IP to.")
-	fs.StringVar(&s.ptrrecord, "ptr-record", "", "A fully qualified domain name.")
+	fs.StringVar(&s.ptrrecord, "ptr-record", "", "New fully qualified domain name to set as the PTR record for the IP address.")
 	s.AddFlags(fs)
 }
 

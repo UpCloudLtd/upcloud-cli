@@ -46,9 +46,10 @@ func (s *createCommand) InitCommand() {
 	fs.IntVar(&s.interfaceIndex, "index", 0, "Interface index.")
 	fs.BoolVar(&s.bootable, "bootable", false, "Whether to try booting through the interface.")
 	fs.BoolVar(&s.sourceIPFiltering, "source-ip-filtering", false, "Whether source IP filtering is enabled on the interface. Disabling it is allowed only for SDN private interfaces.")
-	fs.StringSliceVar(&s.ipAddresses, "ip-addresses", []string{}, "Array of IP addresses, multiple can be declared\n\n"+
-		"Usage: --ip-addresses 94.237.112.143,94.237.112.144")
-	s.AddFlags(fs) // TODO(ana): replace usage with examples once the refactor is done.
+	fs.StringSliceVar(&s.ipAddresses, "ip-addresses", []string{}, "A comma-separated list of IP addresses")
+	// TODO: add to examples when implemented
+	//	"Usage: --ip-addresses 94.237.112.143,94.237.112.144")
+	s.AddFlags(fs)
 }
 
 // MaximumExecutions implements Command.MaximumExecutions

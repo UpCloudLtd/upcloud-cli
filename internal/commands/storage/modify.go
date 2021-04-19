@@ -56,7 +56,7 @@ func (s *modifyCommand) InitCommand() {
 	s.params = modifyParams{ModifyStorageRequest: request.ModifyStorageRequest{}}
 
 	flagSet := &pflag.FlagSet{}
-	flagSet.StringVar(&s.params.Title, "title", defaultModifyParams.Title, "Storage title.")
+	flagSet.StringVar(&s.params.Title, "title", defaultModifyParams.Title, "A short, informational description.")
 	flagSet.IntVar(&s.params.Size, "size", defaultModifyParams.Size, "Size of the storage (GiB).")
 	flagSet.StringVar(&s.params.backupTime, "backup-time", s.params.backupTime, "The time when to create a backup in HH:MM. Empty value means no backups.")
 	flagSet.StringVar(&s.params.backupInterval, "backup-interval", "", "The interval of the backup.\nAvailable: daily,mon,tue,wed,thu,fri,sat,sun")
