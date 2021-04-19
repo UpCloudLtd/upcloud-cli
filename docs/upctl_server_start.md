@@ -6,6 +6,14 @@ Start a server
 upctl server start <UUID/Title/Hostname...> [flags]
 ```
 
+### Examples
+
+```
+upctl server start 00038afc-d526-4148-af0e-d2f1eeaded9b
+upctl server start 00038afc-d526-4148-af0e-d2f1eeaded9b 0053a6f5-e6d1-4b0b-b9dc-b90d0894e8d0
+upctl server start my_server1
+```
+
 ### Options
 
 ```

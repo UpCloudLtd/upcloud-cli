@@ -28,7 +28,11 @@ type loadParams struct {
 // LoadCommand creates the "server load" command
 func LoadCommand() commands.Command {
 	return &loadCommand{
-		BaseCommand: commands.New("load", "Load a CD-ROM into the server", ""),
+		BaseCommand: commands.New(
+			"load",
+			"Load a CD-ROM into the server",
+			"upctl server load my_server4 --storage 01000000-0000-4000-8000-000080030101",
+		),
 	}
 }
 

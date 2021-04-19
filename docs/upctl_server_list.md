@@ -6,6 +6,12 @@ List current servers
 upctl server list [flags]
 ```
 
+### Examples
+
+```
+upctl sever list
+```
+
 ### Options
 
 ```

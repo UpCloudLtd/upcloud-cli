@@ -9,15 +9,22 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 
+	"time"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/pflag"
-	"time"
 )
 
 // RestartCommand creates the "server restart" command
 func RestartCommand() commands.Command {
 	return &restartCommand{
-		BaseCommand: commands.New("restart", "Restart a server", ""),
+		BaseCommand: commands.New(
+			"restart",
+			"Restart a server",
+			"upctl server restart 00038afc-d526-4148-af0e-d2f1eeaded9b",
+			"upctl server restart 00038afc-d526-4148-af0e-d2f1eeaded9b --stop-type hard",
+			"upctl server restart my_server1 my_server2",
+		),
 	}
 }
 
