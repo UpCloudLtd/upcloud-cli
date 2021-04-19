@@ -1,0 +1,20 @@
+name: documentation
+
+on:
+  pull_request:
+
+jobs:
+  update-documentation:
+    name: update-documentation
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref }}
+
+    - name: Regenerate documentation
+      uses: make doc
+
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: "chore(doc): update documentation"
