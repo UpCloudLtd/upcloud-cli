@@ -14,8 +14,13 @@ import (
 
 // StartCommand creates the "server start" command
 func StartCommand() commands.Command {
+	examples := fmt.Sprint(
+		"upctl server start 00038afc-d526-4148-af0e-d2f1eeaded9b\n",
+		"upctl server start my_server1 my_server2",
+	)
+
 	return &startCommand{
-		BaseCommand: commands.New("start", "Start a server", ""),
+		BaseCommand: commands.New("start", "Start a server", examples),
 	}
 }
 

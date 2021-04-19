@@ -16,8 +16,14 @@ import (
 
 // ModifyCommand creates the "server modify" command
 func ModifyCommand() commands.Command {
+	examples := fmt.Sprint(
+		"upctl server modify 00bb4617-c592-4b32-b869-35a60b323b18 --plan 1xCPU-1GB\n",
+		"upctl server modify my_server1 my_server2 --plan 1xCPU-2GB\n",
+		"upctl server modify myapp --hostname superapp",
+	)
+
 	return &modifyCommand{
-		BaseCommand: commands.New("modify", "Modifies the configuration of an existing server", ""),
+		BaseCommand: commands.New("modify", "Modifies the configuration of an existing server", examples),
 	}
 }
 
