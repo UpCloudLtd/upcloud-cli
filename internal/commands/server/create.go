@@ -219,7 +219,7 @@ func (s *createCommand) InitCommand() {
 	fs.StringVar(&s.params.UserData, "user-data", def.UserData, "Defines URL for a server setup script, or the script body itself.")
 	fs.IntVar(&s.params.CoreNumber, "cores", def.CoreNumber, "Number of cores. Use only when defining a flexible (\"custom\") plan.")
 	fs.IntVar(&s.params.MemoryAmount, "memory", def.MemoryAmount, "Memory amount in MiB. Use only when defining a flexible (\"custom\") plan.")
-	fs.StringVar(&s.params.Title, "title", def.Title, "Visible name.")
+	fs.StringVar(&s.params.Title, "title", def.Title, "Server description.")
 	fs.StringVar(&s.params.Hostname, "hostname", def.Hostname, "Hostname.")
 	fs.StringVar(&s.params.Plan, "plan", def.Plan, "Server plan name. See \"server plans\" command for valid plans. Set --cores and --memory for a flexible plan.")
 	fs.StringVar(&s.params.os, "os", def.os, "Server OS to use (will be the first storage device). Set to empty to fully customise the storages.")
