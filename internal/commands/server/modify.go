@@ -50,7 +50,7 @@ func (s *modifyCommand) InitCommand() {
 	flags.StringVar(&s.params.metadata, "metadata", defaultModifyParams.metadata, "Enable metadata service.")
 	flags.StringVar(&s.params.Plan, "plan", defaultModifyParams.Plan, "Server plan to use.")
 	flags.StringVar(&s.params.SimpleBackup, "simple-backup", defaultModifyParams.SimpleBackup, "Simple backup rule. Format (HHMM,{dailies,weeklies,monthlies}).\nExample: 2300,dailies")
-	flags.StringVar(&s.params.Title, "title", defaultModifyParams.Title, "Visible name.")
+	flags.StringVar(&s.params.Title, "title", defaultModifyParams.Title, "A short, informational description.")
 	flags.StringVar(&s.params.TimeZone, "time-zone", defaultModifyParams.TimeZone, "Time zone to set the RTC to.")
 	flags.StringVar(&s.params.VideoModel, "video-model", defaultModifyParams.VideoModel, "Video interface model of the server.\nAvailable: vga,cirrus")
 	flags.StringVar(&s.params.remoteAccessEnabled, "remote-access-enabled", defaultModifyParams.remoteAccessEnabled, "Enables or disables the remote access.\nAvailable: true, false")

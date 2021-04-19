@@ -64,7 +64,7 @@ type createCommand struct {
 }
 
 func applyCreateFlags(fs *pflag.FlagSet, dst, def *createParams) {
-	fs.StringVar(&dst.Title, "title", def.Title, "Storage title.")
+	fs.StringVar(&dst.Title, "title", def.Title, "A short, informational description.")
 	fs.IntVar(&dst.Size, "size", def.Size, "Size of the storage in GiB.")
 	fs.StringVar(&dst.Zone, "zone", def.Zone, "Physical location of the storage. See zone listing for valid zones.")
 	fs.StringVar(&dst.Tier, "tier", def.Tier, "Storage tier.")
