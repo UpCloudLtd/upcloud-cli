@@ -13,7 +13,15 @@ import (
 // ListCommand creates the "network list" command
 func ListCommand() commands.Command {
 	return &listCommand{
-		BaseCommand: commands.New("list", "List networks, by default private networks only", ""),
+		BaseCommand: commands.New(
+			"list",
+			"List networks, by default private networks only",
+			"upctl network list",
+			"upctl network list --zone pl-waw1",
+			"upctl network list --zone pl-waw1 --public",
+			"upctl network list --all",
+			"upctl network list --zone pl-waw1 --all",
+		),
 	}
 }
 

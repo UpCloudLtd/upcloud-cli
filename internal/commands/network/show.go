@@ -2,19 +2,26 @@ package network
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"strings"
 )
 
 // ShowCommand creates the "network show" command
 func ShowCommand() commands.Command {
 	return &showCommand{
-		BaseCommand: commands.New("show", "Show network details", ""),
+		BaseCommand: commands.New(
+			"show",
+			"Show network details",
+			"upctl network show 037a530b-533e-4cef-b6ad-6af8094bb2bc",
+			"upctl network show 037a530b-533e-4cef-b6ad-6af8094bb2bc 0311480d-d0c0-4951-ab41-bf12097f5d3c",
+			"upctl network show \"My Network\"",
+		),
 	}
 }
 

@@ -2,12 +2,13 @@ package network
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
-	"strings"
 )
 
 const maxNetworkActions = 10
@@ -15,7 +16,7 @@ const maxNetworkActions = 10
 // BaseNetworkCommand creates the base "network" command
 func BaseNetworkCommand() commands.Command {
 	return &networkCommand{
-		BaseCommand: commands.New("network", "Manage network", ""),
+		BaseCommand: commands.New("network", "Manage network"),
 	}
 }
 

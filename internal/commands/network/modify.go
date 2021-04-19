@@ -2,6 +2,7 @@ package network
 
 import (
 	"fmt"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
@@ -24,7 +25,12 @@ type modifyCommand struct {
 // ModifyCommand creates the "network modify" command
 func ModifyCommand() commands.Command {
 	return &modifyCommand{
-		BaseCommand: commands.New("modify", "Modify a network", ""),
+		BaseCommand: commands.New(
+			"modify",
+			"Modify a network",
+			"upctl network modify 037a530b-533e-4cef-b6ad-6af8094bb2bc --ip-network dhcp=false,family=IPv4",
+			"upctl network modify \"My Network\" --name \"My Super Network\"",
+		),
 	}
 }
 
@@ -39,11 +45,8 @@ func (s *modifyCommand) InitCommand() {
 		"  gateway: string \n"+
 		"  dhcp: true/false \n"+
 		"  dhcp-default-route: true/false \n"+
-		"  dhcp-dns: array of strings \n"+
-		"Usage \n"+
-		"	--ip-network dhcp-dns=<value1>,family=IPv4 \n"+
-		" --ip-network 'dhcp=true,\"dhcp-dns=<value1>,<value2>\",family=IPv6'")
-	s.AddFlags(fs) // TODO(ana): replace usage with examples once the refactor is done.
+		"  dhcp-dns: array of strings \n")
+	s.AddFlags(fs)
 }
 
 // ExecuteSingleArgument implements commands.SingleArgumentCommand
