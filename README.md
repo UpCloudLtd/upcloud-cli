@@ -104,6 +104,10 @@ $ upctl server list
  003c9d77-0237-4ee7-b3a1-306efba456dc   server2              1xCPU-2GB   sg-sin1   started
 ```
 
+NOTE: Make sure your account allows API connections. To do so, log into 
+[UpCloud control panel](https://hub.upcloud.com/login) and go to 
+**Account** -> **Permissions** -> **Allow API connections** checkbox.
+
 ## Examples
 
 Every command has a help included and you can find all its options by adding `-h` at the end of the command,
