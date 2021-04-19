@@ -35,11 +35,11 @@ func ModifyCommand() commands.Command {
 func (s *modifyCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 	fs.IntVar(&s.currentIndex, "index", s.currentIndex, "Index of the interface to modify.")
-	fs.IntVar(&s.newIndex, "new-index", s.newIndex, "Index of the interface to modify.")
+	fs.IntVar(&s.newIndex, "new-index", s.newIndex, "New index to move the interface to.")
 	// TODO: refactor string to tristate bools (eg. allow empty)
 	fs.StringVar(&s.bootable, "bootable", s.bootable, "Whether to try booting through the interface.")
 	fs.StringVar(&s.sourceIPfiltering, "source-ip-filtering", s.sourceIPfiltering, "Whether source IP filtering is enabled on the interface. Disabling it is allowed only for SDN private interfaces.")
-	fs.StringSliceVar(&s.ipAddresses, "ip-addresses", s.ipAddresses, "Array of IP addresses, multiple can be declared\nUsage: --ip-address address=94.237.112.143,family=IPv4")
+	fs.StringSliceVar(&s.ipAddresses, "ip-addresses", s.ipAddresses, "A comma-separated list of IP addresses, multiple can be declared\nUsage: --ip-address address=94.237.112.143,family=IPv4")
 	s.AddFlags(fs) // TODO(ana): replace usage with examples once the refactor is done.
 }
 
