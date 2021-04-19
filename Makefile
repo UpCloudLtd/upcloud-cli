@@ -39,7 +39,7 @@ doc: $(BIN_DIR) ; $(info building documentation…) @ ## Build documentation (ma
 build-all: build-linux build-darwin build-windows ## Build all targets
 
 .PHONY: build-linux
-build-linux: $(BIN_DIR) ; $(info building executable for Linux x86_64…) @ ## Build program binary for linux x86_64
+build-linux: ; $(info building executable for Linux x86_64…) @ ## Build program binary for linux x86_64
 	$Q GOOS=linux GOARCH=amd64 $(GO) build \
 		-tags release \
 		-ldflags '-X $(MODULE)/internal/config.Version=$(VERSION) -X $(MODULE)/internal/config.BuildDate=$(DATE)' \
