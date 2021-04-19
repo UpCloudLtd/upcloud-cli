@@ -17,14 +17,15 @@ import (
 
 // ShowCommand creates the "server show" command
 func ShowCommand() commands.Command {
-	examples := fmt.Sprint(
-		"upctl server show 21aeb3b7-cd89-4123-a376-559b0e75be8b\n",
-		"upctl server show myhostname\n",
-		"upctl server show my_server1 my_server2",
-	)
-
 	return &showCommand{
-		BaseCommand: commands.New("show", "Show server details", examples),
+		BaseCommand: commands.New(
+			"show",
+			"Show server details",
+			"upctl server show 21aeb3b7-cd89-4123-a376-559b0e75be8b",
+			"upctl server show 21aeb3b7-cd89-4123-a376-559b0e75be8b 0053a6f5-e6d1-4b0b-b9dc-b90d0894e8d0",
+			"upctl server show myhostname",
+			"upctl server show my_server1 my_server2",
+		),
 	}
 }
 

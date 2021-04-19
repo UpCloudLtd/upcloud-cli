@@ -15,14 +15,14 @@ import (
 
 // StopCommand creates the "server stop" command
 func StopCommand() commands.Command {
-	examples := fmt.Sprint(
-		"upctl server stop my_server\n",
-		"upctl server stop my_server1 my_server2",
-		"upctl server stop 00cbe2f3-4cf9-408b-afee-bd340e13cdd8",
-	)
-
 	return &stopCommand{
-		BaseCommand: commands.New("stop", "Stop a server", examples),
+		BaseCommand: commands.New(
+			"stop",
+			"Stop a server",
+			"upctl server stop 00cbe2f3-4cf9-408b-afee-bd340e13cdd8",
+			"upctl server stop 00cbe2f3-4cf9-408b-afee-bd340e13cdd8 0053a6f5-e6d1-4b0b-b9dc-b90d0894e8d0",
+			"upctl server stop my_server",
+		),
 	}
 }
 

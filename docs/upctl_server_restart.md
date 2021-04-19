@@ -9,6 +9,7 @@ upctl server restart <UUID/Title/Hostname...> [flags]
 ### Examples
 
 ```
+upctl server restart 00038afc-d526-4148-af0e-d2f1eeaded9b
 upctl server restart 00038afc-d526-4148-af0e-d2f1eeaded9b --stop-type hard
 upctl server restart my_server1 my_server2
 ```
