@@ -2,6 +2,7 @@ package serverfirewall
 
 import (
 	"fmt"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
@@ -24,7 +25,7 @@ func DeleteCommand() commands.Command {
 		BaseCommand: commands.New(
 			"delete",
 			"Removes a firewall rule from a server. Firewall rules must be removed individually. The positions of remaining firewall rules will be adjusted after a rule is removed.",
-			"",
+			"upctl server firewall delete 00038afc-d526-4148-af0e-d2f1eeaded9b --position 1",
 		),
 	}
 }
