@@ -12,32 +12,39 @@ import (
 )
 
 func commandRunE(command Command, service internal.AllServices, config *config.Config, args []string) error {
+	executor := NewExecutor(config, service)
 	switch typedCommand := command.(type) {
 	case NoArgumentCommand:
 		// need to pass in fake arguments here, to actually trigger execution
-		return execute(typedCommand, service, config, []string{""}, 1,
-			// FIXME: these bits panic go-critic unlambda check, figure out why and report upstream
+		results, err := execute(typedCommand, executor, []string{""}, 1,
+			// FIXME: this bit panics go-critic unlambda check, figure out why and report upstream
 			func(exec Executor, fake string) (output.Output, error) {
 				return typedCommand.ExecuteWithoutArguments(exec)
 			})
+		if err != nil {
+			return err
+		}
+		return render(config, results)
 	case SingleArgumentCommand:
 		// make sure we have an argument
 		if len(args) != 1 || args[0] == "" {
 			return fmt.Errorf("exactly 1 argument is required")
 		}
-		// FIXME: these bits panic go-critic unlambda check, figure out why and report upstream
-		return execute(typedCommand, service, config, args, 1, func(exec Executor, arg string) (output.Output, error) {
-			return typedCommand.ExecuteSingleArgument(exec, arg)
-		})
+		results, err := execute(typedCommand, executor, args, 1, typedCommand.ExecuteSingleArgument)
+		if err != nil {
+			return err
+		}
+		return render(config, results)
 	case MultipleArgumentCommand:
 		// make sure we have arguments
 		if len(args) < 1 {
 			return fmt.Errorf("at least one argument is required")
 		}
-		// FIXME: these bits panic go-critic unlambda check, figure out why and report upstream
-		return execute(typedCommand, service, config, args, typedCommand.MaximumExecutions(), func(exec Executor, arg string) (output.Output, error) {
-			return typedCommand.Execute(exec, arg)
-		})
+		results, err := execute(typedCommand, executor, args, typedCommand.MaximumExecutions(), typedCommand.Execute)
+		if err != nil {
+			return err
+		}
+		return render(config, results)
 	default:
 		// no execution found on this command, eg. most likely an 'organizational' command
 		// so just show usage
@@ -80,11 +87,10 @@ func resolveArguments(nc Command, svc internal.AllServices, args []string) (out 
 	return
 }
 
-func execute(command Command, svc internal.AllServices, config *config.Config, args []string, parallelRuns int, executeCommand func(exec Executor, arg string) (output.Output, error)) error {
-	executor := NewExecutor(config, svc)
-	resolvedArgs, err := resolveArguments(command, svc, args)
+func execute(command Command, executor Executor, args []string, parallelRuns int, executeCommand func(exec Executor, arg string) (output.Output, error)) ([]executeResult, error) {
+	resolvedArgs, err := resolveArguments(command, executor.All(), args)
 	if err != nil {
-		return fmt.Errorf("cannot create resolver: %w", err)
+		return nil, fmt.Errorf("cannot create resolver: %w", err)
 	}
 
 	returnChan := make(chan executeResult)
@@ -133,7 +139,7 @@ func execute(command Command, svc internal.AllServices, config *config.Config, a
 			if len(results) >= len(args) {
 				// we're done, update ui for the last time and render the results
 				executor.Update()
-				return render(config, results)
+				return results, nil
 			}
 		case <-renderTicker.C:
 			executor.Update()
