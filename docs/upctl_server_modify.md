@@ -10,7 +10,8 @@ upctl server modify <UUID/Title/Hostname...> [flags]
 
 ```
 upctl server modify 00bb4617-c592-4b32-b869-35a60b323b18 --plan 1xCPU-1GB
-upctl server modify my_server1 my_server2 --plan 1xCPU-2GB
+upctl server modify 00bb4617-c592-4b32-b869-35a60b323b18 0053a6f5-e6d1-4b0b-b9dc-b90d0894e8d0 --plan 1xCPU-1GB
+upctl server modify my_server1 --plan 1xCPU-2GB
 upctl server modify myapp --hostname superapp
 ```
 

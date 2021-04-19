@@ -22,14 +22,15 @@ import (
 
 // CreateCommand creates the "server create" command
 func CreateCommand() commands.Command {
-	examples := fmt.Sprint(
-		"upctl server create --title my_server --zone fi-hel1 --hostname myapp --password-delivery email\n",
-		"upctl server create --zone fi-hel1 --hostname myapp --password-delivery email --plan 2xCPU-4GB\n",
-		"upctl server create --zone fi-hel1 --hostname myapp --password-delivery email --os \"Debian GNU/Linux 10 (Buster)\"",
-	)
-
 	return &createCommand{
-		BaseCommand: commands.New("create", "Create a server", examples),
+		BaseCommand: commands.New(
+			"create",
+			"Create a server",
+			"upctl server create --title myapp --zone fi-hel1 --hostname myapp --password-delivery email",
+			"upctl server create --title \"My Server\" --zone fi-hel1 --hostname myapp --password-delivery email",
+			"upctl server create --zone fi-hel1 --hostname myapp --password-delivery email --plan 2xCPU-4GB",
+			"upctl server create --zone fi-hel1 --hostname myapp --password-delivery email --os \"Debian GNU/Linux 10 (Buster)\"",
+		),
 	}
 }
 

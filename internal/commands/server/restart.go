@@ -17,13 +17,14 @@ import (
 
 // RestartCommand creates the "server restart" command
 func RestartCommand() commands.Command {
-	examples := fmt.Sprint(
-		"upctl server restart 00038afc-d526-4148-af0e-d2f1eeaded9b --stop-type hard\n",
-		"upctl server restart my_server1 my_server2",
-	)
-
 	return &restartCommand{
-		BaseCommand: commands.New("restart", "Restart a server", examples),
+		BaseCommand: commands.New(
+			"restart",
+			"Restart a server",
+			"upctl server restart 00038afc-d526-4148-af0e-d2f1eeaded9b",
+			"upctl server restart 00038afc-d526-4148-af0e-d2f1eeaded9b --stop-type hard",
+			"upctl server restart my_server1 my_server2",
+		),
 	}
 }
 
