@@ -1,7 +1,10 @@
 name: documentation
 
 on:
-  pull_request:
+  push:
+    branches:
+      - "main"
+      - "test-doc-generator"
 
 jobs:
   update-documentation:
