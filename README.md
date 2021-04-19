@@ -63,14 +63,14 @@ echo "[ -f /usr/local/etc/bash_completion ] && . /usr/local/etc/bash_completion"
 . /usr/local/etc/bash_completion
 ```
 
-###  Linux
+### Linux
 
-## AUR
+#### AUR
 ```
 yay -S upcloud-cli
 ```
 
-## Other distros
+#### Other Linux distros
 
 Use the package corresponding to your distro (deb, rpm, apk), example Debian like:
 
@@ -108,49 +108,42 @@ password: your_upcloud_password
 Credentials can also be stored at environment variables `UPCLOUD_USERNAME` and `UPCLOUD_PASSWORD`. If variables
 are set, matching config file items are ignored.
 
+> NOTE: Make sure your account allows API connections. To do so, log into
+> [UpCloud control panel](https://hub.upcloud.com/login) and go to **Account**
+> -> **Permissions** -> **Allow API connections** checkbox.
+
 Run something to test that the credentials are working.
 
 ```bash
 $ upctl server list
- UUID                                   Hostname             Plan        Zone      State   
+ UUID                                   Hostname             Plan        Zone      State
 ────────────────────────────────────── ──────────────────── ─────────── ───────── ─────────
- 00229ddf-0e46-45b5-a8f7-cad2c8d11f6a   server1              2xCPU-4GB   de-fra1   stopped 
+ 00229ddf-0e46-45b5-a8f7-cad2c8d11f6a   server1              2xCPU-4GB   de-fra1   stopped
  003c9d77-0237-4ee7-b3a1-306efba456dc   server2              1xCPU-2GB   sg-sin1   started
 ```
 
-NOTE: Make sure your account allows API connections. To do so, log into 
-[UpCloud control panel](https://hub.upcloud.com/login) and go to 
-**Account** -> **Permissions** -> **Allow API connections** checkbox.
-
 ## Examples
 
-Every command has a help included and you can find all its options by adding `-h` at the end of the command,
-like `upctl network list -h`. Below, you'll find a few common commands that have many other available options as well.
+Every command has a help and examples included and you can find all its options
+by adding `-h` at the end of the command, like `upctl network list -h`. Below,
+you'll find a few common commands that have many other available options as
+well.
 
-### Create a new server
+* Create a new server
 
 ```bash
-upctl server create --hostname test-server.io --zone es-mad1 --ssh-keys ~/.ssh/id_rsa.pub
+upctl server create --hostname test-server.io --zone de-fra1 --ssh-keys ~/.ssh/id_rsa.pub
 ```
 
-> NOTE: You will have to specify a method for authentication by
->
-> * ssh-keys `--ssh-keys id_rsa.pub`
-> * or password delivery `--password-delivery sms`
->
-> Note: If you have a custom operating system template, these don't work by default. Use `--os your-custom-img` with `--metadata` to make the keys available through the [metadata service](https://developers.upcloud.com/1.3/8-servers/#metadata-service).
-
-Server title defaults to hostname. To set a different title, add `--title "Test server"`
-
-### Create storage
+* Create storage
 
 ```bash
 upctl storage create --size 25 --title test-storage --zone es-mad1
 ```
 
-Note: Storage size is in GB.
+> Note: Storage size is in GB.
 
-### Attach storage to server
+* Attach storage to server
 
 ```bash
 upctl server storage attach <SERVER-UUID> --storage <STORAGE-UUID>
@@ -185,7 +178,7 @@ Use `make` to build and test the CLI. Makefile help can be found:
 ```
 $ make help
 build                Build program binary for current os/arch
-doc                  Build documentation (markdown)
+doc                  Generate documentation (markdown)
 build-all            Build all targets
 build-linux          Build program binary for linux x86_64
 build-darwin         Build program binary for darwin x86_64
@@ -197,8 +190,8 @@ clean                Cleanup everything
 
 ### Requirements
 
-This repository uses [pre-commit](https://pre-commit.com/#install) and [go-critic](https://github.com/go-critic/go-critic) 
-for maintaining code quality. Installing them is not mandatory, but it helps in avoiding the problems you'd 
+This repository uses [pre-commit](https://pre-commit.com/#install) and [go-critic](https://github.com/go-critic/go-critic)
+for maintaining code quality. Installing them is not mandatory, but it helps in avoiding the problems you'd
 otherwise encounter after opening a pull request as they are run by automated tests for all PRs.
 
 ### Development quickstart

@@ -32,7 +32,7 @@ build: fmt | $(BIN_DIR) ; $(info building executable for the current target…) 
 		-ldflags '-X $(MODULE)/internal/config.Version=$(VERSION) -X $(MODULE)/internal/config.BuildDate=$(DATE)' \
 		-o $(BIN_DIR)/$(CLI_BIN) cmd/$(CLI)/main.go
 
-doc: $(BIN_DIR) ; $(info building documentation…) @ ## Build documentation (markdown)
+doc: $(BIN_DIR) ; $(info generating documentation…) @ ## Generate documentation (markdown)
 	$Q $(GO) run cmd/$(DOC_GEN)/main.go
 
 .PHONY: build-all
