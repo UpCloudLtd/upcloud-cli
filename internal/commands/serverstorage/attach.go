@@ -47,7 +47,7 @@ func (s *attachCommand) InitCommand() {
 
 	flagSet := &pflag.FlagSet{}
 	flagSet.StringVar(&s.params.Type, "type", defaultAttachParams.Type, "Type of the attached storage. Available: disk, cdrom")
-	flagSet.StringVar(&s.params.Address, "address", defaultAttachParams.Address, "Address where the storage device is attached on the server. \nSpecify only the bus name (ide/scsi/virtio) to auto-select next available address from that bus.")
+	flagSet.StringVar(&s.params.Address, "address", defaultAttachParams.Address, "Address where the storage device is attached on the server. \nAddress is of the form busname:deviceindex where busname can be ide/scsi/virtio. (example: 'virtio:1')\nSpecify only the bus name to auto-select next available device index from that bus. (example: 'virtio')")
 	flagSet.StringVar(&s.params.StorageUUID, "storage", defaultAttachParams.StorageUUID, "UUID of the storage to attach.")
 	flagSet.BoolVar(&s.params.bootable, "boot-disk", false, "Set attached device as the server's boot disk.")
 
