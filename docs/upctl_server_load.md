@@ -6,6 +6,12 @@ Load a CD-ROM into the server
 upctl server load <UUID/Title/Hostname...> [flags]
 ```
 
+### Examples
+
+```
+upctl server load my_server4 --storage 01000000-0000-4000-8000-000080030101
+```
+
 ### Options
 
 ```

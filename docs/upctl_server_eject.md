@@ -6,6 +6,12 @@ Eject a CD-ROM from the server
 upctl server eject <UUID/Title/Hostname...> [flags]
 ```
 
+### Examples
+
+```
+upctl server eject my_server
+```
+
 ### Options
 
 ```

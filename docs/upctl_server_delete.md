@@ -6,6 +6,14 @@ Delete a server
 upctl server delete <UUID/Title/Hostname...> [flags]
 ```
 
+### Examples
+
+```
+upctl delete my_server
+upctl delete my_server1 my_server2
+upctl delete 00cbe2f3-4cf9-408b-afee-bd340e13cdd8
+```
+
 ### Options
 
 ```

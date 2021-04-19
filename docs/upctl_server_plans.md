@@ -6,6 +6,12 @@ List server plans
 upctl server plans [flags]
 ```
 
+### Examples
+
+```
+upctl server plans
+```
+
 ### Options
 
 ```
