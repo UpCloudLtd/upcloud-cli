@@ -37,7 +37,7 @@ func (s *restartCommand) InitCommand() {
 
 	// TODO: reimplement? does not seem to make sense to automagically destroy
 	// servers if restart fails..
-	flags.StringVar(&s.StopType, "stop-type", defaultStopType, "Restart type. Available: soft, hard")
+	flags.StringVar(&s.StopType, "stop-type", defaultStopType, "The type of stop operation. Available: soft, hard")
 	s.AddFlags(flags)
 }
 
