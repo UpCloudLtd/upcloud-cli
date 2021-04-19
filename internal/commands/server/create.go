@@ -214,7 +214,7 @@ func (s *createCommand) InitCommand() {
 	s.params = createParams{CreateServerRequest: request.CreateServerRequest{}}
 	def := defaultCreateParams
 	fs.IntVar(&s.params.AvoidHost, "avoid-host", def.AvoidHost, "Use this to make sure VMs do not reside on specific host. Refers to value from host -attribute. Useful when building HA-environments.")
-	fs.IntVar(&s.params.Host, "host", def.Host, "Use this to start a VM on a specific host. Refers to value from host -attribute. Only available for private cloud hosts.")
+	fs.IntVar(&s.params.Host, "host", def.Host, "Use this to start a VM on a specific private cloud host. Refers to value from host -attribute. Only available in private clouds.")
 	fs.StringVar(&s.params.BootOrder, "boot-order", def.BootOrder, "The boot device order, disk / cdrom / network or comma separated combination.")
 	fs.StringVar(&s.params.UserData, "user-data", def.UserData, "Defines URL for a server setup script, or the script body itself.")
 	fs.IntVar(&s.params.CoreNumber, "cores", def.CoreNumber, "Number of cores. Use only when defining a flexible (\"custom\") plan.")
