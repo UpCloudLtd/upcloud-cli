@@ -2,6 +2,7 @@ package ipaddress
 
 import (
 	"fmt"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
@@ -26,7 +27,14 @@ type assignCommand struct {
 // AssignCommand creates the 'ip-address assign' command
 func AssignCommand() commands.Command {
 	return &assignCommand{
-		BaseCommand: commands.New("assign", "Assign an ip address", ""),
+		BaseCommand: commands.New(
+			"assign",
+			"Assign an ip address",
+			"upctl ip-address assign --server 00038afc-d526-4148-af0e-d2f1eeaded9b",
+			"upctl ip-address assign --server 00944977-89ce-4d10-89c3-bb5ba482e48d --family IPv6",
+			"upctl ip-address assign --server 00944977-89ce-4d10-89c3-bb5ba482e48d --floating true --zone pl-waw1",
+			"upctl ip-address assign --server 00b78f8b-521d-4ffb-8baa-adf96c7b8f45 --floating true --mac d6:0e:4a:6f:11:8f",
+		),
 	}
 }
 
