@@ -32,11 +32,8 @@ build: fmt | $(BIN_DIR) ; $(info building executable for the current target…) 
 		-ldflags '-X $(MODULE)/internal/config.Version=$(VERSION) -X $(MODULE)/internal/config.BuildDate=$(DATE)' \
 		-o $(BIN_DIR)/$(CLI_BIN) cmd/$(CLI)/main.go
 
-doc: $(BIN_DIR) ; $(info building documentation generator ) @ ## Build documentation (markdown)
-	$Q $(GO) build \
-		-tags release \
-		-ldflags '-X $(MODULE)/internal/config.Version=$(VERSION) -X $(MODULE)/internal/config.BuildDate=$(DATE)' \
-		-o $(BIN_DIR)/$(DOC_GEN_BIN) cmd/$(DOC_GEN)/main.go
+doc: $(BIN_DIR) ; $(info building documentation…) @ ## Build documentation (markdown)
+	$Q $(GO) run cmd/$(DOC_GEN)/main.go
 
 .PHONY: build-all
 build-all: build-linux build-darwin build-windows ## Build all targets
