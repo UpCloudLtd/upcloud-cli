@@ -42,7 +42,7 @@ var defaultModifyParams = modifyParams{
 func (s *modifyCommand) InitCommand() {
 	s.params = modifyParams{ModifyServerRequest: request.ModifyServerRequest{}}
 	flags := &pflag.FlagSet{}
-	flags.StringVar(&s.params.BootOrder, "boot-order", defaultModifyParams.BootOrder, "The boot device order.")
+	flags.StringVar(&s.params.BootOrder, "boot-order", defaultModifyParams.BootOrder, "The boot device order, disk / cdrom / network or comma separated combination.")
 	flags.IntVar(&s.params.CoreNumber, "cores", defaultModifyParams.CoreNumber, "Number of cores. Sets server plan to custom.")
 	flags.StringVar(&s.params.Hostname, "hostname", defaultModifyParams.Hostname, "Hostname.")
 	flags.StringVar(&s.params.Firewall, "firewall", defaultModifyParams.Firewall, "Enables or disables firewall on the server. You can manage firewall rules with the firewall command.\nAvailable: true, false")
