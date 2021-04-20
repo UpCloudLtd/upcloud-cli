@@ -2,6 +2,7 @@ package networkinterface
 
 import (
 	"fmt"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
@@ -27,7 +28,11 @@ type modifyCommand struct {
 // ModifyCommand creates the "network-interface modify" command
 func ModifyCommand() commands.Command {
 	return &modifyCommand{
-		BaseCommand: commands.New("modify", "Modify a network interface", ""),
+		BaseCommand: commands.New(
+			"modify",
+			"Modify a network interface",
+			"upctl server network-interface modify 009d7f4e-99ce-4c78-88f1-e695d4c37743 --index 2 --new-index 1",
+		),
 	}
 }
 

@@ -3,6 +3,7 @@ package networkinterface
 import (
 	"errors"
 	"fmt"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
@@ -22,7 +23,12 @@ type deleteCommand struct {
 // DeleteCommand creates the "network-interface delete" command
 func DeleteCommand() commands.Command {
 	return &deleteCommand{
-		BaseCommand: commands.New("delete", "Delete a network interface", ""),
+		BaseCommand: commands.New(
+			"delete",
+			"Delete a network interface",
+			"upctl server network-interface delete 009d7f4e-99ce-4c78-88f1-e695d4c37743 --index 1",
+			"upctl server network-interface delete my_server --index 7",
+		),
 	}
 }
 

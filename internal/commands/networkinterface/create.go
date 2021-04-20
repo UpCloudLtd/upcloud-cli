@@ -2,6 +2,7 @@ package networkinterface
 
 import (
 	"fmt"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
@@ -28,7 +29,14 @@ type createCommand struct {
 // CreateCommand creates the "network-interface create" command
 func CreateCommand() commands.Command {
 	return &createCommand{
-		BaseCommand: commands.New("create", "Create a network interface", ""),
+		BaseCommand: commands.New(
+			"create",
+			"Create a network interface",
+			"upctl server network-interface create 009d7f4e-99ce-4c78-88f1-e695d4c37743 --network 037a530b-533e-4cef-b6ad-6af8094bb2bc",
+			"upctl server network-interface create 009d7f4e-99ce-4c78-88f1-e695d4c37743 --type public --source-ip-filtering",
+			"upctl server network-interface create 009d7f4e-99ce-4c78-88f1-e695d4c37743 --type public --source-ip-filtering --ip-addresses 94.237.112.143,94.237.112.144",
+			"upctl server network-interface create my_server2 --network 037a530b-533e-4cef-b6ad-6af8094bb2bc",
+		),
 	}
 }
 
@@ -47,8 +55,6 @@ func (s *createCommand) InitCommand() {
 	fs.BoolVar(&s.bootable, "bootable", false, "Whether to try booting through the interface.")
 	fs.BoolVar(&s.sourceIPFiltering, "source-ip-filtering", false, "Whether source IP filtering is enabled on the interface. Disabling it is allowed only for SDN private interfaces.")
 	fs.StringSliceVar(&s.ipAddresses, "ip-addresses", []string{}, "A comma-separated list of IP addresses")
-	// TODO: add to examples when implemented
-	//	"Usage: --ip-addresses 94.237.112.143,94.237.112.144")
 	s.AddFlags(fs)
 }
 
