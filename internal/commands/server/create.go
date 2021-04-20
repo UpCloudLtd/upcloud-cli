@@ -27,9 +27,9 @@ func CreateCommand() commands.Command {
 			"create",
 			"Create a server",
 			"upctl server create --title myapp --zone fi-hel1 --hostname myapp --password-delivery email",
-			"upctl server create --title \"My Server\" --zone fi-hel1 --hostname myapp --password-delivery email",
+			`upctl server create --title "My Server" --zone fi-hel1 --hostname myapp --password-delivery email`,
 			"upctl server create --zone fi-hel1 --hostname myapp --password-delivery email --plan 2xCPU-4GB",
-			"upctl server create --zone fi-hel1 --hostname myapp --password-delivery email --os \"Debian GNU/Linux 10 (Buster)\"",
+			`upctl server create --zone fi-hel1 --hostname myapp --password-delivery email --os "Debian GNU/Linux 10 (Buster)"`,
 		),
 	}
 }

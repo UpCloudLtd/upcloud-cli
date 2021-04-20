@@ -29,7 +29,7 @@ func ModifyCommand() commands.Command {
 			"modify",
 			"Modify a network",
 			"upctl network modify 037a530b-533e-4cef-b6ad-6af8094bb2bc --ip-network dhcp=false,family=IPv4",
-			"upctl network modify \"My Network\" --name \"My Super Network\"",
+			`upctl network modify "My Network" --name "My Super Network"`,
 		),
 	}
 }

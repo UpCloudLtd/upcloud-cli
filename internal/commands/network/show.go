@@ -20,7 +20,7 @@ func ShowCommand() commands.Command {
 			"Show network details",
 			"upctl network show 037a530b-533e-4cef-b6ad-6af8094bb2bc",
 			"upctl network show 037a530b-533e-4cef-b6ad-6af8094bb2bc 0311480d-d0c0-4951-ab41-bf12097f5d3c",
-			"upctl network show \"My Network\"",
+			`upctl network show "My Network"`,
 		),
 	}
 }

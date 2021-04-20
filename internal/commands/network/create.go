@@ -29,7 +29,7 @@ func CreateCommand() commands.Command {
 		BaseCommand: commands.New(
 			"create",
 			"Create a network",
-			"upctl network create --name \"My Network\" --zone pl-waw1 --ip-network address=10.0.1.0/24",
+			`upctl network create --name "My Network" --zone pl-waw1 --ip-network address=10.0.1.0/24`,
 			"upctl network create --name my_net --zone pl-waw1 --ip-network address=10.0.2.0/24,dhcp=true",
 		),
 	}
