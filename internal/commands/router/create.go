@@ -17,7 +17,7 @@ type createCommand struct {
 // CreateCommand creates the "router create" command
 func CreateCommand() commands.Command {
 	return &createCommand{
-		BaseCommand: commands.New("create", "Create a router"),
+		BaseCommand: commands.New("create", "Create a router", ""),
 	}
 }
 

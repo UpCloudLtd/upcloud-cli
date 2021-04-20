@@ -23,7 +23,11 @@ import (
 // ImportCommand creates the "storage import" command
 func ImportCommand() commands.Command {
 	return &importCommand{
-		BaseCommand:  commands.New("import", "Import a storage from external or local source"),
+		BaseCommand: commands.New(
+			"import",
+			"Import a storage from external or local source",
+			"",
+		),
 		createParams: newCreateParams(),
 	}
 }

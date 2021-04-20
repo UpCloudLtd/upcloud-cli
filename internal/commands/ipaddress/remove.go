@@ -20,7 +20,7 @@ type removeCommand struct {
 func RemoveCommand() commands.Command {
 	// TODO: should this be 'release'? inconsistent with libs now
 	return &removeCommand{
-		BaseCommand: commands.New("remove", "Remove an IP address"),
+		BaseCommand: commands.New("remove", "Remove an IP address", ""),
 	}
 }
 

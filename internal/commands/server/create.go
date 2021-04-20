@@ -3,9 +3,10 @@ package server
 import (
 	"bufio"
 	"fmt"
-	"github.com/jedib0t/go-pretty/v6/text"
 	"os"
 	"strings"
+
+	"github.com/jedib0t/go-pretty/v6/text"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/storage"
@@ -22,7 +23,14 @@ import (
 // CreateCommand creates the "server create" command
 func CreateCommand() commands.Command {
 	return &createCommand{
-		BaseCommand: commands.New("create", "Create a server"),
+		BaseCommand: commands.New(
+			"create",
+			"Create a server",
+			"upctl server create --title myapp --zone fi-hel1 --hostname myapp --password-delivery email",
+			"upctl server create --title \"My Server\" --zone fi-hel1 --hostname myapp --password-delivery email",
+			"upctl server create --zone fi-hel1 --hostname myapp --password-delivery email --plan 2xCPU-4GB",
+			"upctl server create --zone fi-hel1 --hostname myapp --password-delivery email --os \"Debian GNU/Linux 10 (Buster)\"",
+		),
 	}
 }
 

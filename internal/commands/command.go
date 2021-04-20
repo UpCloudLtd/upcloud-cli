@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
@@ -13,11 +14,13 @@ import (
 )
 
 // New returns a BaseCommand that implements Command. It is used as a base to create custom commands from.
-func New(name, usage string) *BaseCommand {
+func New(name, usage string, examples ...string) *BaseCommand {
 	return &BaseCommand{
 		cobra: &cobra.Command{
-			Use:   name,
-			Short: usage},
+			Use:     name,
+			Short:   usage,
+			Example: strings.Join(examples, "\n"),
+		},
 	}
 }
 

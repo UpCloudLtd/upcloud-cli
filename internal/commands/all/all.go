@@ -100,6 +100,7 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 			BaseCommand: commands.New(
 				"completion",
 				"Generates shell completion",
+				"upctl completion bash",
 			),
 		}, rootCmd, conf,
 	)
@@ -108,6 +109,7 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 			BaseCommand: commands.New(
 				"version",
 				"Display software infomation",
+				"upctl version",
 			),
 		}, rootCmd, conf,
 	)

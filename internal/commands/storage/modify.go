@@ -42,7 +42,7 @@ var defaultBackupRuleParams = upcloud.BackupRule{
 // ModifyCommand creates the "storage modify" command
 func ModifyCommand() commands.Command {
 	return &modifyCommand{
-		BaseCommand: commands.New("modify", "Modify a storage"),
+		BaseCommand: commands.New("modify", "Modify a storage", ""),
 	}
 }
 

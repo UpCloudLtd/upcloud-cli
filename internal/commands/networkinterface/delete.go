@@ -22,7 +22,7 @@ type deleteCommand struct {
 // DeleteCommand creates the "network-interface delete" command
 func DeleteCommand() commands.Command {
 	return &deleteCommand{
-		BaseCommand: commands.New("delete", "Delete a network interface"),
+		BaseCommand: commands.New("delete", "Delete a network interface", ""),
 	}
 }
 

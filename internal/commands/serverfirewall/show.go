@@ -19,7 +19,7 @@ import (
 // ShowCommand is the 'server firewall show' command, displaying firewall details
 func ShowCommand() commands.Command {
 	return &showCommand{
-		BaseCommand: commands.New("show", "Show server firewall details."),
+		BaseCommand: commands.New("show", "Show server firewall details.", ""),
 	}
 }
 

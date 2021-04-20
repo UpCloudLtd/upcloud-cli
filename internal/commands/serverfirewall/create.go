@@ -35,7 +35,7 @@ type createCommand struct {
 // CreateCommand creates the "server filewall create" command
 func CreateCommand() commands.Command {
 	return &createCommand{
-		BaseCommand: commands.New("create", "Create a new firewall rule"),
+		BaseCommand: commands.New("create", "Create a new firewall rule", ""),
 	}
 }
 
