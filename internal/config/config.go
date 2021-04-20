@@ -10,6 +10,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/log"
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 	"github.com/UpCloudLtd/upcloud-cli/internal/terminal"
+	"github.com/gemalto/flume"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/client"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
@@ -40,6 +41,8 @@ var (
 	Version = "dev"
 	// BuildDate contains a string with the build date.
 	BuildDate = "unknown"
+	// flume logger for config, that will be passed to log pckg
+	logger = flume.New("config")
 )
 
 // New returns a new instance of Config bound to the given viper instance
@@ -54,7 +57,6 @@ type GlobalFlags struct {
 	Colors        bool          `valid:"-"`
 	Debug         bool          `valid:"-"`
 	OutputFormat  string        `valid:"in(human|json|yaml)"`
-	Wait          bool          `valid:"-"`
 }
 
 // Config holds the configuration for running upctl
@@ -94,7 +96,7 @@ func (s *Config) Load() error {
 
 	v.Set("config", v.ConfigFileUsed())
 
-	log.Debug("Config: Load()", "Viper config logs", v.AllSettings())
+	log.Debug(logger, "Viper configs", v.AllSettings())
 	return nil
 
 }

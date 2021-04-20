@@ -5,6 +5,8 @@ import (
 	"io"
 	"time"
 
+	"github.com/gemalto/flume"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/internal/log"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
@@ -12,11 +14,15 @@ import (
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 )
 
+var (
+	logger = flume.New("runcommand")
+)
+
 func commandRunE(command Command, service internal.AllServices, config *config.Config, args []string) error {
 	executor := NewExecutor(config, service)
 	switch typedCommand := command.(type) {
 	case NoArgumentCommand:
-		log.Debug("runcommand.go", "commandRunE() NoArgumentCommand", "Cmd path:", cmd.CommandPath(), "Arguments:", args)
+		log.Debug(logger, cmd.CommandPath(), "Arguments:", args)
 		// need to pass in fake arguments here, to actually trigger execution
 		results, err := execute(typedCommand, executor, []string{""}, 1,
 			// FIXME: this bit panics go-critic unlambda check, figure out why and report upstream
@@ -28,7 +34,7 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 		}
 		return render(command.Cobra().OutOrStdout(), config, results)
 	case SingleArgumentCommand:
-		log.Debug("runcommand.go", "commandRunE() SingleArgumentCommand", "Cmd path:", cmd.CommandPath(), "Arguments:", args)
+		log.Debug(logger, cmd.CommandPath(), "Arguments:", args)
 		// make sure we have an argument
 		if len(args) != 1 || args[0] == "" {
 			return fmt.Errorf("exactly 1 argument is required")
@@ -39,11 +45,11 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 		}
 		return render(command.Cobra().OutOrStdout(), config, results)
 	case MultipleArgumentCommand:
+		log.Debug(logger, cmd.CommandPath(), "Arguments:", args)
 		// make sure we have arguments
 		if len(args) < 1 {
 			return fmt.Errorf("at least one argument is required")
 		}
-		log.Debug("runcommand.go", "commandRunE() MultipleArgumentCommand", "Cmd path:", cmd.CommandPath(), "Arguments:", args)
 		results, err := execute(typedCommand, executor, args, typedCommand.MaximumExecutions(), typedCommand.Execute)
 		if err != nil {
 			return err
@@ -52,7 +58,7 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 	default:
 		// no execution found on this command, eg. most likely an 'organizational' command
 		// so just show usage
-		log.Debug("runcommand.go", "commandRunE() default", "Cmd path:", cmd.CommandPath(), "Arguments:", args)
+		log.Debug(logger, cmd.CommandPath(), "Arguments:", args)
 		return command.Cobra().Usage()
 	}
 }
