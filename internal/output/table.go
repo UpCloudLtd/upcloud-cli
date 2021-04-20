@@ -78,7 +78,7 @@ func (s Table) MarshalHuman() ([]byte, error) {
 		if !ok {
 			continue
 		}
-		if len(header) == 0 && column.Header == "" {
+		if column.Header == "" {
 			header = append(header, column.Key)
 		} else {
 			header = append(header, column.Header)

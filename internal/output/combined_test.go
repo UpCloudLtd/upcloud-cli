@@ -2,28 +2,20 @@ package output_test
 
 import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
-	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestCombined(t *testing.T) {
-	var combinedTests = []struct {
-		name                 string
-		sections             []output.CombinedSection
-		expectedHumanResult  string
-		expectedJSONResult   string
-		expectedYAMLResult   string
-		expectedErrorMessage string
-	}{
+	var combinedTests = []outputTestCase{
 		{
 			name:               "no content",
-			sections:           []output.CombinedSection{},
+			input:              output.Combined{},
 			expectedJSONResult: "{}",
 			expectedYAMLResult: "{}\n", // TODO: is this what we want?
 		},
 		{
 			name: "single section",
-			sections: []output.CombinedSection{
+			input: output.Combined{
 				{Key: "test", Title: "MOCK", Contents: output.Details{
 					Sections: []output.DetailSection{{Key: "foo", Title: "BAR", Rows: []output.DetailRow{
 						{Key: "baz", Title: "boz", Value: "thisistest"},
@@ -36,7 +28,7 @@ func TestCombined(t *testing.T) {
 		},
 		{
 			name: "two sections",
-			sections: []output.CombinedSection{
+			input: output.Combined{
 				{Key: "test1", Title: "MOCK", Contents: output.Details{
 					Sections: []output.DetailSection{{Key: "foo", Title: "BAR", Rows: []output.DetailRow{
 						{Key: "baz", Title: "boz", Value: "thisistest1"},
@@ -54,7 +46,7 @@ func TestCombined(t *testing.T) {
 		},
 		{
 			name: "two tables",
-			sections: []output.CombinedSection{
+			input: output.Combined{
 				{Key: "test1", Title: "MOCK", Contents: output.Table{
 					Columns: []output.TableColumn{
 						{Key: "a", Header: "B"},
@@ -126,28 +118,6 @@ test2:
 		},
 	}
 	for _, test := range combinedTests {
-		t.Run(test.name, func(t *testing.T) {
-			if test.expectedErrorMessage == "" {
-				bytes, err := output.Combined(test.sections).MarshalHuman()
-				assert.NoError(t, err)
-				assert.Equal(t, test.expectedHumanResult, string(bytes))
-				bytes, err = output.Combined(test.sections).MarshalJSON()
-				assert.NoError(t, err)
-				assert.Equal(t, test.expectedJSONResult, string(bytes))
-				bytes, err = output.Combined(test.sections).MarshalYAML()
-				assert.NoError(t, err)
-				assert.Equal(t, test.expectedYAMLResult, string(bytes))
-			} else {
-				bytes, err := output.Combined(test.sections).MarshalHuman()
-				assert.EqualError(t, err, test.expectedErrorMessage)
-				assert.Len(t, bytes, 0)
-				bytes, err = output.Combined(test.sections).MarshalJSON()
-				assert.EqualError(t, err, test.expectedErrorMessage)
-				assert.Len(t, bytes, 0)
-				bytes, err = output.Combined(test.sections).MarshalYAML()
-				assert.EqualError(t, err, test.expectedErrorMessage)
-				assert.Len(t, bytes, 0)
-			}
-		})
+		t.Run(test.name, test.Generate())
 	}
 }

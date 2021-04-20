@@ -2,36 +2,31 @@ package output_test
 
 import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
-	"github.com/stretchr/testify/assert"
 	"testing"
+	"time"
 )
 
-var tableTests = []struct {
-	name                 string
-	columns              []output.TableColumn
-	rows                 []output.TableRow
-	expectedHumanResult  string
-	expectedJSONResult   string
-	expectedYAMLResult   string
-	expectedErrorMessage string
-}{
-	{
-		name: "simple",
-		columns: []output.TableColumn{
-			{Key: "aa", Header: "BB"},
-			{Key: "cc", Header: "DD"},
-		},
-		rows: []output.TableRow{
-			{"1", "2"},
-			{3, 4},
-		},
-		expectedHumanResult: `
+func TestTable(t *testing.T) {
+	var tableTests = []outputTestCase{
+		{
+			name: "simple",
+			input: output.Table{
+				Columns: []output.TableColumn{
+					{Key: "aa", Header: "BB"},
+					{Key: "cc", Header: "DD"},
+				},
+				Rows: []output.TableRow{
+					{"1", "2"},
+					{3, 4},
+				},
+			},
+			expectedHumanResult: `
  BB   DD 
 ──── ────
  1    2  
  3    4  
 `,
-		expectedJSONResult: `[
+			expectedJSONResult: `[
   {
     "aa": "1",
     "cc": "2"
@@ -41,42 +36,66 @@ var tableTests = []struct {
     "cc": 4
   }
 ]`,
-		expectedYAMLResult: `- aa: "1"
+			expectedYAMLResult: `- aa: "1"
   cc: "2"
 - aa: 3
   cc: 4
 `,
-	},
-}
-
-func TestTable(t *testing.T) {
+		},
+		{
+			name: "formatting",
+			input: output.Table{
+				Columns: []output.TableColumn{
+					{Key: "aa", Header: "BB"},
+					{Key: "cc", Header: "DD"},
+				},
+				Rows: []output.TableRow{
+					{4.12345677890123456778901234567789, time.Date(2001, 1, 1, 12, 0, 0, 0, time.UTC)},
+				},
+			},
+			expectedHumanResult: `
+                BB   DD                            
+─────────────────── ───────────────────────────────
+ 4.123456778901234   2001-01-01 12:00:00 +0000 UTC 
+`,
+			expectedJSONResult: `[
+  {
+    "aa": 4.123456778901234,
+    "cc": "2001-01-01T12:00:00Z"
+  }
+]`,
+			expectedYAMLResult: `- aa: 4.123456778901234
+  cc: 2001-01-01T12:00:00Z
+`,
+		},
+		{
+			name: "no headers",
+			input: output.Table{
+				Columns: []output.TableColumn{
+					{Key: "aa"},
+					{Key: "cc"},
+				},
+				Rows: []output.TableRow{
+					{"1", "2"},
+				},
+			},
+			expectedHumanResult: `
+ aa   cc 
+──── ────
+ 1    2  
+`,
+			expectedJSONResult: `[
+  {
+    "aa": "1",
+    "cc": "2"
+  }
+]`,
+			expectedYAMLResult: `- aa: "1"
+  cc: "2"
+`,
+		},
+	}
 	for _, test := range tableTests {
-		t.Run(test.name, func(t *testing.T) {
-			input := output.Table{
-				Columns: test.columns,
-				Rows:    test.rows,
-			}
-			if test.expectedErrorMessage == "" {
-				bytes, err := input.MarshalHuman()
-				assert.NoError(t, err)
-				assert.Equal(t, test.expectedHumanResult, string(bytes))
-				bytes, err = input.MarshalJSON()
-				assert.NoError(t, err)
-				assert.Equal(t, test.expectedJSONResult, string(bytes))
-				bytes, err = input.MarshalYAML()
-				assert.NoError(t, err)
-				assert.Equal(t, test.expectedYAMLResult, string(bytes))
-			} else {
-				bytes, err := input.MarshalHuman()
-				assert.EqualError(t, err, test.expectedErrorMessage)
-				assert.Len(t, bytes, 0)
-				bytes, err = input.MarshalJSON()
-				assert.EqualError(t, err, test.expectedErrorMessage)
-				assert.Len(t, bytes, 0)
-				bytes, err = input.MarshalYAML()
-				assert.EqualError(t, err, test.expectedErrorMessage)
-				assert.Len(t, bytes, 0)
-			}
-		})
+		t.Run(test.name, test.Generate())
 	}
 }

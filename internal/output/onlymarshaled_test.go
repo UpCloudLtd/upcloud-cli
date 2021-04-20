@@ -1,0 +1,39 @@
+package output_test
+
+import (
+	"github.com/UpCloudLtd/upcloud-cli/internal/output"
+	"testing"
+)
+
+func TestOnlyMarshaled(t *testing.T) {
+	var marshaledOnlyTests = []outputTestCase{
+		{
+			name:               "nil",
+			input:              output.OnlyMarshaled{Value: nil},
+			expectedJSONResult: "null",
+			expectedYAMLResult: "null\n",
+		},
+		{
+			name:               "string",
+			input:              output.OnlyMarshaled{Value: "hello"},
+			expectedJSONResult: `"hello"`,
+			expectedYAMLResult: "hello\n",
+		},
+		{
+			name:               "int",
+			input:              output.OnlyMarshaled{Value: 123},
+			expectedJSONResult: `123`,
+			expectedYAMLResult: "123\n",
+		},
+		{
+			name:               "struct",
+			input:              output.OnlyMarshaled{Value: struct{ String string }{"mock"}},
+			expectedJSONResult: "{\n  \"String\": \"mock\"\n}",
+			expectedYAMLResult: "string: mock\n",
+		},
+	}
+
+	for _, test := range marshaledOnlyTests {
+		t.Run(test.name, test.Generate())
+	}
+}

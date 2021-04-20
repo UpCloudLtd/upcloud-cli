@@ -24,24 +24,17 @@ func TestRenderFailingWriter(t *testing.T) {
 }
 
 func TestRender(t *testing.T) {
-	var renderTests = []struct {
-		name                 string
-		output               output.Output
-		expectedHumanResult  string
-		expectedJSONResult   string
-		expectedYAMLResult   string
-		expectedErrorMessage string
-	}{
+	var renderTests = []outputTestCase{
 		{
 			name:                "none",
-			output:              output.None{},
+			input:               output.None{},
 			expectedHumanResult: "\n",
 			expectedJSONResult:  "\n",
 			expectedYAMLResult:  "\n",
 		},
 		{
 			name:                "marshaled",
-			output:              output.OnlyMarshaled{Value: "hello"},
+			input:               output.OnlyMarshaled{Value: "hello"},
 			expectedHumanResult: "\n", // marshaled should not output in human mode
 			expectedJSONResult: `"hello"
 `,
@@ -54,17 +47,17 @@ func TestRender(t *testing.T) {
 			cfg := config.New()
 
 			cfg.Viper().Set(config.KeyOutput, "human")
-			err := output.Render(out, cfg, test.output)
+			err := output.Render(out, cfg, test.input)
 			validateOutput(t, test.expectedHumanResult, test.expectedErrorMessage, out.Bytes(), err)
 			out.Truncate(0)
 
 			cfg.Viper().Set(config.KeyOutput, "json")
-			err = output.Render(out, cfg, test.output)
+			err = output.Render(out, cfg, test.input)
 			validateOutput(t, test.expectedJSONResult, test.expectedErrorMessage, out.Bytes(), err)
 			out.Truncate(0)
 
 			cfg.Viper().Set(config.KeyOutput, "yaml")
-			err = output.Render(out, cfg, test.output)
+			err = output.Render(out, cfg, test.input)
 			validateOutput(t, test.expectedYAMLResult, test.expectedErrorMessage, out.Bytes(), err)
 		})
 	}
