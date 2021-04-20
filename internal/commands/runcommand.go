@@ -2,7 +2,7 @@ package commands
 
 import (
 	"fmt"
-	"os"
+	"io"
 	"time"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
@@ -24,7 +24,7 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 		if err != nil {
 			return err
 		}
-		return render(config, results)
+		return render(command.Cobra().OutOrStdout(), config, results)
 	case SingleArgumentCommand:
 		// make sure we have an argument
 		if len(args) != 1 || args[0] == "" {
@@ -34,7 +34,7 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 		if err != nil {
 			return err
 		}
-		return render(config, results)
+		return render(command.Cobra().OutOrStdout(), config, results)
 	case MultipleArgumentCommand:
 		// make sure we have arguments
 		if len(args) < 1 {
@@ -44,7 +44,7 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 		if err != nil {
 			return err
 		}
-		return render(config, results)
+		return render(command.Cobra().OutOrStdout(), config, results)
 	default:
 		// no execution found on this command, eg. most likely an 'organizational' command
 		// so just show usage
@@ -52,7 +52,7 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 	}
 }
 
-func render(config *config.Config, results []executeResult) error {
+func render(writer io.Writer, config *config.Config, results []executeResult) error {
 	resultList := make([]output.Output, len(results))
 	for i := 0; i < len(results); i++ {
 		if results[i].Error != nil {
@@ -61,7 +61,7 @@ func render(config *config.Config, results []executeResult) error {
 			resultList[i] = results[i].Result
 		}
 	}
-	return output.Render(os.Stdout, config, resultList...)
+	return output.Render(writer, config, resultList...)
 }
 
 type resolvedArgument struct {
