@@ -13,7 +13,13 @@ import (
 // ShowCommand creates the "router show" command
 func ShowCommand() commands.Command {
 	return &showCommand{
-		BaseCommand: commands.New("show", "Show current router", ""),
+		BaseCommand: commands.New(
+			"show",
+			"Show current router",
+			"upctl router show 04d0a7f6-ee78-42b5-8077-6947f9e67c5a",
+			"upctl router show 04d0a7f6-ee78-42b5-8077-6947f9e67c5a 04d031ab-4b85-4cbc-9f0e-6a2977541327",
+			`upctl router show "My Turbo Router" my_super_router`,
+		),
 	}
 }
 

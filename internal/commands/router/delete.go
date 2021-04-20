@@ -2,6 +2,7 @@ package router
 
 import (
 	"fmt"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
@@ -19,7 +20,12 @@ type deleteCommand struct {
 // DeleteCommand creates the "delete router" command
 func DeleteCommand() commands.Command {
 	return &deleteCommand{
-		BaseCommand: commands.New("delete", "Delete a router", ""),
+		BaseCommand: commands.New(
+			"delete",
+			"Delete a router",
+			"upctl router delete 0497728e-76ef-41d0-997f-fa9449eb71bc",
+			"upctl router delete my_router",
+		),
 	}
 }
 

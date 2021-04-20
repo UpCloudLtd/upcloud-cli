@@ -2,6 +2,7 @@ package router
 
 import (
 	"fmt"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
@@ -21,7 +22,12 @@ type modifyCommand struct {
 // ModifyCommand creates the "router modify" command
 func ModifyCommand() commands.Command {
 	return &modifyCommand{
-		BaseCommand: commands.New("modify", "Modify a router", ""),
+		BaseCommand: commands.New(
+			"modify",
+			"Modify a router",
+			"upctl router modify 04d031ab-4b85-4cbc-9f0e-6a2977541327 --name my_super_router",
+			`upctl router modify "My Router" --name "My Turbo Router"`,
+		),
 	}
 }
 
