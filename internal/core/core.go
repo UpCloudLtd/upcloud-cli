@@ -4,18 +4,19 @@ import (
 	"fmt"
 	"time"
 
-	valid "github.com/asaskevich/govalidator"
-	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
-
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/all"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/internal/terminal"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
+
+	valid "github.com/asaskevich/govalidator"
+	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 )
 
 // BuildRootCmd builds the root command
-func BuildRootCmd(_ []string, conf *config.Config) cobra.Command {
+func BuildRootCmd(conf *config.Config) cobra.Command {
 	rootCmd := cobra.Command{
 		Use:   "upctl",
 		Short: "UpCloud CLI",
@@ -74,4 +75,25 @@ func BuildRootCmd(_ []string, conf *config.Config) cobra.Command {
 	rootCmd.SetUsageFunc(ui.UsageFunc)
 
 	return rootCmd
+}
+
+// BuildCLI generates the CLI tree and returns the rootCmd
+func BuildCLI() cobra.Command {
+	conf := config.New()
+	rootCmd := BuildRootCmd(conf)
+
+	all.BuildCommands(&rootCmd, conf)
+
+	return rootCmd
+}
+
+// BootstrapCLI is the CLI entrypoint
+func BootstrapCLI(args []string) error {
+
+	rootCmd := BuildCLI()
+	if err := rootCmd.Execute(); err != nil {
+		return err
+	}
+
+	return nil
 }

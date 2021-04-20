@@ -3,8 +3,6 @@ package main
 import (
 	"log"
 
-	"github.com/UpCloudLtd/upcloud-cli/internal/commands/all"
-	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/internal/core"
 
 	"github.com/spf13/cobra/doc"
@@ -15,11 +13,9 @@ const (
 )
 
 func main() {
-	conf := config.New()
-	upctl := core.BuildRootCmd(nil, conf)
-	all.BuildCommands(&upctl, conf)
+	rootCmd := core.BuildCLI()
 
-	err := doc.GenMarkdownTree(&upctl, docPath)
+	err := doc.GenMarkdownTree(&rootCmd, docPath)
 
 	if err != nil {
 		log.Fatal(err)
