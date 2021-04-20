@@ -13,7 +13,12 @@ import (
 // ListCommand creates the "storage list" command
 func ListCommand() commands.Command {
 	return &listCommand{
-		BaseCommand: commands.New("list", "List current storages", ""),
+		BaseCommand: commands.New(
+			"list",
+			"List current storages",
+			"upctl storage list",
+			"upctl storage list --all",
+		),
 	}
 }
 

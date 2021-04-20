@@ -3,15 +3,16 @@ package storage
 import (
 	"errors"
 	"fmt"
-	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
-	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"io"
 	"net/url"
 	"os"
 	"path/filepath"
 	"sync/atomic"
 	"time"
+
+	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
+	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
@@ -26,7 +27,7 @@ func ImportCommand() commands.Command {
 		BaseCommand: commands.New(
 			"import",
 			"Import a storage from external or local source",
-			"",
+			// TODO: Add examples
 		),
 		createParams: newCreateParams(),
 	}

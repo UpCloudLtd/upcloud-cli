@@ -27,7 +27,12 @@ type createBackupParams struct {
 // CreateBackupCommand creates the "storage backup create" command
 func CreateBackupCommand() commands.Command {
 	return &createBackupCommand{
-		BaseCommand: commands.New("create", "Create backup of a storage", ""),
+		BaseCommand: commands.New(
+			"create",
+			"Create backup of a storage",
+			`upctl storage backup create 01cbea5e-eb5b-4072-b2ac-9b635120e5d8 --title "first backup"`,
+			`upctl storage backup create "My Storage" --title second_backup`,
+		),
 	}
 }
 
