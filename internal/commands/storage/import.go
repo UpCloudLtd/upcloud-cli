@@ -27,7 +27,7 @@ func ImportCommand() commands.Command {
 		BaseCommand: commands.New(
 			"import",
 			"Import a storage from external or local source",
-			// TODO: Add examples
+			"upctl storage import --source-location https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-10.9.0-amd64-netinst.iso --title my_storage --zone es-mad1",
 		),
 		createParams: newCreateParams(),
 	}
