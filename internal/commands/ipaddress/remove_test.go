@@ -35,7 +35,6 @@ func TestRemoveCommand(t *testing.T) {
 	} {
 		targetMethod := "ReleaseIPAddress"
 		t.Run(test.name, func(t *testing.T) {
-			cachedIPs = nil
 			mService := smock.Service{}
 			mService.On(targetMethod, &test.expected).Return(nil)
 			mService.On("GetIPAddresses").Return(&upcloud.IPAddresses{IPAddresses: []upcloud.IPAddress{ip}}, nil)
