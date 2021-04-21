@@ -84,6 +84,15 @@ func TestImportCommand(t *testing.T) {
 			},
 		},
 		{
+			name: "location is missing",
+			args: []string{
+				"--source-type", upcloud.StorageImportSourceHTTPImport,
+				"--zone", "fi-hel1",
+				"--title", "test-1",
+			},
+			error: "source-location and either existing storage or both zone and title are required",
+		},
+		{
 			name: "http import",
 			args: []string{
 				"--source-type", upcloud.StorageImportSourceHTTPImport,
@@ -96,6 +105,16 @@ func TestImportCommand(t *testing.T) {
 				Source:         upcloud.StorageImportSourceHTTPImport,
 				SourceLocation: "http://example.com",
 			},
+		},
+		{
+			name: "local import, non-existent file",
+			args: []string{
+				"--source-type", upcloud.StorageImportSourceDirectUpload,
+				"--source-location", "testfile",
+				"--zone", "fi-hel1",
+				"--title", "test-2",
+			},
+			error: "open testfile: no such file or directory",
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
@@ -117,7 +136,7 @@ func TestImportCommand(t *testing.T) {
 			_, err = c.(commands.NoArgumentCommand).ExecuteWithoutArguments(commands.NewExecutor(conf, mService))
 
 			if test.error != "" {
-				assert.Errorf(t, err, test.error)
+				assert.EqualError(t, err, test.error)
 			} else {
 				mService.AssertNumberOfCalls(t, "CreateStorageImport", 1)
 				mService.AssertNumberOfCalls(t, "GetStorageImportDetails", 1)
