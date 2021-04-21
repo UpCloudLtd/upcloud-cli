@@ -6,7 +6,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/all"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 
-	"github.com/UpCloudLtd/upcloud-cli/internal/log"
 	"github.com/UpCloudLtd/upcloud-cli/internal/terminal"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 
@@ -28,8 +27,19 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 			}
 
 			terminal.ForceColours(conf.GlobalFlags.Colors)
-			if err := log.SetDebugMode(conf.GlobalFlags.Debug); err != nil {
-				return fmt.Errorf("cannot set debug mode: %w", err)
+
+			// Set up flume logging level
+			logLvl := flume.DebugLevel
+			if !conf.GlobalFlags.Debug {
+				logLvl = flume.InfoLevel
+			}
+			// Set Flume config up according to debug flag
+			if err := flume.Configure(flume.Config{
+				AddCaller:    &conf.GlobalFlags.Debug,
+				DefaultLevel: logLvl,
+				Encoding:     "term-color",
+			}); err != nil {
+				return fmt.Errorf("flume config error: %w", err)
 			}
 
 			if err := conf.Load(); err != nil {

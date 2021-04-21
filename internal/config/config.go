@@ -7,7 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/UpCloudLtd/upcloud-cli/internal/log"
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 	"github.com/UpCloudLtd/upcloud-cli/internal/terminal"
 	"github.com/gemalto/flume"
@@ -96,7 +95,7 @@ func (s *Config) Load() error {
 
 	v.Set("config", v.ConfigFileUsed())
 
-	log.Debug(logger, "Viper configs", v.AllSettings())
+	logger.Debug("Viper configs", v.AllSettings())
 	return nil
 
 }
