@@ -104,7 +104,6 @@ func TestShowCommand(t *testing.T) {
     
 `
 
-	cachedNetworks = nil
 	mService := smock.Service{}
 	mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{network}}, nil)
 	for _, server := range servers {
