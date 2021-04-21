@@ -108,7 +108,7 @@ func (s *DetailsView) SetRowSeparators(v bool) {
 	style.Box.MiddleVertical = "│"
 }
 
-// SetRowSpacing sets whether  whether Render() outputs separators empty lines between data rows
+// SetRowSpacing sets whether Render() outputs separators empty lines between data rows
 func (s *DetailsView) SetRowSpacing(v bool) {
 	style := s.t.Style()
 	style.Options.SeparateRows = v
