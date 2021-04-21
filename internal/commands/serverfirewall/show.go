@@ -2,6 +2,10 @@ package serverfirewall
 
 import (
 	"fmt"
+	"net"
+	"strings"
+	"sync"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
@@ -9,9 +13,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/jedib0t/go-pretty/v6/text"
-	"net"
-	"strings"
-	"sync"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 )
@@ -19,7 +20,13 @@ import (
 // ShowCommand is the 'server firewall show' command, displaying firewall details
 func ShowCommand() commands.Command {
 	return &showCommand{
-		BaseCommand: commands.New("show", "Show server firewall details.", ""),
+		BaseCommand: commands.New(
+			"show",
+			"Show server firewall details.",
+			"upctl server firewall show 00038afc-d526-4148-af0e-d2f1eeaded9b",
+			"upctl server firewall show 00038afc-d526-4148-af0e-d2f1eeaded9b 009d7f4e-99ce-4c78-88f1-e695d4c37743",
+			"upctl server firewall show my_server",
+		),
 	}
 }
 

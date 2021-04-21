@@ -28,7 +28,12 @@ type templatizeParams struct {
 // TODO: figure out consistent naming, one way or the other.
 func TemplatizeCommand() commands.Command {
 	return &templatizeCommand{
-		BaseCommand: commands.New("templatise", "Templatise a storage", ""),
+		BaseCommand: commands.New(
+			"templatise",
+			"Templatise a storage",
+			`upctl storage templatise 01271548-2e92-44bb-9774-d282508cc762 --title "My Template"`,
+			`upctl storage templatise "My Storage" --title super_template`,
+		),
 	}
 }
 

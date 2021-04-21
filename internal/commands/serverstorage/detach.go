@@ -31,7 +31,12 @@ var defaultDetachParams = &detachParams{
 // DetachCommand creates the "server storage detach" command
 func DetachCommand() commands.Command {
 	return &detachCommand{
-		BaseCommand: commands.New("detach", "Detaches a storage resource from a server", ""),
+		BaseCommand: commands.New(
+			"detach",
+			"Detaches a storage resource from a server",
+			"upctl server storage detach 00038afc-d526-4148-af0e-d2f1eeaded9b --address virtio:1",
+			"upctl server storage detach my_server1 --address virtio:2",
+		),
 	}
 }
 

@@ -16,7 +16,12 @@ import (
 // CreateCommand creates the "storage create" command
 func CreateCommand() commands.Command {
 	return &createCommand{
-		BaseCommand: commands.New("create", "Create a storage", ""),
+		BaseCommand: commands.New(
+			"create",
+			"Create a storage",
+			`upctl storage create --zone pl-waw1 --title "My Storage"`,
+			"upctl storage create --zone pl-waw1 --title my_storage --size 20 --backup-interval wed --backup-retention 4",
+		),
 	}
 }
 

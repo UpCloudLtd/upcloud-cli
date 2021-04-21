@@ -2,6 +2,7 @@ package storage
 
 import (
 	"fmt"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
@@ -19,7 +20,7 @@ var (
 // BaseStorageCommand creates the base "storage" command
 func BaseStorageCommand() commands.Command {
 	return &storageCommand{
-		commands.New("storage", "Manage storages", ""),
+		commands.New("storage", "Manage storages"),
 	}
 }
 

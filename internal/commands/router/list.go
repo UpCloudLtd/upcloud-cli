@@ -11,7 +11,12 @@ import (
 // ListCommand creates the "router list" command
 func ListCommand() commands.Command {
 	return &listCommand{
-		BaseCommand: commands.New("list", "List routers", ""),
+		BaseCommand: commands.New(
+			"list",
+			"List routers",
+			"upctl router list",
+			"upctl router list --all",
+		),
 	}
 }
 

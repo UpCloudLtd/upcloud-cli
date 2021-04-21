@@ -12,7 +12,12 @@ import (
 // ShowCommand creates the 'ip-address show' command
 func ShowCommand() commands.Command {
 	return &showCommand{
-		BaseCommand: commands.New("show", "Show current IP address", ""),
+		BaseCommand: commands.New(
+			"show",
+			"Show current IP address",
+			"upctl ip-address show 185.70.196.47",
+			"upctl ip-address show 2a04:3544:8000:1000:d40e:4aff:fe6f:5d34",
+		),
 	}
 }
 

@@ -2,6 +2,7 @@ package router
 
 import (
 	"fmt"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
@@ -17,7 +18,12 @@ type createCommand struct {
 // CreateCommand creates the "router create" command
 func CreateCommand() commands.Command {
 	return &createCommand{
-		BaseCommand: commands.New("create", "Create a router", ""),
+		BaseCommand: commands.New(
+			"create",
+			"Create a router",
+			"upctl router create --name my_router",
+			`upctl router create --name "My Router"`,
+		),
 	}
 }
 

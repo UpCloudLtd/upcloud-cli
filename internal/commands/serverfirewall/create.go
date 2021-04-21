@@ -2,6 +2,7 @@ package serverfirewall
 
 import (
 	"fmt"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
@@ -35,7 +36,12 @@ type createCommand struct {
 // CreateCommand creates the "server filewall create" command
 func CreateCommand() commands.Command {
 	return &createCommand{
-		BaseCommand: commands.New("create", "Create a new firewall rule", ""),
+		BaseCommand: commands.New(
+			"create",
+			"Create a new firewall rule",
+			"upctl server firewall create 00038afc-d526-4148-af0e-d2f1eeaded9b --direction in --action accept --family IPv4",
+			"upctl server firewall create 00038afc-d526-4148-af0e-d2f1eeaded9b --direction in --action drop --family IPv4 --src-ipaddress-block 10.11.0.88/24",
+		),
 	}
 }
 

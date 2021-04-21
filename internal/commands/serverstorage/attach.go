@@ -29,7 +29,13 @@ type attachParams struct {
 // AttachCommand creates the "server storage attach" command
 func AttachCommand() commands.Command {
 	return &attachCommand{
-		BaseCommand: commands.New("attach", "Attach a storage as a device to a server", ""),
+		BaseCommand: commands.New(
+			"attach",
+			"Attach a storage as a device to a server",
+			"upctl server storage attach 00038afc-d526-4148-af0e-d2f1eeaded9b --storage 015899e0-0a68-4949-85bb-261a99de5fdd",
+			"upctl server storage attach 00038afc-d526-4148-af0e-d2f1eeaded9b --storage 01a5568f-4766-4ce7-abf5-7d257903a735 --address virtio:2",
+			`upctl server storage attach my_server1 --storage "My Storage"`,
+		),
 	}
 }
 

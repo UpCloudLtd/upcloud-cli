@@ -2,6 +2,7 @@ package ipaddress
 
 import (
 	"fmt"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
@@ -20,7 +21,12 @@ type removeCommand struct {
 func RemoveCommand() commands.Command {
 	// TODO: should this be 'release'? inconsistent with libs now
 	return &removeCommand{
-		BaseCommand: commands.New("remove", "Remove an IP address", ""),
+		BaseCommand: commands.New(
+			"remove",
+			"Remove an IP address",
+			"upctl ip-address remove 185.70.197.44",
+			"upctl ip-address remove 2a04:3544:8000:1000:d40e:4aff:fe6f:2c85",
+		),
 	}
 }
 

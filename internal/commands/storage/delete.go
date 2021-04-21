@@ -15,7 +15,13 @@ import (
 // DeleteCommand creates the "storage delete" command
 func DeleteCommand() commands.Command {
 	return &deleteCommand{
-		BaseCommand: commands.New("delete", "Delete a storage", ""),
+		BaseCommand: commands.New(
+			"delete",
+			"Delete a storage",
+			"upctl storage delete 01ac5319-08ac-4e7b-81e5-3140d2bbd7d8",
+			"upctl storage delete 0175bb34-8aed-47ce-9290-10cc45f78601 01fcb78f-e73d-4e4d-af5a-0bd6cdba4306",
+			`upctl storage delete "My Storage"`,
+		),
 	}
 }
 

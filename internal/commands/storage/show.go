@@ -1,12 +1,13 @@
 package storage
 
 import (
+	"strings"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
-	"strings"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 )
@@ -14,7 +15,13 @@ import (
 // ShowCommand creates the "storage show" command
 func ShowCommand() commands.Command {
 	return &showCommand{
-		BaseCommand: commands.New("show", "Show storage details", ""),
+		BaseCommand: commands.New(
+			"show",
+			"Show storage details",
+			"upctl storage show 01271548-2e92-44bb-9774-d282508cc762",
+			"upctl storage show 01271548-2e92-44bb-9774-d282508cc762 01c60190-3a01-4108-b1c3-2e828855ccc0",
+			`upctl storage show "My Storage"`,
+		),
 	}
 }
 

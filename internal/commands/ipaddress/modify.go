@@ -3,6 +3,7 @@ package ipaddress
 import (
 	"errors"
 	"fmt"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
@@ -23,7 +24,12 @@ type modifyCommand struct {
 // ModifyCommand creates the 'ip-address modify' command
 func ModifyCommand() commands.Command {
 	return &modifyCommand{
-		BaseCommand: commands.New("modify", "Modify an IP address", ""),
+		BaseCommand: commands.New(
+			"modify",
+			"Modify an IP address",
+			"upctl ip-address modify 185.70.196.225 --ptr-record myapp.com",
+			"upctl ip-address modify 185.70.197.175 --mac d6:0e:4a:6f:2b:06",
+		),
 	}
 }
 

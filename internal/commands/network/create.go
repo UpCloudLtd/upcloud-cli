@@ -2,6 +2,7 @@ package network
 
 import (
 	"fmt"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/ipaddress"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
@@ -25,7 +26,12 @@ var _ commands.Command = &createCommand{}
 // CreateCommand creates the 'network create' command
 func CreateCommand() commands.Command {
 	return &createCommand{
-		BaseCommand: commands.New("create", "Create a network", ""),
+		BaseCommand: commands.New(
+			"create",
+			"Create a network",
+			`upctl network create --name "My Network" --zone pl-waw1 --ip-network address=10.0.1.0/24`,
+			"upctl network create --name my_net --zone pl-waw1 --ip-network address=10.0.2.0/24,dhcp=true",
+		),
 	}
 }
 
@@ -43,11 +49,8 @@ func (s *createCommand) InitCommand() {
 		"  gateway: string \n"+
 		"  dhcp: true/false \n"+
 		"  dhcp-default-route: true/false \n"+
-		"  dhcp-dns: array of strings \n"+
-		"Usage: \n"+
-		"	--ip-network 'address=94.23.112.143,\"dhcp-dns=<value1>,<value2>\",gateway=<gateway>,dhcp=true' \n"+
-		"	--ip-network address=94.43.112.143/32,dhcp-dns=<value>\n")
-	s.AddFlags(fs) // TODO(ana): replace usage with examples once the refactor is done.
+		"  dhcp-dns: array of strings")
+	s.AddFlags(fs)
 }
 
 // MaximumExecutions implements Command.MaximumExecutions

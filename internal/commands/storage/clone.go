@@ -28,7 +28,13 @@ type cloneParams struct {
 // CloneCommand creates the "storage clone" command
 func CloneCommand() commands.Command {
 	return &cloneCommand{
-		BaseCommand: commands.New("clone", "Clone a storage", ""),
+		BaseCommand: commands.New(
+			"clone",
+			"Clone a storage",
+			"upctl storage clone 015899e0-0a68-4949-85bb-261a99de5fdd --title my_storage_clone --zone fi-hel1",
+			"upctl storage clone 015899e0-0a68-4949-85bb-261a99de5fdd --title my_storage_clone2 --zone pl-waw1  --tier maxiops",
+			`upctl storage clone "My Storage" --title my_storage_clone3 --zone pl-waw1  --tier maxiops`,
+		),
 	}
 }
 

@@ -2,10 +2,11 @@ package ipaddress
 
 import (
 	"fmt"
+	"net"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
-	"net"
 )
 
 const maxIPAddressActions = 10
@@ -13,7 +14,7 @@ const maxIPAddressActions = 10
 // BaseIPAddressCommand creates the base 'ip-address' command
 func BaseIPAddressCommand() commands.Command {
 	return &ipAddressCommand{
-		commands.New("ip-address", "Manage ip address", ""),
+		commands.New("ip-address", "Manage ip address"),
 	}
 }
 
