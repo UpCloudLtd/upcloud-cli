@@ -2,14 +2,11 @@ package core
 
 import (
 	"bytes"
-	"fmt"
 	"io/ioutil"
 	"os"
-	"path/filepath"
 	"runtime"
 	"testing"
 
-	"github.com/adrg/xdg"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -59,13 +56,16 @@ func TestInputValidation(t *testing.T) {
 			},
 			error: "Output format 'toml' not accepted",
 		},
-		{
-			name: "validate no creds",
-			args: []string{
-				"version",
+		/*
+			TODO: re-enable when we have a clear way of testing this in a configured environment
+			{
+				name: "validate no creds",
+				args: []string{
+					"version",
+				},
+				error: fmt.Sprintf("cannot create service: user credentials not found, these must be set in config file (default location %s) or via environment variables", filepath.Join(xdg.ConfigHome, "upctl.yaml")),
 			},
-			error: fmt.Sprintf("cannot create service: user credentials not found, these must be set in config file (default location %s) or via environment variables", filepath.Join(xdg.ConfigHome, "upctl.yaml")),
-		},
+		*/
 		{
 			name: "validate set credentials via env vars",
 			args: []string{
