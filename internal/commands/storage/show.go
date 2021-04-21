@@ -37,39 +37,13 @@ func (s *showCommand) InitCommand() {
 
 // Execute implements commands.MultipleArgumentCommand
 func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
-	// var (
-	// wg sync.WaitGroup
-	// storageImportDetailsErr error
-	// )
-
 	storageSvc := exec.Storage()
-
-	// wg.Add(1)
-	// go func() {
-	// 	defer wg.Done()
-
-	// 	storageImport, storageImportDetailsErr = storageSvc.GetStorageImportDetails(
-	// 		&request.GetStorageImportDetailsRequest{UUID: uuid},
-	// 	)
-
-	// 	if ucErr, ok := storageImportDetailsErr.(*upcloud.Error); ok {
-	// 		if ucErr.ErrorCode == "STORAGE_IMPORT_NOT_FOUND" {
-	// 			storageImportDetailsErr = nil
-	// 		}
-	// 	}
-	// }()
-
 	storage, err := storageSvc.GetStorageDetails(
 		&request.GetStorageDetailsRequest{UUID: uuid},
 	)
 	if err != nil {
 		return nil, err
 	}
-
-	// wg.Wait()
-	// if storageImportDetailsErr != nil {
-	// 	return nil, storageImportDetailsErr
-	// }
 
 	// Storage details
 	attachedToServer := "N/A"

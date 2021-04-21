@@ -13,9 +13,6 @@ import (
 
 type assignCommand struct {
 	*commands.BaseCommand
-	//	ipSvc     service.IpAddress
-	//	serverSvc service.Server
-	//	req       request.AssignIPAddressRequest
 	floating   bool
 	access     string
 	family     string
