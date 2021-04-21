@@ -46,5 +46,5 @@ func (d OnlyMarshaled) MarshalHuman() ([]byte, error) {
 
 // MarshalRawMap implements output.Output
 func (d OnlyMarshaled) MarshalRawMap() (map[string]interface{}, error) {
-	return nil, errors.New("marshaled should not be used as part of multiple output, raw output is undefined")
+	return nil, errors.New("onlymarshaled output should not be used as part of multiple output, raw output is undefined")
 }

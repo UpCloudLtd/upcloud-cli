@@ -9,6 +9,9 @@ import (
 type Router struct {
 }
 
+// make sure Router implements the interface
+var _ Provider = Router{}
+
 // CompleteArgument implements completion.Provider
 func (s Router) CompleteArgument(svc service.AllServices, toComplete string) ([]string, cobra.ShellCompDirective) {
 	routers, err := svc.GetRouters()

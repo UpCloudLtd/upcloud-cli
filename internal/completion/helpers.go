@@ -8,13 +8,13 @@ import (
 // MatchStringPrefix returns a list of string in vals which have a prefix as specified in key. Quotes are removed from key and output strings are escaped according to completion rules
 func MatchStringPrefix(vals []string, key string, caseSensitive bool) []string {
 	var r []string
-	key = strings.TrimPrefix(key, `"`)
-	key = strings.TrimPrefix(key, "'")
-	key = strings.TrimSuffix(key, `"`)
-	key = strings.TrimSuffix(key, "'")
+	key = strings.Trim(key, "'\"")
+	if caseSensitive {
+		key = strings.ToLower(key)
+	}
 	for _, v := range vals {
 		if (caseSensitive && strings.HasPrefix(v, key)) ||
-			(!caseSensitive && strings.HasPrefix(strings.ToLower(v), strings.ToLower(key))) ||
+			(!caseSensitive && strings.HasPrefix(strings.ToLower(v), key)) ||
 			key == "" {
 			r = append(r, Escape(v))
 		}
