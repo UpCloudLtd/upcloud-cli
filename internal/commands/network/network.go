@@ -7,7 +7,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/spf13/pflag"
 )
 
@@ -23,58 +22,6 @@ func BaseNetworkCommand() commands.Command {
 type networkCommand struct {
 	*commands.BaseCommand
 	resolver.CachingNetwork
-}
-
-// SearchUniqueNetwork returns exactly one network with name or uuid matching *term*
-func SearchUniqueNetwork(term string, service service.Network) (*upcloud.Network, error) {
-	result, err := SearchNetwork(term, service, true)
-	if err != nil {
-		return nil, err
-	}
-	if len(result) > 1 {
-		return nil, fmt.Errorf("multiple networks matched to query %q, use UUID to specify", term)
-	}
-	return result[0], nil
-}
-
-var cachedNetworks []upcloud.Network
-
-// SearchNetwork returns all networks whose name or uuid matches term.
-// It will get the available networks from service once and cache the results on future calls
-func SearchNetwork(term string, service service.Network, unique bool) ([]*upcloud.Network, error) {
-	var result []*upcloud.Network
-
-	if len(cachedNetworks) == 0 {
-		networks, err := service.GetNetworks()
-		if err != nil {
-			return nil, err
-		}
-		cachedNetworks = networks.Networks
-	}
-
-	for _, n := range cachedNetworks {
-		network := n
-		if network.UUID == term || network.Name == term {
-			result = append(result, &network)
-		}
-	}
-	if len(result) == 0 {
-		return nil, fmt.Errorf("no network was found with %s", term)
-	}
-	if len(result) > 1 && unique {
-		return nil, fmt.Errorf("multiple networks matched to query %q, use UUID to specify", term)
-	}
-
-	return result, nil
-}
-
-func searchAllNetworks(terms []string, service service.Network, unique bool) ([]string, error) {
-	return commands.SearchResources(
-		terms,
-		func(id string) (interface{}, error) {
-			return SearchNetwork(id, service, unique)
-		},
-		func(in interface{}) string { return in.(*upcloud.Network).UUID })
 }
 
 // TODO: figure out a nicer way to do this..
