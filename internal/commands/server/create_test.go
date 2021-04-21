@@ -26,6 +26,14 @@ var (
 
 func TestCreateServer(t *testing.T) {
 
+	var Plans = upcloud.Plans{
+		Plans: []upcloud.Plan{
+			{
+				Name:        "1xCPU-2GB",
+				StorageSize: 50,
+			},
+		},
+	}
 	var Storage1 = upcloud.Storage{
 		UUID:   UUID1,
 		Title:  Title1,
@@ -104,8 +112,8 @@ func TestCreateServer(t *testing.T) {
 					Action:  "clone",
 					Address: "",
 					Storage: StorageDef.UUID,
-					Title:   "example.com-osDisk",
-					Size:    10,
+					Title:   "example.com-OS",
+					Size:    50,
 					Tier:    upcloud.StorageTierMaxIOPS,
 					Type:    upcloud.StorageTypeDisk,
 				}},
@@ -133,7 +141,7 @@ func TestCreateServer(t *testing.T) {
 					Action:  "clone",
 					Address: "",
 					Storage: Storage1.UUID,
-					Title:   "example.com-osDisk",
+					Title:   "example.com-OS",
 					Size:    100,
 					Tier:    upcloud.StorageTierMaxIOPS,
 					Type:    upcloud.StorageTypeDisk,
@@ -189,7 +197,7 @@ func TestCreateServer(t *testing.T) {
 					Action:  "clone",
 					Address: "",
 					Storage: StorageDef.UUID,
-					Title:   "example.com-osDisk",
+					Title:   "example.com-OS",
 					Size:    10,
 					Tier:    upcloud.StorageTierMaxIOPS,
 					Type:    upcloud.StorageTypeDisk,
@@ -221,8 +229,8 @@ func TestCreateServer(t *testing.T) {
 						Action:  "clone",
 						Address: "",
 						Storage: StorageDef.UUID,
-						Title:   "example.com-osDisk",
-						Size:    10,
+						Title:   "example.com-OS",
+						Size:    50,
 						Tier:    upcloud.StorageTierMaxIOPS,
 						Type:    upcloud.StorageTypeDisk,
 					},
@@ -270,8 +278,8 @@ func TestCreateServer(t *testing.T) {
 					Action:  "clone",
 					Address: "",
 					Storage: StorageDef.UUID,
-					Title:   "example.com-osDisk",
-					Size:    10,
+					Title:   "example.com-OS",
+					Size:    50,
 					Tier:    upcloud.StorageTierMaxIOPS,
 					Type:    upcloud.StorageTypeDisk,
 				}},
@@ -329,6 +337,7 @@ func TestCreateServer(t *testing.T) {
 			storage.CachedStorages = nil
 			conf.Service = internal.Wrapper{Service: mService}
 			mService.On("CreateServer", &test.createServerReq).Return(&serverDetailsMaint, nil)
+			mService.On("GetPlans", mock.Anything).Return(&Plans, nil)
 			mService.On("GetStorages", mock.Anything).Return(storages, nil)
 
 			c := commands.BuildCommand(testCmd, nil, conf)
