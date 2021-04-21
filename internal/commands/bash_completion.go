@@ -8,6 +8,7 @@ import (
 
 // Override Cobra's custom completion function
 // This fixes quoting of items with spaces
+// TODO: get fixes submitted upstream, otherwise sooner or later something will break if we upgrade cobra
 const goCustomCompletion = `__%[1]s_handle_go_custom_completion()
 {
     __%[1]s_debug "${FUNCNAME[0]}: cur is ${cur}, words[*] is ${words[*]}, #words[@] is ${#words[@]}"
