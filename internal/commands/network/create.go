@@ -20,7 +20,7 @@ type createCommand struct {
 	router   string
 }
 
-// make sure we implemnet the interface
+// make sure we implement the interface
 var _ commands.Command = &createCommand{}
 
 // CreateCommand creates the 'network create' command
