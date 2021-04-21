@@ -44,7 +44,6 @@ func (s *listCommand) InitCommand() {
 	flags.BoolVar(&s.all, "all", false, "Show all networks.")
 	flags.BoolVar(&s.public, "public", false, "Show public networks instead of private networks.")
 	flags.BoolVar(&s.utility, "utility", false, "Show utility networks instead of private networks.")
-	//	flags.BoolVar(&s.private, "private", true, "Show private networks (default).")
 	// TODO: reimplmement
 	// s.AddVisibleColumnsFlag(flags, &s.visibleColumns, s.columnKeys, s.visibleColumns)
 	s.AddFlags(flags)

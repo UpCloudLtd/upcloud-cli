@@ -40,12 +40,12 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	commands.BuildCommand(networkinterface.ModifyCommand(), networkInterfaceCommand.Cobra(), conf)
 	commands.BuildCommand(networkinterface.DeleteCommand(), networkInterfaceCommand.Cobra(), conf)
 
-	// // Server storage operations
+	// Server storage operations
 	serverStorageCommand := commands.BuildCommand(serverstorage.BaseServerStorageCommand(), serverCommand.Cobra(), conf)
 	commands.BuildCommand(serverstorage.AttachCommand(), serverStorageCommand.Cobra(), conf)
 	commands.BuildCommand(serverstorage.DetachCommand(), serverStorageCommand.Cobra(), conf)
 
-	// // Server firewall operations
+	// Server firewall operations
 	serverFirewallCommand := commands.BuildCommand(serverfirewall.BaseServerFirewallCommand(), serverCommand.Cobra(), conf)
 	commands.BuildCommand(serverfirewall.CreateCommand(), serverFirewallCommand.Cobra(), conf)
 	commands.BuildCommand(serverfirewall.DeleteCommand(), serverFirewallCommand.Cobra(), conf)
