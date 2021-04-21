@@ -3,8 +3,6 @@ package ipaddress
 import (
 	"testing"
 
-	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
-
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/stretchr/testify/assert"
 )
@@ -53,102 +51,6 @@ func TestGetFamily(t *testing.T) {
 			} else {
 				assert.Equal(t, test.expected, family)
 			}
-		})
-	}
-}
-
-func TestSearchStorage(t *testing.T) {
-
-	var IPAddress1 = upcloud.IPAddress{
-		Address:   "94.237.113.140",
-		PTRRecord: "ptr-record-1",
-	}
-
-	var IPAddress2 = upcloud.IPAddress{
-		Address:   "94.237.113.141",
-		PTRRecord: "ptr-record-2",
-	}
-
-	var IPAddress3 = upcloud.IPAddress{
-		Address:   "94.237.113.142",
-		PTRRecord: "ptr-record-3",
-	}
-
-	var IPAddress4 = upcloud.IPAddress{
-		Address:   "94.237.113.143",
-		PTRRecord: IPAddress1.PTRRecord,
-	}
-
-	var IPAddresses = upcloud.IPAddresses{IPAddresses: []upcloud.IPAddress{
-		IPAddress1,
-		IPAddress2,
-		IPAddress3,
-		IPAddress4,
-	}}
-
-	for _, testcase := range []struct {
-		name         string
-		args         []string
-		expected     []string
-		unique       bool
-		additional   []upcloud.Storage
-		backendCalls int
-		errMsg       string
-	}{
-		{
-			name:         "SingleAddress",
-			args:         []string{IPAddress2.Address},
-			expected:     []string{IPAddress2.Address},
-			backendCalls: 0,
-		},
-		{
-			name:         "MultipleAddressSearched",
-			args:         []string{IPAddress2.Address, IPAddress3.Address},
-			expected:     []string{IPAddress2.Address, IPAddress3.Address},
-			backendCalls: 0,
-		},
-		{
-			name:         "SinglePTRRecord",
-			args:         []string{IPAddress2.PTRRecord},
-			expected:     []string{IPAddress2.Address},
-			backendCalls: 1,
-		},
-		{
-			name:         "MultiplePTRRecordsSearched",
-			args:         []string{IPAddress2.PTRRecord, IPAddress3.PTRRecord},
-			expected:     []string{IPAddress2.Address, IPAddress3.Address},
-			backendCalls: 1,
-		},
-		{
-			name:         "MultiplePTRRecordsFound",
-			args:         []string{IPAddress1.PTRRecord},
-			expected:     []string{IPAddress1.Address, IPAddress4.Address},
-			backendCalls: 1,
-		},
-		{
-			name:         "MultiplePTRRecordsFound_UniqueWanted",
-			args:         []string{IPAddress1.PTRRecord},
-			expected:     []string{IPAddress1.Address, IPAddress4.Address},
-			backendCalls: 1,
-			unique:       true,
-			errMsg:       "multiple ip addresses matched to query \"" + IPAddress1.PTRRecord + "\", use Address to specify",
-		},
-	} {
-		t.Run(testcase.name, func(t *testing.T) {
-			cachedIPs = nil
-			mService := smock.Service{}
-			mService.On("GetIPAddresses").Return(&IPAddresses, nil)
-
-			result, err := searchIPAddresses(testcase.args, &mService, testcase.unique)
-
-			if testcase.errMsg == "" {
-				assert.Nil(t, err)
-				assert.ElementsMatch(t, testcase.expected, result)
-			} else {
-				assert.Nil(t, result)
-				assert.EqualError(t, err, testcase.errMsg)
-			}
-			mService.AssertNumberOfCalls(t, "GetIPAddresses", testcase.backendCalls)
 		})
 	}
 }
