@@ -212,7 +212,7 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 						Source:         s.sourceType,
 						SourceLocation: reader,
 					})
-				chDone <- struct{}{}
+				chDone <- struct{}{} // Done or timedout
 			}()
 			var prevRead int
 			sleepSecs := 2
@@ -225,7 +225,7 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 						logline.SetMessage(fmt.Sprintf("%s: done", msg))
 						break loop
 					}
-					return nil, fmt.Errorf("failed to import: %w", err)
+					return nil, fmt.Errorf("failed to import: %w", importErr)
 				case <-sleepTicker.C:
 					if read := reader.counter(); read > 0 {
 						logline.SetMessage(fmt.Sprintf("%s: uploaded %.2f%% (%sbps)",
