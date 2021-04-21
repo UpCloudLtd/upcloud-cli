@@ -82,6 +82,11 @@ func (s *importCommand) InitCommand() {
 	s.AddFlags(flagSet)
 }
 
+type storageImportResult struct {
+	result *upcloud.StorageImportDetails
+	err    error
+}
+
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 
@@ -194,26 +199,23 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	}
 
 	// Create import task
-	var createdStorageImport *upcloud.StorageImportDetails
 	if existingStorage != nil {
 		msg := fmt.Sprintf("importing to storage %v", existingStorage.UUID)
 		logline := exec.NewLogEntry(msg)
 		logline.StartedNow()
-		var err error
 		// Import from local file
 		if s.sourceFile != nil {
-			chDone := make(chan struct{})
-			var importErr error
+			chDone := make(chan storageImportResult)
 			reader := &readerCounter{source: s.sourceFile}
 			go func() {
-				createdStorageImport, importErr = svc.CreateStorageImport(
+				imported, err := svc.CreateStorageImport(
 					&request.CreateStorageImportRequest{
 						StorageUUID:    s.storageUUID,
 						ContentType:    contentType,
 						Source:         s.sourceType,
 						SourceLocation: reader,
 					})
-				chDone <- struct{}{} // Done or timedout
+				chDone <- storageImportResult{imported, err}
 			}()
 			var prevRead int
 			sleepSecs := 2
@@ -221,12 +223,12 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		loop:
 			for {
 				select {
-				case <-chDone:
-					if importErr == nil {
+				case result := <-chDone:
+					if result.err == nil {
 						logline.SetMessage(fmt.Sprintf("%s: done", msg))
 						break loop
 					}
-					return nil, fmt.Errorf("failed to import: %w", importErr)
+					return nil, fmt.Errorf("failed to import: %w", result.err)
 				case <-sleepTicker.C:
 					if read := reader.counter(); read > 0 {
 						logline.SetMessage(fmt.Sprintf("%s: uploaded %.2f%% (%sbps)",
@@ -240,7 +242,7 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 			}
 		} else {
 			// Import from http source
-			createdStorageImport, err = svc.CreateStorageImport(
+			createdStorageImport, err := svc.CreateStorageImport(
 				&request.CreateStorageImportRequest{
 					StorageUUID:    s.storageUUID,
 					ContentType:    contentType,
