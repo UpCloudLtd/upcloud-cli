@@ -60,7 +60,7 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 	)
 	flags.DurationVarP(
 		&conf.GlobalFlags.ClientTimeout, "client-timeout", "t",
-		time.Duration(60*time.Second),
+		time.Duration(300*time.Second),
 		"CLI timeout when using interactive mode on some commands",
 	)
 
