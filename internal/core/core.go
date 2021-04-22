@@ -2,8 +2,6 @@ package core
 
 import (
 	"fmt"
-	"time"
-
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/all"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
@@ -60,7 +58,7 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 	)
 	flags.DurationVarP(
 		&conf.GlobalFlags.ClientTimeout, "client-timeout", "t",
-		time.Duration(60*time.Second),
+		0,
 		"CLI timeout when using interactive mode on some commands",
 	)
 
