@@ -5,6 +5,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"runtime"
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
@@ -65,10 +66,11 @@ func TestImportCommand(t *testing.T) {
 	}
 
 	for _, test := range []struct {
-		name    string
-		args    []string
-		error   string
-		request request.CreateStorageImportRequest
+		name         string
+		args         []string
+		error        string
+		request      request.CreateStorageImportRequest
+		windowsError string
 	}{
 		{
 			name: "source is missing",
@@ -114,7 +116,8 @@ func TestImportCommand(t *testing.T) {
 				"--zone", "fi-hel1",
 				"--title", "test-2",
 			},
-			error: "open testfile: no such file or directory",
+			error:        "open testfile: no such file or directory",
+			windowsError: "open testfile: The system cannot find the file specified.",
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
@@ -136,7 +139,11 @@ func TestImportCommand(t *testing.T) {
 			_, err = c.(commands.NoArgumentCommand).ExecuteWithoutArguments(commands.NewExecutor(conf, mService))
 
 			if test.error != "" {
-				assert.EqualError(t, err, test.error)
+				if test.windowsError != "" && runtime.GOOS == "windows" {
+					assert.EqualError(t, err, test.windowsError)
+				} else {
+					assert.EqualError(t, err, test.error)
+				}
 			} else {
 				mService.AssertNumberOfCalls(t, "CreateStorageImport", 1)
 				mService.AssertNumberOfCalls(t, "GetStorageImportDetails", 1)
