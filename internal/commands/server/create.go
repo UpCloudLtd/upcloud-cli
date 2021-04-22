@@ -66,7 +66,7 @@ type createParams struct {
 	remoteAccess   bool
 }
 
-func (s *createParams) processParams(storageSvc service.Storage) error {
+func (s *createParams) processParams(planSvc service.Plans, storageSvc service.Storage) error {
 	if s.os != "" {
 		var osStorage *upcloud.Storage
 
@@ -75,14 +75,24 @@ func (s *createParams) processParams(storageSvc service.Storage) error {
 			return err
 		}
 
-		size := minStorageSize
-		if s.osStorageSize > size {
-			size = s.osStorageSize
+		plans, err := planSvc.GetPlans()
+		if err != nil {
+			return err
 		}
+
+		size := minStorageSize
+		if s.Plan != "custom" {
+			for _, plan := range plans.Plans {
+				if plan.Name == s.Plan {
+					size = plan.StorageSize
+				}
+			}
+		}
+
 		s.StorageDevices = append(s.StorageDevices, request.CreateServerStorageDevice{
 			Action:  "clone",
 			Storage: osStorage.UUID,
-			Title:   fmt.Sprintf("%s-osDisk", ui.TruncateText(s.Hostname, 64-7)),
+			Title:   fmt.Sprintf("%s-OS", ui.TruncateText(s.Hostname, 64-7)),
 			Size:    size,
 			Tier:    upcloud.StorageTierMaxIOPS,
 			Type:    upcloud.StorageTypeDisk,
@@ -277,13 +287,14 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	}
 
 	serverSvc := exec.Server()
+	planSvc := exec.Plan()
 	storageSvc := exec.Storage()
 	msg := fmt.Sprintf("creating server %v", s.params.Hostname)
 	logline := exec.NewLogEntry(msg)
 
 	logline.StartedNow()
 
-	if err := s.params.processParams(storageSvc); err != nil {
+	if err := s.params.processParams(planSvc, storageSvc); err != nil {
 		return nil, err
 	}
 
