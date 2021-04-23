@@ -191,14 +191,18 @@ func (s *Config) CreateService() (internal.AllServices, error) {
 		return nil, fmt.Errorf("user credentials not found, these must be set in config file (%s) or via environment variables", configDetails)
 	}
 
-	hc := &http.Client{Transport: &transport{}}
-	hc.Timeout = s.ClientTimeout()
-
+	hc := &http.Client{Transport: &transport{}, Timeout: s.ClientTimeout()}
 	whc := client.NewWithHTTPClient(
 		username,
 		password,
 		hc,
 	)
+	// TODO: remove this after go-api actually respects 0 timeout
+	// this is in order to enforce our custom (no) timeout because currently go-api
+	// assumes 0 timeout means 'not set' rather than 'no timeout'.
+	// see https://github.com/UpCloudLtd/upcloud-go-api/blob/2964ed7e597209b50a21f34259a20249e9aa220c/upcloud/client/client.go#L48
+	hc.Timeout = s.ClientTimeout()
+
 	whc.UserAgent = fmt.Sprintf("upctl/%s", Version)
 	svc := service.New(whc)
 	// TODO; remove this when refactor is complete
