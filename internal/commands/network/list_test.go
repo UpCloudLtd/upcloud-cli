@@ -105,7 +105,7 @@ func createTable(networks []upcloud.Network) output.Table {
 		Columns: []output.TableColumn{
 			{Header: "UUID", Key: "uuid", Hidden: false, Color: ui.DefaultUUUIDColours},
 			{Header: "Name", Key: "name", Hidden: false},
-			{Header: "Router", Key: "router", Hidden: false},
+			{Header: "Router", Key: "router", Hidden: false, Color: ui.DefaultUUUIDColours},
 			{Header: "Type", Key: "type", Hidden: false},
 			{Header: "Zone", Key: "zone", Hidden: false},
 		},
