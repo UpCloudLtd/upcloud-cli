@@ -79,9 +79,11 @@ func (s *importCommand) InitCommand() {
 	s.AddFlags(flagSet)
 }
 
-type storageImportResult struct {
-	result *upcloud.StorageImportDetails
-	err    error
+type storageImportStatus struct {
+	result           *upcloud.StorageImportDetails
+	bytesTransferred int64
+	err              error
+	complete         bool
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
@@ -126,28 +128,22 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		}
 	}
 	var (
-		contentType string
-		sourceFile  *os.File
+		sourceFile    *os.File
+		localFileSize int64
 	)
 	if s.sourceType == upcloud.StorageImportSourceDirectUpload {
+		// this could be done in the actual upload call, but we'd rather validate all input in the first place
 		f, err := os.Open(s.sourceLocation)
 		if err != nil {
 			return nil, err
-		}
-		switch filepath.Ext(s.sourceLocation) {
-		case ".gz":
-			contentType = "application/gzip"
-		case ".xz":
-			contentType = "application/x-xz"
-		default:
-			contentType = "application/octet-stream"
 		}
 		sourceFile = f
 		stat, err := f.Stat()
 		if err != nil {
 			return nil, err
 		}
-		fileSizeInGB := int(stat.Size() / 1024 / 1024 / 1024)
+		localFileSize = stat.Size()
+		fileSizeInGB := int(localFileSize / 1024 / 1024 / 1024)
 		if existingStorage != nil && existingStorage.Size < fileSizeInGB {
 			return nil, fmt.Errorf("the existing storage is too small for the file")
 		}
@@ -168,18 +164,11 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		}
 	}
 
+	// Create storage, if it doesn't exist yet
 	if existingStorage == nil {
 		if err := s.createParams.processParams(); err != nil {
 			return nil, err
 		}
-	}
-
-	var (
-		createdStorage *upcloud.StorageDetails
-	)
-
-	// Create storage, if it doesn't exist yet
-	if existingStorage == nil {
 		msg := fmt.Sprintf("Creating storage %q", s.createParams.Title)
 		logline := exec.NewLogEntry(msg)
 		logline.StartedNow()
@@ -192,95 +181,132 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		logline.SetMessage(fmt.Sprintf("%s: done", msg))
 		logline.SetDetails(details.UUID, "UUID: ")
 		logline.MarkDone()
-		createdStorage = details
 		existingStorage = &details.Storage
-		s.storageUUID = createdStorage.UUID
+		s.storageUUID = details.UUID
 	}
 
 	// Create import task
-	msg := fmt.Sprintf("importing to storage %v", existingStorage.UUID)
+	msg := fmt.Sprintf("importing to %v", existingStorage.UUID)
 	logline := exec.NewLogEntry(msg)
 	logline.StartedNow()
-	// Import from local file
+	startTime := time.Now()
 	var (
-		result *upcloud.StorageImportDetails
-		err    error
+		statusChan   = make(chan storageImportStatus)
+		transferType string
 	)
 	if sourceFile != nil {
-		result, err = importLocalFile(svc, logline, msg, s.storageUUID, contentType, sourceFile)
+		// Import from local file
+		transferType = "upload"
+		go importLocalFile(svc, s.storageUUID, sourceFile, statusChan)
 	} else {
-		result, err = importRemoteFile(svc, logline, msg, s.storageUUID, contentType, s.sourceLocation, s.wait)
-	}
-	if err != nil {
-		return nil, err
-	}
-	return output.OnlyMarshaled{Value: result}, nil
-}
-
-func importRemoteFile(svc service.Storage, logline *ui.LogEntry, msg string, uuid string, contentType string, location string, wait bool) (*upcloud.StorageImportDetails, error) {
-	createdStorageImport, err := svc.CreateStorageImport(
-		&request.CreateStorageImportRequest{
-			StorageUUID:    uuid,
-			ContentType:    contentType,
-			Source:         upcloud.StorageImportSourceHTTPImport,
-			SourceLocation: location,
-		})
-	if err != nil {
-		return nil, fmt.Errorf("failed to import: %w", err)
-	}
-	logline.SetMessage(fmt.Sprintf("%s: http import queued", msg))
-	if wait {
-		var prevRead int
-		sleepSecs := 5
-		for {
-			details, err := svc.GetStorageImportDetails(&request.GetStorageImportDetailsRequest{
-				UUID: uuid,
+		// Import from http location
+		transferType = "download"
+		result, err := svc.CreateStorageImport(
+			&request.CreateStorageImportRequest{
+				StorageUUID:    s.storageUUID,
+				Source:         upcloud.StorageImportSourceHTTPImport,
+				SourceLocation: s.sourceLocation,
 			})
-			switch {
-			case err != nil:
-				return nil, fmt.Errorf("can not get details: %w", err)
-			case details.ErrorCode != "":
-				return nil, fmt.Errorf("%s (%s)", details.ErrorMessage, details.ErrorCode)
-			case details.State == upcloud.StorageImportStateCancelled:
-				return nil, fmt.Errorf("%s: cancelled", msg)
-			case details.State == upcloud.StorageImportStateCompleted:
-				logline.SetMessage(fmt.Sprintf("%s: done", msg))
-				logline.MarkDone()
-				return createdStorageImport, nil
-			}
-			if read := details.ReadBytes; read > 0 {
-				if details.ClientContentLength > 0 {
-					logline.SetMessage(fmt.Sprintf("%s: downloaded %.2f%% (%sbps)",
-						msg,
-						float64(read)/float64(details.ClientContentLength)*100,
-						ui.AbbrevNum(uint(read-prevRead)*8/uint(sleepSecs)),
-					))
-					prevRead = read
-				} else {
-					logline.SetMessage(fmt.Sprintf("%s: downloaded %s (%sbps)",
-						msg,
-						ui.FormatBytes(read),
-						ui.AbbrevNum(uint(read-prevRead)*8/uint(sleepSecs)),
-					))
-				}
-			}
-			time.Sleep(time.Duration(sleepSecs) * time.Second)
+		if err != nil {
+			return nil, fmt.Errorf("failed to import: %w", err)
+		}
+		logline.SetMessage(fmt.Sprintf("%s: http import queued", msg))
+		if s.wait {
+			// start polling for import status if --wait was entered
+			go pollStorageImportStatus(svc, s.storageUUID, statusChan)
+		} else {
+			// otherwise, we can just return the result
+			return output.OnlyMarshaled{Value: result}, nil
 		}
 	}
-	logline.SetMessage(fmt.Sprintf("%s: http import request sent", msg))
-	logline.MarkDone()
-	return createdStorageImport, nil
+
+	// wait for updates from the import process
+	for statusUpdate := range statusChan {
+		switch {
+		case statusUpdate.err != nil:
+			// we received an error, clean up log and return the error
+			logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, statusUpdate.err.Error()))
+			logline.SetDetails(statusUpdate.err.Error(), "error: ")
+			return nil, statusUpdate.err
+		case statusUpdate.complete:
+			// we're complete, clean up log and return the result
+			logline.SetMessage(fmt.Sprintf("%s: done", msg))
+			logline.MarkDone()
+			return output.OnlyMarshaled{Value: statusUpdate.result}, nil
+		case statusUpdate.bytesTransferred > 0:
+			// got a status update
+			bps := float64(statusUpdate.bytesTransferred) / time.Since(startTime).Seconds()
+			// get the file size, if possible - clientContentLength can still be 0
+			importFileSize := localFileSize
+			if importFileSize == 0 && statusUpdate.result != nil {
+				importFileSize = int64(statusUpdate.result.ClientContentLength)
+			}
+			if importFileSize > 0 {
+				// we have knowledge of import file size, report progress percentage
+				logline.SetMessage(fmt.Sprintf("%s: %sed %.2f%% (%sbps)",
+					msg, transferType,
+					float64(statusUpdate.bytesTransferred)/float64(importFileSize)*100,
+					ui.AbbrevNum(uint(bps)),
+				))
+			} else {
+				// we have no knowledge of the remote file size, report bytes uploaded
+				logline.SetMessage(fmt.Sprintf("%s: %sed %sB (%sBps)",
+					msg, transferType,
+					ui.AbbrevNum(uint(statusUpdate.bytesTransferred)),
+					ui.AbbrevNum(uint(bps)),
+				))
+			}
+		}
+	}
+	// status channel was closed but we did not receive either result or an error, fail.
+	return nil, fmt.Errorf("upload aborted unexpectedly")
 }
 
-func importLocalFile(svc service.Storage, logline *ui.LogEntry, logmsg, uuid, contentType string, file *os.File) (*upcloud.StorageImportDetails, error) {
-	chDone := make(chan storageImportResult)
-	reader := &readerCounter{source: file}
-	fileSize := int64(0)
-	if stat, err := file.Stat(); err == nil {
-		fileSize = stat.Size()
-	} else {
-		return nil, fmt.Errorf("cannot stat input file: %w", err)
+func pollStorageImportStatus(svc service.Storage, uuid string, statusChan chan<- storageImportStatus) {
+	// make sure we close the channel when exiting poller
+	defer close(statusChan)
+
+	sleepSecs := 2
+	for {
+		details, err := svc.GetStorageImportDetails(&request.GetStorageImportDetailsRequest{
+			UUID: uuid,
+		})
+		switch {
+		case err != nil:
+			statusChan <- storageImportStatus{err: err}
+			return
+		case details.ErrorCode != "":
+			statusChan <- storageImportStatus{err: fmt.Errorf("%s (%s)", details.ErrorMessage, details.ErrorCode)}
+			return
+		case details.State == upcloud.StorageImportStateCancelled:
+			statusChan <- storageImportStatus{err: fmt.Errorf("cancelled")}
+			return
+		case details.State == upcloud.StorageImportStateCompleted:
+			statusChan <- storageImportStatus{result: details, complete: true}
+			return
+		}
+		if read := details.ReadBytes; read > 0 {
+			statusChan <- storageImportStatus{result: details, bytesTransferred: int64(read)}
+		}
+		time.Sleep(time.Duration(sleepSecs) * time.Second)
 	}
+}
+
+func importLocalFile(svc service.Storage, uuid string, file *os.File, statusChan chan<- storageImportStatus) {
+	// make sure we close the channel when exiting import
+	defer close(statusChan)
+	chDone := make(chan storageImportStatus)
+	reader := &readerCounter{source: file}
+
+	// figure out content type
+	contentType := "application/octet-stream"
+	switch filepath.Ext(file.Name()) {
+	case ".gz":
+		contentType = "application/gzip"
+	case ".xz":
+		contentType = "application/x-xz"
+	}
+
 	go func() {
 		imported, err := svc.CreateStorageImport(
 			&request.CreateStorageImportRequest{
@@ -289,28 +315,16 @@ func importLocalFile(svc service.Storage, logline *ui.LogEntry, logmsg, uuid, co
 				Source:         upcloud.StorageImportSourceDirectUpload,
 				SourceLocation: reader,
 			})
-		chDone <- storageImportResult{imported, err}
+		chDone <- storageImportStatus{result: imported, err: err, complete: true}
 	}()
-	var prevRead int
-	sleepSecs := 2
-	sleepTicker := time.NewTicker(time.Duration(sleepSecs) * time.Second)
+	updateTicker := time.NewTicker(300 * time.Millisecond)
 	for {
 		select {
 		case result := <-chDone:
-			if result.err == nil {
-				logline.SetMessage(fmt.Sprintf("%s: done", logmsg))
-				return result.result, nil
-			}
-			return nil, fmt.Errorf("failed to import: %w", result.err)
-		case <-sleepTicker.C:
-			if read := reader.counter(); read > 0 {
-				logline.SetMessage(fmt.Sprintf("%s: uploaded %.2f%% (%sbps)",
-					logmsg,
-					float64(read)/float64(fileSize)*100,
-					ui.AbbrevNum(uint(read-prevRead)*8/uint(sleepSecs)),
-				))
-				prevRead = read
-			}
+			statusChan <- result
+			return
+		case <-updateTicker.C:
+			statusChan <- storageImportStatus{bytesTransferred: int64(reader.counter())}
 		}
 	}
 }
