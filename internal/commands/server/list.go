@@ -5,6 +5,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 )
 
 // ListCommand creates the "server list" command
@@ -44,7 +45,7 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 
 	return output.Table{
 		Columns: []output.TableColumn{
-			{Key: "uuid", Header: "UUID"},
+			{Key: "uuid", Header: "UUID", Color: ui.DefaultUUUIDColours},
 			{Key: "hostname", Header: "Hostname"},
 			{Key: "plan", Header: "Plan"},
 			{Key: "zone", Header: "Zone"},

@@ -47,7 +47,11 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 					{Title: "Family:", Key: "access", Value: ipAddress.Family},
 					{Title: "Part of Plan:", Key: "access", Value: ipAddress.PartOfPlan, Format: output.BoolFormat},
 					{Title: "PTR Record:", Key: "access", Value: ipAddress.PTRRecord},
-					{Title: "Server UUID:", Key: "access", Value: ipAddress.ServerUUID},
+					{
+						Title: "Server UUID:",
+						Key:   "access", Value: ipAddress.ServerUUID,
+						Color: ui.DefaultUUUIDColours,
+					},
 					{Title: "MAC:", Key: "credits", Value: ipAddress.MAC},
 					{Title: "Floating:", Key: "credits", Value: ipAddress.Floating, Format: output.BoolFormat},
 					{Title: "Zone:", Key: "zone", Value: ipAddress.Zone},

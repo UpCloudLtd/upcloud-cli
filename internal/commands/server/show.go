@@ -136,7 +136,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 					{
 						Title: "Common",
 						Rows: []output.DetailRow{
-							{Title: "UUID:", Key: "uuid", Value: server.UUID},
+							{Title: "UUID:", Key: "uuid", Value: server.UUID, Color: ui.DefaultUUUIDColours},
 							{Title: "Hostname:", Key: "hostname", Value: server.Hostname},
 							{Title: "Title:", Key: "title", Value: server.Title},
 							{Title: "Plan:", Key: "plan", Value: planOutput},
@@ -177,7 +177,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 					{Key: "type", Header: "Type"},
 					{Key: "ip_address", Header: "IP Address"},
 					{Key: "mac_address", Header: "MAC Address"},
-					{Key: "network", Header: "Network"},
+					{Key: "network", Header: "Network", Color: ui.DefaultUUUIDColours},
 					{Key: "flags", Header: "Flags"},
 				},
 				Rows: nicRows,
