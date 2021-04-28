@@ -69,6 +69,22 @@ func AddEnableOrDisableFlag(flags *pflag.FlagSet, target *OptionalBoolean, defau
 	}
 }
 
+// AddToggleFlag is a convenience method to generate --toggle type of a flag with the correct settings and
+// a default value.
+func AddToggleFlag(flags *pflag.FlagSet, target *OptionalBoolean, name string, defaultValue bool, usage string) {
+	if defaultValue {
+		target.SetDefault(true)
+		flags.Var(target, name, usage)
+		flags.Lookup(name).NoOptDefVal = "false"
+		flags.Lookup(name).DefValue = ""
+	} else {
+		target.SetDefault(false)
+		flags.Var(target, name, usage)
+		flags.Lookup(name).NoOptDefVal = "true"
+		flags.Lookup(name).DefValue = ""
+	}
+}
+
 // String implements flag.Value
 func (s OptionalBoolean) String() string {
 	return fmt.Sprintf("%t", s.Value())

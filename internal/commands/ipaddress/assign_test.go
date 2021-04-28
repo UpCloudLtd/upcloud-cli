@@ -40,7 +40,6 @@ func TestAssignCommand(t *testing.T) {
 			expected: request.AssignIPAddressRequest{
 				Access:     upcloud.IPAddressAccessPublic,
 				Family:     upcloud.IPAddressFamilyIPv4,
-				Floating:   upcloud.FromBool(false),
 				ServerUUID: s2.UUID,
 			},
 		},

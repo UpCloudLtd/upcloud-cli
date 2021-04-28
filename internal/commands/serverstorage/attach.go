@@ -2,6 +2,7 @@ package serverstorage
 
 import (
 	"fmt"
+	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/storage"
@@ -23,7 +24,7 @@ type attachCommand struct {
 
 type attachParams struct {
 	request.AttachStorageRequest
-	bootable bool
+	bootable config.OptionalBoolean
 }
 
 // AttachCommand creates the "server storage attach" command
@@ -55,7 +56,7 @@ func (s *attachCommand) InitCommand() {
 	flagSet.StringVar(&s.params.Type, "type", defaultAttachParams.Type, "Type of the attached storage. Available: disk, cdrom")
 	flagSet.StringVar(&s.params.Address, "address", defaultAttachParams.Address, "Address where the storage device is attached on the server. \nAddress is of the form busname:deviceindex where busname can be ide/scsi/virtio. (example: 'virtio:1')\nSpecify only the bus name to auto-select next available device index from that bus. (example: 'virtio')")
 	flagSet.StringVar(&s.params.StorageUUID, "storage", defaultAttachParams.StorageUUID, "UUID of the storage to attach.")
-	flagSet.BoolVar(&s.params.bootable, "boot-disk", false, "Set attached device as the server's boot disk.")
+	config.AddToggleFlag(flagSet, &s.params.bootable, "boot-disk", false, "Set attached device as the server's boot disk.")
 
 	s.AddFlags(flagSet)
 }
@@ -81,7 +82,7 @@ func (s *attachCommand) ExecuteSingleArgument(exec commands.Executor, uuid strin
 	s.params.StorageUUID = strg.UUID
 	s.params.BootDisk = defaultAttachParams.BootDisk
 
-	if s.params.bootable {
+	if s.params.bootable.Value() {
 		s.params.BootDisk = 1
 	}
 	req := s.params.AttachStorageRequest

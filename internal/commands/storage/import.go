@@ -3,6 +3,7 @@ package storage
 import (
 	"errors"
 	"fmt"
+	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	"io"
 	"net/url"
 	"os"
@@ -57,7 +58,7 @@ type importCommand struct {
 	sourceFile                *os.File
 	sourceFileSize            int
 	existingStorageUUIDOrName string
-	wait                      bool
+	wait                      config.OptionalBoolean
 
 	storageUUID  string
 	createParams createParams
@@ -75,7 +76,7 @@ func (s *importCommand) InitCommand() {
 		upcloud.StorageImportSourceHTTPImport,
 		upcloud.StorageImportSourceDirectUpload))
 	flagSet.StringVar(&s.existingStorageUUIDOrName, "storage", "", "Import to an existing storage. Storage must be large enough and must be undetached or the server where the storage is attached must be in shutdown state.")
-	flagSet.BoolVar(&s.wait, "wait", true, fmt.Sprintf("Wait until the import finishes. Implied if source is set to %s",
+	config.AddToggleFlag(flagSet, &s.wait, "wait", true, fmt.Sprintf("Wait until the import finishes. Implied if source is set to %s",
 		upcloud.StorageImportSourceDirectUpload))
 	applyCreateFlags(flagSet, &s.createParams, defaultCreateParams)
 	s.AddFlags(flagSet)
@@ -250,7 +251,7 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 				return nil, fmt.Errorf("failed to import: %w", err)
 			}
 			logline.SetMessage(fmt.Sprintf("%s: http import queued", msg))
-			if s.wait {
+			if s.wait.Value() {
 				var prevRead int
 				sleepSecs := 5
 				for {

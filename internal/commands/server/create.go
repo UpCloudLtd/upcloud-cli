@@ -108,9 +108,6 @@ func (s *createParams) processParams(planSvc service.Plans, storageSvc service.S
 		s.LoginUser = &request.LoginUser{}
 	}
 	s.LoginUser.CreatePassword = "no"
-	if s.createPassword {
-		s.LoginUser.CreatePassword = "yes"
-	}
 	if s.username != "" {
 		s.LoginUser.Username = s.username
 	}
@@ -214,10 +211,11 @@ func (s *createParams) handleSSHKey() error {
 
 type createCommand struct {
 	*commands.BaseCommand
-	params       createParams
-	firewall     config.OptionalBoolean
-	metadata     config.OptionalBoolean
-	remoteAccess config.OptionalBoolean
+	params         createParams
+	firewall       config.OptionalBoolean
+	metadata       config.OptionalBoolean
+	remoteAccess   config.OptionalBoolean
+	createPassword config.OptionalBoolean
 }
 
 // InitCommand implements Command.InitCommand
@@ -247,7 +245,7 @@ func (s *createCommand) InitCommand() {
 	// fs.BoolVar(&s.params.metadata, "metadata", def.metadata, "Enable metadata service.")
 	fs.StringArrayVar(&s.params.storages, "storage", def.storages, "A storage connected to the server, multiple can be declared.\nUsage: --storage action=attach,storage=01000000-0000-4000-8000-000020010301,type=cdrom")
 	fs.StringArrayVar(&s.params.networks, "network", def.networks, "A network interface for the server, multiple can be declared.\nUsage: --network family=IPv4,type=public")
-	fs.BoolVar(&s.params.createPassword, "create-password", def.createPassword, "Create an admin password.")
+	config.AddToggleFlag(fs, &s.createPassword, "create-password", def.createPassword, "Create an admin password.")
 	fs.StringVar(&s.params.username, "username", def.username, "Admin account username.")
 	fs.StringSliceVar(&s.params.sshKeys, "ssh-keys", def.sshKeys, "Add one or more SSH keys to the admin account. Accepted values are SSH public keys or filenames from where to read the keys.")
 	config.AddEnableOrDisableFlag(fs, &s.remoteAccess, def.remoteAccess, "remote-access", "remote access")
@@ -302,6 +300,9 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	}
 	req.Metadata = s.metadata.AsUpcloudBoolean()
 	req.RemoteAccessEnabled = s.remoteAccess.AsUpcloudBoolean()
+	if s.createPassword.Value() {
+		req.LoginUser.CreatePassword = "yes"
+	}
 
 	logline.SetMessage(fmt.Sprintf("%s: creating network interfaces", msg))
 	var iFaces []request.CreateServerInterface
