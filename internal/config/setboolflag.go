@@ -117,6 +117,7 @@ func (s OptionalBoolean) OverrideNotSet(b bool) OptionalBoolean {
 }
 
 // AsUpcloudBoolean return OptionalBoolean as upcloud.Boolean
+// nb. DefaultTrue and DefaultEmpty return upcloud.Empty, as upcloud.Boolean has no concept of default values
 func (s OptionalBoolean) AsUpcloudBoolean() upcloud.Boolean {
 	switch s {
 	case Unset:
