@@ -91,7 +91,8 @@ echo "[ -f /etc/bash_completion ] && . /etc/bash_completion" >> ~/.bash_profile
 ### Windows
 ```bash
 Invoke-WebRequest -Uri "https://github.com/UpCloudLtd/upcloud-cli/releases/download/v<VERSION>/upcloud-cli-<VERSION>_windows_x86_64.zip" -OutFile "upcloud-cli.zip"
-unzip upcloud-cli.zip
+Expand-Archive -Path upcloud-cli.zip -Destination 'C:\Program Files\Upcloud CLI'
+[Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Program Files\Upcloud CLI", [System.EnvironmentVariableTarget]::Machine)
 upctl.exe -h
 ```
 
