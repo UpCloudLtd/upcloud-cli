@@ -2,6 +2,7 @@ package networkinterface
 
 import (
 	"fmt"
+	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
@@ -16,8 +17,8 @@ import (
 type createCommand struct {
 	*commands.BaseCommand
 	ipAddresses       []string
-	bootable          bool
-	sourceIPFiltering bool
+	bootable          config.OptionalBoolean
+	sourceIPFiltering config.OptionalBoolean
 	networkUUID       string
 	family            string
 	interfaceIndex    int
@@ -52,8 +53,8 @@ func (s *createCommand) InitCommand() {
 	fs.StringVar(&s.networkType, "type", defaultNetworkType, "Set the type of the network. Available: public, utility, private")
 	fs.StringVar(&s.family, "family", defaultIPAddressFamily, "The address family of new IP address.")
 	fs.IntVar(&s.interfaceIndex, "index", 0, "Interface index.")
-	fs.BoolVar(&s.bootable, "bootable", false, "Whether to try booting through the interface.")
-	fs.BoolVar(&s.sourceIPFiltering, "source-ip-filtering", false, "Whether source IP filtering is enabled on the interface. Disabling it is allowed only for SDN private interfaces.")
+	config.AddEnableOrDisableFlag(fs, &s.bootable, false, "bootable", "booting through the interface")
+	config.AddEnableOrDisableFlag(fs, &s.sourceIPFiltering, false, "source-ip-filtering", "filtering source IPs")
 	fs.StringSliceVar(&s.ipAddresses, "ip-addresses", []string{}, "A comma-separated list of IP addresses")
 	s.AddFlags(fs)
 }
@@ -106,8 +107,8 @@ func (s *createCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 		NetworkUUID:       s.networkUUID,
 		Index:             s.interfaceIndex,
 		IPAddresses:       ipAddresses,
-		SourceIPFiltering: upcloud.FromBool(s.sourceIPFiltering),
-		Bootable:          upcloud.FromBool(s.bootable),
+		SourceIPFiltering: s.sourceIPFiltering.AsUpcloudBoolean(),
+		Bootable:          s.bootable.AsUpcloudBoolean(),
 	})
 	if err != nil {
 		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
