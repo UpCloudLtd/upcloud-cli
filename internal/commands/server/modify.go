@@ -2,14 +2,13 @@ package server
 
 import (
 	"fmt"
-
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/spf13/pflag"
 )
@@ -30,15 +29,16 @@ func ModifyCommand() commands.Command {
 
 type modifyCommand struct {
 	*commands.BaseCommand
-	params modifyParams
+	params       modifyParams
+	setMetadata  config.SetBool
+	remoteAccess config.SetBool
+	firewall     config.SetBool
 	resolver.CachingServer
 	completion.Server
 }
 
 type modifyParams struct {
 	request.ModifyServerRequest
-	remoteAccessEnabled string
-	metadata            string
 }
 
 var defaultModifyParams = modifyParams{
@@ -52,15 +52,18 @@ func (s *modifyCommand) InitCommand() {
 	flags.StringVar(&s.params.BootOrder, "boot-order", defaultModifyParams.BootOrder, "The boot device order, disk / cdrom / network or comma separated combination.")
 	flags.IntVar(&s.params.CoreNumber, "cores", defaultModifyParams.CoreNumber, "Number of cores. Sets server plan to custom.")
 	flags.StringVar(&s.params.Hostname, "hostname", defaultModifyParams.Hostname, "Hostname.")
-	flags.StringVar(&s.params.Firewall, "firewall", defaultModifyParams.Firewall, "Enables or disables firewall on the server. You can manage firewall rules with the firewall command.\nAvailable: true, false")
+	config.AddEnableDisableFlags(flags, &s.firewall, "firewall", "firewall")
+	// flags.StringVar(&s.params.Firewall, "firewall", defaultModifyParams.Firewall, "Enables or disables firewall on the server. You can manage firewall rules with the firewall command.\nAvailable: true, false")
 	flags.IntVar(&s.params.MemoryAmount, "memory", defaultModifyParams.MemoryAmount, "Memory amount in MiB. Sets server plan to custom.")
-	flags.StringVar(&s.params.metadata, "metadata", defaultModifyParams.metadata, "Enable metadata service.")
+	config.AddEnableDisableFlags(flags, &s.setMetadata, "metadata", "metadata service")
+	// flags.StringVar(&s.params.metadata, "metadata", defaultModifyParams.metadata, "Enable metadata service.")
 	flags.StringVar(&s.params.Plan, "plan", defaultModifyParams.Plan, "Server plan to use.")
 	flags.StringVar(&s.params.SimpleBackup, "simple-backup", defaultModifyParams.SimpleBackup, "Simple backup rule. Format (HHMM,{dailies,weeklies,monthlies}).\nExample: 2300,dailies")
 	flags.StringVar(&s.params.Title, "title", defaultModifyParams.Title, "A short, informational description.")
 	flags.StringVar(&s.params.TimeZone, "time-zone", defaultModifyParams.TimeZone, "Time zone to set the RTC to.")
 	flags.StringVar(&s.params.VideoModel, "video-model", defaultModifyParams.VideoModel, "Video interface model of the server.\nAvailable: vga,cirrus")
-	flags.StringVar(&s.params.remoteAccessEnabled, "remote-access-enabled", defaultModifyParams.remoteAccessEnabled, "Enables or disables the remote access.\nAvailable: true, false")
+	config.AddEnableDisableFlags(flags, &s.remoteAccess, "remote-access", "remote access")
+	// flags.StringVar(&s.params.remoteAccessEnabled, "remote-access-enabled", defaultModifyParams.remoteAccessEnabled, "Enables or disables the remote access.\nAvailable: true, false")
 	flags.StringVar(&s.params.RemoteAccessType, "remote-access-type", defaultModifyParams.RemoteAccessType, "The remote access type.")
 	flags.StringVar(&s.params.RemoteAccessPassword, "remote-access-password", defaultModifyParams.RemoteAccessPassword, "The remote access password.")
 
@@ -70,25 +73,23 @@ func (s *modifyCommand) InitCommand() {
 // Execute implements commands.MultipleArgumentCommand
 func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 
-	remoteAccess := new(upcloud.Boolean)
-	if err := remoteAccess.UnmarshalJSON([]byte(s.params.remoteAccessEnabled)); err != nil {
-		return nil, err
-	}
-	s.params.RemoteAccessEnabled = *remoteAccess
-
-	metadata := new(upcloud.Boolean)
-	if err := metadata.UnmarshalJSON([]byte(s.params.metadata)); err != nil {
-		return nil, err
-	}
-	s.params.Metadata = *metadata
-
 	svc := exec.Server()
 
-	//XXX: should fix the SDK with the correct type
-	switch s.params.Firewall {
-	case "true":
+	// TODO: refactor out when go-api actually supports not-set upcloud.Booleans in requests
+	// ref: https://app.asana.com/0/1191419140326561/1200258914439524
+	serverDetails, err := svc.GetServerDetails(&request.GetServerDetailsRequest{UUID: uuid})
+	if err != nil {
+		return nil, err
+	}
+
+	s.params.RemoteAccessEnabled = s.remoteAccess.ApplyDefault(serverDetails.RemoteAccessEnabled.Bool()).AsUpcloudBoolean()
+	s.params.Metadata = s.setMetadata.ApplyDefault(serverDetails.Metadata.Bool()).AsUpcloudBoolean()
+
+	// TODO: refactor when go-api parameter is refactored
+	switch s.firewall {
+	case config.True:
 		s.params.Firewall = "on"
-	case "false":
+	case config.False:
 		s.params.Firewall = "off"
 	}
 
