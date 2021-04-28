@@ -29,9 +29,7 @@ func TestCreateCommand(t *testing.T) {
 			name:  "network is missing",
 			flags: []string{"--type", "public"},
 			req: request.CreateNetworkInterfaceRequest{
-				ServerUUID:        server.UUID,
-				Bootable:          upcloud.FromBool(false),
-				SourceIPFiltering: upcloud.FromBool(false),
+				ServerUUID: server.UUID,
 				IPAddresses: request.CreateNetworkInterfaceIPAddressSlice{
 					{Family: upcloud.IPAddressFamilyIPv4},
 				},
@@ -44,10 +42,8 @@ func TestCreateCommand(t *testing.T) {
 				"--network", network.UUID,
 			},
 			req: request.CreateNetworkInterfaceRequest{
-				ServerUUID:        server.UUID,
-				Bootable:          upcloud.FromBool(false),
-				SourceIPFiltering: upcloud.FromBool(false),
-				NetworkUUID:       network.UUID,
+				ServerUUID:  server.UUID,
+				NetworkUUID: network.UUID,
 				IPAddresses: request.CreateNetworkInterfaceIPAddressSlice{
 					{Family: upcloud.IPAddressFamilyIPv4},
 				},
@@ -69,9 +65,7 @@ func TestCreateCommand(t *testing.T) {
 				"--type", "public",
 			},
 			req: request.CreateNetworkInterfaceRequest{
-				ServerUUID:        server.UUID,
-				Bootable:          upcloud.FromBool(false),
-				SourceIPFiltering: upcloud.FromBool(false),
+				ServerUUID: server.UUID,
 				IPAddresses: request.CreateNetworkInterfaceIPAddressSlice{
 					{Family: upcloud.IPAddressFamilyIPv6},
 				},
@@ -93,10 +87,8 @@ func TestCreateCommand(t *testing.T) {
 				"--ip-addresses", "127.0.0.1",
 			},
 			req: request.CreateNetworkInterfaceRequest{
-				ServerUUID:        server.UUID,
-				Bootable:          upcloud.FromBool(false),
-				SourceIPFiltering: upcloud.FromBool(false),
-				NetworkUUID:       network.UUID,
+				ServerUUID:  server.UUID,
+				NetworkUUID: network.UUID,
 				IPAddresses: request.CreateNetworkInterfaceIPAddressSlice{
 					{Address: "127.0.0.1", Family: upcloud.IPAddressFamilyIPv4},
 				},
@@ -108,14 +100,14 @@ func TestCreateCommand(t *testing.T) {
 			flags: []string{
 				"--network", network.UUID,
 				"--ip-addresses", "127.0.0.1,127.0.0.2,127.0.0.3/22",
-				"--bootable",
-				"--source-ip-filtering",
+				"--enable-bootable",
+				"--enable-source-ip-filtering",
 				"--index", "4",
 			},
 			req: request.CreateNetworkInterfaceRequest{
 				ServerUUID:        server.UUID,
-				Bootable:          upcloud.FromBool(true),
-				SourceIPFiltering: upcloud.FromBool(true),
+				Bootable:          upcloud.True,
+				SourceIPFiltering: upcloud.True,
 				NetworkUUID:       network.UUID,
 				IPAddresses: request.CreateNetworkInterfaceIPAddressSlice{
 					{Address: "127.0.0.1", Family: upcloud.IPAddressFamilyIPv4},

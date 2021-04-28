@@ -2,6 +2,7 @@ package network
 
 import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 
@@ -28,9 +29,9 @@ func ListCommand() commands.Command {
 type listCommand struct {
 	*commands.BaseCommand
 	zone    string
-	all     bool
-	public  bool
-	utility bool
+	all     config.OptionalBoolean
+	public  config.OptionalBoolean
+	utility config.OptionalBoolean
 }
 
 func (s *listCommand) MaximumExecutions() int {
@@ -41,9 +42,9 @@ func (s *listCommand) MaximumExecutions() int {
 func (s *listCommand) InitCommand() {
 	flags := &pflag.FlagSet{}
 	flags.StringVar(&s.zone, "zone", "", "Show networks from a specific zone.")
-	flags.BoolVar(&s.all, "all", false, "Show all networks.")
-	flags.BoolVar(&s.public, "public", false, "Show public networks instead of private networks.")
-	flags.BoolVar(&s.utility, "utility", false, "Show utility networks instead of private networks.")
+	config.AddToggleFlag(flags, &s.all, "all", false, "Show all networks.")
+	config.AddToggleFlag(flags, &s.public, "public", false, "Show public networks instead of private networks.")
+	config.AddToggleFlag(flags, &s.utility, "utility", false, "Show utility networks instead of private networks.")
 	// TODO: reimplmement
 	// s.AddVisibleColumnsFlag(flags, &s.visibleColumns, s.columnKeys, s.visibleColumns)
 	s.AddFlags(flags)
@@ -65,18 +66,18 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 
 	var filtered []upcloud.Network
 	for _, n := range networks.Networks {
-		if s.all {
+		if s.all.Value() {
 			filtered = append(filtered, n)
 			continue
 		}
 
-		if s.public && n.Type == upcloud.NetworkTypePublic {
+		if s.public.Value() && n.Type == upcloud.NetworkTypePublic {
 			filtered = append(filtered, n)
 		}
-		if s.utility && n.Type == upcloud.NetworkTypeUtility {
+		if s.utility.Value() && n.Type == upcloud.NetworkTypeUtility {
 			filtered = append(filtered, n)
 		}
-		if !s.public && !s.utility && n.Type == upcloud.NetworkTypePrivate {
+		if !s.public.Value() && !s.utility.Value() && n.Type == upcloud.NetworkTypePrivate {
 			filtered = append(filtered, n)
 		}
 	}

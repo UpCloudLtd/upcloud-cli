@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
@@ -31,13 +32,13 @@ type deleteCommand struct {
 	*commands.BaseCommand
 	resolver.CachingServer
 	completion.Server
-	deleteStorages bool
+	deleteStorages config.OptionalBoolean
 }
 
 // InitCommand implements Command.InitCommand
 func (s *deleteCommand) InitCommand() {
 	flags := &pflag.FlagSet{}
-	flags.BoolVar(&s.deleteStorages, "delete-storages", false, "Delete storages that are attached to the server.")
+	config.AddToggleFlag(flags, &s.deleteStorages, "delete-storages", false, "Delete storages that are attached to the server.")
 	s.AddFlags(flags)
 }
 
@@ -50,7 +51,7 @@ func (s *deleteCommand) Execute(exec commands.Executor, uuid string) (output.Out
 	logline.StartedNow()
 
 	var err error
-	if s.deleteStorages {
+	if s.deleteStorages.Value() {
 		logline.SetMessage(fmt.Sprintf("%s: deleting server and related storages", msg))
 		err = svc.DeleteServerAndStorages(&request.DeleteServerAndStoragesRequest{
 			UUID: uuid,

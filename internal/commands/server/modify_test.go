@@ -31,27 +31,6 @@ func TestModifyCommand(t *testing.T) {
 		Zone:         "fi-hel1",
 	}
 
-	var Server2 = upcloud.Server{
-		CoreNumber:   1,
-		Hostname:     "server-2-hostname",
-		License:      0,
-		MemoryAmount: 1024,
-		Plan:         "server-2-plan",
-		Progress:     0,
-		State:        "started",
-		Tags:         nil,
-		Title:        "server-2-title",
-		UUID:         "f77a5b25-84af-4f52-bc40-581930091fad",
-		Zone:         "fi-hel1",
-	}
-
-	var servers = &upcloud.Servers{
-		Servers: []upcloud.Server{
-			Server1,
-			Server2,
-		},
-	}
-
 	details := upcloud.ServerDetails{
 		Server: Server1,
 	}
@@ -74,9 +53,9 @@ func TestModifyCommand(t *testing.T) {
 				"--simple-backup", "00,monthlies",
 				"--time-zone", "EET",
 				"--video-model", "VM",
-				"--firewall", "false",
-				"--metadata", "true",
-				"--remote-access-enabled", "true",
+				"--enable-firewall",
+				"--enable-metadata",
+				"--enable-remote-access",
 				"--remote-access-type", upcloud.RemoteAccessTypeVNC,
 				"--remote-access-password", "secret",
 			},
@@ -92,7 +71,7 @@ func TestModifyCommand(t *testing.T) {
 				SimpleBackup:         "00,monthlies",
 				TimeZone:             "EET",
 				VideoModel:           "VM",
-				Firewall:             "off",
+				Firewall:             "on",
 				Metadata:             upcloud.FromBool(true),
 				RemoteAccessEnabled:  upcloud.FromBool(true),
 				RemoteAccessType:     upcloud.RemoteAccessTypeVNC,
@@ -107,7 +86,7 @@ func TestModifyCommand(t *testing.T) {
 
 			conf.Service = internal.Wrapper{Service: mService}
 			mService.On(targetMethod, &test.modifyCall).Return(&details, nil)
-			mService.On("GetServers", mock.Anything).Return(servers, nil)
+			mService.On("GetServerDetails", mock.Anything).Return(&details, nil)
 			c := commands.BuildCommand(testCmd, nil, conf)
 			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
@@ -115,6 +94,7 @@ func TestModifyCommand(t *testing.T) {
 			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService), test.server.UUID)
 			assert.NoError(t, err)
 			mService.AssertNumberOfCalls(t, targetMethod, 1)
+			mService.AssertNumberOfCalls(t, "GetServerDetails", 1)
 		})
 	}
 }

@@ -2,6 +2,7 @@ package storage
 
 import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 
@@ -24,25 +25,25 @@ func ListCommand() commands.Command {
 
 type listCommand struct {
 	*commands.BaseCommand
-	all      bool
-	private  bool
-	public   bool
-	normal   bool
-	backup   bool
-	cdrom    bool
-	template bool
+	all      config.OptionalBoolean
+	private  config.OptionalBoolean
+	public   config.OptionalBoolean
+	normal   config.OptionalBoolean
+	backup   config.OptionalBoolean
+	cdrom    config.OptionalBoolean
+	template config.OptionalBoolean
 }
 
 // InitCommand implements Command.InitCommand
 func (s *listCommand) InitCommand() {
 	flags := &pflag.FlagSet{}
-	flags.BoolVar(&s.all, "all", false, "Show all storages.")
-	flags.BoolVar(&s.private, "private", true, "Show private storages (default).")
-	flags.BoolVar(&s.public, "public", false, "Show public storages.")
-	flags.BoolVar(&s.normal, "normal", false, "Show only normal storages.")
-	flags.BoolVar(&s.backup, "backup", false, "Show only backup storages.")
-	flags.BoolVar(&s.cdrom, "cdrom", false, "Show only cdrom storages.")
-	flags.BoolVar(&s.template, "template", false, "Show only template storages.")
+	config.AddToggleFlag(flags, &s.all, "all", false, "Show all storages.")
+	config.AddToggleFlag(flags, &s.private, "private", true, "Show private storages (default).")
+	config.AddToggleFlag(flags, &s.public, "public", false, "Show public storages.")
+	config.AddToggleFlag(flags, &s.normal, "normal", false, "Show only normal storages.")
+	config.AddToggleFlag(flags, &s.backup, "backup", false, "Show only backup storages.")
+	config.AddToggleFlag(flags, &s.cdrom, "cdrom", false, "Show only cdrom storages.")
+	config.AddToggleFlag(flags, &s.template, "template", false, "Show only template storages.")
 
 	s.AddFlags(flags)
 }
@@ -59,35 +60,35 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 	CachedStorages = storageList.Storages
 	var filtered []upcloud.Storage
 	for _, v := range storageList.Storages {
-		if s.all {
+		if s.all.Value() {
 			filtered = append(filtered, v)
 			continue
 		}
 
-		if s.public {
-			s.private = false
+		if s.public.Value() {
+			s.private = config.False
 		}
 
-		if s.private && v.Access == upcloud.StorageAccessPublic {
+		if s.private.Value() && v.Access == upcloud.StorageAccessPublic {
 			continue
 		}
-		if s.public && v.Access == upcloud.StorageAccessPrivate {
+		if s.public.Value() && v.Access == upcloud.StorageAccessPrivate {
 			continue
 		}
-		if !s.normal && !s.backup && !s.cdrom && !s.template {
+		if !s.normal.Value() && !s.backup.Value() && !s.cdrom.Value() && !s.template.Value() {
 			filtered = append(filtered, v)
 			continue
 		}
-		if s.normal && v.Type == upcloud.StorageTypeNormal {
+		if s.normal.Value() && v.Type == upcloud.StorageTypeNormal {
 			filtered = append(filtered, v)
 		}
-		if s.backup && v.Type == upcloud.StorageTypeBackup {
+		if s.backup.Value() && v.Type == upcloud.StorageTypeBackup {
 			filtered = append(filtered, v)
 		}
-		if s.cdrom && v.Type == upcloud.StorageTypeCDROM {
+		if s.cdrom.Value() && v.Type == upcloud.StorageTypeCDROM {
 			filtered = append(filtered, v)
 		}
-		if s.template && v.Type == upcloud.StorageTypeTemplate {
+		if s.template.Value() && v.Type == upcloud.StorageTypeTemplate {
 			filtered = append(filtered, v)
 		}
 	}

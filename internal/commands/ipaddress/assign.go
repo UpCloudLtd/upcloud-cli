@@ -2,6 +2,7 @@ package ipaddress
 
 import (
 	"fmt"
+	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
@@ -13,7 +14,7 @@ import (
 
 type assignCommand struct {
 	*commands.BaseCommand
-	floating   bool
+	floating   config.OptionalBoolean
 	access     string
 	family     string
 	serverUUID string
@@ -48,16 +49,16 @@ func (s *assignCommand) InitCommand() {
 	fs.StringVar(&s.serverUUID, "server", "", "The server the ip address is assigned to.")
 	fs.StringVar(&s.mac, "mac", "", "MAC address of server interface to assign address to. Required for detached floating IP address if zone is not specified.")
 	fs.StringVar(&s.zone, "zone", "", "Zone of address. Required for detached floating IP address if MAC address is not speficied.")
-	fs.BoolVar(&s.floating, "floating", false, "Whether the address to be assigned is a floating one.")
+	config.AddToggleFlag(fs, &s.floating, "floating", false, "Whether the address to be assigned is a floating one.")
 	s.AddFlags(fs)
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (s *assignCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
-	if s.floating && s.zone == "" && s.mac == "" {
+	if s.floating.Value() && s.zone == "" && s.mac == "" {
 		return nil, fmt.Errorf("MAC or zone is required for floating IP")
 	}
-	if !s.floating && s.serverUUID == "" {
+	if !s.floating.Value() && s.serverUUID == "" {
 		return nil, fmt.Errorf("server is required for non-floating IP")
 	}
 
@@ -79,7 +80,7 @@ func (s *assignCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		Access:     s.access,
 		Family:     s.family,
 		ServerUUID: s.serverUUID,
-		Floating:   upcloud.FromBool(s.floating),
+		Floating:   s.floating.AsUpcloudBoolean(),
 		MAC:        s.mac,
 		Zone:       s.zone,
 	})

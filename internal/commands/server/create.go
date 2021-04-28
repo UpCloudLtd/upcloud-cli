@@ -10,6 +10,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/storage"
+	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 
@@ -103,26 +104,13 @@ func (s *createParams) processParams(planSvc service.Plans, storageSvc service.S
 		s.StorageDevices[0].Size = s.osStorageSize
 	}
 
-	if s.firewall {
-		s.Firewall = "on"
-	}
-	if s.metadata {
-		s.Metadata = 1
-	}
 	if s.LoginUser == nil {
 		s.LoginUser = &request.LoginUser{}
 	}
 	s.LoginUser.CreatePassword = "no"
-	if s.createPassword {
-		s.LoginUser.CreatePassword = "yes"
-	}
 	if s.username != "" {
 		s.LoginUser.Username = s.username
 	}
-	if s.remoteAccess {
-		s.RemoteAccessEnabled = upcloud.FromBool(true)
-	}
-
 	return nil
 }
 
@@ -223,7 +211,11 @@ func (s *createParams) handleSSHKey() error {
 
 type createCommand struct {
 	*commands.BaseCommand
-	params createParams
+	params         createParams
+	firewall       config.OptionalBoolean
+	metadata       config.OptionalBoolean
+	remoteAccess   config.OptionalBoolean
+	createPassword config.OptionalBoolean
 }
 
 // InitCommand implements Command.InitCommand
@@ -247,14 +239,17 @@ func (s *createCommand) InitCommand() {
 	fs.StringVar(&s.params.SimpleBackup, "simple-backup", def.SimpleBackup, "Simple backup rule. Format (HHMM,{dailies,weeklies,monthlies}). Example: 2300,dailies")
 	fs.StringVar(&s.params.TimeZone, "time-zone", def.TimeZone, "Time zone to set the RTC to.")
 	fs.StringVar(&s.params.VideoModel, "video-model", def.VideoModel, "Video interface model of the server. Available: vga, cirrus")
-	fs.BoolVar(&s.params.firewall, "firewall", def.firewall, "Enables the firewall. You can manage firewall rules with the firewall command.")
-	fs.BoolVar(&s.params.metadata, "metadata", def.metadata, "Enable metadata service.")
+	config.AddEnableOrDisableFlag(fs, &s.firewall, def.firewall, "firewall", "firewall")
+	// fs.BoolVar(&s.params.firewall, "firewall", def.firewall, "Enables the firewall. You can manage firewall rules with the firewall command.")
+	config.AddEnableOrDisableFlag(fs, &s.metadata, def.metadata, "metadata", "metadata service")
+	// fs.BoolVar(&s.params.metadata, "metadata", def.metadata, "Enable metadata service.")
 	fs.StringArrayVar(&s.params.storages, "storage", def.storages, "A storage connected to the server, multiple can be declared.\nUsage: --storage action=attach,storage=01000000-0000-4000-8000-000020010301,type=cdrom")
 	fs.StringArrayVar(&s.params.networks, "network", def.networks, "A network interface for the server, multiple can be declared.\nUsage: --network family=IPv4,type=public")
-	fs.BoolVar(&s.params.createPassword, "create-password", def.createPassword, "Create an admin password.")
+	config.AddToggleFlag(fs, &s.createPassword, "create-password", def.createPassword, "Create an admin password.")
 	fs.StringVar(&s.params.username, "username", def.username, "Admin account username.")
 	fs.StringSliceVar(&s.params.sshKeys, "ssh-keys", def.sshKeys, "Add one or more SSH keys to the admin account. Accepted values are SSH public keys or filenames from where to read the keys.")
-	fs.BoolVar(&s.params.remoteAccess, "remote-access-enabled", def.remoteAccess, "Enables or disables the remote access.")
+	config.AddEnableOrDisableFlag(fs, &s.remoteAccess, def.remoteAccess, "remote-access", "remote access")
+	// fs.BoolVar(&s.params.remoteAccess, "remote-access-enabled", def.remoteAccess, "Enables or disables the remote access.")
 	fs.StringVar(&s.params.RemoteAccessType, "remote-access-type", def.RemoteAccessType, "Set a remote access type. Available: vnc, spice")
 	fs.StringVar(&s.params.RemoteAccessPassword, "remote-access-password", def.RemoteAccessPassword, "Defines the remote access password.")
 	s.AddFlags(fs)
@@ -299,6 +294,15 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	}
 
 	req := s.params.CreateServerRequest
+	// TODO: refactor when go-api parameter is refactored
+	if s.firewall.Value() {
+		req.Firewall = "on"
+	}
+	req.Metadata = s.metadata.AsUpcloudBoolean()
+	req.RemoteAccessEnabled = s.remoteAccess.AsUpcloudBoolean()
+	if s.createPassword.Value() {
+		req.LoginUser.CreatePassword = "yes"
+	}
 
 	logline.SetMessage(fmt.Sprintf("%s: creating network interfaces", msg))
 	var iFaces []request.CreateServerInterface
