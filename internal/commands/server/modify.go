@@ -30,9 +30,9 @@ func ModifyCommand() commands.Command {
 type modifyCommand struct {
 	*commands.BaseCommand
 	params       modifyParams
-	setMetadata  config.SetBool
-	remoteAccess config.SetBool
-	firewall     config.SetBool
+	setMetadata  config.OptionalBoolean
+	remoteAccess config.OptionalBoolean
+	firewall     config.OptionalBoolean
 	resolver.CachingServer
 	completion.Server
 }
@@ -82,8 +82,8 @@ func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Out
 		return nil, err
 	}
 
-	s.params.RemoteAccessEnabled = s.remoteAccess.ApplyDefault(serverDetails.RemoteAccessEnabled.Bool()).AsUpcloudBoolean()
-	s.params.Metadata = s.setMetadata.ApplyDefault(serverDetails.Metadata.Bool()).AsUpcloudBoolean()
+	s.params.RemoteAccessEnabled = s.remoteAccess.OverrideNotSet(serverDetails.RemoteAccessEnabled.Bool()).AsUpcloudBoolean()
+	s.params.Metadata = s.setMetadata.OverrideNotSet(serverDetails.Metadata.Bool()).AsUpcloudBoolean()
 
 	// TODO: refactor when go-api parameter is refactored
 	switch s.firewall {
@@ -91,6 +91,7 @@ func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Out
 		s.params.Firewall = "on"
 	case config.False:
 		s.params.Firewall = "off"
+		// nb. no handling for not set, just pass in an empty string in the request
 	}
 
 	if s.params.CoreNumber != 0 || s.params.MemoryAmount != 0 {

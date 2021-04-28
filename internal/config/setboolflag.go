@@ -7,25 +7,40 @@ import (
 	"strconv"
 )
 
-// SetBool represents a boolean that can also be 'not set', eg. having three possible states.
-// SetBool implements pflag.Value and flag.Value and as such, can be used with flag.Var() and friends.
+// OptionalBoolean represents a boolean that can also be 'not set', eg. having three possible states.
+// OptionalBoolean implements pflag.Value and flag.Value and as such, can be used with flag.Var() and friends.
 // However, it does not allow to be set more than once, in order to support multiple flags touching the
 // same boolean, eg. when the use case is --enable-something'/--disable-something
-type SetBool int
+type OptionalBoolean int
+
+// TODO: figure out if the default value handling could be done in a nicer way - maybe a separate type instead of trying
+// to force one type to rule them all?
+// Downside with this approach is that bool == True might be false which is kinda unexpected?
+// This is required for 'boolean flags with default values', in order to be able to set the default value and not throw
+// an error when trying to set a non-Unset OptionalBoolean
 
 const (
-	// Unset is the SetBool value representing not set
-	Unset SetBool = iota // 0
-	// True is the SetBool value representing true
+	// Unset is the OptionalBoolean value representing not set
+	Unset OptionalBoolean = iota // 0
+	// True is the OptionalBoolean value representing true
 	True
-	// False is the SetBool value representing false
+	// False is the OptionalBoolean value representing false
 	False
+
+	// DefaultTrue is the OptionalBoolean value representing not set, but with a default value of true.
+	// It returns false from IsSet, to allow for overriding the default (once)
+	DefaultTrue
+	// DefaultFalse is the OptionalBoolean value representing not set, but with a default value of false.
+	// It returns false from IsSet, to allow for overriding the default (once)
+	DefaultFalse
 )
 
 // AddEnableDisableFlags is a convenience method to generate --enable-something and --disable-something
-// flags with the correct settings. *name* specifies the name of the flags (eg. '--enable-[name]') and
+// flags with the correct settings.
+//
+// *name* specifies the name of the flags (eg. '--enable-[name]')
 // *subject* is used to create the usage description for the flags, in the form of 'Enable [subject]'.
-func AddEnableDisableFlags(flags *pflag.FlagSet, target *SetBool, name, subject string) {
+func AddEnableDisableFlags(flags *pflag.FlagSet, target *OptionalBoolean, name, subject string) {
 	flags.Var(target, fmt.Sprintf("enable-%s", name), fmt.Sprintf("Enable %s.", subject))
 	flags.Var(target, fmt.Sprintf("disable-%s", name), fmt.Sprintf("Disable %s.", subject))
 	flags.Lookup(fmt.Sprintf("enable-%s", name)).NoOptDefVal = "true"
@@ -34,25 +49,49 @@ func AddEnableDisableFlags(flags *pflag.FlagSet, target *SetBool, name, subject 
 	flags.Lookup(fmt.Sprintf("disable-%s", name)).DefValue = ""
 }
 
+// AddEnableOrDisableFlag is a convenience method to generate --enable-something *or* --disable-something
+// flag with the correct settings, to overrider the default value. eg. if default is true, flag --disable-something
+// will be generated.
+//
+// *name* specifies the name of the flag (eg. '--enable-[name]')
+// *subject* is used to create the usage description for the flag, in the form of 'Enable [subject]'.
+func AddEnableOrDisableFlag(flags *pflag.FlagSet, target *OptionalBoolean, defaultValue bool, name, subject string) {
+	if defaultValue {
+		target.SetDefault(true)
+		flags.Var(target, fmt.Sprintf("disable-%s", name), fmt.Sprintf("Disable %s.", subject))
+		flags.Lookup(fmt.Sprintf("disable-%s", name)).NoOptDefVal = "false"
+		flags.Lookup(fmt.Sprintf("disable-%s", name)).DefValue = ""
+	} else {
+		target.SetDefault(false)
+		flags.Var(target, fmt.Sprintf("enable-%s", name), fmt.Sprintf("Enable %s.", subject))
+		flags.Lookup(fmt.Sprintf("enable-%s", name)).NoOptDefVal = "true"
+		flags.Lookup(fmt.Sprintf("enable-%s", name)).DefValue = ""
+	}
+}
+
 // String implements flag.Value
-func (s SetBool) String() string {
+func (s OptionalBoolean) String() string {
 	return fmt.Sprintf("%t", s.Value())
 }
 
-// Value returns the underlying bool for SetBool.
+// Value returns the underlying bool for OptionalBoolean.
 // nb. returns false if flag is not set
-func (s SetBool) Value() bool {
+func (s OptionalBoolean) Value() bool {
 	b := boolFromSetBool(s)
 	return b
 }
 
 // Type implements pflag.Value
-func (s SetBool) Type() string {
+func (s OptionalBoolean) Type() string {
+	// return empty type in order to not display the parameter in help texts
+	// seems like this has no other meaning(?)
 	return ""
 }
 
 // Set implements flag.Value
-func (s *SetBool) Set(value string) error {
+// nb. OptionalBoolean will not allow itself to be set twice, if you want to have an underlying
+// default value, use SetDefault()
+func (s *OptionalBoolean) Set(value string) error {
 	if s.IsSet() {
 		return fmt.Errorf("cannot set twice")
 	}
@@ -64,21 +103,21 @@ func (s *SetBool) Set(value string) error {
 	return nil
 }
 
-// IsSet returns true if SetBool is set
-func (s SetBool) IsSet() bool {
-	return s != Unset
+// IsSet returns true if OptionalBoolean has been set
+func (s OptionalBoolean) IsSet() bool {
+	return s == True || s == False
 }
 
-// ApplyDefault returns a SetBool set to b if the original SetBool was not set
-func (s SetBool) ApplyDefault(b bool) SetBool {
+// OverrideNotSet returns a OptionalBoolean set to b if the original OptionalBoolean was not set
+func (s OptionalBoolean) OverrideNotSet(b bool) OptionalBoolean {
 	if s.IsSet() {
 		return s
 	}
 	return setBoolFromBool(b)
 }
 
-// AsUpcloudBoolean return SetBool as upcloud.Boolean
-func (s SetBool) AsUpcloudBoolean() upcloud.Boolean {
+// AsUpcloudBoolean return OptionalBoolean as upcloud.Boolean
+func (s OptionalBoolean) AsUpcloudBoolean() upcloud.Boolean {
 	switch s {
 	case Unset:
 		return upcloud.Empty
@@ -86,15 +125,29 @@ func (s SetBool) AsUpcloudBoolean() upcloud.Boolean {
 		return upcloud.True
 	case False:
 		return upcloud.False
+	case DefaultTrue:
+		return upcloud.Empty
+	case DefaultFalse:
+		return upcloud.Empty
 	}
-	panic("unknown SetBool")
+	panic("unknown OptionalBoolean")
 }
 
-func boolFromSetBool(s SetBool) bool {
-	return s == True
+// SetDefault sets the default value of OptionalBoolean to b
+// Default value is returned from Value() if the OptionalBoolean has not been set
+func (s *OptionalBoolean) SetDefault(b bool) {
+	if b {
+		*s = DefaultTrue
+	} else {
+		*s = DefaultFalse
+	}
 }
 
-func setBoolFromBool(b bool) SetBool {
+func boolFromSetBool(s OptionalBoolean) bool {
+	return s == True || s == DefaultTrue
+}
+
+func setBoolFromBool(b bool) OptionalBoolean {
 	if b {
 		return True
 	}
