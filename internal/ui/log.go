@@ -21,7 +21,7 @@ var (
 	}
 	// LiveLogDefaultConfig represents the default settings for live log
 	LiveLogDefaultConfig = LiveLogConfig{
-		EntryMaxWidth:        80,
+		EntryMaxWidth:        terminal.GetTerminalWidth(),
 		renderPending:        true,
 		DisableLiveRendering: !terminal.IsStdoutTerminal(),
 		Colours:              liveLogDefaultColours,
@@ -186,7 +186,7 @@ func (s *LiveLog) renderEntry(entry *LogEntry) {
 	if text.RuneCount(msg) > s.config.EntryMaxWidth {
 		msg = fmt.Sprintf("%s...", text.Trim(msg, s.config.EntryMaxWidth-3))
 	}
-	msg = text.Pad(msg, s.config.EntryMaxWidth, ' ')
+	msg = text.Pad(msg, s.config.EntryMaxWidth-len(durStr)-1, ' ')
 	s.write(colours.Sprint(msg))
 	s.write(s.config.Colours.Time.Sprint(durStr))
 	s.write("\n")

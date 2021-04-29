@@ -1,6 +1,8 @@
 package ui
 
 import (
+	"github.com/UpCloudLtd/upcloud-cli/internal/terminal"
+
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
 )
@@ -72,7 +74,7 @@ func (s *DetailsView) Render() string {
 	if s.headerWidth == 0 {
 		s.headerWidth = headerMaxWidth
 	}
-	widthRemaining := 140
+	widthRemaining := terminal.GetTerminalWidth()
 	var colConfigs []table.ColumnConfig
 	for i := range s.rows[0] {
 		if i < len(s.rows[0])-1 {

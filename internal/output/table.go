@@ -68,6 +68,7 @@ func (s Table) MarshalHuman() ([]byte, error) {
 	t.ResetFooters()
 	t.ResetRows()
 	t.SetStyle(defaultTableStyle)
+	t.SetAllowedRowLength(terminal.GetTerminalWidth())
 	/*
 		// TODO: reimplement this if/when necessary
 		if len(s.overrideColumnKeys) > 0 {
