@@ -58,7 +58,6 @@ type importCommand struct {
 	existingStorageUUIDOrName string
 	wait                      config.OptionalBoolean
 
-	storageUUID  string
 	createParams createParams
 
 	Resolver resolver.CachingStorage
@@ -84,7 +83,9 @@ type storageImportStatus struct {
 	result           *upcloud.StorageImportDetails
 	bytesTransferred int64
 	err              error
-	complete         bool
+	// we need separate cmoplete as the local and remote imports report in a different manner
+	// with remote import polling the details and returning a new result every time
+	complete bool
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
@@ -92,7 +93,11 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 
 	svc := exec.Storage()
 
-	var existingStorage *upcloud.Storage
+	var (
+		existingStorage *upcloud.Storage
+		storageUUID     string
+	)
+
 	if s.existingStorageUUIDOrName != "" {
 		// initialize resolver
 		// TODO: maybe this should be rethought?
@@ -112,7 +117,7 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 			return nil, fmt.Errorf("cannot get existing storage: %w", err)
 		}
 		existingStorage = &cached
-		s.storageUUID = cached.UUID
+		storageUUID = cached.UUID
 	} else if s.sourceLocation == "" || s.createParams.Zone == "" || s.createParams.Title == "" {
 		return nil, errors.New("source-location and either existing storage or both zone and title are required")
 	}
@@ -183,7 +188,7 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		logline.SetDetails(details.UUID, "UUID: ")
 		logline.MarkDone()
 		existingStorage = &details.Storage
-		s.storageUUID = details.UUID
+		storageUUID = details.UUID
 	}
 
 	// Create import task
@@ -198,13 +203,13 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	if sourceFile != nil {
 		// Import from local file
 		transferType = "upload"
-		go importLocalFile(svc, s.storageUUID, sourceFile, statusChan)
+		go importLocalFile(svc, storageUUID, sourceFile, statusChan)
 	} else {
 		// Import from http location
 		transferType = "download"
 		result, err := svc.CreateStorageImport(
 			&request.CreateStorageImportRequest{
-				StorageUUID:    s.storageUUID,
+				StorageUUID:    storageUUID,
 				Source:         upcloud.StorageImportSourceHTTPImport,
 				SourceLocation: s.sourceLocation,
 			})
@@ -214,7 +219,7 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		logline.SetMessage(fmt.Sprintf("%s: http import queued", msg))
 		if s.wait {
 			// start polling for import status if --wait was entered
-			go pollStorageImportStatus(svc, s.storageUUID, statusChan)
+			go pollStorageImportStatus(svc, storageUUID, statusChan)
 		} else {
 			// otherwise, we can just return the result
 			return output.OnlyMarshaled{Value: result}, nil
