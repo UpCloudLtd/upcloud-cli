@@ -12,12 +12,13 @@ TESTPKGS = $(shell env GO111MODULE=on $(GO) list -f \
 			'{{ if or .TestGoFiles .XTestGoFiles }}{{ .ImportPath }}{{ end }}' \
 			$(PKGS))
 
-BIN_DIR         = $(CURDIR)/bin
-CLI_BIN         = $(CLI)
-DOC_GEN_BIN     = $(DOC_GEN)
-BIN_LINUX       = $(CLI_BIN)-$(VERSION)-linux-amd64
-BIN_DARWIN      = $(CLI_BIN)-$(VERSION)-darwin-amd64
-BIN_WINDOWS     = $(CLI_BIN)-$(VERSION)-windows-amd64.exe
+BIN_DIR              = $(CURDIR)/bin
+CLI_BIN              = $(CLI)
+DOC_GEN_BIN          = $(DOC_GEN)
+BIN_LINUX            = $(CLI_BIN)-$(VERSION)-linux-amd64
+BIN_DOCKERISED_LINUX = $(CLI_BIN)-$(VERSION)-dockerised-linux-amd64
+BIN_DARWIN           = $(CLI_BIN)-$(VERSION)-darwin-amd64
+BIN_WINDOWS          = $(CLI_BIN)-$(VERSION)-windows-amd64.exe
 
 
 V = 0
@@ -44,6 +45,13 @@ build-linux: ; $(info building executable for Linux x86_64…) @ ## Build progra
 		-tags release \
 		-ldflags '-X $(MODULE)/internal/config.Version=$(VERSION) -X $(MODULE)/internal/config.BuildDate=$(DATE)' \
 		-o $(BIN_DIR)/$(BIN_LINUX) cmd/$(CLI)/main.go
+
+.PHONY: build-dockerised
+build-dockerised: ; $(info building executable for dockerised Linux x86_64…) @ ## Build program binary for dockerised linux x86_64
+	$Q GOOS=linux GOARCH=amd64 CGO_ENABLED=0 $(GO) build \
+		-tags release \
+		-ldflags '-X $(MODULE)/internal/config.Version=$(VERSION) -X $(MODULE)/internal/config.BuildDate=$(DATE) -w' \
+		-o $(BIN_DIR)/$(BIN_DOCKERISED_LINUX) cmd/$(CLI)/main.go
 
 .PHONY: build-darwin
 build-darwin: $(BIN_DIR) ; $(info building executable for Darwin x86_64…) @ ## Build program binary for darwin x86_64
