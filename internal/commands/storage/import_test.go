@@ -117,7 +117,7 @@ func TestImportCommand(t *testing.T) {
 				"--title", "test-2",
 			},
 			error:        "cannot get file size: stat testfile: no such file or directory",
-			windowsError: "cannot get file size: stat testfile: The system cannot find the file specified.",
+			windowsError: "cannot get file size: CreateFile testfile: The system cannot find the file specified.",
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
