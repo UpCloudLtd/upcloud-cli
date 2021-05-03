@@ -88,16 +88,16 @@ func TestImportCommand(t *testing.T) {
 		{
 			name: "location is missing",
 			args: []string{
-				"--source-type", upcloud.StorageImportSourceHTTPImport,
+				//				"--source-type", upcloud.StorageImportSourceHTTPImport,
 				"--zone", "fi-hel1",
 				"--title", "test-1",
 			},
-			error: "source-location and either existing storage or both zone and title are required",
+			error: "source-location required",
 		},
 		{
 			name: "http import",
 			args: []string{
-				"--source-type", upcloud.StorageImportSourceHTTPImport,
+				//				"--source-type", upcloud.StorageImportSourceHTTPImport,
 				"--source-location", "http://example.com",
 				"--zone", "fi-hel1",
 				"--title", "test-2",
@@ -111,13 +111,13 @@ func TestImportCommand(t *testing.T) {
 		{
 			name: "local import, non-existent file",
 			args: []string{
-				"--source-type", upcloud.StorageImportSourceDirectUpload,
+				//				"--source-type", upcloud.StorageImportSourceDirectUpload,
 				"--source-location", "testfile",
 				"--zone", "fi-hel1",
 				"--title", "test-2",
 			},
-			error:        "open testfile: no such file or directory",
-			windowsError: "open testfile: The system cannot find the file specified.",
+			error:        "cannot get file size: stat testfile: no such file or directory",
+			windowsError: "cannot get file size: stat testfile: The system cannot find the file specified.",
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {

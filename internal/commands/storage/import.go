@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"net/url"
@@ -10,15 +9,15 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
+
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 
-	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
-	"github.com/UpCloudLtd/upcloud-cli/internal/output"
-
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/spf13/pflag"
 )
 
@@ -54,7 +53,6 @@ type importCommand struct {
 	*commands.BaseCommand
 
 	sourceLocation            string
-	sourceType                string
 	existingStorageUUIDOrName string
 	wait                      config.OptionalBoolean
 
@@ -67,11 +65,6 @@ type importCommand struct {
 func (s *importCommand) InitCommand() {
 	flagSet := &pflag.FlagSet{}
 	flagSet.StringVar(&s.sourceLocation, "source-location", "", "Location of the source of the import. Can be a file or a URL.")
-	// TODO: is this flag actually required? Could we not just figure it out depending on the location?
-	// eg. if there's a file with the name given in location, use direct upload, otherwise validate url and use http import?
-	flagSet.StringVar(&s.sourceType, "source-type", "", fmt.Sprintf("Source type, is derived from source-location if not given. Available: %s,%s",
-		upcloud.StorageImportSourceHTTPImport,
-		upcloud.StorageImportSourceDirectUpload))
 	flagSet.StringVar(&s.existingStorageUUIDOrName, "storage", "", "Import to an existing storage. Storage must be large enough and must be undetached or the server where the storage is attached must be in shutdown state.")
 	config.AddToggleFlag(flagSet, &s.wait, "wait", true, fmt.Sprintf("Wait until the import finishes. Implied if source is set to %s",
 		upcloud.StorageImportSourceDirectUpload))
@@ -90,23 +83,41 @@ type storageImportStatus struct {
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
+	// initial argument validation
+	if s.sourceLocation == "" {
+		return nil, fmt.Errorf("source-location required")
+	}
+	if s.existingStorageUUIDOrName == "" {
+		if s.createParams.Zone == "" || s.createParams.Title == "" {
+			return nil, fmt.Errorf("either existing storage or zone and title for a new storage to be created required")
+		}
+	} else if s.createParams.Zone != "" || s.createParams.Title != "" {
+		return nil, fmt.Errorf("title and zone are not valid when using existing storage")
+	}
 
-	svc := exec.Storage()
+	// figure out sourcetype and validate the inputs to the best of our ability
+	parsedSource, sourceType, fileSize, err := parseSource(s.sourceLocation)
+	if err != nil {
+		return nil, err
+	}
 
+	// calculate filesize in gigabytes to validate storage sizes
+	// add one because we're rounding down with integer division, otherwise we could end up consistently
+	// creating too small storages to hold the file we want to upload
+	fileSizeInGB := int(fileSize/1024/1024/1024) + 1
+
+	// next, figure out if we want to import to an existing storage (and validate it) or create one
 	var (
-		existingStorage *upcloud.Storage
-		storageUUID     string
+		storageToImportTo upcloud.Storage
 	)
-
 	if s.existingStorageUUIDOrName != "" {
+		// user specified an existing storage, validate it
 		// initialize resolver
-		// TODO: maybe this should be rethought?
+		// TODO: maybe this resolver business should be rethought? this use case isnt really supported,
+		//       possibly split resolving and caching to separate bits?
 		_, err := s.Resolver.Get(exec.All())
 		if err != nil {
 			return nil, fmt.Errorf("cannot setup storage resolver: %w", err)
-		}
-		if s.sourceLocation == "" {
-			return nil, errors.New("source-location must be defined")
 		}
 		foundUUID, err := s.Resolver.Resolve(s.existingStorageUUIDOrName)
 		if err != nil {
@@ -116,83 +127,28 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		if err != nil {
 			return nil, fmt.Errorf("cannot get existing storage: %w", err)
 		}
-		existingStorage = &cached
-		storageUUID = cached.UUID
-	} else if s.sourceLocation == "" || s.createParams.Zone == "" || s.createParams.Title == "" {
-		return nil, errors.New("source-location and either existing storage or both zone and title are required")
-	}
-
-	// Infer source type from source location
-	// TODO: is there any sense in passing this as a parameter?
-	// TODO: is there any sense that this is not the domain of the sdk?
-	if s.sourceType == "" {
-		parsedURL, err := url.Parse(s.sourceLocation)
-		if err != nil || parsedURL.Scheme == "" || parsedURL.Scheme == "file" {
-			s.sourceType = upcloud.StorageImportSourceDirectUpload
-		} else {
-			s.sourceType = upcloud.StorageImportSourceHTTPImport
-		}
-	}
-	var (
-		sourceFile    *os.File
-		localFileSize int64
-	)
-	if s.sourceType == upcloud.StorageImportSourceDirectUpload {
-		// this could be done in the actual upload call, but we'd rather validate all input in the first place
-		f, err := os.Open(s.sourceLocation)
-		if err != nil {
-			return nil, err
-		}
-		sourceFile = f
-		stat, err := f.Stat()
-		if err != nil {
-			return nil, err
-		}
-		localFileSize = stat.Size()
-		fileSizeInGB := int(localFileSize / 1024 / 1024 / 1024)
-		if existingStorage != nil && existingStorage.Size < fileSizeInGB {
+		if cached.Size < fileSizeInGB {
 			return nil, fmt.Errorf("the existing storage is too small for the file")
 		}
-		if existingStorage == nil && s.createParams.Size != defaultCreateParams.Size &&
-			s.createParams.Size < fileSizeInGB {
+		storageToImportTo = cached
+	} else {
+		// We need to create a new storage.
+		// Infer created storage size from the file if default size is used
+		if s.createParams.Size == defaultCreateParams.Size && fileSizeInGB > defaultCreateParams.Size {
+			s.createParams.Size = fileSizeInGB
+		} else if s.createParams.Size < fileSizeInGB {
+			// user gave a custom size, validate that it's large enough
 			return nil, fmt.Errorf("the requested storage size is too small for the file")
 		}
-		// Infer created storage size from the file if default size is used
-		if existingStorage == nil && s.createParams.Size == defaultCreateParams.Size &&
-			fileSizeInGB > defaultCreateParams.Size {
-			s.createParams.Size = fileSizeInGB
-		}
-	}
-	if s.sourceType == upcloud.StorageImportSourceHTTPImport {
-		_, err := url.Parse(s.sourceLocation)
+		createdStorage, err := createStorage(exec, &s.createParams)
 		if err != nil {
-			return nil, fmt.Errorf("invalid import url: %w", err)
+			return nil, fmt.Errorf("cannot create storage: %w", err)
 		}
+		storageToImportTo = createdStorage
 	}
 
-	// Create storage, if it doesn't exist yet
-	if existingStorage == nil {
-		if err := s.createParams.processParams(); err != nil {
-			return nil, err
-		}
-		msg := fmt.Sprintf("Creating storage %q", s.createParams.Title)
-		logline := exec.NewLogEntry(msg)
-		logline.StartedNow()
-		details, err := svc.CreateStorage(&s.createParams.CreateStorageRequest)
-		if err != nil {
-			logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed", msg))
-			logline.SetDetails(err.Error(), "error: ")
-			return nil, fmt.Errorf("import failed: %w", err)
-		}
-		logline.SetMessage(fmt.Sprintf("%s: done", msg))
-		logline.SetDetails(details.UUID, "UUID: ")
-		logline.MarkDone()
-		existingStorage = &details.Storage
-		storageUUID = details.UUID
-	}
-
-	// Create import task
-	msg := fmt.Sprintf("importing to %v", existingStorage.UUID)
+	// input has been validated and we have a storage, start importing
+	msg := fmt.Sprintf("importing to %v", storageToImportTo.UUID)
 	logline := exec.NewLogEntry(msg)
 	logline.StartedNow()
 	startTime := time.Now()
@@ -200,17 +156,14 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		statusChan   = make(chan storageImportStatus)
 		transferType string
 	)
-	if sourceFile != nil {
-		// Import from local file
-		transferType = "upload"
-		go importLocalFile(svc, storageUUID, sourceFile, statusChan)
-	} else {
-		// Import from http location
+	switch sourceType {
+	case upcloud.StorageImportSourceHTTPImport:
+		// Import from the internet
 		transferType = "download"
-		result, err := svc.CreateStorageImport(
+		result, err := exec.Storage().CreateStorageImport(
 			&request.CreateStorageImportRequest{
-				StorageUUID:    storageUUID,
-				Source:         upcloud.StorageImportSourceHTTPImport,
+				StorageUUID:    storageToImportTo.UUID,
+				Source:         sourceType,
 				SourceLocation: s.sourceLocation,
 			})
 		if err != nil {
@@ -219,14 +172,24 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		logline.SetMessage(fmt.Sprintf("%s: http import queued", msg))
 		if s.wait {
 			// start polling for import status if --wait was entered
-			go pollStorageImportStatus(svc, storageUUID, statusChan)
+			go pollStorageImportStatus(exec.Storage(), storageToImportTo.UUID, statusChan)
 		} else {
-			// otherwise, we can just return the result
+			// otherwise, we can just return the result and be done with it
+			logline.SetMessage(fmt.Sprintf("%s: http import request sent", msg))
+			logline.MarkDone()
 			return output.OnlyMarshaled{Value: result}, nil
 		}
+	case upcloud.StorageImportSourceDirectUpload:
+		// import from local file
+		transferType = "upload"
+		sourceFile, err := os.Open(parsedSource.Path)
+		if err != nil {
+			return nil, fmt.Errorf("cannot open local file: %w", err)
+		}
+		go importLocalFile(exec.Storage(), storageToImportTo.UUID, sourceFile, statusChan)
 	}
 
-	// wait for updates from the import process
+	// import has been triggered, read updates from the process
 	for statusUpdate := range statusChan {
 		switch {
 		case statusUpdate.err != nil:
@@ -242,16 +205,15 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		case statusUpdate.bytesTransferred > 0:
 			// got a status update
 			bps := float64(statusUpdate.bytesTransferred) / time.Since(startTime).Seconds()
-			// get the file size, if possible - clientContentLength can still be 0
-			importFileSize := localFileSize
-			if importFileSize == 0 && statusUpdate.result != nil {
-				importFileSize = int64(statusUpdate.result.ClientContentLength)
+			// update the file size, if the backend returns a status update with it
+			if fileSize == 0 && statusUpdate.result != nil {
+				fileSize = int64(statusUpdate.result.ClientContentLength)
 			}
-			if importFileSize > 0 {
+			if fileSize > 0 {
 				// we have knowledge of import file size, report progress percentage
 				logline.SetMessage(fmt.Sprintf("%s: %sed %.2f%% (%sbps)",
 					msg, transferType,
-					float64(statusUpdate.bytesTransferred)/float64(importFileSize)*100,
+					float64(statusUpdate.bytesTransferred)/float64(fileSize)*100,
 					ui.AbbrevNum(uint(bps)),
 				))
 			} else {
@@ -264,8 +226,66 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 			}
 		}
 	}
-	// status channel was closed but we did not receive either result or an error, fail.
+	// status channel was closed but we did not receive either result or an error, fail.*/
 	return nil, fmt.Errorf("upload aborted unexpectedly")
+}
+
+// TODO: figure out how to handle 'local http uploads', eg. piping from a local / non public internet url
+//       if required(?)
+func parseSource(location string) (parsedLocation *url.URL, sourceType string, fileSize int64, err error) {
+	parsedSource, err := url.Parse(location)
+	switch {
+	case err != nil:
+		// error parsing url.. try if we can just open the source file?
+		sourceType = upcloud.StorageImportSourceDirectUpload
+		fileSize, err = getLocalFileSize(location)
+		if err != nil {
+			return nil, "", 0, fmt.Errorf("cannot get file size: %w", err)
+		}
+		// looks like it, force the sourcelocation to parsed path
+		parsedSource = &url.URL{Path: location}
+	case parsedSource.Scheme == "" || parsedSource.Scheme == "file":
+		// parsed, but looks like a local file
+		sourceType = upcloud.StorageImportSourceDirectUpload
+		fileSize, err = getLocalFileSize(parsedSource.Path)
+		if err != nil {
+			return nil, "", 0, fmt.Errorf("cannot get file size: %w", err)
+		}
+	default:
+		// url was parsed and seems to not be a reference to a local file, make sure it's http or https
+		sourceType = upcloud.StorageImportSourceHTTPImport
+		if parsedSource.Scheme != "http" && parsedSource.Scheme != "https" {
+			return nil, "", 0, fmt.Errorf("unsupported scheme '%v'", parsedSource.Scheme)
+		}
+	}
+	return
+}
+
+func createStorage(exec commands.Executor, params *createParams) (upcloud.Storage, error) {
+	if err := params.processParams(); err != nil {
+		return upcloud.Storage{}, err
+	}
+	msg := fmt.Sprintf("Creating storage %q", params.Title)
+	logline := exec.NewLogEntry(msg)
+	logline.StartedNow()
+	details, err := exec.Storage().CreateStorage(&params.CreateStorageRequest)
+	if err != nil {
+		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed", msg))
+		logline.SetDetails(err.Error(), "error: ")
+		return upcloud.Storage{}, err
+	}
+	logline.SetMessage(fmt.Sprintf("%s: done", msg))
+	logline.SetDetails(details.UUID, "UUID: ")
+	logline.MarkDone()
+	return details.Storage, nil
+}
+
+func getLocalFileSize(path string) (size int64, err error) {
+	stat, err := os.Stat(path)
+	if err != nil {
+		return 0, err
+	}
+	return stat.Size(), nil
 }
 
 func pollStorageImportStatus(svc service.Storage, uuid string, statusChan chan<- storageImportStatus) {
