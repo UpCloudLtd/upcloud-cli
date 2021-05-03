@@ -87,6 +87,7 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	if s.sourceLocation == "" {
 		return nil, fmt.Errorf("source-location required")
 	}
+
 	if s.existingStorageUUIDOrName == "" {
 		if s.createParams.Zone == "" || s.createParams.Title == "" {
 			return nil, fmt.Errorf("either existing storage or zone and title for a new storage to be created required")
@@ -205,23 +206,24 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		case statusUpdate.bytesTransferred > 0:
 			// got a status update
 			bps := float64(statusUpdate.bytesTransferred) / time.Since(startTime).Seconds()
-			// update the file size, if the backend returns a status update with it
+			// update the file size, if the backend returns a status update with it, eg. if
+			// the import is a http import
 			if fileSize == 0 && statusUpdate.result != nil {
 				fileSize = int64(statusUpdate.result.ClientContentLength)
 			}
 			if fileSize > 0 {
 				// we have knowledge of import file size, report progress percentage
-				logline.SetMessage(fmt.Sprintf("%s: %sed %.2f%% (%sbps)",
+				logline.SetMessage(fmt.Sprintf("%s: %sed %.2f%% (%sBps)",
 					msg, transferType,
 					float64(statusUpdate.bytesTransferred)/float64(fileSize)*100,
-					ui.AbbrevNum(uint(bps)),
+					ui.AbbrevNumBinaryPrefix(uint(bps)),
 				))
 			} else {
 				// we have no knowledge of the remote file size, report bytes uploaded
 				logline.SetMessage(fmt.Sprintf("%s: %sed %sB (%sBps)",
 					msg, transferType,
-					ui.AbbrevNum(uint(statusUpdate.bytesTransferred)),
-					ui.AbbrevNum(uint(bps)),
+					ui.AbbrevNumBinaryPrefix(uint(statusUpdate.bytesTransferred)),
+					ui.AbbrevNumBinaryPrefix(uint(bps)),
 				))
 			}
 		}
@@ -233,7 +235,7 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 // TODO: figure out how to handle 'local http uploads', eg. piping from a local / non public internet url
 //       if required(?)
 func parseSource(location string) (parsedLocation *url.URL, sourceType string, fileSize int64, err error) {
-	parsedSource, err := url.Parse(location)
+	parsedLocation, err = url.Parse(location)
 	switch {
 	case err != nil:
 		// error parsing url.. try if we can just open the source file?
@@ -243,19 +245,19 @@ func parseSource(location string) (parsedLocation *url.URL, sourceType string, f
 			return nil, "", 0, fmt.Errorf("cannot get file size: %w", err)
 		}
 		// looks like it, force the sourcelocation to parsed path
-		parsedSource = &url.URL{Path: location}
-	case parsedSource.Scheme == "" || parsedSource.Scheme == "file":
+		parsedLocation = &url.URL{Path: location}
+	case parsedLocation.Scheme == "" || parsedLocation.Scheme == "file":
 		// parsed, but looks like a local file
 		sourceType = upcloud.StorageImportSourceDirectUpload
-		fileSize, err = getLocalFileSize(parsedSource.Path)
+		fileSize, err = getLocalFileSize(parsedLocation.Path)
 		if err != nil {
 			return nil, "", 0, fmt.Errorf("cannot get file size: %w", err)
 		}
 	default:
 		// url was parsed and seems to not be a reference to a local file, make sure it's http or https
 		sourceType = upcloud.StorageImportSourceHTTPImport
-		if parsedSource.Scheme != "http" && parsedSource.Scheme != "https" {
-			return nil, "", 0, fmt.Errorf("unsupported scheme '%v'", parsedSource.Scheme)
+		if parsedLocation.Scheme != "http" && parsedLocation.Scheme != "https" {
+			return nil, "", 0, fmt.Errorf("unsupported scheme '%v'", parsedLocation.Scheme)
 		}
 	}
 	return
