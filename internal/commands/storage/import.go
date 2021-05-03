@@ -55,7 +55,7 @@ type importCommand struct {
 
 	sourceLocation            string
 	existingStorageUUIDOrName string
-	wait                      config.OptionalBoolean
+	noWait                    config.OptionalBoolean
 
 	createParams createParams
 
@@ -67,8 +67,7 @@ func (s *importCommand) InitCommand() {
 	flagSet := &pflag.FlagSet{}
 	flagSet.StringVar(&s.sourceLocation, "source-location", "", "Location of the source of the import. Can be a file or a URL.")
 	flagSet.StringVar(&s.existingStorageUUIDOrName, "storage", "", "Import to an existing storage. Storage must be large enough and must be undetached or the server where the storage is attached must be in shutdown state.")
-	config.AddToggleFlag(flagSet, &s.wait, "wait", true, fmt.Sprintf("Wait until the import finishes. Implied if source is set to %s",
-		upcloud.StorageImportSourceDirectUpload))
+	config.AddToggleFlag(flagSet, &s.noWait, "no-wait", false, "Do not wait until the import finishes. Only applicable when importing from a remote URL.")
 	applyCreateFlags(flagSet, &s.createParams, defaultCreateParams)
 	s.AddFlags(flagSet)
 }
@@ -172,8 +171,8 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 			return nil, fmt.Errorf("failed to import: %w", err)
 		}
 		logline.SetMessage(fmt.Sprintf("%s: http import queued", msg))
-		if s.wait.Value() {
-			// start polling for import status if --wait was entered
+		if !s.noWait.Value() {
+			// start polling for import status if --no-wait was not entered on the command line
 			go pollStorageImportStatus(exec.Storage(), storageToImportTo.UUID, statusChan)
 		} else {
 			// otherwise, we can just return the result and be done with it
