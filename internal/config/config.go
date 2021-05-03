@@ -85,7 +85,7 @@ func (s *Config) Load() error {
 	// Attempt to read the config file, ignoring only config file not found errors
 	if err := v.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
-			return err
+			return fmt.Errorf("unable to parse config from file '%v': %w", v.ConfigFileUsed(), err)
 		}
 	}
 
