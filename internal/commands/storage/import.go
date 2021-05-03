@@ -257,7 +257,7 @@ func parseSource(location string) (parsedLocation *url.URL, sourceType string, f
 		// url was parsed and seems to not be a reference to a local file, make sure it's http or https
 		sourceType = upcloud.StorageImportSourceHTTPImport
 		if parsedLocation.Scheme != "http" && parsedLocation.Scheme != "https" {
-			return nil, "", 0, fmt.Errorf("unsupported scheme '%v'", parsedLocation.Scheme)
+			return nil, "", 0, fmt.Errorf("unsupported URL scheme '%v'", parsedLocation.Scheme)
 		}
 	}
 	return
