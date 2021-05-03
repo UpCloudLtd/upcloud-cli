@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
@@ -148,7 +149,7 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		storageToImportTo = createdStorage
 	}
 
-	// input has been validated and we have a storage, start importing
+	// input has been validated and we have a storage to import to, ready to start the actual import
 	msg := fmt.Sprintf("importing to %v", storageToImportTo.UUID)
 	logline := exec.NewLogEntry(msg)
 	logline.StartedNow()
@@ -171,7 +172,7 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 			return nil, fmt.Errorf("failed to import: %w", err)
 		}
 		logline.SetMessage(fmt.Sprintf("%s: http import queued", msg))
-		if s.wait {
+		if s.wait.Value() {
 			// start polling for import status if --wait was entered
 			go pollStorageImportStatus(exec.Storage(), storageToImportTo.UUID, statusChan)
 		} else {
