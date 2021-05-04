@@ -16,9 +16,8 @@ upctl storage import --source-location https://cdimage.debian.org/debian-cd/curr
 
 ```
       --source-location string   Location of the source of the import. Can be a file or a URL.
-      --source-type string       Source type, is derived from source-location if not given. Available: http_import,direct_upload
       --storage string           Import to an existing storage. Storage must be large enough and must be undetached or the server where the storage is attached must be in shutdown state.
-      --wait[=false]             Wait until the import finishes. Implied if source is set to direct_upload (default )
+      --no-wait[=true]           Do not wait until the import finishes. Only applicable when importing from a remote URL.
       --title string             A short, informational description.
       --size int                 Size of the storage in GiB. (default 10)
       --zone string              Physical location of the storage. See zone listing for valid zones.
