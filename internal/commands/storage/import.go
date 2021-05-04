@@ -235,19 +235,20 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 // TODO: figure out how to handle 'local http uploads', eg. piping from a local / non public internet url
 //       if required(?)
 func parseSource(location string) (parsedLocation *url.URL, sourceType string, fileSize int64, err error) {
+	fileSize, err = getLocalFileSize(location)
+	if err == nil {
+		// we managed to open a local file with this path, so use that
+		sourceType = upcloud.StorageImportSourceDirectUpload
+		parsedLocation = &url.URL{Path: location}
+		return
+	}
 	parsedLocation, err = url.Parse(location)
 	switch {
 	case err != nil:
-		// error parsing url.. try if we can just open the source file?
-		sourceType = upcloud.StorageImportSourceDirectUpload
-		fileSize, err = getLocalFileSize(location)
-		if err != nil {
-			return nil, "", 0, fmt.Errorf("cannot get file size: %w", err)
-		}
-		// looks like it, force the sourcelocation to parsed path
-		parsedLocation = &url.URL{Path: location}
+		// error parsing url and can't open the file - return with error
+		return nil, "", 0, fmt.Errorf("cannot parse url from source-location '%v': %w", location, err)
 	case parsedLocation.Scheme == "" || parsedLocation.Scheme == "file":
-		// parsed, but looks like a local file
+		// parsed, but looks like a local file URL
 		sourceType = upcloud.StorageImportSourceDirectUpload
 		fileSize, err = getLocalFileSize(parsedLocation.Path)
 		if err != nil {

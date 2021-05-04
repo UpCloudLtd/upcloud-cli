@@ -185,7 +185,7 @@ func TestParseSource(t *testing.T) {
 			name:                 "local non-existent file",
 			input:                "foobar",
 			expectedError:        "cannot get file size: stat foobar: no such file or directory",
-			expectedWindowsError: "cannot get file size: CreateFile foobar: no such file or directory",
+			expectedWindowsError: "cannot get file size: CreateFile foobar: The system cannot find the file specified.",
 		},
 		{
 			name:                    "remote http url",
