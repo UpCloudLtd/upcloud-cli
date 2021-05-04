@@ -186,3 +186,24 @@ brews:
     test: |
       system "#{bin}/upctl version"
 
+dockers:
+  -
+    # We're currently building only amd64 version, but might want to build
+    # different kinds in the future.
+    goos: linux
+    goarch: amd64
+    use_buildx: true
+    dockerfile: Dockerfile.goreleaser
+
+    image_templates:
+    - "upcloud/upctl:latest"
+    - "upcloud/upctl:{{ .Tag }}"
+    - "upcloud/upctl:{{ .Major }}"
+    - "upcloud/upctl:{{ .Major }}.{{ .Minor }}"
+
+    build_flag_templates:
+    - "--platform=linux/amd64"
+    - "--label=org.opencontainers.image.created={{.Date}}"
+    - "--label=org.opencontainers.image.title=upctl"
+    - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+    - "--label=org.opencontainers.image.version={{.Version}}"
