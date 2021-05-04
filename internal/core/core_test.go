@@ -40,8 +40,8 @@ func TestInputValidation(t *testing.T) {
 				"--config", "/invalid/file/path",
 				"version",
 			},
-			error:        "cannot load configuration: open /invalid/file/path: no such file or directory",
-			errorWindows: "cannot load configuration: open /invalid/file/path: The system cannot find the path specified.",
+			error:        "cannot load configuration: unable to parse config from file '/invalid/file/path': open /invalid/file/path: no such file or directory",
+			errorWindows: "cannot load configuration: unable to parse config from file '/invalid/file/path': open /invalid/file/path: The system cannot find the path specified.",
 		},
 		{
 			name: "validate output config via env var",
