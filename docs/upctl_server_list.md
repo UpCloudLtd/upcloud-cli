@@ -9,7 +9,7 @@ upctl server list [flags]
 ### Examples
 
 ```
-upctl sever list
+upctl server list
 ```
 
 ### Options
