@@ -99,7 +99,7 @@ upctl.exe -h
 ## Quick Start
 
 Create a `upctl.yaml` config file with user credentials into your home
-directory's .config dir ($HOME/.config/upctl.yaml) or the current directory.
+directory's .config dir ($HOME/.config/upctl.yaml).
 
 ```yaml
 username: your_upcloud_username
