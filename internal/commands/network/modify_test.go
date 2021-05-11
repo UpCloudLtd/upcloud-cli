@@ -3,6 +3,8 @@ package network
 import (
 	"testing"
 
+	"github.com/gemalto/flume"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
@@ -89,7 +91,7 @@ func TestModifyCommand(t *testing.T) {
 			assert.NoError(t, err)
 
 			_, err = c.(commands.SingleArgumentCommand).ExecuteSingleArgument(
-				commands.NewExecutor(conf, &mService),
+				commands.NewExecutor(conf, &mService, flume.New("test")),
 				n.UUID,
 			)
 

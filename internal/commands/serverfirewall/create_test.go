@@ -3,6 +3,8 @@ package serverfirewall
 import (
 	"testing"
 
+	"github.com/gemalto/flume"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
@@ -93,7 +95,7 @@ func TestCreateFirewallRuleCommand(t *testing.T) {
 			err := cc.Cobra().Flags().Parse(test.flags)
 			assert.NoError(t, err)
 
-			_, err = cc.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService), test.arg)
+			_, err = cc.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService, flume.New("test")), test.arg)
 			if test.error != "" {
 				assert.Error(t, err)
 				assert.Equal(t, test.error, err.Error())

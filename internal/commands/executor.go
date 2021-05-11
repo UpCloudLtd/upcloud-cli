@@ -2,13 +2,16 @@ package commands
 
 import (
 	"fmt"
+	"os"
+	"time"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
-	"os"
-	"time"
+	"github.com/gemalto/flume"
 )
 
 // Executor represents the execution context for commands
@@ -24,6 +27,9 @@ type Executor interface {
 	Account() service.Account
 	Plan() service.Plans
 	All() internal.AllServices
+	WithLogger(args ...interface{}) Executor
+	LogDebug(msg string, args ...interface{})
+	LogInfo(msg string, args ...interface{})
 }
 
 type executeResult struct {
@@ -36,6 +42,20 @@ type executorImpl struct {
 	Config  *config.Config
 	LiveLog *ui.LiveLog
 	service internal.AllServices
+	logger  flume.Logger
+}
+
+func (e executorImpl) WithLogger(args ...interface{}) Executor {
+	e.logger = e.logger.With(args...)
+	return &e
+}
+
+func (e *executorImpl) LogDebug(msg string, args ...interface{}) {
+	e.logger.Debug(msg, args...)
+}
+
+func (e *executorImpl) LogInfo(msg string, args ...interface{}) {
+	e.logger.Info(msg, args...)
 }
 
 func (e *executorImpl) WaitFor(waitFn func() error, timeout time.Duration) error {
@@ -96,10 +116,11 @@ func (e executorImpl) All() internal.AllServices {
 }
 
 // NewExecutor creates the default Executor
-func NewExecutor(cfg *config.Config, svc internal.AllServices) Executor {
+func NewExecutor(cfg *config.Config, svc internal.AllServices, logger flume.Logger) Executor {
 	return &executorImpl{
 		Config:  cfg,
 		LiveLog: ui.NewLiveLog(os.Stderr, ui.LiveLogDefaultConfig),
+		logger:  logger,
 		service: svc,
 	}
 }

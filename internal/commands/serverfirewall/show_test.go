@@ -2,11 +2,15 @@ package serverfirewall
 
 import (
 	"bytes"
+
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/gemalto/flume"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
@@ -168,7 +172,7 @@ func TestFirewallShowHumanOutput(t *testing.T) {
 	conf.Viper().Set(config.KeyOutput, config.ValueOutputHuman)
 
 	command := commands.BuildCommand(testCmd, nil, conf)
-	out, err := command.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService), serverDetails.UUID)
+	out, err := command.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService, flume.New("test")), serverDetails.UUID)
 	assert.NoError(t, err)
 
 	buf := bytes.NewBuffer(nil)

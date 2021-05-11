@@ -3,6 +3,8 @@ package ipaddress
 import (
 	"testing"
 
+	"github.com/gemalto/flume"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
@@ -51,7 +53,7 @@ func TestModifyCommand(t *testing.T) {
 			err := c.Cobra().Flags().Parse(test.flags)
 			assert.NoError(t, err)
 
-			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService), test.arg)
+			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService, flume.New("test")), test.arg)
 			if err != nil {
 				assert.Equal(t, test.error, err.Error())
 			} else {

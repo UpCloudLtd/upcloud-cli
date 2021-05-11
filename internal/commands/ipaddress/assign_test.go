@@ -3,6 +3,8 @@ package ipaddress
 import (
 	"testing"
 
+	"github.com/gemalto/flume"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
@@ -76,7 +78,7 @@ func TestAssignCommand(t *testing.T) {
 			err := c.Cobra().Flags().Parse(test.flags)
 			assert.NoError(t, err)
 
-			_, err = c.(commands.NoArgumentCommand).ExecuteWithoutArguments(commands.NewExecutor(conf, &mService))
+			_, err = c.(commands.NoArgumentCommand).ExecuteWithoutArguments(commands.NewExecutor(conf, &mService, flume.New("test")))
 
 			if err != nil {
 				assert.Equal(t, test.error, err.Error())

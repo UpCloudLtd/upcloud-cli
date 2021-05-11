@@ -2,8 +2,12 @@ package account
 
 import (
 	"bytes"
-	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
+
+	"github.com/gemalto/flume"
+
 	"testing"
+
+	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
@@ -55,7 +59,7 @@ func TestShowCommand(t *testing.T) {
 	conf.Viper().Set(config.KeyOutput, config.ValueOutputHuman)
 
 	command := commands.BuildCommand(testCmd, nil, conf)
-	out, err := command.(commands.NoArgumentCommand).ExecuteWithoutArguments(commands.NewExecutor(conf, mService))
+	out, err := command.(commands.NoArgumentCommand).ExecuteWithoutArguments(commands.NewExecutor(conf, mService, flume.New("test")))
 	assert.NoError(t, err)
 
 	buf := bytes.NewBuffer(nil)

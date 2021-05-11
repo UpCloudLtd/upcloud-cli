@@ -2,8 +2,12 @@ package network
 
 import (
 	"bytes"
-	"github.com/UpCloudLtd/upcloud-cli/internal/output"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/gemalto/flume"
+
+	"github.com/UpCloudLtd/upcloud-cli/internal/output"
+
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
@@ -121,7 +125,7 @@ func TestShowCommand(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	res, err := command.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService), network.UUID)
+	res, err := command.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService, flume.New("test")), network.UUID)
 
 	assert.Nil(t, err)
 

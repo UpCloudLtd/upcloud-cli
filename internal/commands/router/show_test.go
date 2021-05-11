@@ -2,15 +2,18 @@ package router
 
 import (
 	"bytes"
+	"testing"
+
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+	"github.com/gemalto/flume"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"testing"
 )
 
 func TestShowCommand(t *testing.T) {
@@ -77,7 +80,7 @@ func TestShowCommand(t *testing.T) {
 	_, err := c.(resolver.ResolutionProvider).Get(&mService)
 	assert.NoError(t, err)
 
-	res, err := c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService), router.UUID)
+	res, err := c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService, flume.New("test")), router.UUID)
 	assert.NoError(t, err)
 
 	buf := bytes.NewBuffer(nil)

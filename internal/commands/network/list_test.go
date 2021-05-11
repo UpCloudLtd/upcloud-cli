@@ -1,8 +1,11 @@
 package network
 
 import (
-	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
+	"github.com/gemalto/flume"
+
 	"testing"
+
+	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
@@ -84,7 +87,7 @@ func TestListCommand(t *testing.T) {
 
 			assert.NoError(t, err)
 
-			res, err := c.(commands.NoArgumentCommand).ExecuteWithoutArguments(commands.NewExecutor(cfg, &mService))
+			res, err := c.(commands.NoArgumentCommand).ExecuteWithoutArguments(commands.NewExecutor(cfg, &mService, flume.New("test")))
 
 			assert.Nil(t, err)
 			assert.Equal(t, createTable(test.expected), res)

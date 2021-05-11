@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/gemalto/flume"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
@@ -58,7 +60,7 @@ func TestDeleteServerFirewallRuleCommand(t *testing.T) {
 			err := cc.Cobra().Flags().Parse(test.flags)
 			assert.NoError(t, err)
 
-			_, err = cc.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService), Server1.UUID)
+			_, err = cc.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService, flume.New("test")), Server1.UUID)
 			if test.error != "" {
 				fmt.Println("ERROR", test.error, "==", err)
 				assert.EqualError(t, err, test.error)

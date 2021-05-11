@@ -3,6 +3,8 @@ package serverstorage
 import (
 	"testing"
 
+	"github.com/gemalto/flume"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
@@ -115,7 +117,7 @@ func TestAttachStorageCommand(t *testing.T) {
 			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 
-			_, err = c.(commands.SingleArgumentCommand).ExecuteSingleArgument(commands.NewExecutor(conf, mService), Server1.UUID)
+			_, err = c.(commands.SingleArgumentCommand).ExecuteSingleArgument(commands.NewExecutor(conf, mService, flume.New("test")), Server1.UUID)
 
 			if test.error != "" {
 				assert.Error(t, err)

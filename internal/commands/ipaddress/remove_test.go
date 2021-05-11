@@ -3,6 +3,8 @@ package ipaddress
 import (
 	"testing"
 
+	"github.com/gemalto/flume"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
@@ -41,7 +43,7 @@ func TestRemoveCommand(t *testing.T) {
 			conf := config.New()
 
 			c := commands.BuildCommand(RemoveCommand(), nil, conf)
-			_, err := c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService), test.arg)
+			_, err := c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService, flume.New("test")), test.arg)
 
 			if err != nil {
 				assert.Equal(t, test.error, err.Error())

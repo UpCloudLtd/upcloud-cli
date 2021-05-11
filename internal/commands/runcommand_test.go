@@ -215,9 +215,8 @@ func TestExecute_Resolution(t *testing.T) {
 	mService := &smock.Service{}
 	cfg := config.New()
 	cfg.Viper().Set(config.KeyOutput, config.ValueOutputJSON)
-	executor := NewExecutor(cfg, mService)
-	testLogger := flume.New("test")
-	results, err := execute(cmd, executor, testLogger, []string{"a", "b", "failtoresolve", "c"}, 10, func(exec Executor, arg string) (output.Output, error) {
+	executor := NewExecutor(cfg, mService, flume.New("test"))
+	results, err := execute(cmd, executor, []string{"a", "b", "failtoresolve", "c"}, 10, func(exec Executor, arg string) (output.Output, error) {
 		return output.OnlyMarshaled{Value: arg}, nil
 	})
 	assert.Len(t, results, 4)
@@ -251,9 +250,8 @@ func TestExecute_Error(t *testing.T) {
 	mService := &smock.Service{}
 	cfg := config.New()
 	cfg.Viper().Set(config.KeyOutput, config.ValueOutputJSON)
-	executor := NewExecutor(cfg, mService)
-	testLogger := flume.New("test")
-	results, err := execute(cmd, executor, testLogger, []string{"a", "b", "failtorexecute", "c"}, 10, cmd.Execute)
+	executor := NewExecutor(cfg, mService, flume.New("test"))
+	results, err := execute(cmd, executor, []string{"a", "b", "failtorexecute", "c"}, 10, cmd.Execute)
 	assert.Len(t, results, 4)
 	assert.NoError(t, err)
 

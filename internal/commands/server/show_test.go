@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"testing"
 
+	"github.com/gemalto/flume"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
@@ -211,7 +213,7 @@ func TestServerHumanOutput(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	res, err := command.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService), uuid)
+	res, err := command.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService, flume.New("test")), uuid)
 
 	assert.Nil(t, err)
 

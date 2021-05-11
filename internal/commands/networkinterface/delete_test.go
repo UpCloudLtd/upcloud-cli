@@ -3,6 +3,8 @@ package networkinterface
 import (
 	"testing"
 
+	"github.com/gemalto/flume"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
@@ -53,7 +55,7 @@ func TestDeleteCommand(t *testing.T) {
 			err := c.Cobra().Flags().Parse(test.flags)
 			assert.NoError(t, err)
 
-			_, err = c.(commands.SingleArgumentCommand).ExecuteSingleArgument(commands.NewExecutor(conf, &mService), test.arg)
+			_, err = c.(commands.SingleArgumentCommand).ExecuteSingleArgument(commands.NewExecutor(conf, &mService, flume.New("test")), test.arg)
 
 			if test.error != "" {
 				assert.Errorf(t, err, test.error)
