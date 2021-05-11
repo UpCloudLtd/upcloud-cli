@@ -2,6 +2,9 @@ package core
 
 import (
 	"fmt"
+
+	"github.com/gemalto/flume"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/all"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"

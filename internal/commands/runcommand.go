@@ -21,7 +21,7 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 	executor := NewExecutor(config, service)
 	switch typedCommand := command.(type) {
 	case NoArgumentCommand:
-		logger.Debug(cmd.CommandPath(), "Arguments:", args)
+		logger.Debug(command.Cobra().CommandPath(), "Arguments:", args)
 		// need to pass in fake arguments here, to actually trigger execution
 		results, err := execute(typedCommand, executor, []string{""}, 1,
 			// FIXME: this bit panics go-critic unlambda check, figure out why and report upstream
@@ -33,7 +33,7 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 		}
 		return render(command.Cobra().OutOrStdout(), config, results)
 	case SingleArgumentCommand:
-		logger.Debug(cmd.CommandPath(), "Arguments:", args)
+		logger.Debug(command.Cobra().CommandPath(), "Arguments:", args)
 		// make sure we have an argument
 		if len(args) != 1 || args[0] == "" {
 			return fmt.Errorf("exactly 1 argument is required")
@@ -44,7 +44,7 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 		}
 		return render(command.Cobra().OutOrStdout(), config, results)
 	case MultipleArgumentCommand:
-		logger.Debug(cmd.CommandPath(), "Arguments:", args)
+		logger.Debug(command.Cobra().CommandPath(), "Arguments:", args)
 		// make sure we have arguments
 		if len(args) < 1 {
 			return fmt.Errorf("at least one argument is required")
@@ -57,7 +57,7 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 	default:
 		// no execution found on this command, eg. most likely an 'organizational' command
 		// so just show usage
-		logger.Debug(cmd.CommandPath(), "Arguments:", args)
+		logger.Debug(command.Cobra().CommandPath(), "Arguments:", args)
 		return command.Cobra().Usage()
 	}
 }
