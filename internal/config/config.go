@@ -7,9 +7,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gemalto/flume"
+
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 	"github.com/UpCloudLtd/upcloud-cli/internal/terminal"
-	"github.com/gemalto/flume"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/client"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
@@ -95,7 +96,12 @@ func (s *Config) Load() error {
 
 	v.Set("config", v.ConfigFileUsed())
 
-	logger.Debug("Viper configs", v.AllSettings())
+	settings := v.AllSettings()
+	// sanitize password before logging settings
+	if _, ok := settings["password"]; ok {
+		settings["password"] = "..."
+	}
+	logger.Debug("Viper settings", settings)
 	return nil
 
 }
