@@ -18,12 +18,13 @@ var (
 )
 
 func commandRunE(command Command, service internal.AllServices, config *config.Config, args []string) error {
+	cmdLogger := logger.With("command", command.Cobra().CommandPath())
 	executor := NewExecutor(config, service)
 	switch typedCommand := command.(type) {
 	case NoArgumentCommand:
-		logger.Debug(command.Cobra().CommandPath(), "Arguments:", args)
+		cmdLogger.Debug("executing without arguments", "arguments", args)
 		// need to pass in fake arguments here, to actually trigger execution
-		results, err := execute(typedCommand, executor, []string{""}, 1,
+		results, err := execute(typedCommand, executor, cmdLogger, []string{""}, 1,
 			// FIXME: this bit panics go-critic unlambda check, figure out why and report upstream
 			func(exec Executor, fake string) (output.Output, error) {
 				return typedCommand.ExecuteWithoutArguments(exec)
@@ -33,23 +34,23 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 		}
 		return render(command.Cobra().OutOrStdout(), config, results)
 	case SingleArgumentCommand:
-		logger.Debug(command.Cobra().CommandPath(), "Arguments:", args)
+		cmdLogger.Debug("executing single argument", "arguments", args)
 		// make sure we have an argument
 		if len(args) != 1 || args[0] == "" {
 			return fmt.Errorf("exactly 1 argument is required")
 		}
-		results, err := execute(typedCommand, executor, args, 1, typedCommand.ExecuteSingleArgument)
+		results, err := execute(typedCommand, executor, cmdLogger, args, 1, typedCommand.ExecuteSingleArgument)
 		if err != nil {
 			return err
 		}
 		return render(command.Cobra().OutOrStdout(), config, results)
 	case MultipleArgumentCommand:
-		logger.Debug(command.Cobra().CommandPath(), "Arguments:", args)
+		cmdLogger.Debug("executing multi argument", "arguments", args)
 		// make sure we have arguments
 		if len(args) < 1 {
 			return fmt.Errorf("at least one argument is required")
 		}
-		results, err := execute(typedCommand, executor, args, typedCommand.MaximumExecutions(), typedCommand.Execute)
+		results, err := execute(typedCommand, executor, cmdLogger, args, typedCommand.MaximumExecutions(), typedCommand.Execute)
 		if err != nil {
 			return err
 		}
@@ -57,7 +58,7 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 	default:
 		// no execution found on this command, eg. most likely an 'organizational' command
 		// so just show usage
-		logger.Debug(command.Cobra().CommandPath(), "Arguments:", args)
+		cmdLogger.Debug("no execution found", "arguments", args)
 		return command.Cobra().Usage()
 	}
 }
@@ -97,7 +98,7 @@ func resolveArguments(nc Command, svc internal.AllServices, args []string) (out 
 	return
 }
 
-func execute(command Command, executor Executor, args []string, parallelRuns int, executeCommand func(exec Executor, arg string) (output.Output, error)) ([]executeResult, error) {
+func execute(command Command, executor Executor, logger flume.Logger, args []string, parallelRuns int, executeCommand func(exec Executor, arg string) (output.Output, error)) ([]executeResult, error) {
 	resolvedArgs, err := resolveArguments(command, executor.All(), args)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create resolver: %w", err)
@@ -117,7 +118,7 @@ func execute(command Command, executor Executor, args []string, parallelRuns int
 
 	results := make([]executeResult, 0, len(args))
 	renderTicker := time.NewTicker(100 * time.Millisecond)
-
+	logger.Debug("starting work", "workers", workerCount)
 	for {
 		select {
 		case workerID := <-workerQueue:
@@ -132,13 +133,16 @@ func execute(command Command, executor Executor, args []string, parallelRuns int
 			go func(index int, argument resolvedArgument) {
 				defer func() {
 					// return worker to queue when exiting
+					logger.Debug("worker exiting", "worker", index)
 					workerQueue <- workerID
 				}()
 				if argument.Error != nil {
 					// argument wasn't parsed correctly, pass the error on
+					logger.Debug("worker got invalid argument", "worker", index, "error", argument.Error)
 					returnChan <- executeResult{Job: index, Error: fmt.Errorf("cannot resolve argument: %w", argument.Error)}
 				} else {
 					// otherwise, execute and return results
+					logger.Debug("worker starting", "worker", index, "argument", argument.Resolved)
 					res, err := executeCommand(executor, argument.Resolved)
 					returnChan <- executeResult{Job: index, Result: res, Error: err}
 				}
