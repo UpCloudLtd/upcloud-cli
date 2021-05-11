@@ -34,16 +34,17 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 
 			// Set up flume
 			flume.SetOut(os.Stderr)
+			// TODO: should we make the level configurable?
 			logLvl := flume.DebugLevel
 			if !conf.GlobalFlags.Debug {
 				// not debugging, no log output!
 				logLvl = flume.OffLevel
 			}
 			logEncoding := "term-color"
+			// only terminal.Colours() is, as stderr might be piped out of a terminal too.
 			if !terminal.Colours() || !terminal.IsStderrTerminal() {
 				logEncoding = "ltsv"
 			}
-			// Set Flume config up according to debug flag
 			if err := flume.Configure(flume.Config{
 				AddCaller:    &conf.GlobalFlags.Debug,
 				DefaultLevel: logLvl,
