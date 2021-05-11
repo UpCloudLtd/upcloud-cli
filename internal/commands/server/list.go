@@ -11,7 +11,7 @@ import (
 // ListCommand creates the "server list" command
 func ListCommand() commands.Command {
 	return &listCommand{
-		BaseCommand: commands.New("list", "List current servers", "upctl sever list"),
+		BaseCommand: commands.New("list", "List current servers", "upctl server list"),
 	}
 }
 
