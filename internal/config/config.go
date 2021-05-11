@@ -101,7 +101,7 @@ func (s *Config) Load() error {
 	if _, ok := settings["password"]; ok {
 		settings["password"] = "..."
 	}
-	logger.Debug("Viper settings", settings)
+	logger.Debug("viper initialized", "settings", settings)
 	return nil
 
 }
