@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/gemalto/flume"
 
@@ -31,7 +32,8 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 
 			terminal.ForceColours(conf.GlobalFlags.Colors && terminal.IsStdoutTerminal())
 
-			// Set up flume logging level
+			// Set up flume
+			flume.SetOut(os.Stderr)
 			logLvl := flume.DebugLevel
 			if !conf.GlobalFlags.Debug {
 				logLvl = flume.InfoLevel
