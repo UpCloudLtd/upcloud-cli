@@ -29,7 +29,7 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 				return err
 			}
 
-			terminal.ForceColours(conf.GlobalFlags.Colors)
+			terminal.ForceColours(conf.GlobalFlags.Colors && terminal.IsStdoutTerminal())
 
 			// Set up flume logging level
 			logLvl := flume.DebugLevel
