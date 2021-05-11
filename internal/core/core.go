@@ -39,11 +39,15 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 				// not debugging, no log output!
 				logLvl = flume.OffLevel
 			}
+			logEncoding := "term-color"
+			if !terminal.Colours() || !terminal.IsStderrTerminal() {
+				logEncoding = "ltsv"
+			}
 			// Set Flume config up according to debug flag
 			if err := flume.Configure(flume.Config{
 				AddCaller:    &conf.GlobalFlags.Debug,
 				DefaultLevel: logLvl,
-				Encoding:     "term-color",
+				Encoding:     logEncoding,
 			}); err != nil {
 				return fmt.Errorf("flume config error: %w", err)
 			}
