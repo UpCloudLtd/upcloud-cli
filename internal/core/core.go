@@ -36,7 +36,8 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 			flume.SetOut(os.Stderr)
 			logLvl := flume.DebugLevel
 			if !conf.GlobalFlags.Debug {
-				logLvl = flume.InfoLevel
+				// not debugging, no log output!
+				logLvl = flume.OffLevel
 			}
 			// Set Flume config up according to debug flag
 			if err := flume.Configure(flume.Config{
