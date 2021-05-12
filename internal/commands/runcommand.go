@@ -50,7 +50,7 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 		if len(args) < 1 {
 			return fmt.Errorf("at least one argument is required")
 		}
-		results, err := execute(typedCommand, executor, args, 5, typedCommand.Execute)
+		results, err := execute(typedCommand, executor, args, typedCommand.MaximumExecutions(), typedCommand.Execute)
 		if err != nil {
 			return err
 		}
