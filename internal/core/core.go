@@ -39,7 +39,7 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 				logLvl = flume.OffLevel
 			}
 			logEncoding := "term-color"
-			// only terminal.Colours() is, as stderr might be piped out of a terminal too.
+			// only terminal.Colours() is not enough, as stderr might be piped out of a terminal too.
 			if !terminal.Colours() || !terminal.IsStderrTerminal() {
 				logEncoding = "ltsv"
 			}
