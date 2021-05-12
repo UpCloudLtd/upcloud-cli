@@ -143,7 +143,7 @@ func execute(command Command, executor Executor, args []string, parallelRuns int
 				} else {
 					// otherwise, execute and return results
 					executor.LogDebug("worker starting", "worker", index, "argument", argument.Resolved)
-					res, err := executeCommand(executor.WithLogger("worker", index), argument.Resolved)
+					res, err := executeCommand(executor.WithLogger("worker", index, "argument", argument.Resolved), argument.Resolved)
 					returnChan <- executeResult{Job: index, Result: res, Error: err}
 				}
 			}(workerID, arg)
