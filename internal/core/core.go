@@ -43,8 +43,9 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 			if !terminal.Colours() || !terminal.IsStderrTerminal() {
 				logEncoding = "ltsv"
 			}
+			addCaller := true
 			if err := flume.Configure(flume.Config{
-				AddCaller:    &conf.GlobalFlags.Debug,
+				AddCaller:    &addCaller,
 				DefaultLevel: logLvl,
 				Encoding:     logEncoding,
 			}); err != nil {
