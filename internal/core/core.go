@@ -4,16 +4,14 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/gemalto/flume"
-
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/all"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
-
 	"github.com/UpCloudLtd/upcloud-cli/internal/terminal"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 
 	valid "github.com/asaskevich/govalidator"
+	"github.com/gemalto/flume"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )

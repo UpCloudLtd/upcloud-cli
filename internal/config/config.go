@@ -7,14 +7,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gemalto/flume"
-
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 	"github.com/UpCloudLtd/upcloud-cli/internal/terminal"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/client"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/adrg/xdg"
+	"github.com/gemalto/flume"
 	"github.com/hashicorp/go-cleanhttp"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"

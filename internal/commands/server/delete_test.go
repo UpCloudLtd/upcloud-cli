@@ -3,14 +3,13 @@ package server
 import (
 	"testing"
 
-	"github.com/gemalto/flume"
-
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )

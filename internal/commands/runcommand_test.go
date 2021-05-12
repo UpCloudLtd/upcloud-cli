@@ -7,16 +7,16 @@ import (
 	"os"
 	"testing"
 
-	"github.com/gemalto/flume"
-	"github.com/spf13/cobra"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
+
+	"github.com/gemalto/flume"
+	"github.com/spf13/cobra"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 type mockNone struct {

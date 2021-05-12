@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/gemalto/flume"
-
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/storage"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
@@ -14,6 +12,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )

@@ -5,12 +5,12 @@ import (
 	"io"
 	"time"
 
-	"github.com/gemalto/flume"
-
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
+
+	"github.com/gemalto/flume"
 )
 
 var (

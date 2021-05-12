@@ -3,14 +3,13 @@ package networkinterface
 import (
 	"testing"
 
-	"github.com/gemalto/flume"
-
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 )
 

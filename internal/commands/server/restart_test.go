@@ -1,19 +1,16 @@
 package server
 
 import (
-	"github.com/gemalto/flume"
-
 	"testing"
-
-	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
-	// "time"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
+	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )

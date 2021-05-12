@@ -2,18 +2,16 @@ package serverfirewall
 
 import (
 	"bytes"
-
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/gemalto/flume"
+	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 
-	"testing"
-
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/gemalto/flume"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/stretchr/testify/assert"
 )

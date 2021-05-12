@@ -5,11 +5,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gemalto/flume"
-	"github.com/stretchr/testify/assert"
-
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
+
+	"github.com/gemalto/flume"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestExecutor_WaitFor(t *testing.T) {
