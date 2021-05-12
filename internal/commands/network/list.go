@@ -94,9 +94,9 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 	}
 	return output.Table{
 		Columns: []output.TableColumn{
-			{Key: "uuid", Header: "UUID", Color: ui.DefaultUUUIDColours},
+			{Key: "uuid", Header: "UUID", Colour: ui.DefaultUUUIDColours},
 			{Key: "name", Header: "Name"},
-			{Key: "router", Header: "Router", Color: ui.DefaultUUUIDColours},
+			{Key: "router", Header: "Router", Colour: ui.DefaultUUUIDColours},
 			{Key: "type", Header: "Type"},
 			{Key: "zone", Header: "Zone"},
 		},

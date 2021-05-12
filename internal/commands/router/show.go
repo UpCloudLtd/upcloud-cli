@@ -61,7 +61,7 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 			Contents: output.Details{
 				Sections: []output.DetailSection{
 					{Rows: []output.DetailRow{
-						{Key: "uuid", Title: "UUID:", Color: ui.DefaultUUUIDColours, Value: router.UUID},
+						{Key: "uuid", Title: "UUID:", Colour: ui.DefaultUUUIDColours, Value: router.UUID},
 						{Key: "name", Title: "Name:", Value: router.Name},
 						{Key: "type", Title: "Type:", Value: router.Type},
 					}},
@@ -73,7 +73,7 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 			Title: "Networks:",
 			Contents: output.Table{
 				Columns: []output.TableColumn{
-					{Key: "uuid", Header: "UUID", Color: ui.DefaultUUUIDColours},
+					{Key: "uuid", Header: "UUID", Colour: ui.DefaultUUUIDColours},
 					{Key: "name", Header: "Name"},
 					{Key: "type", Header: "Type"},
 					{Key: "zone", Header: "Zone"},

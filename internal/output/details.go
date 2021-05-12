@@ -3,10 +3,12 @@ package output
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
+
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"gopkg.in/yaml.v2"
+
+	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 )
 
 // DetailRow represents a single row in the details view, with a title and a value
@@ -14,7 +16,7 @@ type DetailRow struct {
 	Title  string // used for human-readable representations
 	Key    string // user for machine-readable (json, yaml) representations
 	Value  interface{}
-	Color  text.Colors
+	Colour text.Colors
 	Format func(val interface{}) (text.Colors, string, error)
 }
 
@@ -89,13 +91,13 @@ func (d Details) MarshalHuman() ([]byte, error) {
 		for _, row := range sec.Rows {
 			switch {
 			case row.Format != nil:
-				color, formatted, err := row.Format(row.Value)
+				colour, formatted, err := row.Format(row.Value)
 				if err != nil {
 					return nil, fmt.Errorf("error formatting row '%v': %w", row.Key, err)
 				}
-				dCommon.Append(table.Row{row.Title, color.Sprintf("%v", formatted)})
-			case row.Color != nil:
-				dCommon.Append(table.Row{row.Title, row.Color.Sprintf("%v", row.Value)})
+				dCommon.Append(table.Row{row.Title, colour.Sprintf("%v", formatted)})
+			case row.Colour != nil:
+				dCommon.Append(table.Row{row.Title, row.Colour.Sprintf("%v", row.Value)})
 			default:
 				dCommon.Append(table.Row{row.Title, row.Value})
 			}

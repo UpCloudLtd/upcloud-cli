@@ -3,13 +3,15 @@ package output
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
-	"github.com/UpCloudLtd/upcloud-cli/internal/validation"
+	"math"
+	"time"
+
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"gopkg.in/yaml.v2"
-	"math"
-	"time"
+
+	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
+	"github.com/UpCloudLtd/upcloud-cli/internal/validation"
 )
 
 // TableRow represents a single row of data in a table
@@ -21,7 +23,7 @@ type TableColumn struct {
 	Key    string
 	Hidden bool
 	config *table.ColumnConfig
-	Color  text.Colors
+	Colour text.Colors
 	Format func(val interface{}) (text.Colors, string, error)
 }
 
@@ -133,13 +135,13 @@ func (s Table) MarshalHuman() ([]byte, error) {
 			}
 			val := row[columnKeyPos[column.Key]]
 			if column.Format != nil {
-				color, formatted, err := column.Format(val)
+				colour, formatted, err := column.Format(val)
 				if err != nil {
 					return nil, fmt.Errorf("error formatting column '%v': %w", column.Key, err)
 				}
-				val = color.Sprintf("%v", formatted)
-			} else if column.Color != nil {
-				val = column.Color.Sprintf("%v", val)
+				val = colour.Sprintf("%v", formatted)
+			} else if column.Colour != nil {
+				val = column.Colour.Sprintf("%v", val)
 			}
 			arow = append(arow, val)
 		}

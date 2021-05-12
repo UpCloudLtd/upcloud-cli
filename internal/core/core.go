@@ -29,7 +29,7 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 				return err
 			}
 
-			// detect desired color output
+			// detect desired colour output
 			switch {
 			case conf.GlobalFlags.ForceColours == config.True:
 				text.EnableColors()
@@ -55,7 +55,7 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 			if err := flume.Configure(flume.Config{
 				AddCaller:    &addCaller,
 				DefaultLevel: logLvl,
-				// do not color logs, as it doesn't really fit our usecase and complicates the colour handling
+				// do not colour logs, as it doesn't really fit our use case and complicates the colour handling
 				Encoding: "ltsv",
 			}); err != nil {
 				return fmt.Errorf("flume config error: %w", err)
@@ -86,8 +86,8 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 		&conf.GlobalFlags.OutputFormat, "output", "o", "human",
 		"Output format (supported: json, yaml and human)",
 	)
-	config.AddToggleFlag(flags, &conf.GlobalFlags.ForceColours, "force-colours", false, "force colored output despite detected terminal support")
-	config.AddToggleFlag(flags, &conf.GlobalFlags.NoColours, "no-colours", false, "disable colored output despite detected terminal support")
+	config.AddToggleFlag(flags, &conf.GlobalFlags.ForceColours, "force-colours", false, "force coloured output despite detected terminal support")
+	config.AddToggleFlag(flags, &conf.GlobalFlags.NoColours, "no-colours", false, "disable coloured output despite detected terminal support")
 	flags.BoolVar(
 		&conf.GlobalFlags.Debug, "debug", false,
 		"Print out more verbose debug logs",
