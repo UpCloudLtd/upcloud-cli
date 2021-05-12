@@ -27,9 +27,10 @@ type Executor interface {
 	Account() service.Account
 	Plan() service.Plans
 	All() internal.AllServices
+	Debug(msg string, args ...interface{})
+	Info(msg string, args ...interface{})
+	Error(msg string, args ...interface{})
 	WithLogger(args ...interface{}) Executor
-	LogDebug(msg string, args ...interface{})
-	LogInfo(msg string, args ...interface{})
 }
 
 type executeResult struct {
@@ -50,12 +51,16 @@ func (e executorImpl) WithLogger(args ...interface{}) Executor {
 	return &e
 }
 
-func (e *executorImpl) LogDebug(msg string, args ...interface{}) {
+func (e *executorImpl) Debug(msg string, args ...interface{}) {
 	e.logger.Debug(msg, args...)
 }
 
-func (e *executorImpl) LogInfo(msg string, args ...interface{}) {
+func (e *executorImpl) Info(msg string, args ...interface{}) {
 	e.logger.Info(msg, args...)
+}
+
+func (e *executorImpl) Error(msg string, args ...interface{}) {
+	e.logger.Error(msg, args...)
 }
 
 func (e *executorImpl) WaitFor(waitFn func() error, timeout time.Duration) error {

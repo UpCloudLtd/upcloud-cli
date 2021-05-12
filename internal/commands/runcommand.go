@@ -118,7 +118,7 @@ func execute(command Command, executor Executor, args []string, parallelRuns int
 
 	results := make([]executeResult, 0, len(args))
 	renderTicker := time.NewTicker(100 * time.Millisecond)
-	executor.LogDebug("starting work", "workers", workerCount)
+	executor.Debug("starting work", "workers", workerCount)
 	for {
 		select {
 		case workerID := <-workerQueue:
@@ -133,16 +133,16 @@ func execute(command Command, executor Executor, args []string, parallelRuns int
 			go func(index int, argument resolvedArgument) {
 				defer func() {
 					// return worker to queue when exiting
-					executor.LogDebug("worker exiting", "worker", index)
+					executor.Debug("worker exiting", "worker", index)
 					workerQueue <- workerID
 				}()
 				if argument.Error != nil {
 					// argument wasn't parsed correctly, pass the error on
-					executor.LogDebug("worker got invalid argument", "worker", index, "error", argument.Error)
+					executor.Debug("worker got invalid argument", "worker", index, "error", argument.Error)
 					returnChan <- executeResult{Job: index, Error: fmt.Errorf("cannot resolve argument: %w", argument.Error)}
 				} else {
 					// otherwise, execute and return results
-					executor.LogDebug("worker starting", "worker", index, "argument", argument.Resolved)
+					executor.Debug("worker starting", "worker", index, "argument", argument.Resolved)
 					res, err := executeCommand(executor.WithLogger("worker", index, "argument", argument.Resolved), argument.Resolved)
 					returnChan <- executeResult{Job: index, Result: res, Error: err}
 				}
@@ -151,7 +151,7 @@ func execute(command Command, executor Executor, args []string, parallelRuns int
 			// got a result from a worker
 			results = append(results, res)
 			if len(results) >= len(args) {
-				executor.LogDebug("execute done")
+				executor.Debug("execute done")
 				// we're done, update ui for the last time and render the results
 				executor.Update()
 				return results, nil

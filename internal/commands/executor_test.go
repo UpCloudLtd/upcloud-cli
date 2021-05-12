@@ -96,11 +96,11 @@ func TestExecutor_Logging(t *testing.T) {
 	cfg := config.New()
 	logger := &mockLogger{context: []interface{}{"base", "context"}}
 	exec := NewExecutor(cfg, mService, logger)
-	exec.LogInfo("info", "hello", "world")
+	exec.Info("info", "hello", "world")
 	// create a contexted executor
 	contextExec := exec.WithLogger("added", "newcontext")
-	contextExec.LogInfo("infoz", "helloz", "worldz")
-	exec.LogDebug("debug", "hi", "earth")
+	contextExec.Info("infoz", "helloz", "worldz")
+	exec.Debug("debug", "hi", "earth")
 	// make sure the main executor does not leak to the contexted one or vice versa
 	assert.Equal(t, &mockLogger{
 		debugLines: []mockLogEntry{

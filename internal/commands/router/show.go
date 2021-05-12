@@ -40,12 +40,12 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 	if err != nil {
 		return nil, err
 	}
-	exec.LogDebug("got router", "uuid", router.UUID)
+	exec.Debug("got router", "uuid", router.UUID)
 	networks, err := getNetworks(exec, router.AttachedNetworks)
 	if err != nil {
 		return nil, err
 	}
-	exec.LogDebug("got router networks", "networks", len(networks))
+	exec.Debug("got router networks", "networks", len(networks))
 	networkRows := make([]output.TableRow, len(networks))
 	for i, network := range networks {
 		networkRows[i] = output.TableRow{
