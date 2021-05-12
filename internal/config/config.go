@@ -8,7 +8,6 @@ import (
 	"time"
 
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
-	"github.com/UpCloudLtd/upcloud-cli/internal/terminal"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/client"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
@@ -53,9 +52,10 @@ func New() *Config {
 type GlobalFlags struct {
 	ConfigFile    string        `valid:"-"`
 	ClientTimeout time.Duration `valid:"-"`
-	Colors        bool          `valid:"-"`
 	Debug         bool          `valid:"-"`
 	OutputFormat  string        `valid:"in(human|json|yaml)"`
+	NoColours     OptionalBoolean
+	ForceColours  OptionalBoolean
 }
 
 // Config holds the configuration for running upctl
@@ -171,11 +171,6 @@ func (s *Config) OutputHuman() bool {
 // ClientTimeout is a convenience method that returns the user specified client timeout
 func (s *Config) ClientTimeout() time.Duration {
 	return s.viper.GetDuration(KeyClientTimeout)
-}
-
-// InteractiveUI is a convenience method that returns true if the user has requested human output and the terminal supports it.
-func (s *Config) InteractiveUI() bool {
-	return terminal.IsStdoutTerminal() && s.OutputHuman()
 }
 
 type transport struct{}

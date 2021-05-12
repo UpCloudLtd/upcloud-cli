@@ -1,9 +1,12 @@
 package output_test
 
 import (
-	"github.com/UpCloudLtd/upcloud-cli/internal/output"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/jedib0t/go-pretty/v6/text"
+	"github.com/stretchr/testify/assert"
+
+	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 )
 
 type outputTestCase struct {
@@ -17,6 +20,7 @@ type outputTestCase struct {
 
 func (c outputTestCase) Generate() func(t *testing.T) {
 	return func(t *testing.T) {
+		text.DisableColors()
 		if c.expectedErrorMessage == "" {
 			bytes, err := c.input.MarshalHuman()
 			assert.NoError(t, err)

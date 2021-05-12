@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"testing"
 
+	"github.com/jedib0t/go-pretty/v6/text"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
@@ -15,7 +17,7 @@ import (
 )
 
 func TestShowCommand(t *testing.T) {
-
+	text.DisableColors()
 	account := upcloud.Account{
 		Credits:  42,
 		UserName: "opencredo",

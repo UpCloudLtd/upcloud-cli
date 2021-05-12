@@ -12,6 +12,7 @@ import (
 
 	valid "github.com/asaskevich/govalidator"
 	"github.com/gemalto/flume"
+	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
@@ -28,7 +29,19 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 				return err
 			}
 
-			terminal.ForceColours(conf.GlobalFlags.Colors && terminal.IsStdoutTerminal())
+			// detect desired color output
+			switch {
+			case conf.GlobalFlags.ForceColours == config.True:
+				text.EnableColors()
+			case conf.GlobalFlags.NoColours == config.True:
+				text.DisableColors()
+			default:
+				if terminal.IsStdoutTerminal() {
+					text.EnableColors()
+				} else {
+					text.DisableColors()
+				}
+			}
 
 			// Set up flume
 			flume.SetOut(os.Stderr)
@@ -73,10 +86,8 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 		&conf.GlobalFlags.OutputFormat, "output", "o", "human",
 		"Output format (supported: json, yaml and human)",
 	)
-	flags.BoolVar(
-		&conf.GlobalFlags.Colors, "colours", true,
-		"Use terminal colours",
-	)
+	config.AddToggleFlag(flags, &conf.GlobalFlags.ForceColours, "force-colours", false, "force colored output despite detected terminal support")
+	config.AddToggleFlag(flags, &conf.GlobalFlags.NoColours, "no-colours", false, "disable colored output despite detected terminal support")
 	flags.BoolVar(
 		&conf.GlobalFlags.Debug, "debug", false,
 		"Print out more verbose debug logs",

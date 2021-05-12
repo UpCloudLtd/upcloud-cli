@@ -5,6 +5,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/jedib0t/go-pretty/v6/text"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
@@ -17,6 +19,7 @@ import (
 )
 
 func TestStorageHumanOutput(t *testing.T) {
+	text.DisableColors()
 	storage := upcloud.Storage{
 		Access:     "private",
 		License:    0,

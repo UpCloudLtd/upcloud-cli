@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -64,6 +65,7 @@ func TestShowDetailsRender(t *testing.T) {
 		},
 	} {
 		t.Run(testcase.name, func(t *testing.T) {
+			text.DisableColors()
 			view := NewListLayout(testcase.style)
 			testcase.buildViewFn(view)
 			fmt.Println(view.Render())
