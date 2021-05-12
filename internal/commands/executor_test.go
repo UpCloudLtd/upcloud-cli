@@ -96,24 +96,22 @@ func TestExecutor_Logging(t *testing.T) {
 	cfg := config.New()
 	logger := &mockLogger{context: []interface{}{"base", "context"}}
 	exec := NewExecutor(cfg, mService, logger)
-	exec.Info("info", "hello", "world")
+	exec.Debug("debug1", "hello", "world")
 	// create a contexted executor
 	contextExec := exec.WithLogger("added", "newcontext")
-	contextExec.Info("infoz", "helloz", "worldz")
-	exec.Debug("debug", "hi", "earth")
+	contextExec.Debug("debugcontext", "helloz", "worldz")
+	exec.Debug("debug2", "hi", "earth")
 	// make sure the main executor does not leak to the contexted one or vice versa
 	assert.Equal(t, &mockLogger{
 		debugLines: []mockLogEntry{
-			{Msg: "debug", Args: []interface{}{"hi", "earth"}},
-		},
-		infoLines: []mockLogEntry{
-			{Msg: "info", Args: []interface{}{"hello", "world"}},
+			{Msg: "debug1", Args: []interface{}{"hello", "world"}},
+			{Msg: "debug2", Args: []interface{}{"hi", "earth"}},
 		},
 		context: []interface{}{"base", "context"},
 	}, logger)
 	assert.Equal(t, &mockLogger{
-		infoLines: []mockLogEntry{
-			{Msg: "infoz", Args: []interface{}{"helloz", "worldz"}},
+		debugLines: []mockLogEntry{
+			{Msg: "debugcontext", Args: []interface{}{"helloz", "worldz"}},
 		},
 		context: []interface{}{"base", "context", "added", "newcontext"},
 	}, contextExec.(*executorImpl).logger)
