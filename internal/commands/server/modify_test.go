@@ -1,15 +1,16 @@
 package server
 
 import (
-	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
+	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -91,7 +92,7 @@ func TestModifyCommand(t *testing.T) {
 			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 
-			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService), test.server.UUID)
+			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService, flume.New("test")), test.server.UUID)
 			assert.NoError(t, err)
 			mService.AssertNumberOfCalls(t, targetMethod, 1)
 			mService.AssertNumberOfCalls(t, "GetServerDetails", 1)

@@ -8,11 +8,11 @@ import (
 	"time"
 
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
-	"github.com/UpCloudLtd/upcloud-cli/internal/terminal"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/client"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/adrg/xdg"
+	"github.com/gemalto/flume"
 	"github.com/hashicorp/go-cleanhttp"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -39,6 +39,8 @@ var (
 	Version = "dev"
 	// BuildDate contains a string with the build date.
 	BuildDate = "unknown"
+	// flume logger for config, that will be passed to log pckg
+	logger = flume.New("config")
 )
 
 // New returns a new instance of Config bound to the given viper instance
@@ -49,9 +51,11 @@ func New() *Config {
 // GlobalFlags holds information on the flags shared among all commands
 type GlobalFlags struct {
 	ConfigFile    string        `valid:"-"`
-	OutputFormat  string        `valid:"in(human|json|yaml)"`
-	Colors        bool          `valid:"-"`
 	ClientTimeout time.Duration `valid:"-"`
+	Debug         bool          `valid:"-"`
+	OutputFormat  string        `valid:"in(human|json|yaml)"`
+	NoColours     OptionalBoolean
+	ForceColours  OptionalBoolean
 }
 
 // Config holds the configuration for running upctl
@@ -91,6 +95,12 @@ func (s *Config) Load() error {
 
 	v.Set("config", v.ConfigFileUsed())
 
+	settings := v.AllSettings()
+	// sanitize password before logging settings
+	if _, ok := settings["password"]; ok {
+		settings["password"] = "..."
+	}
+	logger.Debug("viper initialized", "settings", settings)
 	return nil
 
 }
@@ -161,11 +171,6 @@ func (s *Config) OutputHuman() bool {
 // ClientTimeout is a convenience method that returns the user specified client timeout
 func (s *Config) ClientTimeout() time.Duration {
 	return s.viper.GetDuration(KeyClientTimeout)
-}
-
-// InteractiveUI is a convenience method that returns true if the user has requested human output and the terminal supports it.
-func (s *Config) InteractiveUI() bool {
-	return terminal.IsStdoutTerminal() && s.OutputHuman()
 }
 
 type transport struct{}

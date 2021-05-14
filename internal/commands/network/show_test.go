@@ -2,20 +2,23 @@ package network
 
 import (
 	"bytes"
-	"github.com/UpCloudLtd/upcloud-cli/internal/output"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 	"testing"
+
+	"github.com/jedib0t/go-pretty/v6/text"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
+	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestShowCommand(t *testing.T) {
-
+	text.DisableColors()
 	server1 := upcloud.Server{
 		CoreNumber:   1,
 		Hostname:     "server1.example.com",
@@ -121,7 +124,7 @@ func TestShowCommand(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	res, err := command.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService), network.UUID)
+	res, err := command.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService, flume.New("test")), network.UUID)
 
 	assert.Nil(t, err)
 

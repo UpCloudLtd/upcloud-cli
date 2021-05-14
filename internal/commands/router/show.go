@@ -1,13 +1,14 @@
 package router
 
 import (
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 )
 
 // ShowCommand creates the "router show" command
@@ -39,10 +40,12 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 	if err != nil {
 		return nil, err
 	}
+	exec.Debug("got router", "uuid", router.UUID)
 	networks, err := getNetworks(exec, router.AttachedNetworks)
 	if err != nil {
 		return nil, err
 	}
+	exec.Debug("got router networks", "networks", len(networks))
 	networkRows := make([]output.TableRow, len(networks))
 	for i, network := range networks {
 		networkRows[i] = output.TableRow{
@@ -58,7 +61,7 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 			Contents: output.Details{
 				Sections: []output.DetailSection{
 					{Rows: []output.DetailRow{
-						{Key: "uuid", Title: "UUID:", Color: ui.DefaultUUUIDColours, Value: router.UUID},
+						{Key: "uuid", Title: "UUID:", Colour: ui.DefaultUUUIDColours, Value: router.UUID},
 						{Key: "name", Title: "Name:", Value: router.Name},
 						{Key: "type", Title: "Type:", Value: router.Type},
 					}},
@@ -70,7 +73,7 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 			Title: "Networks:",
 			Contents: output.Table{
 				Columns: []output.TableColumn{
-					{Key: "uuid", Header: "UUID", Color: ui.DefaultUUUIDColours},
+					{Key: "uuid", Header: "UUID", Colour: ui.DefaultUUUIDColours},
 					{Key: "name", Header: "Name"},
 					{Key: "type", Header: "Type"},
 					{Key: "zone", Header: "Zone"},

@@ -2,19 +2,23 @@ package ipaddress
 
 import (
 	"bytes"
+	"testing"
+
+	"github.com/jedib0t/go-pretty/v6/text"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-
-	"testing"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestShowCommand(t *testing.T) {
+	text.DisableColors()
 	ipAddress := upcloud.IPAddress{
 		Address:    "94.237.117.150",
 		Access:     "public",
@@ -49,7 +53,7 @@ func TestShowCommand(t *testing.T) {
 	conf.Viper().Set(config.KeyOutput, config.ValueOutputHuman)
 
 	command := commands.BuildCommand(ShowCommand(), nil, conf)
-	out, err := command.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, svc), ipAddress.Address)
+	out, err := command.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, svc, flume.New("test")), ipAddress.Address)
 	assert.NoError(t, err)
 
 	buf := bytes.NewBuffer(nil)

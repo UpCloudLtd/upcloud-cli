@@ -2,6 +2,8 @@ package core
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/all"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
@@ -9,6 +11,8 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 
 	valid "github.com/asaskevich/govalidator"
+	"github.com/gemalto/flume"
+	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
@@ -25,7 +29,37 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 				return err
 			}
 
-			terminal.ForceColours(conf.GlobalFlags.Colors)
+			// detect desired colour output
+			switch {
+			case conf.GlobalFlags.ForceColours == config.True:
+				text.EnableColors()
+			case conf.GlobalFlags.NoColours == config.True:
+				text.DisableColors()
+			default:
+				if terminal.IsStdoutTerminal() {
+					text.EnableColors()
+				} else {
+					text.DisableColors()
+				}
+			}
+
+			// Set up flume
+			flume.SetOut(os.Stderr)
+			// TODO: should we make the level configurable?
+			logLvl := flume.DebugLevel
+			if !conf.GlobalFlags.Debug {
+				// not debugging, no log output!
+				logLvl = flume.OffLevel
+			}
+			addCaller := true
+			if err := flume.Configure(flume.Config{
+				AddCaller:    &addCaller,
+				DefaultLevel: logLvl,
+				// do not colour logs, as it doesn't really fit our use case and complicates the colour handling
+				Encoding: "ltsv",
+			}); err != nil {
+				return fmt.Errorf("flume config error: %w", err)
+			}
 
 			if err := conf.Load(); err != nil {
 				return fmt.Errorf("cannot load configuration: %w", err)
@@ -52,9 +86,11 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 		&conf.GlobalFlags.OutputFormat, "output", "o", "human",
 		"Output format (supported: json, yaml and human)",
 	)
+	config.AddToggleFlag(flags, &conf.GlobalFlags.ForceColours, "force-colours", false, "force coloured output despite detected terminal support")
+	config.AddToggleFlag(flags, &conf.GlobalFlags.NoColours, "no-colours", false, "disable coloured output despite detected terminal support")
 	flags.BoolVar(
-		&conf.GlobalFlags.Colors, "colours", true,
-		"Use terminal colours",
+		&conf.GlobalFlags.Debug, "debug", false,
+		"Print out more verbose debug logs",
 	)
 	flags.DurationVarP(
 		&conf.GlobalFlags.ClientTimeout, "client-timeout", "t",

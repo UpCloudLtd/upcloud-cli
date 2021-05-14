@@ -10,6 +10,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -98,7 +99,7 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 			err := c.Cobra().Flags().Parse(test1.args)
 			assert.NoError(t, err)
 
-			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService), test1.storage.UUID)
+			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService, flume.New("test")), test1.storage.UUID)
 
 			if test1.error != "" {
 				assert.Error(t, err)
@@ -149,7 +150,7 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 			err := c.Cobra().Flags().Parse(test2.args)
 			assert.NoError(t, err)
 
-			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService), test2.storage.UUID)
+			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService, flume.New("test")), test2.storage.UUID)
 
 			if test2.error != "" {
 				assert.Error(t, err)
@@ -217,7 +218,7 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 			err := c.Cobra().Flags().Parse(test3.args)
 			assert.NoError(t, err)
 
-			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService), test3.storage.UUID)
+			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService, flume.New("test")), test3.storage.UUID)
 
 			if test3.error != "" {
 				assert.Error(t, err)

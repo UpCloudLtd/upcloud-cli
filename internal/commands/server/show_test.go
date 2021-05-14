@@ -11,6 +11,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/gemalto/flume"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/stretchr/testify/assert"
 )
@@ -211,7 +212,7 @@ func TestServerHumanOutput(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	res, err := command.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService), uuid)
+	res, err := command.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService, flume.New("test")), uuid)
 
 	assert.Nil(t, err)
 

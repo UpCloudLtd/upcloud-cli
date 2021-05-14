@@ -50,7 +50,7 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 					{
 						Title: "Common",
 						Rows: []output.DetailRow{
-							{Title: "UUID:", Key: "uuid", Value: network.UUID, Color: ui.DefaultUUUIDColours},
+							{Title: "UUID:", Key: "uuid", Value: network.UUID, Colour: ui.DefaultUUUIDColours},
 							{Title: "Name:", Key: "name", Value: network.Name},
 							{Title: "Router:", Key: "router", Value: network.Router},
 							{Title: "Type:", Key: "type", Value: network.Type},
@@ -79,7 +79,7 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 			Title: "IP Networks:",
 			Contents: output.Table{
 				Columns: []output.TableColumn{
-					{Key: "address", Header: "Address", Color: ui.DefaultAddressColours},
+					{Key: "address", Header: "Address", Colour: ui.DefaultAddressColours},
 					{Key: "family", Header: "Family"},
 					{Key: "dhcp", Header: "DHCP", Format: output.BoolFormat},
 					{Key: "dhcp_default_route", Header: "DHCP Def Router", Format: output.BoolFormat},
@@ -110,7 +110,7 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 			Title: "Servers:",
 			Contents: output.Table{
 				Columns: []output.TableColumn{
-					{Header: "UUID", Key: "uuid", Color: ui.DefaultUUUIDColours},
+					{Header: "UUID", Key: "uuid", Colour: ui.DefaultUUUIDColours},
 					{Header: "Title", Key: "title"},
 					{Header: "Hostname", Key: "hostname"},
 					{Header: "State", Key: "state"},

@@ -3,17 +3,20 @@ package commands
 import (
 	"bytes"
 	"fmt"
+	"io"
+	"os"
+	"testing"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
+
+	"github.com/gemalto/flume"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"io"
-	"os"
-	"testing"
 )
 
 type mockNone struct {
@@ -212,7 +215,7 @@ func TestExecute_Resolution(t *testing.T) {
 	mService := &smock.Service{}
 	cfg := config.New()
 	cfg.Viper().Set(config.KeyOutput, config.ValueOutputJSON)
-	executor := NewExecutor(cfg, mService)
+	executor := NewExecutor(cfg, mService, flume.New("test"))
 	results, err := execute(cmd, executor, []string{"a", "b", "failtoresolve", "c"}, 10, func(exec Executor, arg string) (output.Output, error) {
 		return output.OnlyMarshaled{Value: arg}, nil
 	})
@@ -247,7 +250,7 @@ func TestExecute_Error(t *testing.T) {
 	mService := &smock.Service{}
 	cfg := config.New()
 	cfg.Viper().Set(config.KeyOutput, config.ValueOutputJSON)
-	executor := NewExecutor(cfg, mService)
+	executor := NewExecutor(cfg, mService, flume.New("test"))
 	results, err := execute(cmd, executor, []string{"a", "b", "failtorexecute", "c"}, 10, cmd.Execute)
 	assert.Len(t, results, 4)
 	assert.NoError(t, err)

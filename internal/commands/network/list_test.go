@@ -1,16 +1,17 @@
 package network
 
 import (
-	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -84,7 +85,7 @@ func TestListCommand(t *testing.T) {
 
 			assert.NoError(t, err)
 
-			res, err := c.(commands.NoArgumentCommand).ExecuteWithoutArguments(commands.NewExecutor(cfg, &mService))
+			res, err := c.(commands.NoArgumentCommand).ExecuteWithoutArguments(commands.NewExecutor(cfg, &mService, flume.New("test")))
 
 			assert.Nil(t, err)
 			assert.Equal(t, createTable(test.expected), res)
@@ -103,9 +104,9 @@ func createTable(networks []upcloud.Network) output.Table {
 	return output.Table{
 		HideHeader: false,
 		Columns: []output.TableColumn{
-			{Header: "UUID", Key: "uuid", Hidden: false, Color: ui.DefaultUUUIDColours},
+			{Header: "UUID", Key: "uuid", Hidden: false, Colour: ui.DefaultUUUIDColours},
 			{Header: "Name", Key: "name", Hidden: false},
-			{Header: "Router", Key: "router", Hidden: false, Color: ui.DefaultUUUIDColours},
+			{Header: "Router", Key: "router", Hidden: false, Colour: ui.DefaultUUUIDColours},
 			{Header: "Type", Key: "type", Hidden: false},
 			{Header: "Zone", Key: "zone", Hidden: false},
 		},

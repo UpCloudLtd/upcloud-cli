@@ -40,7 +40,7 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 			{
 				Header: "Address",
 				Key:    "address",
-				Color:  ui.DefaultAddressColours,
+				Colour: ui.DefaultAddressColours,
 			},
 			{
 				Header: "Access",
@@ -62,7 +62,7 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 			{
 				Header: "Server",
 				Key:    "server",
-				Color:  ui.DefaultUUUIDColours,
+				Colour: ui.DefaultUUUIDColours,
 			},
 			{
 				Header: "Floating",

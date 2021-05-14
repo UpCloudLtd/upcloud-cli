@@ -8,6 +8,7 @@ import (
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -122,7 +123,7 @@ func TestListStorages(t *testing.T) {
 			err := c.Cobra().Flags().Parse(testcase.args)
 			assert.NoError(t, err)
 
-			_, err = c.(commands.NoArgumentCommand).ExecuteWithoutArguments(commands.NewExecutor(conf, mService))
+			_, err = c.(commands.NoArgumentCommand).ExecuteWithoutArguments(commands.NewExecutor(conf, mService, flume.New("test")))
 			assert.NoError(t, err)
 
 			mService.AssertNumberOfCalls(t, "GetStorages", 1)

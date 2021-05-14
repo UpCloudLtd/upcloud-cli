@@ -9,12 +9,20 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
+
+	"github.com/gemalto/flume"
+)
+
+var (
+	logger = flume.New("runcommand")
 )
 
 func commandRunE(command Command, service internal.AllServices, config *config.Config, args []string) error {
-	executor := NewExecutor(config, service)
+	cmdLogger := logger.With("command", command.Cobra().CommandPath())
+	executor := NewExecutor(config, service, cmdLogger)
 	switch typedCommand := command.(type) {
 	case NoArgumentCommand:
+		cmdLogger.Debug("executing without arguments", "arguments", args)
 		// need to pass in fake arguments here, to actually trigger execution
 		results, err := execute(typedCommand, executor, []string{""}, 1,
 			// FIXME: this bit panics go-critic unlambda check, figure out why and report upstream
@@ -26,6 +34,7 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 		}
 		return render(command.Cobra().OutOrStdout(), config, results)
 	case SingleArgumentCommand:
+		cmdLogger.Debug("executing single argument", "arguments", args)
 		// make sure we have an argument
 		if len(args) != 1 || args[0] == "" {
 			return fmt.Errorf("exactly 1 argument is required")
@@ -36,6 +45,7 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 		}
 		return render(command.Cobra().OutOrStdout(), config, results)
 	case MultipleArgumentCommand:
+		cmdLogger.Debug("executing multi argument", "arguments", args)
 		// make sure we have arguments
 		if len(args) < 1 {
 			return fmt.Errorf("at least one argument is required")
@@ -48,6 +58,7 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 	default:
 		// no execution found on this command, eg. most likely an 'organizational' command
 		// so just show usage
+		cmdLogger.Debug("no execution found", "arguments", args)
 		return command.Cobra().Usage()
 	}
 }
@@ -107,7 +118,7 @@ func execute(command Command, executor Executor, args []string, parallelRuns int
 
 	results := make([]executeResult, 0, len(args))
 	renderTicker := time.NewTicker(100 * time.Millisecond)
-
+	executor.Debug("starting work", "workers", workerCount)
 	for {
 		select {
 		case workerID := <-workerQueue:
@@ -122,14 +133,17 @@ func execute(command Command, executor Executor, args []string, parallelRuns int
 			go func(index int, argument resolvedArgument) {
 				defer func() {
 					// return worker to queue when exiting
+					executor.Debug("worker exiting", "worker", index)
 					workerQueue <- workerID
 				}()
 				if argument.Error != nil {
 					// argument wasn't parsed correctly, pass the error on
+					executor.Debug("worker got invalid argument", "worker", index, "error", argument.Error)
 					returnChan <- executeResult{Job: index, Error: fmt.Errorf("cannot resolve argument: %w", argument.Error)}
 				} else {
 					// otherwise, execute and return results
-					res, err := executeCommand(executor, argument.Resolved)
+					executor.Debug("worker starting", "worker", index, "argument", argument.Resolved)
+					res, err := executeCommand(executor.WithLogger("worker", index, "argument", argument.Resolved), argument.Resolved)
 					returnChan <- executeResult{Job: index, Result: res, Error: err}
 				}
 			}(workerID, arg)
@@ -137,6 +151,7 @@ func execute(command Command, executor Executor, args []string, parallelRuns int
 			// got a result from a worker
 			results = append(results, res)
 			if len(results) >= len(args) {
+				executor.Debug("execute done")
 				// we're done, update ui for the last time and render the results
 				executor.Update()
 				return results, nil

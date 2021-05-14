@@ -56,15 +56,15 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 				{
 					Title: "Storage",
 					Rows: []output.DetailRow{
-						{Title: "UUID:", Key: "uuid", Value: storage.UUID, Color: ui.DefaultUUUIDColours},
+						{Title: "UUID:", Key: "uuid", Value: storage.UUID, Colour: ui.DefaultUUUIDColours},
 						{Title: "Title:", Key: "title", Value: storage.Title},
 						{Title: "type:", Key: "type", Value: storage.Type},
-						{Title: "State:", Key: "state", Value: storage.State, Color: commands.StorageStateColor(storage.State)},
+						{Title: "State:", Key: "state", Value: storage.State, Colour: commands.StorageStateColour(storage.State)},
 						{Title: "Size:", Key: "size", Value: storage.Size},
 						{Title: "Tier:", Key: "tier", Value: storage.Tier},
 						{Title: "Zone:", Key: "zone", Value: storage.Zone},
 						{Title: "Server:", Key: "zone", Value: attachedToServer},
-						{Title: "Origin:", Key: "origin", Value: storage.Origin, Color: ui.DefaultUUUIDColours},
+						{Title: "Origin:", Key: "origin", Value: storage.Origin, Colour: ui.DefaultUUUIDColours},
 						{Title: "Created:", Key: "created", Value: storage.Created},
 						{Title: "Licence:", Key: "licence", Value: storage.License},
 					},
@@ -105,7 +105,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 			Title: "Available Backups",
 			Contents: output.Table{
 				Columns: []output.TableColumn{
-					{Key: "uuid", Header: "UUID", Color: ui.DefaultUUUIDColours},
+					{Key: "uuid", Header: "UUID", Colour: ui.DefaultUUUIDColours},
 				},
 				Rows: backupsListRows,
 			},

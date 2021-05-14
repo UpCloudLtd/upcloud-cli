@@ -9,6 +9,7 @@ import (
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -58,7 +59,7 @@ func TestDeleteServerFirewallRuleCommand(t *testing.T) {
 			err := cc.Cobra().Flags().Parse(test.flags)
 			assert.NoError(t, err)
 
-			_, err = cc.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService), Server1.UUID)
+			_, err = cc.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService, flume.New("test")), Server1.UUID)
 			if test.error != "" {
 				fmt.Println("ERROR", test.error, "==", err)
 				assert.EqualError(t, err, test.error)

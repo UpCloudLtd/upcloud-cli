@@ -26,7 +26,7 @@ var (
 		DisableLiveRendering: !terminal.IsStdoutTerminal(),
 		Colours:              liveLogDefaultColours,
 	}
-	// LiveLogEntryErrorColours specifies the color used for errors in LiveLog
+	// LiveLogEntryErrorColours specifies the colour used for errors in LiveLog
 	// TODO: remove cross-package dependency and make this private
 	LiveLogEntryErrorColours = text.FgHiRed
 )

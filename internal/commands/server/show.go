@@ -136,12 +136,12 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 					{
 						Title: "Common",
 						Rows: []output.DetailRow{
-							{Title: "UUID:", Key: "uuid", Value: server.UUID, Color: ui.DefaultUUUIDColours},
+							{Title: "UUID:", Key: "uuid", Value: server.UUID, Colour: ui.DefaultUUUIDColours},
 							{Title: "Hostname:", Key: "hostname", Value: server.Hostname},
 							{Title: "Title:", Key: "title", Value: server.Title},
 							{Title: "Plan:", Key: "plan", Value: planOutput},
 							{Title: "Zone:", Key: "zone", Value: server.Zone},
-							{Title: "State:", Key: "state", Value: server.State, Color: commands.ServerStateColour(server.State)},
+							{Title: "State:", Key: "state", Value: server.State, Colour: commands.ServerStateColour(server.State)},
 							{Title: "Simple Backup:", Key: "simple_backup", Value: server.SimpleBackup},
 							{Title: "Licence:", Key: "licence", Value: server.License},
 							{Title: "Metadata:", Key: "metadata", Value: server.Metadata.String()},
@@ -158,7 +158,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 			Title: "Storage: (Flags: B = bootdisk, P = part of plan)",
 			Contents: output.Table{
 				Columns: []output.TableColumn{
-					{Key: "uuid", Header: "UUID", Color: ui.DefaultUUUIDColours},
+					{Key: "uuid", Header: "UUID", Colour: ui.DefaultUUUIDColours},
 					{Key: "title", Header: "Title"},
 					{Key: "type", Header: "Type"},
 					{Key: "address", Header: "Address"},
@@ -177,7 +177,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 					{Key: "type", Header: "Type"},
 					{Key: "ip_address", Header: "IP Address"},
 					{Key: "mac_address", Header: "MAC Address"},
-					{Key: "network", Header: "Network", Color: ui.DefaultUUUIDColours},
+					{Key: "network", Header: "Network", Colour: ui.DefaultUUUIDColours},
 					{Key: "flags", Header: "Flags"},
 				},
 				Rows: nicRows,
@@ -220,8 +220,8 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 					{Key: "position", Header: "#"},
 					{Key: "direction", Header: "Direction"},
 					{Key: "action", Header: "Action"},
-					{Key: "src_ipaddress", Header: "Src IPAddress", Color: ui.DefaultAddressColours},
-					{Key: "dest_ipaddress", Header: "Dest IPAddress", Color: ui.DefaultAddressColours},
+					{Key: "src_ipaddress", Header: "Src IPAddress", Colour: ui.DefaultAddressColours},
+					{Key: "dest_ipaddress", Header: "Dest IPAddress", Colour: ui.DefaultAddressColours},
 					{Key: "src_port", Header: "Src Port"},
 					{Key: "dest_port", Header: "Dest Port"},
 					{Key: "protocol", Header: "Protocol"},

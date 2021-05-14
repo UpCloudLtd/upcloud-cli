@@ -1,15 +1,16 @@
 package server
 
 import (
-	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
+	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -67,7 +68,7 @@ func TestEjectCDROMCommand(t *testing.T) {
 			assert.NoError(t, err)
 
 			_, err = c.(commands.MultipleArgumentCommand).Execute(
-				commands.NewExecutor(conf, mService),
+				commands.NewExecutor(conf, mService, flume.New("test")),
 				Server1.UUID,
 			)
 

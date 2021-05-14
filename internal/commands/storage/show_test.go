@@ -5,6 +5,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/jedib0t/go-pretty/v6/text"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
@@ -12,10 +14,12 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestStorageHumanOutput(t *testing.T) {
+	text.DisableColors()
 	storage := upcloud.Storage{
 		Access:     "private",
 		License:    0,
@@ -103,7 +107,7 @@ func TestStorageHumanOutput(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	res, err := command.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService), storage.UUID)
+	res, err := command.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService, flume.New("test")), storage.UUID)
 
 	assert.Nil(t, err)
 

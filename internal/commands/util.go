@@ -3,11 +3,13 @@ package commands
 import (
 	"encoding/csv"
 	"fmt"
-	"github.com/UpCloudLtd/upcloud-cli/internal/validation"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/jedib0t/go-pretty/v6/text"
 	"reflect"
 	"strings"
+
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+	"github.com/jedib0t/go-pretty/v6/text"
+
+	"github.com/UpCloudLtd/upcloud-cli/internal/validation"
 )
 
 // Parse parses a complex, querystring-type argument from in and returns all the parts found
@@ -68,7 +70,7 @@ func SearchResources(
 	return result, nil
 }
 
-// ServerStateColour is a helper mapping states to colors
+// ServerStateColour is a helper mapping server states to colours
 func ServerStateColour(state string) text.Colors {
 	switch state {
 	case upcloud.ServerStateStarted:
@@ -82,7 +84,8 @@ func ServerStateColour(state string) text.Colors {
 	}
 }
 
-func StorageStateColor(state string) text.Colors {
+// StorageStateColour is a helper mapping storage states to colours
+func StorageStateColour(state string) text.Colors {
 	switch state {
 	case upcloud.StorageStateOnline, upcloud.StorageStateSyncing:
 		return text.Colors{text.FgGreen}

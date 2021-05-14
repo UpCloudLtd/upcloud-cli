@@ -342,7 +342,7 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	logline.MarkDone()
 
 	return output.MarshaledWithHumanDetails{Value: res, Details: []output.DetailRow{
-		{Title: "UUID", Value: res.UUID, Color: ui.DefaultUUUIDColours},
+		{Title: "UUID", Value: res.UUID, Colour: ui.DefaultUUUIDColours},
 		{Title: "IP Addresses", Value: res.IPAddresses, Format: formatIPAddresses},
 	}}, nil
 }
