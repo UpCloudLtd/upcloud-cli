@@ -3,6 +3,7 @@ package ui
 import (
 	"fmt"
 	"io"
+	"math"
 	"sync"
 	"time"
 
@@ -60,6 +61,7 @@ type LiveLog struct {
 	entriesPending    []*LogEntry
 	entriesInProgress []*LogEntry
 	entriesDone       []*LogEntry
+	lastRenderWidth   int
 	height            int
 	out               io.Writer
 }
@@ -104,11 +106,21 @@ func (s *LiveLog) Render() {
 	locks := s.lockActiveEntries()
 	defer s.unlockActiveEntries(locks)
 
-	if s.height > 0 {
-		// Set cursor to start of the current rendering space
-		s.write(text.CursorUp.Sprintn(s.height))
+	// Set cursor to start of the current rendering space
+	heightDelta := 0
+	if s.lastRenderWidth > 0 && s.lastRenderWidth != s.MaxWidth() {
+		// terminal size has changed since our last render, figure out where to actually move to
+		prevBuffLen := s.height * s.lastRenderWidth
+		expectedHeight := int(math.Ceil(float64(prevBuffLen) / float64(s.MaxWidth())))
+		heightDelta = expectedHeight - s.height
 	}
-	// fmt.Println(len(s.entriesPending), len(s.entriesInProgress), len(s.entriesDone))
+	// linefeed to move to the first column
+	s.write("\r")
+	// and clear up our rendering space
+	for n := 0; n < s.height+heightDelta; n++ {
+		s.eraseLine()                   // erase the end of line
+		s.write(text.CursorUp.Sprint()) // and move up
+	}
 	newInProgress := s.entriesInProgress[:0]
 	// Render any completed
 	for _, entry := range s.entriesInProgress {
@@ -124,7 +136,6 @@ func (s *LiveLog) Render() {
 			s.write(s.config.Colours.Details.Sprint(IndentText(details, entry.detailsPrefix, true)))
 			s.write("\n")
 		}
-		s.eraseLine()
 	}
 	s.entriesInProgress = newInProgress
 
@@ -163,10 +174,10 @@ func (s *LiveLog) Render() {
 			}
 		}
 	}
+	s.lastRenderWidth = s.MaxWidth()
 }
 
 func (s *LiveLog) renderEntry(entry *LogEntry) {
-	s.eraseLine()
 	var durStr string
 	var lineColour text.Colors
 	switch {
