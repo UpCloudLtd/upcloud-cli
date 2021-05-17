@@ -4,10 +4,7 @@ import (
 	"fmt"
 	"io"
 	"math"
-	"os"
-	"os/signal"
 	"sync"
-	"syscall"
 	"time"
 
 	"github.com/jedib0t/go-pretty/v6/text"
@@ -52,24 +49,6 @@ type LiveLogConfig struct {
 	Colours              liveLogColours
 }
 
-// NewLiveLog returns a new renderer for live logs
-func NewLiveLog(out io.Writer, style LiveLogConfig) *LiveLog {
-	llog := &LiveLog{out: out, config: style, signalCh: make(chan os.Signal, 1)}
-	go func() {
-		signal.Notify(llog.signalCh, syscall.SIGWINCH)
-		for range llog.signalCh {
-			llog.Render()
-		}
-	}()
-	return llog
-}
-
-// Close closes the LiveLog and cleans up related resources
-func (s *LiveLog) Close() {
-	signal.Stop(s.signalCh)
-	close(s.signalCh)
-}
-
 // LiveLog represents the internal state of a live log renderer
 type LiveLog struct {
 	mu                sync.Mutex
@@ -80,7 +59,19 @@ type LiveLog struct {
 	lastRenderWidth   int
 	height            int
 	out               io.Writer
-	signalCh          chan os.Signal
+	resizeListener    *terminal.ResizeListener
+}
+
+// NewLiveLog returns a new renderer for live logs
+func NewLiveLog(out io.Writer, style LiveLogConfig) *LiveLog {
+	llog := &LiveLog{out: out, config: style}
+	llog.resizeListener = terminal.NewResizeListener(llog.Render)
+	return llog
+}
+
+// Close closes the LiveLog and cleans up related resources
+func (s *LiveLog) Close() {
+	s.resizeListener.Close()
 }
 
 // AddEntries adds log entries to LiveLog
