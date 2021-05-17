@@ -10,7 +10,6 @@ import (
 	"github.com/jedib0t/go-pretty/v6/text"
 	"gopkg.in/yaml.v2"
 
-	"github.com/UpCloudLtd/upcloud-cli/internal/terminal"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-cli/internal/validation"
 )
@@ -69,7 +68,6 @@ func (s Table) MarshalHuman() ([]byte, error) {
 	t.ResetFooters()
 	t.ResetRows()
 	t.SetStyle(defaultTableStyle)
-	t.SetAllowedRowLength(terminal.GetTerminalWidth())
 	/*
 		// TODO: reimplement this if/when necessary
 		if len(s.overrideColumnKeys) > 0 {
