@@ -18,6 +18,7 @@ import (
 type Executor interface {
 	NewLogEntry(s string) *ui.LogEntry
 	Update()
+	Close()
 	WaitFor(waitFn func() error, timeout time.Duration) error
 	Server() service.Server
 	Storage() service.Storage
@@ -76,6 +77,11 @@ func (e *executorImpl) NewLogEntry(message string) *ui.LogEntry {
 // Update implements Executor
 func (e *executorImpl) Update() {
 	e.LiveLog.Render()
+}
+
+// Close implements Executor
+func (e *executorImpl) Close() {
+	e.LiveLog.Close()
 }
 
 func (e executorImpl) Server() service.Server {
