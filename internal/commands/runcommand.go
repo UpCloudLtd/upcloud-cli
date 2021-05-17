@@ -20,6 +20,7 @@ var (
 func commandRunE(command Command, service internal.AllServices, config *config.Config, args []string) error {
 	cmdLogger := logger.With("command", command.Cobra().CommandPath())
 	executor := NewExecutor(config, service, cmdLogger)
+	defer executor.Close()
 	switch typedCommand := command.(type) {
 	case NoArgumentCommand:
 		cmdLogger.Debug("executing without arguments", "arguments", args)

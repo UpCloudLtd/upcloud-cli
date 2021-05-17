@@ -3,6 +3,7 @@ package ui
 import (
 	"fmt"
 	"io"
+	"math"
 	"sync"
 	"time"
 
@@ -21,7 +22,7 @@ var (
 	}
 	// LiveLogDefaultConfig represents the default settings for live log
 	LiveLogDefaultConfig = LiveLogConfig{
-		EntryMaxWidth:        80,
+		EntryMaxWidth:        0,
 		renderPending:        true,
 		DisableLiveRendering: !terminal.IsStdoutTerminal(),
 		Colours:              liveLogDefaultColours,
@@ -41,15 +42,11 @@ type liveLogColours struct {
 
 // LiveLogConfig is a configuration for rendering live logs
 type LiveLogConfig struct {
+	// EntryMaxWidth sets the forced maximum width of live log lines. Use 0 for detecting terminal width.
 	EntryMaxWidth        int
 	renderPending        bool
 	DisableLiveRendering bool
 	Colours              liveLogColours
-}
-
-// NewLiveLog returns a new renderer for live logs
-func NewLiveLog(out io.Writer, style LiveLogConfig) *LiveLog {
-	return &LiveLog{out: out, config: style}
 }
 
 // LiveLog represents the internal state of a live log renderer
@@ -59,8 +56,22 @@ type LiveLog struct {
 	entriesPending    []*LogEntry
 	entriesInProgress []*LogEntry
 	entriesDone       []*LogEntry
+	lastRenderWidth   int
 	height            int
 	out               io.Writer
+	resizeListener    *terminal.ResizeListener
+}
+
+// NewLiveLog returns a new renderer for live logs
+func NewLiveLog(out io.Writer, style LiveLogConfig) *LiveLog {
+	llog := &LiveLog{out: out, config: style}
+	llog.resizeListener = terminal.NewResizeListener(llog.Render)
+	return llog
+}
+
+// Close closes the LiveLog and cleans up related resources
+func (s *LiveLog) Close() {
+	s.resizeListener.Close()
 }
 
 // AddEntries adds log entries to LiveLog
@@ -103,11 +114,21 @@ func (s *LiveLog) Render() {
 	locks := s.lockActiveEntries()
 	defer s.unlockActiveEntries(locks)
 
-	if s.height > 0 {
-		// Set cursor to start of the current rendering space
-		s.write(text.CursorUp.Sprintn(s.height))
+	// Set cursor to start of the current rendering space
+	heightDelta := 0
+	if s.lastRenderWidth > 0 && s.lastRenderWidth != s.MaxWidth() {
+		// terminal size has changed since our last render, figure out where to actually move to
+		prevBuffLen := s.height * s.lastRenderWidth
+		expectedHeight := int(math.Ceil(float64(prevBuffLen) / float64(s.MaxWidth())))
+		heightDelta = expectedHeight - s.height
 	}
-	// fmt.Println(len(s.entriesPending), len(s.entriesInProgress), len(s.entriesDone))
+	// linefeed to move to the first column
+	s.write("\r")
+	// and clear up our rendering space
+	for n := 0; n < s.height+heightDelta; n++ {
+		s.eraseLine()                   // erase the end of line
+		s.write(text.CursorUp.Sprint()) // and move up
+	}
 	newInProgress := s.entriesInProgress[:0]
 	// Render any completed
 	for _, entry := range s.entriesInProgress {
@@ -118,12 +139,11 @@ func (s *LiveLog) Render() {
 		s.entriesDone = append(s.entriesDone, entry)
 		s.renderEntry(entry)
 		if entry.details != "" {
-			details := text.WrapSoft(entry.details, s.config.EntryMaxWidth-len(entry.detailsPrefix))
-			details = text.Pad(details, s.config.EntryMaxWidth, ' ')
+			details := text.WrapSoft(entry.details, s.MaxWidth()-len(entry.detailsPrefix))
+			details = text.Pad(details, s.MaxWidth(), ' ')
 			s.write(s.config.Colours.Details.Sprint(IndentText(details, entry.detailsPrefix, true)))
 			s.write("\n")
 		}
-		s.eraseLine()
 	}
 	s.entriesInProgress = newInProgress
 
@@ -162,19 +182,19 @@ func (s *LiveLog) Render() {
 			}
 		}
 	}
+	s.lastRenderWidth = s.MaxWidth()
 }
 
 func (s *LiveLog) renderEntry(entry *LogEntry) {
-	s.eraseLine()
 	var durStr string
-	var colours text.Colors
+	var lineColour text.Colors
 	switch {
 	case entry.started.IsZero():
-		colours = s.config.Colours.Pending
+		lineColour = s.config.Colours.Pending
 	case entry.done:
-		colours = s.config.Colours.Done
+		lineColour = s.config.Colours.Done
 	default:
-		colours = s.config.Colours.InProgress
+		lineColour = s.config.Colours.InProgress
 	}
 	if !entry.started.IsZero() {
 		dur := time.Since(entry.started)
@@ -183,11 +203,12 @@ func (s *LiveLog) renderEntry(entry *LogEntry) {
 			dur%time.Minute/time.Second)
 	}
 	msg := entry.msg
-	if text.RuneCount(msg) > s.config.EntryMaxWidth {
-		msg = fmt.Sprintf("%s...", text.Trim(msg, s.config.EntryMaxWidth-3))
+	maxWidth := s.MaxWidth() - 1 - text.RuneCount(durStr)
+	if text.RuneCount(msg) > maxWidth {
+		msg = fmt.Sprintf("%s...", text.Trim(msg, maxWidth-3))
 	}
-	msg = text.Pad(msg, s.config.EntryMaxWidth, ' ')
-	s.write(colours.Sprint(msg))
+	msg = text.Pad(msg, maxWidth, ' ')
+	s.write(lineColour.Sprint(msg))
 	s.write(s.config.Colours.Time.Sprint(durStr))
 	s.write("\n")
 }
@@ -204,6 +225,17 @@ func (s *LiveLog) write(str string) {
 	if err != nil {
 		panic(fmt.Sprintf("LiveLog rendering error: %v", err))
 	}
+}
+
+// MaxWidth returns the maximum allowed width of a log line for this LiveLog instance.
+// if config.MaxEntryWidth is set to 0, it will return the maximum terminal width.
+// Note that this means that MaxWidth() can return different values across Render()s,
+// as terminal could be resized between them.
+func (s *LiveLog) MaxWidth() int {
+	if s.config.EntryMaxWidth != 0 {
+		return s.config.EntryMaxWidth
+	}
+	return terminal.GetTerminalWidth()
 }
 
 // NewLogEntry creates a new LogEntry with the specified message
