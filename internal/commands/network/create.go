@@ -89,7 +89,6 @@ func (s *createCommand) buildRequest() (*request.CreateNetworkRequest, error) {
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
-
 	// TODO: should we, for example, accept name as the first argument instead of as a flag?
 	if s.name == "" {
 		return nil, fmt.Errorf("name is required")

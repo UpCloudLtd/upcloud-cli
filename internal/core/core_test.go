@@ -54,7 +54,7 @@ func TestInputValidation(t *testing.T) {
 			unsetFixture: func() {
 				os.Unsetenv("UPCLOUD_OUTPUT")
 			},
-			error: "Output format 'toml' not accepted",
+			error: "output format 'toml' not accepted",
 		},
 		/*
 			TODO: re-enable when we have a clear way of testing this in a configured environment

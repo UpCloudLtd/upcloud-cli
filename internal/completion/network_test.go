@@ -2,13 +2,15 @@ package completion_test
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
 )
 
 var mockNetworks = &upcloud.Networks{Networks: []upcloud.Network{
@@ -39,7 +41,6 @@ func TestNetwork_CompleteArgument(t *testing.T) {
 			assert.Equal(t, test.expectedDirective, directive)
 		})
 	}
-
 }
 
 func TestNetwork_CompleteArgumentServiceFail(t *testing.T) {

@@ -3,10 +3,12 @@ package output_test
 import (
 	"bytes"
 	"errors"
+	"testing"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
+
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 type failWriter struct{}
@@ -76,5 +78,4 @@ func validateOutput(t *testing.T, expectedOutput string, expectedErrorMessage st
 			assert.Equal(t, expectedOutput, string(output))
 		}
 	}
-
 }

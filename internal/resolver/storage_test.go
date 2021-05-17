@@ -2,12 +2,14 @@ package resolver_test
 
 import (
 	"errors"
+	"testing"
+
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
 )
 
 var (
@@ -22,7 +24,6 @@ var mockStorages = &upcloud.Storages{Storages: []upcloud.Storage{s1, s2, s3, amb
 var unambiguousStorages = []upcloud.Storage{s1, s2, s3}
 
 func TestStorageResolution(t *testing.T) {
-
 	t.Run("resolve uuid", func(t *testing.T) {
 		mService := &smock.Service{}
 		mService.On("GetStorages", mock.Anything).Return(mockStorages, nil)

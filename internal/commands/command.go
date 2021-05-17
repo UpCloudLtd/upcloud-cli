@@ -126,7 +126,7 @@ func (s *BaseCommand) AddFlags(flags *pflag.FlagSet) {
 	})
 }
 
-// InitCommand can be overriden to handle flag registration.
+// InitCommand can be overridden to handle flag registration.
 // A hook to handle flag registration.
 // The config values are not available during this hook. Register a cobra hook to use them. You can set defaults though.
 func (s *BaseCommand) InitCommand() {

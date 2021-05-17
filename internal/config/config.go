@@ -101,8 +101,8 @@ func (s *Config) Load() error {
 		settings["password"] = "..."
 	}
 	logger.Debug("viper initialized", "settings", settings)
-	return nil
 
+	return nil
 }
 
 // Viper returns a reference to the viper instance

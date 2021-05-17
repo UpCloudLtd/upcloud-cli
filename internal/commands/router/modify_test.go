@@ -15,9 +15,9 @@ import (
 )
 
 func TestModifyCommand(t *testing.T) {
-
 	router := upcloud.Router{Name: "test-router", UUID: "123123"}
 	modifiedRouter := upcloud.Router{Name: "test-router-b", UUID: "123123"}
+
 	for _, test := range []struct {
 		name    string
 		flags   []string
@@ -66,5 +66,4 @@ func TestModifyCommand(t *testing.T) {
 			}
 		})
 	}
-
 }

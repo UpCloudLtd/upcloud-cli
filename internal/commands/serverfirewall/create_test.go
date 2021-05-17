@@ -15,7 +15,6 @@ import (
 )
 
 func TestCreateFirewallRuleCommand(t *testing.T) {
-
 	var Server1 = upcloud.Server{
 		CoreNumber:   1,
 		Hostname:     "server-1-hostname",

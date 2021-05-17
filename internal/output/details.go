@@ -103,8 +103,8 @@ func (d Details) MarshalHuman() ([]byte, error) {
 			}
 		}
 		l.AppendSection(sec.Title, dCommon.Render())
-
 	}
+
 	// add a newline at the end
 	return append([]byte(l.Render()), '\n'), nil
 }

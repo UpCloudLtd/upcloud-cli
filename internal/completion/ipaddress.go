@@ -2,7 +2,9 @@ package completion
 
 import (
 	"fmt"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/service"
+
 	"github.com/spf13/cobra"
 )
 

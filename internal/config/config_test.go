@@ -2,10 +2,11 @@ package config
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestConfig_LoadInvalidYAML(t *testing.T) {

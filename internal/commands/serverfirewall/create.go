@@ -163,5 +163,4 @@ func (s *createCommand) Execute(exec commands.Executor, arg string) (output.Outp
 	logline.MarkDone()
 
 	return output.OnlyMarshaled{Value: res}, nil
-
 }

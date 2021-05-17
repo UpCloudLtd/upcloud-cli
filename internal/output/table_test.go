@@ -1,9 +1,10 @@
 package output_test
 
 import (
-	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"testing"
 	"time"
+
+	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 )
 
 func TestTable(t *testing.T) {

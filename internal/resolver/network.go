@@ -2,7 +2,9 @@ package resolver
 
 import (
 	"errors"
+
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 )
 
@@ -60,8 +62,8 @@ func (s *CachingNetwork) Resolve(arg string) (resolved string, err error) {
 	if s.cached == nil {
 		return "", errors.New("caching network does not have a cache initialized")
 	}
-	return networkMatcher(s.cached)(arg)
 
+	return networkMatcher(s.cached)(arg)
 }
 
 // PositionalArgumentHelp implements resolver.ResolutionProvider

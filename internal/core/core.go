@@ -69,7 +69,7 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 			if conf.Output() != config.ValueOutputHuman &&
 				conf.Output() != config.ValueOutputJSON &&
 				conf.Output() != config.ValueOutputYAML {
-				return fmt.Errorf("Output format '%v' not accepted", conf.Output())
+				return fmt.Errorf("output format '%v' not accepted", conf.Output())
 			}
 
 			return nil
@@ -123,11 +123,6 @@ func BuildCLI() cobra.Command {
 
 // BootstrapCLI is the CLI entrypoint
 func BootstrapCLI(args []string) error {
-
 	rootCmd := BuildCLI()
-	if err := rootCmd.Execute(); err != nil {
-		return err
-	}
-
-	return nil
+	return rootCmd.Execute()
 }

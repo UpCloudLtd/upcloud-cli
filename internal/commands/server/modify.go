@@ -73,7 +73,6 @@ func (s *modifyCommand) InitCommand() {
 
 // Execute implements commands.MultipleArgumentCommand
 func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
-
 	svc := exec.Server()
 
 	// TODO: refactor out when go-api actually supports not-set upcloud.Booleans in requests

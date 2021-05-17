@@ -2,9 +2,10 @@ package resolver
 
 import (
 	"errors"
-	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 
+	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
+
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 )
 
@@ -56,8 +57,8 @@ func (s *CachingStorage) Resolve(arg string) (resolved string, err error) {
 	if s.cachedStorages == nil {
 		return "", errors.New("caching storage does not have a cache initialized")
 	}
-	return storageMatcher(s.cachedStorages.Storages)(arg)
 
+	return storageMatcher(s.cachedStorages.Storages)(arg)
 }
 
 // GetCached is a helper method for commands to use when they need to get an item from the cached results

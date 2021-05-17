@@ -26,7 +26,6 @@ var (
 )
 
 func TestCreateServer(t *testing.T) {
-
 	var Plans = upcloud.Plans{
 		Plans: []upcloud.Plan{
 			{
@@ -359,5 +358,4 @@ func TestCreateServer(t *testing.T) {
 			}
 		})
 	}
-
 }
