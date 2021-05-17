@@ -43,6 +43,13 @@ snapshot:
 changelog:
   sort: asc
 
+  filters:
+
+    # Commit messages matching the regexp listed here will be removed from
+    # the changelog
+    exclude:
+      - '^chore(docs)'
+
 nfpms:
   -
     # Name of the package.
