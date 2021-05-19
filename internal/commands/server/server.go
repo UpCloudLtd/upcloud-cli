@@ -14,6 +14,7 @@ const (
 	defaultStopType             = request.ServerStopTypeSoft
 	defaultRestartTimeout       = time.Duration(120) * time.Second
 	defaultRestartTimeoutAction = request.RestartTimeoutActionIgnore
+	customPlan                  = "custom"
 )
 
 // BaseServerCommand crestes the base "server" command

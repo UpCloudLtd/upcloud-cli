@@ -1,14 +1,11 @@
 package config
 
 import (
+	"testing"
+
 	"github.com/spf13/pflag"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
-
-func TestSetBoolFlag(t *testing.T) {
-
-}
 
 func TestSetBoolFlag_EnableDisableFlags(t *testing.T) {
 	for _, test := range []struct {
@@ -40,7 +37,7 @@ func TestSetBoolFlag_EnableDisableFlags(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			fs := &pflag.FlagSet{}
-			target := OptionalBoolean(Unset)
+			target := Unset
 			AddEnableDisableFlags(fs, &target, "test", "testing")
 			err := fs.Parse(test.args)
 			if test.expectedError == "" {
@@ -100,7 +97,7 @@ func TestSetBoolFlag_EnableOrDisableFlag(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			fs := &pflag.FlagSet{}
-			target := OptionalBoolean(Unset)
+			target := Unset
 			AddEnableOrDisableFlag(fs, &target, test.defaultValue, "test", "testing")
 			err := fs.Parse(test.args)
 			if test.expectedError == "" {

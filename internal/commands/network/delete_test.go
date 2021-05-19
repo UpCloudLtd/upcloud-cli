@@ -49,5 +49,4 @@ func TestDeleteCommand(t *testing.T) {
 			}
 		})
 	}
-
 }

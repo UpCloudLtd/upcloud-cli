@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
+
 	"gopkg.in/yaml.v2"
 )
 
@@ -30,8 +32,8 @@ func (m Combined) MarshalYAML() ([]byte, error) {
 
 func flattenSections(m Combined) map[string]interface{} {
 	out := map[string]interface{}{}
-	for _, sec := range m {
 
+	for _, sec := range m {
 		if sec.Key != "" {
 			if _, ok := out[sec.Key]; ok {
 				panic(fmt.Sprintf("duplicate section key '%v' in output", sec.Key))
@@ -57,12 +59,14 @@ func flattenSections(m Combined) map[string]interface{} {
 			}
 		}
 	}
+
 	return out
 }
 
 // MarshalHuman returns output in a human-readable form
 func (m Combined) MarshalHuman() ([]byte, error) {
 	out := []byte{}
+
 	for i, sec := range m {
 		marshaled, err := sec.Contents.MarshalHuman()
 		if err != nil {
@@ -83,6 +87,7 @@ func (m Combined) MarshalHuman() ([]byte, error) {
 			out = append(out, []byte("\n")...)
 		}
 	}
+
 	return out, nil
 }
 

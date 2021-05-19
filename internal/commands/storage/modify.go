@@ -2,15 +2,13 @@ package storage
 
 import (
 	"fmt"
-
-	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
+	"time"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
-
-	"time"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
@@ -73,7 +71,6 @@ func (s *modifyCommand) InitCommand() {
 }
 
 func setBackupFields(storageUUID string, p modifyParams, service service.Storage, req *request.ModifyStorageRequest) error {
-
 	details, err := service.GetStorageDetails(&request.GetStorageDetailsRequest{UUID: storageUUID})
 	if err != nil {
 		return err
@@ -123,7 +120,6 @@ func setBackupFields(storageUUID string, p modifyParams, service service.Storage
 		if p.backupRetention != 0 {
 			req.BackupRule.Retention = p.backupRetention
 		}
-
 	}
 
 	req.UUID = storageUUID

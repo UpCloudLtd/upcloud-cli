@@ -58,7 +58,6 @@ func (s *cloneCommand) InitCommand() {
 
 // Execute implements commands.MultipleArgumentCommand
 func (s *cloneCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
-
 	if s.params.Zone == "" || s.params.Title == "" {
 		return nil, fmt.Errorf("title and zone are required")
 	}

@@ -14,7 +14,6 @@ import (
 )
 
 func TestRemoveCommand(t *testing.T) {
-
 	ip := upcloud.IPAddress{
 		Address:   "127.0.0.1",
 		PTRRecord: "old.ptr.com",
@@ -49,7 +48,6 @@ func TestRemoveCommand(t *testing.T) {
 			} else {
 				mService.AssertNumberOfCalls(t, targetMethod, 1)
 			}
-
 		})
 	}
 }

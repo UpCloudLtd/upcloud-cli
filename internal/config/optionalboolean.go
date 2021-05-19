@@ -2,9 +2,10 @@ package config
 
 import (
 	"fmt"
+	"strconv"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/spf13/pflag"
-	"strconv"
 )
 
 // OptionalBoolean represents a boolean that can also be 'not set', eg. having three possible states.
@@ -20,6 +21,11 @@ type OptionalBoolean int
 // an error when trying to set a non-Unset OptionalBoolean
 
 const (
+	// FalseFlagValue false Bool String value
+	FalseFlagValue = "false"
+	// TrueFlagValue true Bool String value
+	TrueFlagValue = "true"
+
 	// Unset is the OptionalBoolean value representing not set
 	Unset OptionalBoolean = iota // 0
 	// True is the OptionalBoolean value representing true
@@ -43,9 +49,9 @@ const (
 func AddEnableDisableFlags(flags *pflag.FlagSet, target *OptionalBoolean, name, subject string) {
 	flags.Var(target, fmt.Sprintf("enable-%s", name), fmt.Sprintf("Enable %s.", subject))
 	flags.Var(target, fmt.Sprintf("disable-%s", name), fmt.Sprintf("Disable %s.", subject))
-	flags.Lookup(fmt.Sprintf("enable-%s", name)).NoOptDefVal = "true"
+	flags.Lookup(fmt.Sprintf("enable-%s", name)).NoOptDefVal = TrueFlagValue
 	flags.Lookup(fmt.Sprintf("enable-%s", name)).DefValue = ""
-	flags.Lookup(fmt.Sprintf("disable-%s", name)).NoOptDefVal = "false"
+	flags.Lookup(fmt.Sprintf("disable-%s", name)).NoOptDefVal = FalseFlagValue
 	flags.Lookup(fmt.Sprintf("disable-%s", name)).DefValue = ""
 }
 
@@ -59,12 +65,12 @@ func AddEnableOrDisableFlag(flags *pflag.FlagSet, target *OptionalBoolean, defau
 	if defaultValue {
 		target.SetDefault(true)
 		flags.Var(target, fmt.Sprintf("disable-%s", name), fmt.Sprintf("Disable %s.", subject))
-		flags.Lookup(fmt.Sprintf("disable-%s", name)).NoOptDefVal = "false"
+		flags.Lookup(fmt.Sprintf("disable-%s", name)).NoOptDefVal = FalseFlagValue
 		flags.Lookup(fmt.Sprintf("disable-%s", name)).DefValue = ""
 	} else {
 		target.SetDefault(false)
 		flags.Var(target, fmt.Sprintf("enable-%s", name), fmt.Sprintf("Enable %s.", subject))
-		flags.Lookup(fmt.Sprintf("enable-%s", name)).NoOptDefVal = "true"
+		flags.Lookup(fmt.Sprintf("enable-%s", name)).NoOptDefVal = TrueFlagValue
 		flags.Lookup(fmt.Sprintf("enable-%s", name)).DefValue = ""
 	}
 }
@@ -75,12 +81,12 @@ func AddToggleFlag(flags *pflag.FlagSet, target *OptionalBoolean, name string, d
 	if defaultValue {
 		target.SetDefault(true)
 		flags.Var(target, name, usage)
-		flags.Lookup(name).NoOptDefVal = "false"
+		flags.Lookup(name).NoOptDefVal = FalseFlagValue
 		flags.Lookup(name).DefValue = ""
 	} else {
 		target.SetDefault(false)
 		flags.Var(target, name, usage)
-		flags.Lookup(name).NoOptDefVal = "true"
+		flags.Lookup(name).NoOptDefVal = TrueFlagValue
 		flags.Lookup(name).DefValue = ""
 	}
 }

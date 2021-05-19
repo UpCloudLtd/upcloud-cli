@@ -2,11 +2,13 @@ package resolver_test
 
 import (
 	"errors"
+	"testing"
+
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
+
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 var Network1 = upcloud.Network{
@@ -97,7 +99,6 @@ func TestNetworkResolution(t *testing.T) {
 		// make sure caching works, eg. we didn't call GetServers more than once
 		mService.AssertNumberOfCalls(t, "GetNetworks", 1)
 	})
-
 }
 
 func TestCachingNetwork_GetCached(t *testing.T) {

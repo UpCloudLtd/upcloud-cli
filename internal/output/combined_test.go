@@ -1,8 +1,9 @@
 package output_test
 
 import (
-	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"testing"
+
+	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 )
 
 func TestCombined(t *testing.T) {

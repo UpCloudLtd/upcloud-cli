@@ -53,7 +53,6 @@ func (s *templatizeCommand) InitCommand() {
 
 // Execute implements commands.MultipleArgumentCommand
 func (s *templatizeCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
-
 	if s.params.Title == "" {
 		return nil, fmt.Errorf("title is required")
 	}

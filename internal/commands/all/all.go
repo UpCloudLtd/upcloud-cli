@@ -19,7 +19,6 @@ import (
 
 // BuildCommands is the main function that sets up the commands provided by upctl.
 func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
-
 	// Servers
 	serverCommand := commands.BuildCommand(server.BaseServerCommand(), rootCmd, conf)
 	commands.BuildCommand(server.ListCommand(), serverCommand.Cobra(), conf)
@@ -108,7 +107,7 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 		&root.VersionCommand{
 			BaseCommand: commands.New(
 				"version",
-				"Display software infomation",
+				"Display software information",
 				"upctl version",
 			),
 		}, rootCmd, conf,

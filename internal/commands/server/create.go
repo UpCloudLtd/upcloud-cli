@@ -82,7 +82,7 @@ func (s *createParams) processParams(planSvc service.Plans, storageSvc service.S
 		}
 
 		size := minStorageSize
-		if s.Plan != "custom" {
+		if s.Plan != customPlan {
 			for _, plan := range plans.Plans {
 				if plan.Name == s.Plan {
 					size = plan.StorageSize
@@ -257,7 +257,6 @@ func (s *createCommand) InitCommand() {
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
-
 	if s.params.Hostname == "" || s.params.Zone == "" {
 		return nil, fmt.Errorf("hostname, zone and some password delivery method are required")
 	}
@@ -269,16 +268,16 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		s.params.Title = s.params.Hostname
 	}
 
-	if s.params.CoreNumber != 0 || s.params.MemoryAmount != 0 || s.params.Plan == "custom" {
+	if s.params.CoreNumber != 0 || s.params.MemoryAmount != 0 || s.params.Plan == customPlan {
 		if s.params.CoreNumber == 0 || s.params.MemoryAmount == 0 {
 			return nil, fmt.Errorf("both --cores and --memory must be defined for custom plans")
 		}
 
-		if s.params.Plan != "" && s.params.Plan != "custom" {
+		if s.params.Plan != "" && s.params.Plan != customPlan {
 			return nil, fmt.Errorf("--plan needs to be 'custom' or omitted when --cores and --memory are specified")
 		}
 
-		s.params.Plan = "custom" // Valid for all custom plans.
+		s.params.Plan = customPlan // Valid for all custom plans.
 	}
 
 	serverSvc := exec.Server()

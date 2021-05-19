@@ -9,7 +9,6 @@ import (
 )
 
 func TestShowDetailsRender(t *testing.T) {
-
 	for _, testcase := range []struct {
 		name           string
 		buildViewFn    func(*ListLayout)
@@ -72,5 +71,4 @@ func TestShowDetailsRender(t *testing.T) {
 			assert.Equal(t, testcase.expectedOutput, view.Render())
 		})
 	}
-
 }

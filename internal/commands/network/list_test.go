@@ -16,7 +16,6 @@ import (
 )
 
 func TestListCommand(t *testing.T) {
-
 	var Network1 = upcloud.Network{
 		Name: "network-1",
 		UUID: "28e15cf5-8817-42ab-b017-970666be96ec",

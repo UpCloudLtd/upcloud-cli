@@ -1,9 +1,11 @@
 package completion_test
 
 import (
-	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMatchStringPrefix(t *testing.T) {

@@ -2,8 +2,9 @@ package output_test
 
 import (
 	"fmt"
-	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"testing"
+
+	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 )
 
 func TestMarshaledWithHumanDetails(t *testing.T) {

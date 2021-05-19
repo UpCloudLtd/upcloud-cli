@@ -3,6 +3,7 @@ package output
 import (
 	"encoding/json"
 	"fmt"
+
 	"gopkg.in/yaml.v2"
 )
 
@@ -19,8 +20,8 @@ func (e Error) MarshalJSON() ([]byte, error) {
 			"error": err.Error(),
 		}, "", "  ")
 	}
-	return json.MarshalIndent(marshaled, "", "  ")
 
+	return json.MarshalIndent(marshaled, "", "  ")
 }
 
 // MarshalYAML implements output.Output, it marshals the value and returns the YAML as []byte
@@ -32,6 +33,7 @@ func (e Error) MarshalYAML() ([]byte, error) {
 			"error": err.Error(),
 		})
 	}
+
 	return yaml.Marshal(marshaled)
 }
 
@@ -40,6 +42,7 @@ func (e Error) MarshalHuman() ([]byte, error) {
 	if e.Value == nil {
 		return []byte("\nERROR: Unspecified error"), nil
 	}
+
 	return []byte(fmt.Sprintf("\nERROR: %v", e.Value.Error())), nil
 }
 
@@ -50,6 +53,7 @@ func (e Error) MarshalRawMap() (map[string]interface{}, error) {
 			"error": "Unspecified error",
 		}, nil
 	}
+
 	return map[string]interface{}{
 		"error": e.Value.Error(),
 	}, nil

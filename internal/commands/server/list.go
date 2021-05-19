@@ -30,7 +30,7 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 	rows := []output.TableRow{}
 	for _, s := range servers.Servers {
 		plan := s.Plan
-		if plan == "custom" {
+		if plan == customPlan {
 			memory := s.MemoryAmount / 1024
 			plan = fmt.Sprintf("%dxCPU-%dGB (custom)", s.CoreNumber, memory)
 		}

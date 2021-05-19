@@ -220,5 +220,4 @@ func TestServerHumanOutput(t *testing.T) {
 	err = output.Render(buf, conf, res)
 	assert.NoError(t, err)
 	assert.Equal(t, expected, buf.String())
-
 }

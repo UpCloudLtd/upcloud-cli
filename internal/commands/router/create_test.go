@@ -54,5 +54,4 @@ func TestCreateCommand(t *testing.T) {
 			}
 		})
 	}
-
 }
