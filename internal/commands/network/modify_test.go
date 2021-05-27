@@ -6,6 +6,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
+	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
@@ -14,8 +15,6 @@ import (
 )
 
 func TestModifyCommand(t *testing.T) {
-	targetMethod := "ModifyNetwork"
-
 	n := upcloud.Network{
 		UUID:   "9abccbe8-8d47-40dd-a5af-c6598f38b11b",
 		Name:   "test-network",
@@ -80,6 +79,7 @@ func TestModifyCommand(t *testing.T) {
 			},
 		},
 	} {
+		targetMethod := "ModifyNetwork"
 		t.Run(test.name, func(t *testing.T) {
 			mService := smock.Service{}
 			mService.On(targetMethod, &test.expected).Return(&upcloud.Network{}, nil)
@@ -98,6 +98,264 @@ func TestModifyCommand(t *testing.T) {
 				assert.EqualError(t, err, test.error)
 			} else {
 				mService.AssertNumberOfCalls(t, targetMethod, 1)
+			}
+		})
+	}
+}
+
+func TestModifyCommandAttach(t *testing.T) {
+	n := upcloud.Network{
+		UUID:   "9abccbe8-8d47-40dd-a5af-c6598f38b11b",
+		Name:   "test-network",
+		Zone:   "fi-hel1",
+		Router: "",
+	}
+	r := upcloud.Router{
+		AttachedNetworks: nil,
+		Name:             "test-router",
+		UUID:             "fakeuuid",
+	}
+	for _, test := range []struct {
+		name     string
+		flags    []string
+		error    string
+		expected request.AttachNetworkRouterRequest
+	}{
+		{
+			name: "attach router with uuid",
+			flags: []string{
+				"--router", "fakeuuid",
+			},
+			expected: request.AttachNetworkRouterRequest{
+				NetworkUUID: n.UUID,
+				RouterUUID:  "fakeuuid",
+			},
+		},
+		{
+			name: "attach router with name",
+			flags: []string{
+				"--router", "test-router",
+			},
+			expected: request.AttachNetworkRouterRequest{
+				NetworkUUID: n.UUID,
+				RouterUUID:  "fakeuuid",
+			},
+		},
+	} {
+		targetMethod := "AttachNetworkRouter"
+		t.Run(test.name, func(t *testing.T) {
+			mService := smock.Service{}
+			mService.On(targetMethod, &test.expected).Return(nil)
+			mService.On("GetNetworkDetails", &request.GetNetworkDetailsRequest{UUID: n.UUID}).Return(&n, nil)
+			mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{n}}, nil)
+			mService.On("GetRouters").Return(&upcloud.Routers{Routers: []upcloud.Router{r}}, nil)
+			conf := config.New()
+			c := commands.BuildCommand(ModifyCommand(), nil, conf)
+			err := c.Cobra().Flags().Parse(test.flags)
+			assert.NoError(t, err)
+
+			_, err = c.(commands.SingleArgumentCommand).ExecuteSingleArgument(
+				commands.NewExecutor(conf, &mService, flume.New("test")),
+				n.UUID,
+			)
+
+			if err != nil {
+				assert.EqualError(t, err, test.error)
+			} else {
+				mService.AssertNumberOfCalls(t, targetMethod, 1)
+			}
+		})
+	}
+}
+
+func TestModifyCommandDetach(t *testing.T) {
+	n := upcloud.Network{
+		UUID:   "9abccbe8-8d47-40dd-a5af-c6598f38b11b",
+		Name:   "test-network",
+		Zone:   "fi-hel1",
+		Router: "",
+	}
+	r := upcloud.Router{
+		AttachedNetworks: nil,
+		Name:             "test-router",
+		UUID:             "fakeuuid",
+	}
+	for _, test := range []struct {
+		name     string
+		flags    []string
+		error    string
+		expected request.DetachNetworkRouterRequest
+	}{
+		{
+			name: "detach router",
+			flags: []string{
+				"--detach-router",
+			},
+			expected: request.DetachNetworkRouterRequest{
+				NetworkUUID: n.UUID,
+			},
+		},
+	} {
+		targetMethod := "DetachNetworkRouter"
+		t.Run(test.name, func(t *testing.T) {
+			mService := smock.Service{}
+			mService.On(targetMethod, &test.expected).Return(nil)
+			mService.On("GetNetworkDetails", &request.GetNetworkDetailsRequest{UUID: n.UUID}).Return(&n, nil)
+			mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{n}}, nil)
+			mService.On("GetRouters").Return(&upcloud.Routers{Routers: []upcloud.Router{r}}, nil)
+			conf := config.New()
+			c := commands.BuildCommand(ModifyCommand(), nil, conf)
+			err := c.Cobra().Flags().Parse(test.flags)
+			assert.NoError(t, err)
+
+			_, err = c.(commands.SingleArgumentCommand).ExecuteSingleArgument(
+				commands.NewExecutor(conf, &mService, flume.New("test")),
+				n.UUID,
+			)
+
+			if err != nil {
+				assert.EqualError(t, err, test.error)
+			} else {
+				mService.AssertNumberOfCalls(t, targetMethod, 1)
+			}
+		})
+	}
+}
+
+func TestModifyCommandModifyAndAttach(t *testing.T) {
+	n := upcloud.Network{
+		UUID:   "9abccbe8-8d47-40dd-a5af-c6598f38b11b",
+		Name:   "test-network",
+		Zone:   "fi-hel1",
+		Router: "",
+	}
+	r := upcloud.Router{
+		AttachedNetworks: nil,
+		Name:             "test-router",
+		UUID:             "fakeuuid",
+	}
+	for _, test := range []struct {
+		name           string
+		flags          []string
+		error          string
+		expectedModify request.ModifyNetworkRequest
+		expectedAttach request.AttachNetworkRouterRequest
+	}{
+		{
+			name: "change name and attach router with uuid",
+			flags: []string{
+				"--name", "foo",
+				"--router", "fakeuuid",
+			},
+			expectedModify: request.ModifyNetworkRequest{
+				UUID: n.UUID,
+				Name: "foo",
+			},
+			expectedAttach: request.AttachNetworkRouterRequest{
+				NetworkUUID: n.UUID,
+				RouterUUID:  "fakeuuid",
+			},
+		},
+		{
+			name: "change name and attach router with name",
+			flags: []string{
+				"--name", "foo",
+				"--router", "test-router",
+			},
+			expectedModify: request.ModifyNetworkRequest{
+				UUID: n.UUID,
+				Name: "foo",
+			},
+			expectedAttach: request.AttachNetworkRouterRequest{
+				NetworkUUID: n.UUID,
+				RouterUUID:  "fakeuuid",
+			},
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			mService := smock.Service{}
+			mService.On("AttachNetworkRouter", &test.expectedAttach).Return(nil)
+			mService.On("ModifyNetwork", &test.expectedModify).Return(&n, nil)
+			mService.On("GetNetworkDetails", &request.GetNetworkDetailsRequest{UUID: n.UUID}).Return(&n, nil)
+			mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{n}}, nil)
+			mService.On("GetRouters").Return(&upcloud.Routers{Routers: []upcloud.Router{r}}, nil)
+			conf := config.New()
+			c := commands.BuildCommand(ModifyCommand(), nil, conf)
+			err := c.Cobra().Flags().Parse(test.flags)
+			assert.NoError(t, err)
+
+			result, err := c.(commands.SingleArgumentCommand).ExecuteSingleArgument(
+				commands.NewExecutor(conf, &mService, flume.New("test")),
+				n.UUID,
+			)
+			if err != nil {
+				assert.EqualError(t, err, test.error)
+			} else {
+				mService.AssertNumberOfCalls(t, "AttachNetworkRouter", 1)
+				mService.AssertNumberOfCalls(t, "ModifyNetwork", 1)
+				mService.AssertNumberOfCalls(t, "GetRouters", 1)
+				// validate the edge case here which should not call GetNetworkDetails (as the modify returns the latest state)
+				// but still updates the router manually
+				mService.AssertNumberOfCalls(t, "GetNetworkDetails", 0)
+				assert.Equal(t, r.UUID, result.(output.OnlyMarshaled).Value.(*upcloud.Network).Router)
+			}
+		})
+	}
+}
+
+func TestModifyCommandModifyAndDetach(t *testing.T) {
+	n := upcloud.Network{
+		UUID:   "9abccbe8-8d47-40dd-a5af-c6598f38b11b",
+		Name:   "test-network",
+		Zone:   "fi-hel1",
+		Router: "fakeuuid",
+	}
+	for _, test := range []struct {
+		name           string
+		flags          []string
+		error          string
+		expectedModify request.ModifyNetworkRequest
+		expectedDetach request.DetachNetworkRouterRequest
+	}{
+		{
+			name: "change name and detach router",
+			flags: []string{
+				"--name", "foo",
+				"--detach-router",
+			},
+			expectedModify: request.ModifyNetworkRequest{
+				UUID: n.UUID,
+				Name: "foo",
+			},
+			expectedDetach: request.DetachNetworkRouterRequest{
+				NetworkUUID: n.UUID,
+			},
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			mService := smock.Service{}
+			mService.On("DetachNetworkRouter", &test.expectedDetach).Return(nil)
+			mService.On("ModifyNetwork", &test.expectedModify).Return(&n, nil)
+			mService.On("GetNetworkDetails", &request.GetNetworkDetailsRequest{UUID: n.UUID}).Return(&n, nil)
+			mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{n}}, nil)
+			conf := config.New()
+			c := commands.BuildCommand(ModifyCommand(), nil, conf)
+			err := c.Cobra().Flags().Parse(test.flags)
+			assert.NoError(t, err)
+
+			result, err := c.(commands.SingleArgumentCommand).ExecuteSingleArgument(
+				commands.NewExecutor(conf, &mService, flume.New("test")),
+				n.UUID,
+			)
+			if err != nil {
+				assert.EqualError(t, err, test.error)
+			} else {
+				mService.AssertNumberOfCalls(t, "DetachNetworkRouter", 1)
+				mService.AssertNumberOfCalls(t, "ModifyNetwork", 1)
+				// validate the edge case here which should not call GetNetworkDetails (as the modify returns the latest state)
+				// but still updates the router manually
+				mService.AssertNumberOfCalls(t, "GetNetworkDetails", 0)
+				assert.Equal(t, "", result.(output.OnlyMarshaled).Value.(*upcloud.Network).Router)
 			}
 		})
 	}

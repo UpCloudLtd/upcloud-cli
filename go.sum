@@ -16,8 +16,8 @@ github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
-github.com/UpCloudLtd/upcloud-go-api v0.0.0-20201130170350-7fc02444127a h1:9dQjUEQKfRIuVAaDjWOfyjpydGPTq/MjJTuyBjVH7go=
-github.com/UpCloudLtd/upcloud-go-api v0.0.0-20201130170350-7fc02444127a/go.mod h1:nKv1Y0cTJTGYSd3lEcFfEnbPPiIj3gT4lJzV0ZfTlpQ=
+github.com/UpCloudLtd/upcloud-go-api v0.0.0-20210525102709-661419a1956b h1:WDp7g7xKKvXJvfEPicT8A7dLwMDgEN5cb5fgnsgvzJw=
+github.com/UpCloudLtd/upcloud-go-api v0.0.0-20210525102709-661419a1956b/go.mod h1:nKv1Y0cTJTGYSd3lEcFfEnbPPiIj3gT4lJzV0ZfTlpQ=
 github.com/adrg/xdg v0.3.2 h1:GUSGQ5pHdev83AYhDSS1A/CX+0JIsxbiWtow2DSA+RU=
 github.com/adrg/xdg v0.3.2/go.mod h1:7I2hH/IT30IsupOpKZ5ue7/qNi3CoKzD6tL3HwpaRMQ=
 github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=

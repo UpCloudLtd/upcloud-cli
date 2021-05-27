@@ -3,7 +3,7 @@ module github.com/UpCloudLtd/upcloud-cli
 go 1.13
 
 require (
-	github.com/UpCloudLtd/upcloud-go-api v0.0.0-20201130170350-7fc02444127a
+	github.com/UpCloudLtd/upcloud-go-api v0.0.0-20210525102709-661419a1956b
 	github.com/adrg/xdg v0.3.2
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d
 	github.com/fsnotify/fsnotify v1.4.9 // indirect

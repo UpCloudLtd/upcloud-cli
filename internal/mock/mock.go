@@ -359,6 +359,18 @@ func (m *Service) ModifyNetwork(r *request.ModifyNetworkRequest) (*upcloud.Netwo
 	return args[0].(*upcloud.Network), args.Error(1)
 }
 
+// AttachNetworkRouter implements service.Network.AttachNetworkRouter
+func (m *Service) AttachNetworkRouter(r *request.AttachNetworkRouterRequest) error {
+	args := m.Called(r)
+	return args.Error(0)
+}
+
+// DetachNetworkRouter implements service.Network.DetachNetworkRouter
+func (m *Service) DetachNetworkRouter(r *request.DetachNetworkRouterRequest) error {
+	args := m.Called(r)
+	return args.Error(0)
+}
+
 // GetServerNetworks implements service.Network.GetServerNetworks
 func (m *Service) GetServerNetworks(r *request.GetServerNetworksRequest) (*upcloud.Networking, error) {
 	args := m.Called(r)
