@@ -43,8 +43,8 @@ func ModifyCommand() commands.Command {
 func (s *modifyCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.name, "name", "", "Set name of the private network.")
-	fs.StringVar(&s.attachRouter, "router", "", "Set the router attachment.")
-	config.AddToggleFlag(fs, &s.detachRouter, "detach-router", false, "Detach the router attachment.")
+	fs.StringVar(&s.attachRouter, "router", "", "Attach a router to this network, specified by router UUID or router name.")
+	config.AddToggleFlag(fs, &s.detachRouter, "detach-router", false, "Detach a router from this network.")
 	fs.StringArrayVar(&s.networks, "ip-network", s.networks, "The ip network with modified values. \n\n"+
 		"Fields \n"+
 		"  family: string \n"+
