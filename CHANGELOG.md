@@ -61,7 +61,7 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v1.1.0...HEAD
 [0.1.0]: https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v0.1.0
 [0.1.1]: https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v0.1.1
 [0.5.0]: https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v0.5.0
