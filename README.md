@@ -72,7 +72,8 @@ yay -S upcloud-cli
 Use the package corresponding to your distro (deb, rpm, apk), example for Debian like:
 
 ```bash
-sudo curl -o upcloud.deb https://github.com/kaminek/upcloud-cli/releases/download/v<VERSION>/upcloud-cli-<VERSION>_amd64.deb
+sudo curl -o upcloud.deb https://github.com/UpCloudLtd/upcloud-cli/releases/download/v<VERSION>/upcloud-cli-<VERSION>_amd64.deb
+sudo dpkg -i upcloud.deb
 sudo chmod +x /usr/local/bin/upctl
 upctl -h
 ```
