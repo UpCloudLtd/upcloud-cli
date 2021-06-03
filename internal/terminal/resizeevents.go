@@ -32,5 +32,4 @@ func NewResizeListener(callback func()) *ResizeListener {
 func (s *ResizeListener) Close() {
 	signal.Stop(s.signal)
 	close(s.signal)
-
 }
