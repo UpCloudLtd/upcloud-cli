@@ -19,6 +19,7 @@ BIN_LINUX            = $(CLI_BIN)-$(VERSION)-linux-amd64
 BIN_DOCKERISED_LINUX = $(CLI_BIN)-$(VERSION)-dockerised-linux-amd64
 BIN_DARWIN           = $(CLI_BIN)-$(VERSION)-darwin-amd64
 BIN_WINDOWS          = $(CLI_BIN)-$(VERSION)-windows-amd64.exe
+BIN_FREEBSD            = $(CLI_BIN)-$(VERSION)-freebsd-amd64
 
 
 V = 0
@@ -45,6 +46,13 @@ build-linux: ; $(info building executable for Linux x86_64…) @ ## Build progra
 		-tags release \
 		-ldflags '-X $(MODULE)/internal/config.Version=$(VERSION) -X $(MODULE)/internal/config.BuildDate=$(DATE)' \
 		-o $(BIN_DIR)/$(BIN_LINUX) cmd/$(CLI)/main.go
+
+.PHONY: build-freebsd
+build-freebsd: ; $(info building executable for FreeBSD x86_64…) @ ## Build program binary for linux x86_64
+	$Q GOOS=freebsd GOARCH=amd64 $(GO) build \
+		-tags release \
+		-ldflags '-X $(MODULE)/internal/config.Version=$(VERSION) -X $(MODULE)/internal/config.BuildDate=$(DATE)' \
+		-o $(BIN_DIR)/$(BIN_FREEBSD) cmd/$(CLI)/main.go
 
 .PHONY: build-dockerised
 build-dockerised: ; $(info building executable for dockerised Linux x86_64…) @ ## Build program binary for dockerised linux x86_64

@@ -182,6 +182,7 @@ build-all            Build all targets
 build-linux          Build program binary for linux x86_64
 build-darwin         Build program binary for darwin x86_64
 build-windows        Build program binary for windows x86_64
+build-freebsd        Build program binary for freebsd x86_64
 test                 Run tests
 fmt                  Run gofmt on all source files
 clean                Cleanup everything
