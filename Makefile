@@ -38,7 +38,7 @@ doc: $(BIN_DIR) ; $(info generating documentation…) @ ## Generate documentatio
 	$Q $(GO) run cmd/$(DOC_GEN)/main.go
 
 .PHONY: build-all
-build-all: build-linux build-darwin build-windows ## Build all targets
+build-all: build-linux build-darwin build-windows build-freebsd ## Build all targets
 
 .PHONY: build-linux
 build-linux: ; $(info building executable for Linux x86_64…) @ ## Build program binary for linux x86_64
@@ -48,7 +48,7 @@ build-linux: ; $(info building executable for Linux x86_64…) @ ## Build progra
 		-o $(BIN_DIR)/$(BIN_LINUX) cmd/$(CLI)/main.go
 
 .PHONY: build-freebsd
-build-freebsd: ; $(info building executable for FreeBSD x86_64…) @ ## Build program binary for linux x86_64
+build-freebsd: ; $(info building executable for FreeBSD x86_64…) @ ## Build program binary for freebsd x86_64
 	$Q GOOS=freebsd GOARCH=amd64 $(GO) build \
 		-tags release \
 		-ldflags '-X $(MODULE)/internal/config.Version=$(VERSION) -X $(MODULE)/internal/config.BuildDate=$(DATE)' \
