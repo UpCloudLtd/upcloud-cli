@@ -66,3 +66,5 @@ Initial public beta release :tada:
 [0.1.1]: https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v0.1.1
 [0.5.0]: https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v0.5.0
 [0.6.0]: https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v0.6.0
+[1.0.0]: https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v1.0.0
+[1.1.0]: https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v1.1.0
