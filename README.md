@@ -40,10 +40,7 @@ Use "upctl [command] --help" for more information about a command.
 
 ## Installation
 
-As upctl is currently in beta, we aren't yet offering it through different packaging managers. Expect this
-to change once we hit version 1.0.0.
-
-To use upctl, download the upctl binary from the
+To use upctl as a binary, download it from the
 [Releases](https://github.com/UpCloudLtd/upcloud-cli/releases) page. After downloading, verify that the client works.
 
 ### macOS
@@ -72,10 +69,11 @@ yay -S upcloud-cli
 
 #### Other Linux distros
 
-Use the package corresponding to your distro (deb, rpm, apk), example Debian like:
+Use the package corresponding to your distro (deb, rpm, apk), example for Debian like:
 
 ```bash
-sudo curl -o upcloud.deb https://github.com/kaminek/upcloud-cli/releases/download/v<VERSION>/upcloud-cli-<VERSION>_amd64.deb
+sudo curl -o upcloud.deb https://github.com/UpCloudLtd/upcloud-cli/releases/download/v<VERSION>/upcloud-cli-<VERSION>_amd64.deb
+sudo dpkg -i upcloud.deb
 sudo chmod +x /usr/local/bin/upctl
 upctl -h
 ```
