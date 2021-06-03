@@ -19,7 +19,7 @@ BIN_LINUX            = $(CLI_BIN)-$(VERSION)-linux-amd64
 BIN_DOCKERISED_LINUX = $(CLI_BIN)-$(VERSION)-dockerised-linux-amd64
 BIN_DARWIN           = $(CLI_BIN)-$(VERSION)-darwin-amd64
 BIN_WINDOWS          = $(CLI_BIN)-$(VERSION)-windows-amd64.exe
-BIN_FREEBSD            = $(CLI_BIN)-$(VERSION)-freebsd-amd64
+BIN_FREEBSD          = $(CLI_BIN)-$(VERSION)-freebsd-amd64
 
 
 V = 0
