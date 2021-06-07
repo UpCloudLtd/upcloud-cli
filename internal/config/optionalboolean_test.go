@@ -37,7 +37,7 @@ func TestSetBoolFlag_EnableDisableFlags(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			fs := &pflag.FlagSet{}
-			target := Unset
+			var target OptionalBoolean
 			AddEnableDisableFlags(fs, &target, "test", "testing")
 			err := fs.Parse(test.args)
 			if test.expectedError == "" {

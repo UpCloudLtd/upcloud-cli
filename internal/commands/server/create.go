@@ -6,20 +6,22 @@ import (
 	"os"
 	"strings"
 
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
 	"github.com/jedib0t/go-pretty/v6/text"
+	"github.com/spf13/pflag"
+	"golang.org/x/crypto/ssh"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/ipaddress"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/storage"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
-
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
-	"github.com/spf13/pflag"
-	"golang.org/x/crypto/ssh"
 )
+
+const defaultIPAddressFamily = upcloud.IPAddressFamilyIPv4
 
 // CreateCommand creates the "server create" command
 func CreateCommand() commands.Command {
@@ -31,6 +33,7 @@ func CreateCommand() commands.Command {
 			"upctl server create --title \"My Server\" --zone fi-hel1 --hostname myapp --password-delivery email",
 			"upctl server create --zone fi-hel1 --hostname myapp --password-delivery email --plan 2xCPU-4GB",
 			"upctl server create --zone fi-hel1 --hostname myapp --password-delivery email --os \"Debian GNU/Linux 10 (Buster)\"",
+			"upctl server create --zone fi-hel1 --hostname myapp --ssh-keys /path/to/publickey --network type=private,network=037a530b-533e-4cef-b6ad-6af8094bb2bc,ip-address=10.0.0.1",
 		),
 	}
 }
@@ -156,29 +159,52 @@ func (s *createParams) handleStorage(in string, storageSvc service.Storage) (*re
 }
 
 func (s *createParams) handleNetwork(in string) (*request.CreateServerInterface, error) {
-	network := &request.CreateServerInterface{}
-	var family string
+	var (
+		serverInterface             = &request.CreateServerInterface{}
+		ipFamily                    string
+		ipAddress                   string
+		bootable, sourceIPFiltering config.OptionalBoolean
+	)
 	fs := &pflag.FlagSet{}
 	args, err := commands.Parse(in)
 	if err != nil {
 		return nil, err
 	}
-	fs.StringVar(&family, "family", family, "")
-	fs.StringVar(&network.Type, "type", network.Type, "")
+	fs.StringVar(&ipFamily, "family", ipFamily, "")
+	fs.StringVar(&serverInterface.Type, "type", serverInterface.Type, "")
+	fs.StringVar(&serverInterface.Network, "network", "", "")
+	fs.StringVar(&ipAddress, "ip-address", "", "")
+	config.AddEnableDisableFlags(fs, &bootable, "bootable", "")
+	config.AddEnableDisableFlags(fs, &sourceIPFiltering, "source-ip-filtering", "")
 	err = fs.Parse(args)
 	if err != nil {
 		return nil, err
 	}
-
-	if network.Type == "" {
+	if serverInterface.Type == "" {
 		return nil, fmt.Errorf("network type is required")
 	}
+	if ipAddress != "" {
+		parsedFamily, err := ipaddress.GetFamily(ipAddress)
+		if err != nil {
+			return nil, err
+		}
+		if ipFamily != "" && ipFamily != parsedFamily {
+			return nil, fmt.Errorf("ip family mismatch: %v != %v", ipFamily, parsedFamily)
+		}
+		ipFamily = parsedFamily
+	} else if ipFamily == "" {
+		ipFamily = defaultIPAddressFamily
+	}
 
-	var ipAddresses []request.CreateServerIPAddress
-	ipAddresses = append(ipAddresses, request.CreateServerIPAddress{Family: family})
-	network.IPAddresses = ipAddresses
+	serverInterface.Bootable = bootable.AsUpcloudBoolean()
+	serverInterface.SourceIPFiltering = sourceIPFiltering.AsUpcloudBoolean()
+	serverInterface.IPAddresses = append(serverInterface.IPAddresses,
+		request.CreateServerIPAddress{
+			Family:  ipFamily,
+			Address: ipAddress,
+		})
 
-	return network, nil
+	return serverInterface, nil
 }
 
 func (s *createParams) handleSSHKey() error {
@@ -244,7 +270,7 @@ func (s *createCommand) InitCommand() {
 	config.AddEnableOrDisableFlag(fs, &s.metadata, def.metadata, "metadata", "metadata service")
 	// fs.BoolVar(&s.params.metadata, "metadata", def.metadata, "Enable metadata service.")
 	fs.StringArrayVar(&s.params.storages, "storage", def.storages, "A storage connected to the server, multiple can be declared.\nUsage: --storage action=attach,storage=01000000-0000-4000-8000-000020010301,type=cdrom")
-	fs.StringArrayVar(&s.params.networks, "network", def.networks, "A network interface for the server, multiple can be declared.\nUsage: --network family=IPv4,type=public")
+	fs.StringArrayVar(&s.params.networks, "network", def.networks, "A network interface for the server, multiple can be declared.\nUsage: --network family=IPv4,type=public\n\n--network type=private,network=037a530b-533e-4cef-b6ad-6af8094bb2bc,ip-address=10.0.0.1")
 	config.AddToggleFlag(fs, &s.createPassword, "create-password", def.createPassword, "Create an admin password.")
 	fs.StringVar(&s.params.username, "username", def.username, "Admin account username.")
 	fs.StringSliceVar(&s.params.sshKeys, "ssh-keys", def.sshKeys, "Add one or more SSH keys to the admin account. Accepted values are SSH public keys or filenames from where to read the keys.")
