@@ -25,7 +25,9 @@ const (
 	FalseFlagValue = "false"
 	// TrueFlagValue true Bool String value
 	TrueFlagValue = "true"
+)
 
+const (
 	// Unset is the OptionalBoolean value representing not set
 	Unset OptionalBoolean = iota // 0
 	// True is the OptionalBoolean value representing true
