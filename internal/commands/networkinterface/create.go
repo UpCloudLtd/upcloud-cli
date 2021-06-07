@@ -34,9 +34,9 @@ func CreateCommand() commands.Command {
 		BaseCommand: commands.New(
 			"create",
 			"Create a network interface",
-			"upctl server network-interface create 009d7f4e-99ce-4c78-88f1-e695d4c37743 --network 037a530b-533e-4cef-b6ad-6af8094bb2bc",
-			"upctl server network-interface create 009d7f4e-99ce-4c78-88f1-e695d4c37743 --type public --source-ip-filtering",
-			"upctl server network-interface create 009d7f4e-99ce-4c78-88f1-e695d4c37743 --type public --source-ip-filtering --ip-addresses 94.237.112.143,94.237.112.144",
+			"upctl server network-interface create 009d7f4e-99ce-4c78-88f1-e695d4c37743 --type private --network 037a530b-533e-4cef-b6ad-6af8094bb2bc --disable-source-ip-filtering --ip-addresses 10.0.0.1",
+			"upctl server network-interface create my_server2 --type public --family IPv6",
+			"upctl server network-interface create my_server2 --type public --family IPv4",
 			"upctl server network-interface create my_server2 --network 037a530b-533e-4cef-b6ad-6af8094bb2bc",
 		),
 	}
@@ -54,8 +54,8 @@ func (s *createCommand) InitCommand() {
 	fs.StringVar(&s.networkType, "type", defaultNetworkType, "Set the type of the network. Available: public, utility, private")
 	fs.StringVar(&s.family, "family", defaultIPAddressFamily, "The address family of new IP address.")
 	fs.IntVar(&s.interfaceIndex, "index", 0, "Interface index.")
-	config.AddEnableOrDisableFlag(fs, &s.bootable, false, "bootable", "booting through the interface")
-	config.AddEnableOrDisableFlag(fs, &s.sourceIPFiltering, false, "source-ip-filtering", "filtering source IPs")
+	config.AddEnableDisableFlags(fs, &s.bootable, "bootable", "Whether to try booting through the interface.")
+	config.AddEnableDisableFlags(fs, &s.sourceIPFiltering, "source-ip-filtering", "Whether source IP filtering is enabled on the interface. Disabling it is allowed only for SDN private interfaces.")
 	fs.StringSliceVar(&s.ipAddresses, "ip-addresses", []string{}, "A comma-separated list of IP addresses")
 	s.AddFlags(fs)
 }
@@ -68,34 +68,21 @@ func (s *createCommand) MaximumExecutions() int {
 // ExecuteSingleArgument implements commands.SingleArgumentCommand
 func (s *createCommand) ExecuteSingleArgument(exec commands.Executor, arg string) (output.Output, error) {
 	ipAddresses := []request.CreateNetworkInterfaceIPAddress{}
-	if s.networkUUID == "" {
-		ipAddresses = request.CreateNetworkInterfaceIPAddressSlice{{Family: s.family}}
+	if len(s.ipAddresses) == 0 {
+		ipFamily := defaultIPAddressFamily
+		if s.family != "" {
+			ipFamily = s.family
+		}
+		ip := request.CreateNetworkInterfaceIPAddress{
+			Family: ipFamily,
+		}
+		ipAddresses = append(ipAddresses, ip)
 	} else {
-		if len(s.ipAddresses) == 0 {
-			ipFamily := upcloud.IPAddressFamilyIPv4
-			// Currently only IPv4 is supported in private networks
-			if s.family != "IPv4" && s.networkType == "private" {
-				return nil, fmt.Errorf("currently only IPv4 is supported in private networks")
-			}
-			if s.family != "" {
-				ipFamily = s.family
-			}
-			ip := request.CreateNetworkInterfaceIPAddress{
-				Family: ipFamily,
-			}
-			ipAddresses = append(ipAddresses, ip)
-		} else {
-			handled, err := mapIPAddressesToRequest(s.ipAddresses)
-			if err != nil {
-				return nil, err
-			}
-			ipAddresses = handled
-		}
-		res, err := exec.Network().GetNetworkDetails(&request.GetNetworkDetailsRequest{UUID: s.networkUUID})
+		handled, err := mapIPAddressesToRequest(s.ipAddresses)
 		if err != nil {
-			return nil, fmt.Errorf("invalid network requested: %w", err)
+			return nil, err
 		}
-		s.networkUUID = res.UUID
+		ipAddresses = handled
 	}
 
 	msg := fmt.Sprintf("Creating network interface for server %s network %s", arg, s.networkUUID)

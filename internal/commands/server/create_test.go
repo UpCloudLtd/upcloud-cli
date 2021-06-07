@@ -18,11 +18,16 @@ import (
 )
 
 var (
-	Title1 = "mock-storage-title1"
-	Title2 = "mock-storage-title2"
-	UUID1  = "0127dfd6-3884-4079-a948-3a8881df1a7a"
-	UUID2  = "012bde1d-f0e7-4bb2-9f4a-74e1f2b49c07"
-	UUID3  = "012c61a6-b8f0-48c2-a63a-b4bf7d26a655"
+	Title1             = "mock-storage-title1"
+	Title2             = "mock-storage-title2"
+	UUID1              = "0127dfd6-3884-4079-a948-3a8881df1a7a"
+	UUID2              = "012bde1d-f0e7-4bb2-9f4a-74e1f2b49c07"
+	UUID3              = "012c61a6-b8f0-48c2-a63a-b4bf7d26a655"
+	PrivateNetworkUUID = "03b5b0a0-ad4c-4817-9632-dafdb3ace5d9"
+	MockPrivateIPv4    = "10.0.0.1"
+	MockPrivateIPv6    = "fd42:42::1"
+	MockPublicIPv4     = "192.0.2.0"
+	MockPublicIPv6     = "2001:DB8::1"
 )
 
 func TestCreateServer(t *testing.T) {
@@ -261,9 +266,16 @@ func TestCreateServer(t *testing.T) {
 				"--title", "test-server",
 				"--zone", "uk-lon1",
 				"--password-delivery", "email",
-				"--network", "family=IPv4,type=utility",
+				"--network", "type=public",
+				"--network", "family=IPv4,type=public",
+				"--network", fmt.Sprintf("type=public,ip-address=%s", MockPublicIPv4),
+				"--network", fmt.Sprintf("type=public,ip-address=%s", MockPublicIPv6),
 				"--network", "family=IPv6,type=public",
-				"--network", "family=IPv6,type=private",
+				"--network", "family=IPv4,type=utility",
+				"--network", fmt.Sprintf("family=IPv4,type=private,network=%s,enable-bootable,disable-source-ip-filtering", PrivateNetworkUUID),
+				"--network", fmt.Sprintf("type=private,network=%s,ip-address=%s", PrivateNetworkUUID, MockPrivateIPv4),
+				"--network", fmt.Sprintf("family=IPv6,type=private,network=%s", PrivateNetworkUUID),
+				"--network", fmt.Sprintf("type=private,network=%s,ip-address=%s", PrivateNetworkUUID, MockPrivateIPv6),
 			},
 			createServerReq: request.CreateServerRequest{
 				VideoModel:       "vga",
@@ -285,16 +297,50 @@ func TestCreateServer(t *testing.T) {
 				}},
 				Networking: &request.CreateServerNetworking{Interfaces: request.CreateServerInterfaceSlice{
 					request.CreateServerInterface{
-						IPAddresses: request.CreateServerIPAddressSlice{request.CreateServerIPAddress{Family: "IPv4"}},
-						Type:        upcloud.NetworkTypeUtility,
-					},
-					request.CreateServerInterface{
-						IPAddresses: request.CreateServerIPAddressSlice{request.CreateServerIPAddress{Family: "IPv6"}},
+						IPAddresses: request.CreateServerIPAddressSlice{request.CreateServerIPAddress{Family: upcloud.IPAddressFamilyIPv4}},
 						Type:        upcloud.NetworkTypePublic,
 					},
 					request.CreateServerInterface{
-						IPAddresses: request.CreateServerIPAddressSlice{request.CreateServerIPAddress{Family: "IPv6"}},
+						IPAddresses: request.CreateServerIPAddressSlice{request.CreateServerIPAddress{Family: upcloud.IPAddressFamilyIPv4}},
+						Type:        upcloud.NetworkTypePublic,
+					},
+					request.CreateServerInterface{
+						IPAddresses: request.CreateServerIPAddressSlice{request.CreateServerIPAddress{Family: upcloud.IPAddressFamilyIPv4, Address: MockPublicIPv4}},
+						Type:        upcloud.NetworkTypePublic,
+					},
+					request.CreateServerInterface{
+						IPAddresses: request.CreateServerIPAddressSlice{request.CreateServerIPAddress{Family: upcloud.IPAddressFamilyIPv6, Address: MockPublicIPv6}},
+						Type:        upcloud.NetworkTypePublic,
+					},
+					request.CreateServerInterface{
+						IPAddresses: request.CreateServerIPAddressSlice{request.CreateServerIPAddress{Family: upcloud.IPAddressFamilyIPv6}},
+						Type:        upcloud.NetworkTypePublic,
+					},
+					request.CreateServerInterface{
+						IPAddresses: request.CreateServerIPAddressSlice{request.CreateServerIPAddress{Family: upcloud.IPAddressFamilyIPv4}},
+						Type:        upcloud.NetworkTypeUtility,
+					},
+					request.CreateServerInterface{
+						IPAddresses:       request.CreateServerIPAddressSlice{request.CreateServerIPAddress{Family: upcloud.IPAddressFamilyIPv4}},
+						Type:              upcloud.NetworkTypePrivate,
+						Network:           PrivateNetworkUUID,
+						Bootable:          upcloud.True,
+						SourceIPFiltering: upcloud.False,
+					},
+					request.CreateServerInterface{
+						IPAddresses: request.CreateServerIPAddressSlice{request.CreateServerIPAddress{Family: upcloud.IPAddressFamilyIPv4, Address: MockPrivateIPv4}},
 						Type:        upcloud.NetworkTypePrivate,
+						Network:     PrivateNetworkUUID,
+					},
+					request.CreateServerInterface{
+						IPAddresses: request.CreateServerIPAddressSlice{request.CreateServerIPAddress{Family: upcloud.IPAddressFamilyIPv6}},
+						Type:        upcloud.NetworkTypePrivate,
+						Network:     PrivateNetworkUUID,
+					},
+					request.CreateServerInterface{
+						IPAddresses: request.CreateServerIPAddressSlice{request.CreateServerIPAddress{Family: upcloud.IPAddressFamilyIPv6, Address: MockPrivateIPv6}},
+						Type:        upcloud.NetworkTypePrivate,
+						Network:     PrivateNetworkUUID,
 					},
 				}},
 			},
@@ -311,6 +357,17 @@ func TestCreateServer(t *testing.T) {
 				"--password-delivery", "sms",
 			},
 			error: "network type is required",
+		},
+		{
+			name: "invalid ip address",
+			args: []string{
+				"--hostname", "example.com",
+				"--title", "test-server",
+				"--zone", "uk-lon1",
+				"--network", "type=public,ip-address=10.0.0.300",
+				"--password-delivery", "sms",
+			},
+			error: "10.0.0.300 is an invalid ip address",
 		},
 		{
 			name: "hostname is missing",

@@ -52,14 +52,6 @@ func TestCreateCommand(t *testing.T) {
 			},
 		},
 		{
-			name: "ip-family unsupported for private network",
-			flags: []string{
-				"--network", network.UUID,
-				"--family", "IPv6",
-			},
-			error: "Currently only IPv4 is supported in private networks",
-		},
-		{
 			name: "set ip-family for public network",
 			flags: []string{
 				"--family", "IPv6",
@@ -102,13 +94,13 @@ func TestCreateCommand(t *testing.T) {
 				"--network", network.UUID,
 				"--ip-addresses", "127.0.0.1,127.0.0.2,127.0.0.3/22",
 				"--enable-bootable",
-				"--enable-source-ip-filtering",
+				"--disable-source-ip-filtering",
 				"--index", "4",
 			},
 			req: request.CreateNetworkInterfaceRequest{
 				ServerUUID:        server.UUID,
 				Bootable:          upcloud.True,
-				SourceIPFiltering: upcloud.True,
+				SourceIPFiltering: upcloud.False,
 				NetworkUUID:       network.UUID,
 				IPAddresses: request.CreateNetworkInterfaceIPAddressSlice{
 					{Address: "127.0.0.1", Family: upcloud.IPAddressFamilyIPv4},
