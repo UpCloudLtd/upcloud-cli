@@ -21,7 +21,7 @@ network     Manage network
 router      Manage router
 server      Manage servers
 storage     Manage storages
-version     Display software infomation
+version     Display software information
 
 Options:
   -t, --client-timeout duration   CLI timeout when using interactive mode on some commands
