@@ -7,6 +7,12 @@ import (
 	"github.com/jedib0t/go-pretty/v6/text"
 )
 
+const (
+	horizontalLine = "─"
+	verticalLine   = "│"
+	crossLine      = "┼"
+)
+
 func styleDetails(t *table.Table) {
 	t.SetStyle(table.Style{
 		Name: "Details",
@@ -105,9 +111,9 @@ func (s *DetailsView) Render() string {
 func (s *DetailsView) SetRowSeparators(v bool) {
 	style := s.t.Style()
 	style.Options.SeparateRows = v
-	style.Box.MiddleHorizontal = "─"
-	style.Box.MiddleSeparator = "┼"
-	style.Box.MiddleVertical = "│"
+	style.Box.MiddleHorizontal = horizontalLine
+	style.Box.MiddleSeparator = crossLine
+	style.Box.MiddleVertical = verticalLine
 }
 
 // SetRowSpacing sets whether Render() outputs separators empty lines between data rows
@@ -115,9 +121,9 @@ func (s *DetailsView) SetRowSpacing(v bool) {
 	style := s.t.Style()
 	style.Options.SeparateRows = v
 	style.Box.MiddleHorizontal = " "
-	style.Box.MiddleSeparator = "  │"
-	style.Box.LeftSeparator = "│"
-	style.Box.MiddleVertical = "│"
+	style.Box.MiddleSeparator = "  " + verticalLine
+	style.Box.LeftSeparator = verticalLine
+	style.Box.MiddleVertical = verticalLine
 }
 
 // SetRowTransformer sets a method to transform rwos before rendering
