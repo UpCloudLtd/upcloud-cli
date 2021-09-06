@@ -3,15 +3,16 @@ package serverfirewall
 import (
 	"fmt"
 
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/m7shapan/cidr"
+	"github.com/spf13/pflag"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/m7shapan/cidr"
-	"github.com/spf13/pflag"
 )
 
 type createCommand struct {
@@ -117,7 +118,7 @@ func (s *createCommand) Execute(exec commands.Executor, arg string) (output.Outp
 	if s.destinationIPBlock != "" {
 		destinationNetwork, err = cidr.ParseCIDR(s.destinationIPBlock)
 		if err != nil {
-			return nil, fmt.Errorf("dest-ipaddress-block parse error: %s", err)
+			return nil, fmt.Errorf("dest-ipaddress-block parse error: %w", err)
 		}
 		destinationAddressStart = destinationNetwork.FirstIP.String()
 		destinationAddressEnd = destinationNetwork.LastIP.String()
@@ -125,7 +126,7 @@ func (s *createCommand) Execute(exec commands.Executor, arg string) (output.Outp
 	if s.sourceIPBlock != "" {
 		sourceNetwork, err = cidr.ParseCIDR(s.sourceIPBlock)
 		if err != nil {
-			return nil, fmt.Errorf("src-ipaddress-block parse error: %s", err)
+			return nil, fmt.Errorf("src-ipaddress-block parse error: %w", err)
 		}
 		sourceAddressStart = sourceNetwork.FirstIP.String()
 		sourceAddressEnd = sourceNetwork.LastIP.String()

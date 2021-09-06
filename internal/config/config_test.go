@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -33,4 +34,12 @@ func TestConfig_Load(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "sdkfo", cfg.GetString("username"))
 	assert.Equal(t, "foo", cfg.GetString("password"))
+}
+
+func TestConfig_LoadNotFound(t *testing.T) {
+	cfg := New()
+	cfg.GlobalFlags.ConfigFile = "foobar"
+	err := cfg.Load()
+	assert.ErrorIs(t, err, os.ErrNotExist)
+	assert.True(t, strings.HasPrefix(err.Error(), "unable to parse config from file 'foobar':"))
 }

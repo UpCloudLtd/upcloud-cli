@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"path/filepath"
@@ -88,7 +89,7 @@ func (s *Config) Load() error {
 
 	// Attempt to read the config file, ignoring only config file not found errors
 	if err := v.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+		if !errors.Is(err, viper.ConfigFileNotFoundError{}) {
 			return fmt.Errorf("unable to parse config from file '%v': %w", v.ConfigFileUsed(), err)
 		}
 	}

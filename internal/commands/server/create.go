@@ -212,7 +212,7 @@ func (s *createParams) handleSSHKey() error {
 	for _, keyOrFile := range s.sshKeys {
 		if strings.HasPrefix(keyOrFile, "ssh-") {
 			if _, _, _, _, err := ssh.ParseAuthorizedKey([]byte(keyOrFile)); err != nil {
-				return fmt.Errorf("invalid ssh key %q: %v", keyOrFile, err)
+				return fmt.Errorf("invalid ssh key %q: %w", keyOrFile, err)
 			}
 			allSSHKeys = append(allSSHKeys, keyOrFile)
 			continue
@@ -225,7 +225,7 @@ func (s *createParams) handleSSHKey() error {
 		for rdr.Scan() {
 			if _, _, _, _, err := ssh.ParseAuthorizedKey(rdr.Bytes()); err != nil {
 				_ = f.Close()
-				return fmt.Errorf("invalid ssh key %q in file %s: %v", rdr.Text(), keyOrFile, err)
+				return fmt.Errorf("invalid ssh key %q in file %s: %w", rdr.Text(), keyOrFile, err)
 			}
 			allSSHKeys = append(allSSHKeys, rdr.Text())
 		}
