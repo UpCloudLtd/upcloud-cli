@@ -91,7 +91,9 @@ func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Out
 		s.params.Firewall = "on"
 	case config.False:
 		s.params.Firewall = "off"
-		// nb. no handling for not set, just pass in an empty string in the request
+	case config.Unset, config.DefaultFalse, config.DefaultTrue:
+		// nb. no handling for unset parameter, we'll just pass in an empty string in the request and let
+		// the backend figure it out, eg. go with the backend default.
 	}
 
 	if s.params.CoreNumber != 0 || s.params.MemoryAmount != 0 {
