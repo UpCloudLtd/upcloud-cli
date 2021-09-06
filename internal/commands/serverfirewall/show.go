@@ -6,13 +6,14 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/jedib0t/go-pretty/v6/text"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/jedib0t/go-pretty/v6/text"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 )
@@ -77,7 +78,7 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 		return nil, err
 	}
 	// build output
-	var fwRows []output.TableRow
+	fwRows := make([]output.TableRow, 0, len(rules.FirewallRules))
 	for _, rule := range rules.FirewallRules {
 		fwRows = append(fwRows, output.TableRow{
 			rule.Position,

@@ -19,7 +19,7 @@ func (s Storage) CompleteArgument(svc service.AllServices, toComplete string) ([
 	if err != nil {
 		return None(toComplete)
 	}
-	var vals []string
+	vals := make([]string, 0, len(storages.Storages))
 	for _, v := range storages.Storages {
 		vals = append(vals, v.UUID, v.Title)
 	}

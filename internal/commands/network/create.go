@@ -59,7 +59,7 @@ func (s *createCommand) MaximumExecutions() int {
 }
 
 func (s *createCommand) buildRequest() (*request.CreateNetworkRequest, error) {
-	var networks []upcloud.IPNetwork
+	networks := make([]upcloud.IPNetwork, 0, len(s.networks))
 	for _, networkStr := range s.networks {
 		network, err := handleNetwork(networkStr)
 		if err != nil {

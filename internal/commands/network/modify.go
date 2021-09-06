@@ -61,16 +61,19 @@ func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 		return nil, fmt.Errorf("ambiguous command, cannot detach and attach a router at the same time")
 	}
 	var networks []upcloud.IPNetwork
-	for _, networkStr := range s.networks {
-		network, err := handleNetwork(networkStr)
-		if err != nil {
-			return nil, err
+	if len(s.networks) > 0 {
+		networks = make([]upcloud.IPNetwork, 0, len(s.networks))
+		for _, networkStr := range s.networks {
+			network, err := handleNetwork(networkStr)
+			if err != nil {
+				return nil, err
+			}
+			if network.Family == "" {
+				return nil, fmt.Errorf("family is required")
+			}
+			network.Address = ""
+			networks = append(networks, *network)
 		}
-		if network.Family == "" {
-			return nil, fmt.Errorf("family is required")
-		}
-		network.Address = ""
-		networks = append(networks, *network)
 	}
 
 	msg := fmt.Sprintf("modifying network %v", arg)

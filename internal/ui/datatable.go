@@ -212,7 +212,7 @@ func (s *DataTable) Render() string {
 	if len(header) > 0 {
 		s.t.AppendHeader(header)
 	}
-	var columnConfigs []table.ColumnConfig
+	columnConfigs := make([]table.ColumnConfig, 0, len(s.columnConfig))
 	for _, cfg := range s.columnConfig {
 		columnConfigs = append(columnConfigs, *cfg)
 	}

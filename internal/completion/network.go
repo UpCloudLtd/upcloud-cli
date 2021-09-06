@@ -18,7 +18,7 @@ func (s Network) CompleteArgument(svc service.AllServices, toComplete string) ([
 	if err != nil {
 		return None(toComplete)
 	}
-	var vals []string
+	vals := make([]string, 0, len(networks.Networks))
 	// XXX: filter networks as it include all public/private prefixes
 	for _, v := range networks.Networks {
 		vals = append(vals, v.UUID, v.Name)

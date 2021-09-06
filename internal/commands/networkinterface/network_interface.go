@@ -1,9 +1,10 @@
 package networkinterface
 
 import (
+	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/ipaddress"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 )
 
 const maxNetworkInterfaceActions = 10
@@ -18,7 +19,10 @@ type networkInterfaceCommand struct {
 }
 
 func mapIPAddressesToRequest(ipStrings []string) ([]request.CreateNetworkInterfaceIPAddress, error) {
-	var ipAddresses []request.CreateNetworkInterfaceIPAddress
+	if len(ipStrings) == 0 {
+		return nil, nil
+	}
+	ipAddresses := make([]request.CreateNetworkInterfaceIPAddress, 0, len(ipStrings))
 	for _, ipAddrStr := range ipStrings {
 		t, err := ipaddress.GetFamily(ipAddrStr)
 		if err != nil {

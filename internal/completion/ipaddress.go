@@ -19,7 +19,7 @@ func (s IPAddress) CompleteArgument(svc service.AllServices, toComplete string) 
 	if err != nil {
 		return None(toComplete)
 	}
-	var vals []string
+	vals := make([]string, 0, len(ipAddresses.IPAddresses))
 	for _, v := range ipAddresses.IPAddresses {
 		vals = append(vals, v.PTRRecord, v.Address)
 	}

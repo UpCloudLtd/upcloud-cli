@@ -87,7 +87,7 @@ func (s *LiveLog) AddEntries(entries ...*LogEntry) {
 }
 
 func (s *LiveLog) lockActiveEntries() []*sync.Mutex {
-	var locks []*sync.Mutex
+	locks := make([]*sync.Mutex, 0, len(s.entriesPending)+len(s.entriesInProgress))
 	for _, entry := range s.entriesPending {
 		entry.mu.Lock()
 		locks = append(locks, &entry.mu)

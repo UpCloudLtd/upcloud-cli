@@ -82,7 +82,7 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 		}
 	}
 
-	var rows []output.TableRow
+	rows := make([]output.TableRow, 0, len(filtered))
 	for _, n := range filtered {
 		rows = append(rows, output.TableRow{
 			n.UUID,

@@ -1,8 +1,9 @@
 package completion
 
 import (
-	"github.com/UpCloudLtd/upcloud-cli/internal/service"
 	"github.com/spf13/cobra"
+
+	"github.com/UpCloudLtd/upcloud-cli/internal/service"
 )
 
 // Server implements argument completion for routers, by uuid, name or hostname.
@@ -17,7 +18,7 @@ func (s Server) CompleteArgument(svc service.AllServices, toComplete string) ([]
 	if err != nil {
 		return None(toComplete)
 	}
-	var vals []string
+	vals := make([]string, 0, len(servers.Servers))
 	for _, v := range servers.Servers {
 		vals = append(vals, v.UUID, v.Hostname, v.Title)
 	}

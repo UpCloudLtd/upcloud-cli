@@ -14,7 +14,7 @@ func Value(val interface{}, validVals ...interface{}) error {
 			return nil
 		}
 	}
-	var sValidVals []string
+	sValidVals := make([]string, 0, len(validVals))
 	for _, t := range validVals {
 		sValidVals = append(sValidVals, fmt.Sprintf("%v", t))
 	}

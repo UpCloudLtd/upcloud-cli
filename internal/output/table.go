@@ -122,7 +122,7 @@ func (s Table) MarshalHuman() ([]byte, error) {
 	if len(header) > 0 {
 		t.AppendHeader(header)
 	}
-	var columnConfigs []table.ColumnConfig
+	columnConfigs := make([]table.ColumnConfig, 0, len(columnConfig))
 	for _, cfg := range columnConfig {
 		columnConfigs = append(columnConfigs, *cfg)
 	}

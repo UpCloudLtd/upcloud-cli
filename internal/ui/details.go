@@ -81,7 +81,7 @@ func (s *DetailsView) Render() string {
 		s.headerWidth = headerMaxWidth
 	}
 	widthRemaining := terminal.GetTerminalWidth()
-	var colConfigs []table.ColumnConfig
+	colConfigs := make([]table.ColumnConfig, 0, len(s.rows[0]))
 	for i := range s.rows[0] {
 		if i < len(s.rows[0])-1 {
 			colConfigs = append(colConfigs, table.ColumnConfig{

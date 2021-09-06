@@ -330,7 +330,7 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	}
 
 	logline.SetMessage(fmt.Sprintf("%s: creating network interfaces", msg))
-	var iFaces []request.CreateServerInterface
+	iFaces := make([]request.CreateServerInterface, 0, len(s.params.networks))
 	for _, network := range s.params.networks {
 		_interface, err := s.params.handleNetwork(network)
 		if err != nil {
