@@ -1,9 +1,10 @@
-package ipaddress
+package ipaddress_test
 
 import (
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/ipaddress"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 
@@ -44,7 +45,7 @@ func TestRemoveCommand(t *testing.T) {
 			mService.On("GetIPAddresses").Return(&upcloud.IPAddresses{IPAddresses: []upcloud.IPAddress{ip}}, nil)
 			conf := config.New()
 
-			c := commands.BuildCommand(RemoveCommand(), nil, conf)
+			c := commands.BuildCommand(ipaddress.RemoveCommand(), nil, conf)
 			_, err := c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService, flume.New("test")), test.arg)
 
 			if err != nil {

@@ -1,9 +1,10 @@
-package storage
+package storage_test
 
 import (
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/storage"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
@@ -70,7 +71,7 @@ func TestCreateBackupCommand(t *testing.T) {
 			mService.On("GetStorages", &request.GetStoragesRequest{}).Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2}}, nil)
 			mService.On(targetMethod, mock.Anything).Return(&details, nil)
 
-			c := commands.BuildCommand(CreateBackupCommand(), nil, conf)
+			c := commands.BuildCommand(storage.CreateBackupCommand(), nil, conf)
 			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 

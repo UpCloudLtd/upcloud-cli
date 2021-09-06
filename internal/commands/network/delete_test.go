@@ -1,9 +1,10 @@
-package network
+package network_test
 
 import (
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/network"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 
@@ -40,7 +41,7 @@ func TestDeleteCommand(t *testing.T) {
 			mService.On(targetMethod, &test.req).Return(nil)
 			mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{n}}, nil)
 			conf := config.New()
-			c := commands.BuildCommand(DeleteCommand(), nil, conf)
+			c := commands.BuildCommand(network.DeleteCommand(), nil, conf)
 			err := c.Cobra().Flags().Parse(test.flags)
 			assert.NoError(t, err)
 

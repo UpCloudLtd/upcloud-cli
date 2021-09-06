@@ -1,9 +1,10 @@
-package router
+package router_test
 
 import (
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/router"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 
@@ -16,7 +17,7 @@ import (
 
 func TestModifyCommand(t *testing.T) {
 	t.Parallel()
-	router := upcloud.Router{Name: "test-router", UUID: "123123"}
+	testRouter := upcloud.Router{Name: "test-router", UUID: "123123"}
 	modifiedRouter := upcloud.Router{Name: "test-router-b", UUID: "123123"}
 
 	for _, test := range []struct {
@@ -34,16 +35,16 @@ func TestModifyCommand(t *testing.T) {
 		},
 		{
 			name:  "name is missing",
-			arg:   router.UUID,
+			arg:   testRouter.UUID,
 			flags: []string{},
 			error: "name is required",
 		},
 		{
 			name:    "name is passed",
-			arg:     router.UUID,
+			arg:     testRouter.UUID,
 			flags:   []string{"--name", "router-2-b"},
 			returns: &modifiedRouter,
-			req:     request.ModifyRouterRequest{Name: "router-2-b", UUID: router.UUID},
+			req:     request.ModifyRouterRequest{Name: "router-2-b", UUID: testRouter.UUID},
 		},
 	} {
 		// grab a local reference for parallel tests
@@ -53,11 +54,11 @@ func TestModifyCommand(t *testing.T) {
 			t.Parallel()
 			mService := smock.Service{}
 			mService.On(targetMethod, &test.req).Return(test.returns, nil)
-			mService.On("GetRouters", mock.Anything).Return(&upcloud.Routers{Routers: []upcloud.Router{router}}, nil)
+			mService.On("GetRouters", mock.Anything).Return(&upcloud.Routers{Routers: []upcloud.Router{testRouter}}, nil)
 
 			conf := config.New()
 
-			c := commands.BuildCommand(ModifyCommand(), nil, conf)
+			c := commands.BuildCommand(router.ModifyCommand(), nil, conf)
 			if err := c.Cobra().Flags().Parse(test.flags); err != nil {
 				t.Fatal(err)
 			}

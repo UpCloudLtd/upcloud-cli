@@ -1,26 +1,28 @@
-package ui
+package ui_test
 
 import (
 	"testing"
 
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 )
 
 func TestShowDetailsRender(t *testing.T) {
 	t.Parallel()
 	for _, testcase := range []struct {
 		name           string
-		buildViewFn    func(*ListLayout)
-		style          listLayoutConfig
+		buildViewFn    func(*ui.ListLayout)
+		style          ui.ListLayoutConfig
 		expectedOutput string
 	}{
 		{
 			name: "Default style",
-			buildViewFn: func(layout *ListLayout) {
+			buildViewFn: func(layout *ui.ListLayout) {
 				layout.AppendSection("Parent", "Child 1", "Child 2")
 			},
-			style: ListLayoutDefault,
+			style: ui.ListLayoutDefault,
 			expectedOutput: `  
   Parent
     Child 1
@@ -28,10 +30,10 @@ func TestShowDetailsRender(t *testing.T) {
 		},
 		{
 			name: "Default style with note",
-			buildViewFn: func(layout *ListLayout) {
+			buildViewFn: func(layout *ui.ListLayout) {
 				layout.AppendSectionWithNote("Parent", "Child 1", "(note)")
 			},
-			style: ListLayoutDefault,
+			style: ui.ListLayoutDefault,
 			expectedOutput: `  
   Parent
     Child 1
@@ -40,10 +42,10 @@ func TestShowDetailsRender(t *testing.T) {
 		},
 		{
 			name: "Nested table style",
-			buildViewFn: func(layout *ListLayout) {
+			buildViewFn: func(layout *ui.ListLayout) {
 				layout.AppendSection("Parent", "Child 1", "Child 2")
 			},
-			style: ListLayoutNestedTable,
+			style: ui.ListLayoutNestedTable,
 			expectedOutput: `Parent
   
   Child 1
@@ -52,10 +54,10 @@ func TestShowDetailsRender(t *testing.T) {
 		},
 		{
 			name: "Nested table with note",
-			buildViewFn: func(layout *ListLayout) {
+			buildViewFn: func(layout *ui.ListLayout) {
 				layout.AppendSectionWithNote("Parent", "Child 1", "(note)")
 			},
-			style: ListLayoutNestedTable,
+			style: ui.ListLayoutNestedTable,
 			expectedOutput: `Parent
   
   Child 1
@@ -68,7 +70,7 @@ func TestShowDetailsRender(t *testing.T) {
 		t.Run(testcase.name, func(t *testing.T) {
 			t.Parallel()
 			text.DisableColors()
-			view := NewListLayout(testcase.style)
+			view := ui.NewListLayout(testcase.style)
 			testcase.buildViewFn(view)
 			// fmt.Println(view.Render())
 			assert.Equal(t, testcase.expectedOutput, view.Render())

@@ -20,7 +20,8 @@ var defaultListStyle = list.Style{
 	Name:             "ListDefault",
 }
 
-type listLayoutConfig struct {
+// ListLayoutConfig configures how lists are rendered.
+type ListLayoutConfig struct {
 	MarginLeft    bool
 	MarginTop     bool
 	MarginBottom  bool
@@ -30,7 +31,7 @@ type listLayoutConfig struct {
 }
 
 // ListLayoutDefault defines the default config used for rendering lists.
-var ListLayoutDefault = listLayoutConfig{
+var ListLayoutDefault = ListLayoutConfig{
 	MarginLeft:    true,
 	MarginTop:     true,
 	MarginBottom:  false,
@@ -40,7 +41,7 @@ var ListLayoutDefault = listLayoutConfig{
 }
 
 // ListLayoutNestedTable defines the configuration used for rendering nested tables.
-var ListLayoutNestedTable = listLayoutConfig{
+var ListLayoutNestedTable = ListLayoutConfig{
 	MarginLeft:    false,
 	MarginTop:     false,
 	MarginBottom:  false,
@@ -52,11 +53,11 @@ var ListLayoutNestedTable = listLayoutConfig{
 // ListLayout is a renderer of list data.
 type ListLayout struct {
 	l     list.Writer
-	style listLayoutConfig
+	style ListLayoutConfig
 }
 
 // NewListLayout returns a a new list data renderer.
-func NewListLayout(style listLayoutConfig) *ListLayout {
+func NewListLayout(style ListLayoutConfig) *ListLayout {
 	l := list.NewWriter()
 	l.SetStyle(defaultListStyle)
 
@@ -67,7 +68,7 @@ func NewListLayout(style listLayoutConfig) *ListLayout {
 }
 
 // WrapWithListLayout returns a list data renderer wrapping given text.
-func WrapWithListLayout(text string, style listLayoutConfig) *ListLayout {
+func WrapWithListLayout(text string, style ListLayoutConfig) *ListLayout {
 	l := NewListLayout(style)
 	l.appendSection("", "", []string{text})
 	return l

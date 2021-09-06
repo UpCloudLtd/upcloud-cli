@@ -1,4 +1,4 @@
-package account
+package account_test
 
 import (
 	"bytes"
@@ -7,6 +7,7 @@ import (
 	"github.com/jedib0t/go-pretty/v6/text"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/account"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
@@ -19,7 +20,7 @@ import (
 func TestShowCommand(t *testing.T) {
 	t.Parallel()
 	text.DisableColors()
-	account := upcloud.Account{
+	testAccount := upcloud.Account{
 		Credits:  42,
 		UserName: "opencredo",
 		ResourceLimits: upcloud.ResourceLimits{
@@ -51,10 +52,10 @@ func TestShowCommand(t *testing.T) {
 `
 
 	conf := config.New()
-	testCmd := ShowCommand()
+	testCmd := account.ShowCommand()
 	mService := new(smock.Service)
 
-	mService.On("GetAccount").Return(&account, nil)
+	mService.On("GetAccount").Return(&testAccount, nil)
 	// force human output
 	conf.Viper().Set(config.KeyOutput, config.ValueOutputHuman)
 

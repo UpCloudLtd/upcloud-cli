@@ -15,7 +15,8 @@ import (
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 )
 
-func testSimpleServerCommand(t *testing.T, testCmd commands.Command, servers *upcloud.Servers, server upcloud.Server, details upcloud.ServerDetails, methodName string, madeRequest interface{}, requestResponse interface{}, args []string) {
+func SimpleServerCommandTests(t *testing.T, testCmd commands.Command, servers *upcloud.Servers, server upcloud.Server, details upcloud.ServerDetails, methodName string, madeRequest interface{}, requestResponse interface{}, args []string) {
+	// nb. this needs to be in the server package, as the external tests also utilize it
 	t.Helper()
 	conf := config.New()
 	mService := new(smock.Service)

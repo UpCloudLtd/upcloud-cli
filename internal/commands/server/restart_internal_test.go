@@ -67,7 +67,7 @@ func TestRestartCommand(t *testing.T) {
 		test := test
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			testSimpleServerCommand(t, RestartCommand(), servers, Server1, details, methodName, &test.restartReq, &details2, test.args)
+			SimpleServerCommandTests(t, RestartCommand(), servers, Server1, details, methodName, &test.restartReq, &details2, test.args)
 		})
 	}
 }

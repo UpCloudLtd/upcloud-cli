@@ -1,10 +1,11 @@
-package ipaddress
+package ipaddress_test
 
 import (
 	"bytes"
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/ipaddress"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
@@ -52,7 +53,7 @@ func TestShowCommand(t *testing.T) {
 	).Return(&ipAddress, nil)
 	conf.Viper().Set(config.KeyOutput, config.ValueOutputHuman)
 
-	command := commands.BuildCommand(ShowCommand(), nil, conf)
+	command := commands.BuildCommand(ipaddress.ShowCommand(), nil, conf)
 	out, err := command.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, svc, flume.New("test")), ipAddress.Address)
 	assert.NoError(t, err)
 

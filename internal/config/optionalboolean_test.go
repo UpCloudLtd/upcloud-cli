@@ -1,10 +1,12 @@
-package config
+package config_test
 
 import (
 	"testing"
 
 	"github.com/spf13/pflag"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 )
 
 func TestSetBoolFlag_EnableDisableFlags(t *testing.T) {
@@ -12,23 +14,23 @@ func TestSetBoolFlag_EnableDisableFlags(t *testing.T) {
 	for _, test := range []struct {
 		name          string
 		args          []string
-		expectedState OptionalBoolean
+		expectedState config.OptionalBoolean
 		expectedError string
 	}{
 		{
 			name:          "set to true",
 			args:          []string{"--enable-test"},
-			expectedState: True,
+			expectedState: config.True,
 		},
 		{
 			name:          "set to false",
 			args:          []string{"--disable-test"},
-			expectedState: False,
+			expectedState: config.False,
 		},
 		{
 			name:          "no flag",
 			args:          []string{},
-			expectedState: Unset,
+			expectedState: config.Unset,
 		},
 		{
 			name:          "both options",
@@ -41,8 +43,8 @@ func TestSetBoolFlag_EnableDisableFlags(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 			fs := &pflag.FlagSet{}
-			var target OptionalBoolean
-			AddEnableDisableFlags(fs, &target, "test", "testing")
+			var target config.OptionalBoolean
+			config.AddEnableDisableFlags(fs, &target, "test", "testing")
 			err := fs.Parse(test.args)
 			if test.expectedError == "" {
 				assert.NoError(t, err)
@@ -60,32 +62,32 @@ func TestSetBoolFlag_EnableOrDisableFlag(t *testing.T) {
 		name          string
 		defaultValue  bool
 		args          []string
-		expectedState OptionalBoolean
+		expectedState config.OptionalBoolean
 		expectedError string
 	}{
 		{
 			name:          "set to true",
 			defaultValue:  false,
 			args:          []string{"--enable-test"},
-			expectedState: True,
+			expectedState: config.True,
 		},
 		{
 			name:          "set to false",
 			defaultValue:  true,
 			args:          []string{"--disable-test"},
-			expectedState: False,
+			expectedState: config.False,
 		},
 		{
 			name:          "true stays true with no flag",
 			defaultValue:  true,
 			args:          []string{},
-			expectedState: DefaultTrue,
+			expectedState: config.DefaultTrue,
 		},
 		{
 			name:          "false stays false with no flag",
 			defaultValue:  false,
 			args:          []string{},
-			expectedState: DefaultFalse,
+			expectedState: config.DefaultFalse,
 		},
 		{
 			name:          "both options passed in when true",
@@ -105,8 +107,8 @@ func TestSetBoolFlag_EnableOrDisableFlag(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 			fs := &pflag.FlagSet{}
-			target := Unset
-			AddEnableOrDisableFlag(fs, &target, test.defaultValue, "test", "testing")
+			target := config.Unset
+			config.AddEnableOrDisableFlag(fs, &target, test.defaultValue, "test", "testing")
 			err := fs.Parse(test.args)
 			if test.expectedError == "" {
 				assert.NoError(t, err)

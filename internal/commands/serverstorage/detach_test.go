@@ -1,9 +1,10 @@
-package serverstorage
+package serverstorage_test
 
 import (
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/serverstorage"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
@@ -74,7 +75,7 @@ func TestDetachCommand(t *testing.T) {
 			mService.On("GetServers", mock.Anything).Return(servers, nil)
 			mService.On(targetMethod, &test.detachReq).Return(&details, nil)
 
-			c := commands.BuildCommand(DetachCommand(), nil, conf)
+			c := commands.BuildCommand(serverstorage.DetachCommand(), nil, conf)
 			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 

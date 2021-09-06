@@ -1,6 +1,10 @@
-package ui
+package ui_test
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
+)
 
 func TestIndentText(t *testing.T) {
 	t.Parallel()
@@ -35,7 +39,7 @@ func TestIndentText(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			if got := IndentText(tt.args.s, tt.args.prefix, tt.args.repeatedPrefixAsSpaces); got != tt.want {
+			if got := ui.IndentText(tt.args.s, tt.args.prefix, tt.args.repeatedPrefixAsSpaces); got != tt.want {
 				t.Errorf("IndentText() = %q, want %q	", got, tt.want)
 			}
 		})

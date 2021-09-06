@@ -1,10 +1,12 @@
-package ipaddress
+package ipaddress_test
 
 import (
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/ipaddress"
 )
 
 func TestGetFamily(t *testing.T) {
@@ -49,7 +51,7 @@ func TestGetFamily(t *testing.T) {
 		test := test
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			family, err := GetFamily(test.address)
+			family, err := ipaddress.GetFamily(test.address)
 			if err != nil {
 				assert.Equal(t, test.expected, err.Error())
 			} else {

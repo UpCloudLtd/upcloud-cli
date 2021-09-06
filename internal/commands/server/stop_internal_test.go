@@ -1,15 +1,13 @@
-package server_test
+package server
 
 import (
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-
-	"github.com/UpCloudLtd/upcloud-cli/internal/commands/server"
 )
 
-func TestStopCommand(t *testing.T) {
+func TestStopCommandDefaults(t *testing.T) {
 	t.Parallel()
 	targetMethod := "StopServer"
 
@@ -43,13 +41,11 @@ func TestStopCommand(t *testing.T) {
 		stopReq request.StopServerRequest
 	}{
 		{
-			name: "flags mapped to the correct field",
-			args: []string{
-				"--type", "hard",
-			},
+			name: "use default values",
+			args: []string{},
 			stopReq: request.StopServerRequest{
 				UUID:     Server1.UUID,
-				StopType: upcloud.StopTypeHard,
+				StopType: defaultStopType,
 			},
 		},
 	} {
@@ -57,7 +53,7 @@ func TestStopCommand(t *testing.T) {
 		test := test
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			server.SimpleServerCommandTests(t, server.StopCommand(), servers, Server1, details2, targetMethod, &test.stopReq, &details, test.args)
+			SimpleServerCommandTests(t, StopCommand(), servers, Server1, details2, targetMethod, &test.stopReq, &details, test.args)
 		})
 	}
 }

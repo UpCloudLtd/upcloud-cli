@@ -1,10 +1,12 @@
-package server
+package server_test
 
 import (
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/server"
 )
 
 func TestStartCommand(t *testing.T) {
@@ -51,7 +53,7 @@ func TestStartCommand(t *testing.T) {
 		test := test
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			testSimpleServerCommand(t, StartCommand(), servers, Server1, details2, targetMethod, &test.startReq, &details, test.args)
+			server.SimpleServerCommandTests(t, server.StartCommand(), servers, Server1, details2, targetMethod, &test.startReq, &details, test.args)
 		})
 	}
 }

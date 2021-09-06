@@ -1,4 +1,4 @@
-package storage
+package storage_test
 
 import (
 	"testing"
@@ -6,6 +6,7 @@ import (
 	"github.com/gemalto/flume"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/storage"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
@@ -54,7 +55,7 @@ func TestRestoreBackupCommand(t *testing.T) {
 
 			mService.On(targetMethod, mock.Anything).Return(nil, nil)
 
-			c := commands.BuildCommand(RestoreBackupCommand(), nil, conf)
+			c := commands.BuildCommand(storage.RestoreBackupCommand(), nil, conf)
 			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 

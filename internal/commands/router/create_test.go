@@ -1,9 +1,10 @@
-package router
+package router_test
 
 import (
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/router"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 
@@ -17,7 +18,7 @@ func TestCreateCommand(t *testing.T) {
 	t.Parallel()
 	targetMethod := "CreateRouter"
 
-	router := upcloud.Router{Name: "test-router"}
+	testRouter := upcloud.Router{Name: "test-router"}
 
 	for _, test := range []struct {
 		name  string
@@ -32,8 +33,8 @@ func TestCreateCommand(t *testing.T) {
 		},
 		{
 			name:  "name is passed",
-			flags: []string{"--name", router.Name},
-			req:   request.CreateRouterRequest{Name: router.Name},
+			flags: []string{"--name", testRouter.Name},
+			req:   request.CreateRouterRequest{Name: testRouter.Name},
 		},
 	} {
 		// grab a local reference for parallel tests
@@ -41,11 +42,11 @@ func TestCreateCommand(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 			mService := smock.Service{}
-			mService.On(targetMethod, &test.req).Return(&router, nil)
+			mService.On(targetMethod, &test.req).Return(&testRouter, nil)
 
 			conf := config.New()
 
-			c := commands.BuildCommand(CreateCommand(), nil, conf)
+			c := commands.BuildCommand(router.CreateCommand(), nil, conf)
 			err := c.Cobra().Flags().Parse(test.flags)
 			assert.NoError(t, err)
 

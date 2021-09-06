@@ -1,6 +1,10 @@
-package validation
+package validation_test
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/UpCloudLtd/upcloud-cli/internal/validation"
+)
 
 func TestUuid4(t *testing.T) {
 	t.Parallel()
@@ -24,7 +28,7 @@ func TestUuid4(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			if err := UUID4(tt.args.val); (err != nil) != tt.wantErr {
+			if err := validation.UUID4(tt.args.val); (err != nil) != tt.wantErr {
 				t.Errorf("UUID4() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

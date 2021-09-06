@@ -1,9 +1,10 @@
-package network
+package network_test
 
 import (
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/network"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
@@ -89,7 +90,7 @@ func TestModifyCommand(t *testing.T) {
 			mService.On(targetMethod, &test.expected).Return(&upcloud.Network{}, nil)
 			mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{n}}, nil)
 			conf := config.New()
-			c := commands.BuildCommand(ModifyCommand(), nil, conf)
+			c := commands.BuildCommand(network.ModifyCommand(), nil, conf)
 			err := c.Cobra().Flags().Parse(test.flags)
 			assert.NoError(t, err)
 
@@ -196,21 +197,21 @@ func TestModifyCommandDetach(t *testing.T) {
 	}
 }
 
-func testSimpleModifyCommand(t *testing.T, flags []string, expectedError string, network upcloud.Network, router upcloud.Router, calledMethod string, expectedRequest interface{}) {
+func testSimpleModifyCommand(t *testing.T, flags []string, expectedError string, returnNetwork upcloud.Network, router upcloud.Router, calledMethod string, expectedRequest interface{}) {
 	t.Helper()
 	mService := smock.Service{}
 	mService.On(calledMethod, expectedRequest).Return(nil)
-	mService.On("GetNetworkDetails", &request.GetNetworkDetailsRequest{UUID: network.UUID}).Return(&network, nil)
-	mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{network}}, nil)
+	mService.On("GetNetworkDetails", &request.GetNetworkDetailsRequest{UUID: returnNetwork.UUID}).Return(&returnNetwork, nil)
+	mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{returnNetwork}}, nil)
 	mService.On("GetRouters").Return(&upcloud.Routers{Routers: []upcloud.Router{router}}, nil)
 	conf := config.New()
-	c := commands.BuildCommand(ModifyCommand(), nil, conf)
+	c := commands.BuildCommand(network.ModifyCommand(), nil, conf)
 	err := c.Cobra().Flags().Parse(flags)
 	assert.NoError(t, err)
 
 	_, err = c.(commands.SingleArgumentCommand).ExecuteSingleArgument(
 		commands.NewExecutor(conf, &mService, flume.New("test")),
-		network.UUID,
+		returnNetwork.UUID,
 	)
 
 	if err != nil {
@@ -283,7 +284,7 @@ func TestModifyCommandModifyAndAttach(t *testing.T) {
 			mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{n}}, nil)
 			mService.On("GetRouters").Return(&upcloud.Routers{Routers: []upcloud.Router{r}}, nil)
 			conf := config.New()
-			c := commands.BuildCommand(ModifyCommand(), nil, conf)
+			c := commands.BuildCommand(network.ModifyCommand(), nil, conf)
 			err := c.Cobra().Flags().Parse(test.flags)
 			assert.NoError(t, err)
 
@@ -346,7 +347,7 @@ func TestModifyCommandModifyAndDetach(t *testing.T) {
 			mService.On("GetNetworkDetails", &request.GetNetworkDetailsRequest{UUID: n.UUID}).Return(&n, nil)
 			mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{n}}, nil)
 			conf := config.New()
-			c := commands.BuildCommand(ModifyCommand(), nil, conf)
+			c := commands.BuildCommand(network.ModifyCommand(), nil, conf)
 			err := c.Cobra().Flags().Parse(test.flags)
 			assert.NoError(t, err)
 

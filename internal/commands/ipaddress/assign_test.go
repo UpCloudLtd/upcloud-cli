@@ -1,9 +1,10 @@
-package ipaddress
+package ipaddress_test
 
 import (
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/ipaddress"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 
@@ -76,7 +77,7 @@ func TestAssignCommand(t *testing.T) {
 			}
 			conf := config.New()
 
-			c := commands.BuildCommand(AssignCommand(), nil, conf)
+			c := commands.BuildCommand(ipaddress.AssignCommand(), nil, conf)
 			err := c.Cobra().Flags().Parse(test.flags)
 			assert.NoError(t, err)
 

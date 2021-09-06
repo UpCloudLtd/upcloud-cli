@@ -1,9 +1,10 @@
-package storage
+package storage_test
 
 import (
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/storage"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
@@ -125,8 +126,8 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 				Size: 50,
 				BackupRule: &upcloud.BackupRule{
 					Time:      "1200",
-					Retention: defaultBackupRuleParams.Retention,
-					Interval:  defaultBackupRuleParams.Interval,
+					Retention: 7,
+					Interval:  "daily",
 				},
 			},
 		},
@@ -142,9 +143,9 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 		test := test
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			CachedStorages = nil
+			storage.CachedStorages = nil
 			conf := config.New()
-			testCmd := ModifyCommand()
+			testCmd := storage.ModifyCommand()
 			mService := new(smock.Service)
 
 			conf.Service = internal.Wrapper{Service: mService}

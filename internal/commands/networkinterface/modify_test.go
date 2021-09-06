@@ -1,9 +1,10 @@
-package networkinterface
+package networkinterface_test
 
 import (
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/networkinterface"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 
@@ -74,7 +75,7 @@ func TestModifyCommand(t *testing.T) {
 			mService.On("GetServers").Return(&servers, nil)
 			conf := config.New()
 
-			c := commands.BuildCommand(ModifyCommand(), nil, conf)
+			c := commands.BuildCommand(networkinterface.ModifyCommand(), nil, conf)
 			err := c.Cobra().Flags().Parse(test.flags)
 			assert.NoError(t, err)
 

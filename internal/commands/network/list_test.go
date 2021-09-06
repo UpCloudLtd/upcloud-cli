@@ -1,9 +1,10 @@
-package network
+package network_test
 
 import (
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/network"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
@@ -83,7 +84,7 @@ func TestListCommand(t *testing.T) {
 			mService.On("GetNetworksInZone", &request.GetNetworksInZoneRequest{Zone: "uk-lon1"}).Return(&upcloud.Networks{Networks: []upcloud.Network{Network3, Network4}}, nil)
 
 			cfg := config.New()
-			c := commands.BuildCommand(ListCommand(), nil, cfg)
+			c := commands.BuildCommand(network.ListCommand(), nil, cfg)
 			err := c.Cobra().Flags().Parse(test.flags)
 
 			assert.NoError(t, err)

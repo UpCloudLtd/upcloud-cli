@@ -1,4 +1,4 @@
-package storage
+package storage_test
 
 const (
 	Title1 = "mock-storage-title1"

@@ -1,4 +1,4 @@
-package serverstorage
+package serverstorage_test
 
 var (
 	Title1 = "mock-storage-title1"

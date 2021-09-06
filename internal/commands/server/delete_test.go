@@ -1,9 +1,10 @@
-package server
+package server_test
 
 import (
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/server"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
@@ -62,7 +63,7 @@ func TestDeleteServerCommand(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 			conf := config.New()
-			testCmd := DeleteCommand()
+			testCmd := server.DeleteCommand()
 			mService := new(smock.Service)
 
 			conf.Service = internal.Wrapper{Service: mService}

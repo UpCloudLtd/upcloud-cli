@@ -1,9 +1,10 @@
-package storage
+package storage_test
 
 import (
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/storage"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
@@ -65,7 +66,7 @@ func TestTemplatizeCommand(t *testing.T) {
 		test := test
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			CachedStorages = nil
+			storage.CachedStorages = nil
 			conf := config.New()
 			mService := new(smock.Service)
 
@@ -74,7 +75,7 @@ func TestTemplatizeCommand(t *testing.T) {
 			mService.On("GetStorages", mock.Anything).Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2}}, nil)
 			mService.On(targetMethod, &test.expected).Return(&details, nil)
 
-			c := commands.BuildCommand(TemplatizeCommand(), nil, conf)
+			c := commands.BuildCommand(storage.TemplatizeCommand(), nil, conf)
 			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 

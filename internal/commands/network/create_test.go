@@ -1,9 +1,10 @@
-package network
+package network_test
 
 import (
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/network"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 
@@ -100,7 +101,7 @@ func TestCreateCommand(t *testing.T) {
 			mService := smock.Service{}
 			mService.On(targetMethod, &test.expected).Return(&upcloud.Network{}, nil)
 			conf := config.New()
-			c := commands.BuildCommand(CreateCommand(), nil, conf)
+			c := commands.BuildCommand(network.CreateCommand(), nil, conf)
 			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 

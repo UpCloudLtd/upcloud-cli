@@ -1,9 +1,10 @@
-package storage
+package storage_test
 
 import (
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/storage"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
@@ -87,7 +88,7 @@ func TestCloneCommand(t *testing.T) {
 		test := test
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			CachedStorages = nil
+			storage.CachedStorages = nil
 			conf := config.New()
 			mService := new(smock.Service)
 
@@ -96,7 +97,7 @@ func TestCloneCommand(t *testing.T) {
 			mService.On(targetMethod, &test.expected).Return(&details, nil)
 			mService.On("GetStorages", mock.Anything).Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2}}, nil)
 
-			c := commands.BuildCommand(CloneCommand(), nil, conf)
+			c := commands.BuildCommand(storage.CloneCommand(), nil, conf)
 			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 

@@ -1,9 +1,10 @@
-package storage
+package storage_test
 
 import (
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/storage"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 
@@ -123,7 +124,7 @@ func TestListStorages(t *testing.T) {
 			storages := upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2, Storage3, Storage4, Storage5, Storage6}}
 			mService.On("GetStorages", mock.Anything).Return(&storages, nil)
 
-			c := commands.BuildCommand(ListCommand(), nil, config.New())
+			c := commands.BuildCommand(storage.ListCommand(), nil, config.New())
 			err := c.Cobra().Flags().Parse(testcase.args)
 			assert.NoError(t, err)
 

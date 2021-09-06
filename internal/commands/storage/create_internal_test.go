@@ -1,10 +1,9 @@
-package storage_test
+package storage
 
 import (
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
-	"github.com/UpCloudLtd/upcloud-cli/internal/commands/storage"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
@@ -15,12 +14,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCreateCommand(t *testing.T) {
+func TestCreateCommandDefaults(t *testing.T) {
 	t.Parallel()
 	targetMethod := "CreateStorage"
 	Storage1 := upcloud.Storage{
-		UUID:   UUID1,
-		Title:  Title1,
+		UUID:   "0127dfd6-3884-4079-a948-3a8881df1a7a",
+		Title:  "test storage",
 		Access: "private",
 		State:  "maintenance",
 		Type:   "backup",
@@ -38,43 +37,33 @@ func TestCreateCommand(t *testing.T) {
 		expected request.CreateStorageRequest
 	}{
 		{
-			name: "create with non default values",
+			name: "create with default values, no backup rule",
 			args: []string{
-				"--title", "create-storage-test",
-				"--zone", "abc",
-				"--size", "30",
-				"--tier", "xyz",
-				"--backup-time", "09:00",
-				"--backup-retention", "10",
-				"--backup-interval", "mon",
+				"--title", "create-storage-test", "" +
+					"--zone", "abc",
 			},
 			expected: request.CreateStorageRequest{
-				Size:  30,
-				Tier:  "xyz",
+				Size:       defaultCreateParams.Size,
+				Tier:       defaultCreateParams.Tier,
+				Title:      "create-storage-test",
+				Zone:       "abc",
+				BackupRule: nil,
+			},
+		},
+		{
+			name: "create with default values, with backup rule",
+			args: []string{"--title", "create-storage-test", "--zone", "abc", "--backup-time", "09:00"},
+			expected: request.CreateStorageRequest{
+				Size:  defaultCreateParams.Size,
+				Tier:  defaultCreateParams.Tier,
 				Title: "create-storage-test",
 				Zone:  "abc",
 				BackupRule: &upcloud.BackupRule{
-					Interval:  "mon",
+					Interval:  "daily",
 					Time:      "0900",
-					Retention: 10,
+					Retention: 7,
 				},
 			},
-		},
-		{
-			name: "title is missing",
-			args: []string{
-				"--size", "10",
-				"--zone", "zone",
-			},
-			error: "size, title and zone are required",
-		},
-		{
-			name: "zone is missing",
-			args: []string{
-				"--title", "title",
-				"--size", "10",
-			},
-			error: "size, title and zone are required",
 		},
 	} {
 		// grab a local reference for parallel tests
@@ -82,7 +71,7 @@ func TestCreateCommand(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 			conf := config.New()
-			testCmd := storage.CreateCommand()
+			testCmd := CreateCommand()
 			mService := new(smock.Service)
 
 			conf.Service = internal.Wrapper{Service: mService}

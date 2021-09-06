@@ -1,10 +1,11 @@
-package serverfirewall
+package serverfirewall_test
 
 import (
 	"bytes"
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/serverfirewall"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
@@ -158,7 +159,7 @@ func TestFirewallShowHumanOutput(t *testing.T) {
 `
 
 	conf := config.New()
-	testCmd := ShowCommand()
+	testCmd := serverfirewall.ShowCommand()
 	mService := new(smock.Service)
 
 	mService.On("GetFirewallRules",

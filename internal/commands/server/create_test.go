@@ -1,10 +1,11 @@
-package server
+package server_test
 
 import (
 	"fmt"
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/server"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/storage"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
@@ -390,7 +391,7 @@ func TestCreateServer(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			conf := config.New()
-			testCmd := CreateCommand()
+			testCmd := server.CreateCommand()
 			mService := new(smock.Service)
 
 			storage.CachedStorages = nil

@@ -1,9 +1,10 @@
-package serverstorage
+package serverstorage_test
 
 import (
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/serverstorage"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
@@ -116,7 +117,7 @@ func TestAttachStorageCommand(t *testing.T) {
 			mService.On(targetMethod, &test.attacheReq).Return(&serverDetails, nil)
 			mService.On("GetStorages", mock.Anything).Return(storages, nil)
 
-			c := commands.BuildCommand(AttachCommand(), nil, conf)
+			c := commands.BuildCommand(serverstorage.AttachCommand(), nil, conf)
 			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 

@@ -1,9 +1,10 @@
-package serverfirewall
+package serverfirewall_test
 
 import (
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/serverfirewall"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 
@@ -58,7 +59,7 @@ func TestDeleteServerFirewallRuleCommand(t *testing.T) {
 			mService.On(deleteRuleMethod, mock.Anything).Return(nil, nil)
 
 			conf := config.New()
-			cc := commands.BuildCommand(DeleteCommand(), nil, conf)
+			cc := commands.BuildCommand(serverfirewall.DeleteCommand(), nil, conf)
 			err := cc.Cobra().Flags().Parse(test.flags)
 			assert.NoError(t, err)
 

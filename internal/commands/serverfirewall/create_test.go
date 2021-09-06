@@ -1,9 +1,10 @@
-package serverfirewall
+package serverfirewall_test
 
 import (
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/serverfirewall"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 
@@ -93,7 +94,7 @@ func TestCreateFirewallRuleCommand(t *testing.T) {
 			}
 
 			conf := config.New()
-			cc := commands.BuildCommand(CreateCommand(), nil, conf)
+			cc := commands.BuildCommand(serverfirewall.CreateCommand(), nil, conf)
 			err := cc.Cobra().Flags().Parse(test.flags)
 			assert.NoError(t, err)
 

@@ -1,4 +1,4 @@
-package router
+package router_test
 
 import (
 	"bytes"
@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/router"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
@@ -49,7 +50,7 @@ func TestShowCommand(t *testing.T) {
 		},
 	}
 
-	router := upcloud.Router{
+	testRouter := upcloud.Router{
 		AttachedNetworks: upcloud.RouterNetworkSlice{
 			{NetworkUUID: networks[0].UUID},
 		},
@@ -71,19 +72,19 @@ func TestShowCommand(t *testing.T) {
     
 `
 	mService := smock.Service{}
-	mService.On("GetRouters", mock.Anything).Return(&upcloud.Routers{Routers: []upcloud.Router{router}}, nil)
+	mService.On("GetRouters", mock.Anything).Return(&upcloud.Routers{Routers: []upcloud.Router{testRouter}}, nil)
 	mService.On("GetNetworkDetails", mock.Anything).Return(networks[0], nil)
 
 	conf := config.New()
 	conf.Viper().Set(config.KeyOutput, config.ValueOutputHuman)
 
-	c := commands.BuildCommand(ShowCommand(), nil, conf)
+	c := commands.BuildCommand(router.ShowCommand(), nil, conf)
 
 	// get resolver to trigger caching
 	_, err := c.(resolver.ResolutionProvider).Get(&mService)
 	assert.NoError(t, err)
 
-	res, err := c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService, flume.New("test")), router.UUID)
+	res, err := c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService, flume.New("test")), testRouter.UUID)
 	assert.NoError(t, err)
 
 	buf := bytes.NewBuffer(nil)

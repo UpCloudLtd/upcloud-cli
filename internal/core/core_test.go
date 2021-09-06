@@ -1,4 +1,4 @@
-package core
+package core_test
 
 import (
 	"bytes"
@@ -8,6 +8,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/UpCloudLtd/upcloud-cli/internal/core"
 )
 
 func TestInputValidation(t *testing.T) {
@@ -108,7 +110,7 @@ func TestInputValidation(t *testing.T) {
 		test := test
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			cmd := BuildCLI()
+			cmd := core.BuildCLI()
 			stdout := bytes.NewBufferString("")
 
 			if test.setupFixture != nil {

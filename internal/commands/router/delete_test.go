@@ -1,9 +1,10 @@
-package router
+package router_test
 
 import (
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/router"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 
@@ -18,7 +19,7 @@ func TestDeleteCommand(t *testing.T) {
 	t.Parallel()
 	targetMethod := "DeleteRouter"
 
-	router := upcloud.Router{
+	testRouter := upcloud.Router{
 		UUID: "97fbd082-30b0-11eb-adc1-0242ac120002",
 		Name: "test-router",
 	}
@@ -31,8 +32,8 @@ func TestDeleteCommand(t *testing.T) {
 	}{
 		{
 			name: "delete with UUID",
-			arg:  router.UUID,
-			req:  request.DeleteRouterRequest{UUID: router.UUID},
+			arg:  testRouter.UUID,
+			req:  request.DeleteRouterRequest{UUID: testRouter.UUID},
 		},
 	} {
 		// grab a local reference for parallel tests
@@ -41,11 +42,11 @@ func TestDeleteCommand(t *testing.T) {
 			t.Parallel()
 			mService := smock.Service{}
 			mService.On(targetMethod, &test.req).Return(nil)
-			mService.On("GetRouters", mock.Anything).Return(&upcloud.Routers{Routers: []upcloud.Router{router}}, nil)
+			mService.On("GetRouters", mock.Anything).Return(&upcloud.Routers{Routers: []upcloud.Router{testRouter}}, nil)
 
 			conf := config.New()
 
-			c := commands.BuildCommand(DeleteCommand(), nil, conf)
+			c := commands.BuildCommand(router.DeleteCommand(), nil, conf)
 
 			_, err := c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService, flume.New("test")), test.arg)
 

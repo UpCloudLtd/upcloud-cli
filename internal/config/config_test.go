@@ -1,4 +1,4 @@
-package config
+package config_test
 
 import (
 	"fmt"
@@ -8,11 +8,13 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 )
 
 func TestConfig_LoadInvalidYAML(t *testing.T) {
 	t.Parallel()
-	cfg := New()
+	cfg := config.New()
 	tmpFile, err := ioutil.TempFile(os.TempDir(), "")
 	assert.NoError(t, err)
 	_, err = tmpFile.WriteString("usernamd:sdkfo\npassword: foo")
@@ -25,7 +27,7 @@ func TestConfig_LoadInvalidYAML(t *testing.T) {
 
 func TestConfig_Load(t *testing.T) {
 	t.Parallel()
-	cfg := New()
+	cfg := config.New()
 	tmpFile, err := ioutil.TempFile(os.TempDir(), "")
 	assert.NoError(t, err)
 	_, err = tmpFile.WriteString("username: sdkfo\npassword: foo")
@@ -40,7 +42,7 @@ func TestConfig_Load(t *testing.T) {
 
 func TestConfig_LoadNotFound(t *testing.T) {
 	t.Parallel()
-	cfg := New()
+	cfg := config.New()
 	cfg.GlobalFlags.ConfigFile = "foobar"
 	err := cfg.Load()
 	assert.ErrorIs(t, err, os.ErrNotExist)
