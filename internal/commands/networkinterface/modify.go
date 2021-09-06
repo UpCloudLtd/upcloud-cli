@@ -65,9 +65,9 @@ func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 		return nil, err
 	}
 	// initialize bootable and filtering flags as empty upcloud.Booleans
-	var empty = upcloud.Empty
-	var bootable = &empty
-	var sourceIPFiltering = &empty
+	empty := upcloud.Empty
+	bootable := &empty
+	sourceIPFiltering := &empty
 	if s.bootable != "" {
 		bootable, err = commands.BoolFromString(s.bootable)
 		if err != nil {

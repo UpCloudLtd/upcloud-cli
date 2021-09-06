@@ -20,8 +20,11 @@ var (
 	amb2 = upcloud.Storage{UUID: "def", Title: "eadads"}
 	amb3 = upcloud.Storage{UUID: "ghi", Title: "dadads"}
 )
-var mockStorages = &upcloud.Storages{Storages: []upcloud.Storage{s1, s2, s3, amb1, amb2, amb3}}
-var unambiguousStorages = []upcloud.Storage{s1, s2, s3}
+
+var (
+	mockStorages        = &upcloud.Storages{Storages: []upcloud.Storage{s1, s2, s3, amb1, amb2, amb3}}
+	unambiguousStorages = []upcloud.Storage{s1, s2, s3}
+)
 
 func TestStorageResolution(t *testing.T) {
 	t.Run("resolve uuid", func(t *testing.T) {

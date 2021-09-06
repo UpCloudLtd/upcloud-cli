@@ -16,7 +16,7 @@ import (
 
 func TestCreateCommand(t *testing.T) {
 	targetMethod := "CreateStorage"
-	var Storage1 = upcloud.Storage{
+	Storage1 := upcloud.Storage{
 		UUID:   UUID1,
 		Title:  Title1,
 		Access: "private",
@@ -39,7 +39,8 @@ func TestCreateCommand(t *testing.T) {
 			name: "create with default values, no backup rule",
 			args: []string{
 				"--title", "create-storage-test", "" +
-					"--zone", "abc"},
+					"--zone", "abc",
+			},
 			expected: request.CreateStorageRequest{
 				Size:       defaultCreateParams.Size,
 				Tier:       defaultCreateParams.Tier,

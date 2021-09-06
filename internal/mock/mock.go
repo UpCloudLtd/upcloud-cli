@@ -31,11 +31,13 @@ func (m *Service) GetPlans() (*upcloud.Plans, error) {
 }
 
 // make sure Service implements service interfaces.
-var _ service.Server = &Service{}
-var _ service.Storage = &Service{}
-var _ service.Firewall = &Service{}
-var _ service.Network = &Service{}
-var _ service.Plans = &Service{}
+var (
+	_ service.Server   = &Service{}
+	_ service.Storage  = &Service{}
+	_ service.Firewall = &Service{}
+	_ service.Network  = &Service{}
+	_ service.Plans    = &Service{}
+)
 
 // GetServerConfigurations implements service.Server.GetServerConfigurations.
 func (m *Service) GetServerConfigurations() (*upcloud.ServerConfigurations, error) {

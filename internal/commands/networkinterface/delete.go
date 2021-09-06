@@ -60,7 +60,6 @@ func (s *deleteCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 		ServerUUID: arg,
 		Index:      s.interfaceIndex,
 	})
-
 	if err != nil {
 		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
 		logline.SetDetails(err.Error(), "error: ")

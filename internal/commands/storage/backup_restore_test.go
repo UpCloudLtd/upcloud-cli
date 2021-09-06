@@ -19,7 +19,7 @@ import (
 func TestRestoreBackupCommand(t *testing.T) {
 	targetMethod := "RestoreBackup"
 
-	var Storage2 = upcloud.Storage{
+	Storage2 := upcloud.Storage{
 		UUID:   UUID2,
 		Title:  Title2,
 		Access: "private",

@@ -8,8 +8,7 @@ import (
 )
 
 // Storage implements argument completion for routers, by uuid, name or hostname.
-type Storage struct {
-}
+type Storage struct{}
 
 // make sure Storage implements the interface.
 var _ Provider = Storage{}

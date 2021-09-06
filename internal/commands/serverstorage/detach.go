@@ -71,7 +71,6 @@ func (s *detachCommand) ExecuteSingleArgument(exec commands.Executor, uuid strin
 	logline.StartedNow()
 
 	res, err := storageSvc.DetachStorage(&req)
-
 	if err != nil {
 		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
 		logline.SetDetails(err.Error(), "error: ")

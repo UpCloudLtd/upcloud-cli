@@ -17,7 +17,7 @@ import (
 
 func TestCreateBackupCommand(t *testing.T) {
 	targetMethod := "CreateBackup"
-	var Storage1 = upcloud.Storage{
+	Storage1 := upcloud.Storage{
 		UUID:   UUID1,
 		Title:  Title1,
 		Access: "private",
@@ -27,7 +27,7 @@ func TestCreateBackupCommand(t *testing.T) {
 		Size:   40,
 		Tier:   "maxiops",
 	}
-	var Storage2 = upcloud.Storage{
+	Storage2 := upcloud.Storage{
 		UUID:   UUID2,
 		Title:  Title2,
 		Access: "private",

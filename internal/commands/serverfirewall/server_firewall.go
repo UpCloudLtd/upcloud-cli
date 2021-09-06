@@ -10,7 +10,8 @@ func BaseServerFirewallCommand() commands.Command {
 		commands.New(
 			"firewall",
 			"Manage server firewall rules. Enabling or disabling the firewall is done in server modify.",
-		)}
+		),
+	}
 }
 
 type serverFirewallCommand struct {

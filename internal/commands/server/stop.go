@@ -35,7 +35,7 @@ type stopCommand struct {
 
 // InitCommand implements Command.InitCommand.
 func (s *stopCommand) InitCommand() {
-	//XXX: findout what to do with risky params (timeout actions)
+	// XXX: findout what to do with risky params (timeout actions)
 	flags := &pflag.FlagSet{}
 	flags.StringVar(&s.StopType, "type", defaultStopType, "The type of stop operation. Available: soft, hard")
 	s.AddFlags(flags)

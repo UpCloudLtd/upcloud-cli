@@ -26,7 +26,7 @@ func TestRenderFailingWriter(t *testing.T) {
 }
 
 func TestRender(t *testing.T) {
-	var renderTests = []outputTestCase{
+	renderTests := []outputTestCase{
 		{
 			name:                "none",
 			input:               output.None{},

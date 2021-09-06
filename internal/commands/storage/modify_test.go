@@ -16,7 +16,7 @@ import (
 
 func TestModifyCommandExistingBackupRule(t *testing.T) {
 	targetMethod := "ModifyStorage"
-	var Storage1 = upcloud.Storage{
+	Storage1 := upcloud.Storage{
 		UUID:   UUID1,
 		Title:  Title1,
 		Access: "private",
@@ -26,7 +26,7 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 		Size:   40,
 		Tier:   "maxiops",
 	}
-	var StorageDetails1 = upcloud.StorageDetails{
+	StorageDetails1 := upcloud.StorageDetails{
 		Storage: Storage1,
 		BackupRule: &upcloud.BackupRule{
 			Interval:  "sun",
@@ -34,7 +34,7 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 			Retention: 5,
 		},
 	}
-	var Storage2 = upcloud.Storage{
+	Storage2 := upcloud.Storage{
 		UUID:   UUID2,
 		Title:  Title2,
 		Access: "private",
@@ -44,7 +44,7 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 		Size:   40,
 		Tier:   "maxiops",
 	}
-	var StorageDetails2 = upcloud.StorageDetails{
+	StorageDetails2 := upcloud.StorageDetails{
 		Storage:    Storage2,
 		BackupRule: &upcloud.BackupRule{Time: "", Interval: "", Retention: 0},
 	}

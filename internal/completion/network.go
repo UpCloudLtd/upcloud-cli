@@ -7,8 +7,7 @@ import (
 )
 
 // Network implements argument completion for networks, by name or uuid.
-type Network struct {
-}
+type Network struct{}
 
 // make sure Network implements the interface.
 var _ Provider = Network{}

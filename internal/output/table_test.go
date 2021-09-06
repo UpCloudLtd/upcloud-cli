@@ -8,7 +8,7 @@ import (
 )
 
 func TestTable(t *testing.T) {
-	var tableTests = []outputTestCase{
+	tableTests := []outputTestCase{
 		{
 			name: "simple",
 			input: output.Table{

@@ -18,7 +18,7 @@ import (
 func TestAttachStorageCommand(t *testing.T) {
 	targetMethod := "AttachStorage"
 
-	var Storage1 = upcloud.Storage{
+	Storage1 := upcloud.Storage{
 		UUID:   UUID1,
 		Title:  Title1,
 		Access: "private",
@@ -28,13 +28,13 @@ func TestAttachStorageCommand(t *testing.T) {
 		Size:   40,
 		Tier:   "maxiops",
 	}
-	var storages = &upcloud.Storages{
+	storages := &upcloud.Storages{
 		Storages: []upcloud.Storage{
 			Storage1,
 		},
 	}
 
-	var Server1 = upcloud.Server{
+	Server1 := upcloud.Server{
 		CoreNumber:   1,
 		Hostname:     "server-1-hostname",
 		License:      0,
@@ -48,13 +48,13 @@ func TestAttachStorageCommand(t *testing.T) {
 		Zone:         "fi-hel1",
 	}
 
-	var servers = &upcloud.Servers{
+	servers := &upcloud.Servers{
 		Servers: []upcloud.Server{
 			Server1,
 		},
 	}
 
-	var serverDetails = upcloud.ServerDetails{
+	serverDetails := upcloud.ServerDetails{
 		Server: upcloud.Server{
 			UUID:  UUID1,
 			State: upcloud.ServerStateStarted,

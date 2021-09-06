@@ -10,13 +10,13 @@ import (
 func TestStopCommand(t *testing.T) {
 	targetMethod := "StopServer"
 
-	var Server1 = upcloud.Server{
+	Server1 := upcloud.Server{
 		State: upcloud.ServerStateMaintenance,
 		Title: "server-1-title",
 		UUID:  "1fdfda29-ead1-4855-b71f-1e33eb2ca9de",
 	}
 
-	var servers = &upcloud.Servers{
+	servers := &upcloud.Servers{
 		Servers: []upcloud.Server{
 			Server1,
 		},

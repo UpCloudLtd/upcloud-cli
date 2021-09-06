@@ -41,7 +41,7 @@ func (s *createCommand) InitCommand() {
 	fs.StringVar(&s.name, "name", s.name, "Names the network.")
 	fs.StringVar(&s.zone, "zone", s.zone, "The zone in which the network is configured.")
 	fs.StringVar(&s.router, "router", s.router, "Add this network to an existing router.")
-	//XXX: handle multiline flag doc (try nested flags)
+	// XXX: handle multiline flag doc (try nested flags)
 	fs.StringArrayVar(&s.networks, "ip-network", s.networks, "A network interface for the server, multiple can be declared.\n\n "+
 		"Fields: \n"+
 		"  address: string \n"+
