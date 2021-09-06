@@ -15,7 +15,7 @@ import (
 	"github.com/spf13/pflag"
 )
 
-// RestartCommand creates the "server restart" command
+// RestartCommand creates the "server restart" command.
 func RestartCommand() commands.Command {
 	return &restartCommand{
 		BaseCommand: commands.New(
@@ -38,7 +38,7 @@ type restartCommand struct {
 	Timeout              time.Duration
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *restartCommand) InitCommand() {
 	flags := &pflag.FlagSet{}
 
@@ -48,12 +48,12 @@ func (s *restartCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
-// MaximumExecutions implements Command.MaximumExecutions
+// MaximumExecutions implements Command.MaximumExecutions.
 func (s *restartCommand) MaximumExecutions() int {
 	return maxServerActions
 }
 
-// Execute implements commands.MultipleArgumentCommand
+// Execute implements commands.MultipleArgumentCommand.
 func (s *restartCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Server()
 	msg := fmt.Sprintf("restarting server %v", uuid)

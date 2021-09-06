@@ -23,7 +23,7 @@ type restoreBackupParams struct {
 	request.RestoreBackupRequest
 }
 
-// RestoreBackupCommand creates the "storage backup restore" command
+// RestoreBackupCommand creates the "storage backup restore" command.
 func RestoreBackupCommand() commands.Command {
 	return &restoreBackupCommand{
 		BaseCommand: commands.New(
@@ -35,11 +35,11 @@ func RestoreBackupCommand() commands.Command {
 	}
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *restoreBackupCommand) InitCommand() {
 }
 
-// Execute implements commands.MultipleArgumentCommand
+// Execute implements commands.MultipleArgumentCommand.
 func (s *restoreBackupCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	msg := fmt.Sprintf("restoring backup %v", uuid)
 	logline := exec.NewLogEntry(msg)

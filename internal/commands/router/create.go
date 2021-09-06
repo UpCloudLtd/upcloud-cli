@@ -15,7 +15,7 @@ type createCommand struct {
 	name string
 }
 
-// CreateCommand creates the "router create" command
+// CreateCommand creates the "router create" command.
 func CreateCommand() commands.Command {
 	return &createCommand{
 		BaseCommand: commands.New(
@@ -27,19 +27,19 @@ func CreateCommand() commands.Command {
 	}
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *createCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.name, "name", s.name, "Router name.")
 	s.AddFlags(fs)
 }
 
-// MaximumExecutions implements Command.MaximumExecutions
+// MaximumExecutions implements Command.MaximumExecutions.
 func (s *createCommand) MaximumExecutions() int {
 	return maxRouterActions
 }
 
-// ExecuteWithoutArguments implements commands.NoArgumentCommand
+// ExecuteWithoutArguments implements commands.NoArgumentCommand.
 func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	// TODO: should this be a regular argument?
 	if s.name == "" {

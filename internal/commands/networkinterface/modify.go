@@ -27,7 +27,7 @@ type modifyCommand struct {
 	completion.Server
 }
 
-// ModifyCommand creates the "network-interface modify" command
+// ModifyCommand creates the "network-interface modify" command.
 func ModifyCommand() commands.Command {
 	return &modifyCommand{
 		BaseCommand: commands.New(
@@ -38,7 +38,7 @@ func ModifyCommand() commands.Command {
 	}
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *modifyCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 	fs.IntVar(&s.currentIndex, "index", s.currentIndex, "Index of the interface to modify.")
@@ -50,12 +50,12 @@ func (s *modifyCommand) InitCommand() {
 	s.AddFlags(fs) // TODO(ana): replace usage with examples once the refactor is done.
 }
 
-// MaximumExecutions implements Command.MaximumExecutions
+// MaximumExecutions implements Command.MaximumExecutions.
 func (s *modifyCommand) MaximumExecutions() int {
 	return maxNetworkInterfaceActions
 }
 
-// ExecuteSingleArgument implements commands.SingleArgumentCommand
+// ExecuteSingleArgument implements commands.SingleArgumentCommand.
 func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string) (output.Output, error) {
 	if s.currentIndex == 0 {
 		return nil, fmt.Errorf("index is required")

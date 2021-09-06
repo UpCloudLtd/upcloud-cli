@@ -14,7 +14,7 @@ import (
 	"github.com/spf13/pflag"
 )
 
-// ModifyCommand creates the "server modify" command
+// ModifyCommand creates the "server modify" command.
 func ModifyCommand() commands.Command {
 	return &modifyCommand{
 		BaseCommand: commands.New(
@@ -46,7 +46,7 @@ var defaultModifyParams = modifyParams{
 	ModifyServerRequest: request.ModifyServerRequest{},
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *modifyCommand) InitCommand() {
 	s.params = modifyParams{ModifyServerRequest: request.ModifyServerRequest{}}
 	flags := &pflag.FlagSet{}
@@ -71,7 +71,7 @@ func (s *modifyCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
-// Execute implements commands.MultipleArgumentCommand
+// Execute implements commands.MultipleArgumentCommand.
 func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Server()
 

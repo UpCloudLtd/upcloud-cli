@@ -9,12 +9,12 @@ import (
 )
 
 // OnlyMarshaled implements output.Command for a return value that is only displayed as raw marshaled in JSON and YAML
-// eg. most 'state change' commands
+// eg. most 'state change' commands.
 type OnlyMarshaled struct {
 	Value interface{}
 }
 
-// MarshalJSON implements json.Marshaler and output.Output
+// MarshalJSON implements json.Marshaler and output.Output.
 func (d OnlyMarshaled) MarshalJSON() ([]byte, error) {
 	if errValue, ok := d.Value.(error); ok {
 		return json.MarshalIndent(map[string]interface{}{
@@ -25,7 +25,7 @@ func (d OnlyMarshaled) MarshalJSON() ([]byte, error) {
 }
 
 // MarshalYAML implements output.Output, it marshals the value and returns the YAML as []byte
-// nb. does *not* implement yaml.Marshaler
+// nb. does *not* implement yaml.Marshaler.
 func (d OnlyMarshaled) MarshalYAML() ([]byte, error) {
 	if errValue, ok := d.Value.(error); ok {
 		return yaml.Marshal(map[string]interface{}{
@@ -45,7 +45,7 @@ func (d OnlyMarshaled) MarshalHuman() ([]byte, error) {
 	return []byte{}, nil
 }
 
-// MarshalRawMap implements output.Output
+// MarshalRawMap implements output.Output.
 func (d OnlyMarshaled) MarshalRawMap() (map[string]interface{}, error) {
 	return nil, errors.New("onlymarshaled output should not be used as part of multiple output, raw output is undefined")
 }

@@ -9,12 +9,12 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 )
 
-// CachingStorage implements resolver for storages, caching the results
+// CachingStorage implements resolver for storages, caching the results.
 type CachingStorage struct {
 	cachedStorages *upcloud.Storages
 }
 
-// make sure we implement the ResolutionProvider interface
+// make sure we implement the ResolutionProvider interface.
 var _ ResolutionProvider = &CachingStorage{}
 
 func storageMatcher(cached []upcloud.Storage) func(arg string) (uuid string, err error) {
@@ -37,7 +37,7 @@ func storageMatcher(cached []upcloud.Storage) func(arg string) (uuid string, err
 	}
 }
 
-// Get implements ResolutionProvider.Get
+// Get implements ResolutionProvider.Get.
 func (s *CachingStorage) Get(svc internal.AllServices) (Resolver, error) {
 	var err error
 	s.cachedStorages, err = svc.GetStorages(&request.GetStoragesRequest{})
@@ -47,12 +47,12 @@ func (s *CachingStorage) Get(svc internal.AllServices) (Resolver, error) {
 	return storageMatcher(s.cachedStorages.Storages), nil
 }
 
-// PositionalArgumentHelp implements resolver.ResolutionProvider
+// PositionalArgumentHelp implements resolver.ResolutionProvider.
 func (s *CachingStorage) PositionalArgumentHelp() string {
 	return "<UUID/Title...>"
 }
 
-// Resolve is a helper method for commands to resolve networks inside Execute(), outside arguments
+// Resolve is a helper method for commands to resolve networks inside Execute(), outside arguments.
 func (s *CachingStorage) Resolve(arg string) (resolved string, err error) {
 	if s.cachedStorages == nil {
 		return "", errors.New("caching storage does not have a cache initialized")
@@ -61,7 +61,7 @@ func (s *CachingStorage) Resolve(arg string) (resolved string, err error) {
 	return storageMatcher(s.cachedStorages.Storages)(arg)
 }
 
-// GetCached is a helper method for commands to use when they need to get an item from the cached results
+// GetCached is a helper method for commands to use when they need to get an item from the cached results.
 func (s *CachingStorage) GetCached(uuid string) (upcloud.Storage, error) {
 	if s.cachedStorages == nil {
 		return upcloud.Storage{}, errors.New("caching storages does not have a cache initialized")

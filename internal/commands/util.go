@@ -13,7 +13,7 @@ import (
 )
 
 // Parse parses a complex, querystring-type argument from in and returns all the parts found
-// eg. `--foo bar=baz,flop=flip` returns `[]string{"bar","baz","flop","flip"}`
+// eg. `--foo bar=baz,flop=flip` returns `[]string{"bar","baz","flop","flip"}`.
 func Parse(in string) ([]string, error) {
 	var result []string
 	reader := csv.NewReader(strings.NewReader(in))
@@ -70,7 +70,7 @@ func SearchResources(
 	return result, nil
 }
 
-// ServerStateColour is a helper mapping server states to colours
+// ServerStateColour is a helper mapping server states to colours.
 func ServerStateColour(state string) text.Colors {
 	switch state {
 	case upcloud.ServerStateStarted:
@@ -84,7 +84,7 @@ func ServerStateColour(state string) text.Colors {
 	}
 }
 
-// StorageStateColour is a helper mapping storage states to colours
+// StorageStateColour is a helper mapping storage states to colours.
 func StorageStateColour(state string) text.Colors {
 	switch state {
 	case upcloud.StorageStateOnline, upcloud.StorageStateSyncing:
@@ -100,7 +100,7 @@ func StorageStateColour(state string) text.Colors {
 	}
 }
 
-// BoolFromString parses a string and returns *upcloud.Boolean
+// BoolFromString parses a string and returns *upcloud.Boolean.
 func BoolFromString(b string) (*upcloud.Boolean, error) {
 	// TODO: why does this return a pointer? this should (eventually) not be needed as tristate flags
 	// should be handled much more easily than with this approach

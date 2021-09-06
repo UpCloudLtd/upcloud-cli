@@ -24,7 +24,7 @@ type createBackupParams struct {
 	request.CreateBackupRequest
 }
 
-// CreateBackupCommand creates the "storage backup create" command
+// CreateBackupCommand creates the "storage backup create" command.
 func CreateBackupCommand() commands.Command {
 	return &createBackupCommand{
 		BaseCommand: commands.New(
@@ -40,7 +40,7 @@ var defaultCreateBackupParams = &createBackupParams{
 	CreateBackupRequest: request.CreateBackupRequest{},
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *createBackupCommand) InitCommand() {
 	s.params = createBackupParams{CreateBackupRequest: request.CreateBackupRequest{}}
 
@@ -50,7 +50,7 @@ func (s *createBackupCommand) InitCommand() {
 	s.AddFlags(flagSet)
 }
 
-// Execute implements commands.MultipleArgumentCommand
+// Execute implements commands.MultipleArgumentCommand.
 func (s *createBackupCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Storage()
 

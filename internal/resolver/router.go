@@ -8,15 +8,15 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 )
 
-// CachingRouter implements resolver for routers by uuid or name, caching the results
+// CachingRouter implements resolver for routers by uuid or name, caching the results.
 type CachingRouter struct {
 	cached []upcloud.Router
 }
 
-// make sure we implement the ResolutionProvider interface
+// make sure we implement the ResolutionProvider interface.
 var _ ResolutionProvider = &CachingRouter{}
 
-// Get implements ResolutionProvider.Get
+// Get implements ResolutionProvider.Get.
 func (s *CachingRouter) Get(svc internal.AllServices) (Resolver, error) {
 	routers, err := svc.GetRouters()
 	if err != nil {
@@ -40,7 +40,7 @@ func (s *CachingRouter) Get(svc internal.AllServices) (Resolver, error) {
 	}, nil
 }
 
-// GetCached is a helper method for commands to use when they need to get an item from the cached results
+// GetCached is a helper method for commands to use when they need to get an item from the cached results.
 func (s *CachingRouter) GetCached(uuid string) (upcloud.Router, error) {
 	if s.cached == nil {
 		return upcloud.Router{}, errors.New("caching network does not have a cache initialized")
@@ -53,7 +53,7 @@ func (s *CachingRouter) GetCached(uuid string) (upcloud.Router, error) {
 	return upcloud.Router{}, NotFoundError(uuid)
 }
 
-// PositionalArgumentHelp implements resolver.ResolutionProvider
+// PositionalArgumentHelp implements resolver.ResolutionProvider.
 func (s *CachingRouter) PositionalArgumentHelp() string {
 	return "<UUID/Name...>"
 }

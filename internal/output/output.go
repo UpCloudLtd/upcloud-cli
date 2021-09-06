@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 )
 
-// Output represent output from a command that can be rendered as JSON, YAML or human-readable
+// Output represent output from a command that can be rendered as JSON, YAML or human-readable.
 type Output interface {
 	json.Marshaler
 	MarshalYAML() ([]byte, error)

@@ -12,7 +12,7 @@ import (
 
 const maxNetworkActions = 10
 
-// BaseNetworkCommand creates the base "network" command
+// BaseNetworkCommand creates the base "network" command.
 func BaseNetworkCommand() commands.Command {
 	return &networkCommand{
 		BaseCommand: commands.New("network", "Manage network"),

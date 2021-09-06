@@ -4,13 +4,13 @@ import (
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 )
 
-// CachingIPAddress implements resolver for ip addresses that resolve with ptr records, caching the results
+// CachingIPAddress implements resolver for ip addresses that resolve with ptr records, caching the results.
 type CachingIPAddress struct{}
 
-// make sure we implement the ResolutionProvider interface
+// make sure we implement the ResolutionProvider interface.
 var _ ResolutionProvider = CachingIPAddress{}
 
-// Get implements ResolutionProvider.Get
+// Get implements ResolutionProvider.Get.
 func (s CachingIPAddress) Get(svc internal.AllServices) (Resolver, error) {
 	ipaddresses, err := svc.GetIPAddresses()
 	if err != nil {
@@ -33,7 +33,7 @@ func (s CachingIPAddress) Get(svc internal.AllServices) (Resolver, error) {
 	}, nil
 }
 
-// PositionalArgumentHelp implements resolver.ResolutionProvider
+// PositionalArgumentHelp implements resolver.ResolutionProvider.
 func (s CachingIPAddress) PositionalArgumentHelp() string {
 	return "<Address/PTRRecord...>"
 }

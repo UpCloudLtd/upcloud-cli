@@ -17,7 +17,7 @@ import (
 	"github.com/spf13/pflag"
 )
 
-// BuildRootCmd builds the root command
+// BuildRootCmd builds the root command.
 func BuildRootCmd(conf *config.Config) cobra.Command {
 	rootCmd := cobra.Command{
 		Use:   "upctl",
@@ -111,7 +111,7 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 	return rootCmd
 }
 
-// BuildCLI generates the CLI tree and returns the rootCmd
+// BuildCLI generates the CLI tree and returns the rootCmd.
 func BuildCLI() cobra.Command {
 	conf := config.New()
 	rootCmd := BuildRootCmd(conf)
@@ -121,7 +121,7 @@ func BuildCLI() cobra.Command {
 	return rootCmd
 }
 
-// BootstrapCLI is the CLI entrypoint
+// BootstrapCLI is the CLI entrypoint.
 func BootstrapCLI(args []string) error {
 	rootCmd := BuildCLI()
 	return rootCmd.Execute()

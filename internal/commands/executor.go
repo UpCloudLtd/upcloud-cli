@@ -14,7 +14,7 @@ import (
 	"github.com/gemalto/flume"
 )
 
-// Executor represents the execution context for commands
+// Executor represents the execution context for commands.
 type Executor interface {
 	NewLogEntry(s string) *ui.LogEntry
 	Update()
@@ -74,12 +74,12 @@ func (e *executorImpl) NewLogEntry(message string) *ui.LogEntry {
 	return entry
 }
 
-// Update implements Executor
+// Update implements Executor.
 func (e *executorImpl) Update() {
 	e.LiveLog.Render()
 }
 
-// Close implements Executor
+// Close implements Executor.
 func (e *executorImpl) Close() {
 	e.LiveLog.Close()
 }
@@ -116,7 +116,7 @@ func (e executorImpl) All() internal.AllServices {
 	return e.service
 }
 
-// NewExecutor creates the default Executor
+// NewExecutor creates the default Executor.
 func NewExecutor(cfg *config.Config, svc internal.AllServices, logger flume.Logger) Executor {
 	return &executorImpl{
 		Config:  cfg,

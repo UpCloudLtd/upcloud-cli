@@ -13,11 +13,11 @@ import (
 var (
 	maxStorageActions = 10
 	// CachedStorages stores the cached list of storages in order to not hit the service more than once
-	// TODO: refactor
+	// TODO: refactor.
 	CachedStorages []upcloud.Storage
 )
 
-// BaseStorageCommand creates the base "storage" command
+// BaseStorageCommand creates the base "storage" command.
 func BaseStorageCommand() commands.Command {
 	return &storageCommand{
 		commands.New("storage", "Manage storages"),
@@ -63,7 +63,7 @@ func searchStorage(storagesPtr *[]upcloud.Storage, service service.Storage, uuid
 }
 
 // SearchSingleStorage returns exactly one storage where title or uuid matches uuidOrTitle
-// TODO: remove the cross-command dependencies
+// TODO: remove the cross-command dependencies.
 func SearchSingleStorage(uuidOrTitle string, service service.Storage) (*upcloud.Storage, error) {
 	matchedResults, err := searchStorage(&CachedStorages, service, uuidOrTitle, true)
 	if err != nil {

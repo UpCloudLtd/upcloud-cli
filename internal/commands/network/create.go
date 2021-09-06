@@ -20,10 +20,10 @@ type createCommand struct {
 	router   string
 }
 
-// make sure we implement the interface
+// make sure we implement the interface.
 var _ commands.Command = &createCommand{}
 
-// CreateCommand creates the 'network create' command
+// CreateCommand creates the 'network create' command.
 func CreateCommand() commands.Command {
 	return &createCommand{
 		BaseCommand: commands.New(
@@ -35,7 +35,7 @@ func CreateCommand() commands.Command {
 	}
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *createCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.name, "name", s.name, "Names the network.")
@@ -53,7 +53,7 @@ func (s *createCommand) InitCommand() {
 	s.AddFlags(fs)
 }
 
-// MaximumExecutions implements Command.MaximumExecutions
+// MaximumExecutions implements Command.MaximumExecutions.
 func (s *createCommand) MaximumExecutions() int {
 	return maxNetworkActions
 }
@@ -87,7 +87,7 @@ func (s *createCommand) buildRequest() (*request.CreateNetworkRequest, error) {
 	}, nil
 }
 
-// ExecuteWithoutArguments implements commands.NoArgumentCommand
+// ExecuteWithoutArguments implements commands.NoArgumentCommand.
 func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	// TODO: should we, for example, accept name as the first argument instead of as a flag?
 	if s.name == "" {

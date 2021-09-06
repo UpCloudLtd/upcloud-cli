@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// MatchStringPrefix returns a list of string in vals which have a prefix as specified in key. Quotes are removed from key and output strings are escaped according to completion rules
+// MatchStringPrefix returns a list of string in vals which have a prefix as specified in key. Quotes are removed from key and output strings are escaped according to completion rules.
 func MatchStringPrefix(vals []string, key string, caseSensitive bool) []string {
 	var r []string
 	key = strings.Trim(key, "'\"")

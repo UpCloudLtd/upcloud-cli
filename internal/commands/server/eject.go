@@ -26,14 +26,14 @@ type ejectParams struct {
 func (s *ejectCommand) InitCommand() {
 }
 
-// EjectCommand creates the "server eject" command
+// EjectCommand creates the "server eject" command.
 func EjectCommand() commands.Command {
 	return &ejectCommand{
 		BaseCommand: commands.New("eject", "Eject a CD-ROM from the server", "upctl server eject my_server"),
 	}
 }
 
-// Execute implements commands.MultipleArgumentCommand
+// Execute implements commands.MultipleArgumentCommand.
 func (s *ejectCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Storage()
 	msg := fmt.Sprintf("Ejecting CD-ROM from %v", uuid)

@@ -25,7 +25,7 @@ type loadParams struct {
 	request.LoadCDROMRequest
 }
 
-// LoadCommand creates the "server load" command
+// LoadCommand creates the "server load" command.
 func LoadCommand() commands.Command {
 	return &loadCommand{
 		BaseCommand: commands.New(
@@ -40,7 +40,7 @@ var defaultLoadParams = &loadParams{
 	LoadCDROMRequest: request.LoadCDROMRequest{},
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *loadCommand) InitCommand() {
 	s.params = loadParams{LoadCDROMRequest: request.LoadCDROMRequest{}}
 
@@ -50,7 +50,7 @@ func (s *loadCommand) InitCommand() {
 	s.AddFlags(flagSet)
 }
 
-// Execute implements commands.MultipleArgumentCommand
+// Execute implements commands.MultipleArgumentCommand.
 func (s *loadCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Storage()
 

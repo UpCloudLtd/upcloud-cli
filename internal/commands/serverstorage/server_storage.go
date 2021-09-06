@@ -8,7 +8,7 @@ const (
 	maxServerStorageActions = 10
 )
 
-// BaseServerStorageCommand creates the base "server storage" command
+// BaseServerStorageCommand creates the base "server storage" command.
 func BaseServerStorageCommand() commands.Command {
 	return &serverStorageCommand{commands.New("storage", "Manage server storages")}
 }

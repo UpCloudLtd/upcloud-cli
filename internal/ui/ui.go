@@ -7,23 +7,23 @@ import (
 )
 
 var (
-	// DefaultHeaderColours defines the default colours used for headers
+	// DefaultHeaderColours defines the default colours used for headers.
 	DefaultHeaderColours = text.Colors{text.Bold}
-	// DefaultUUUIDColours defines the default colours used for UUIDs
+	// DefaultUUUIDColours defines the default colours used for UUIDs.
 	DefaultUUUIDColours = text.Colors{text.FgHiBlue}
-	// DefaultErrorColours defines the default colours used for errors
+	// DefaultErrorColours defines the default colours used for errors.
 	DefaultErrorColours = text.Colors{text.FgHiRed, text.Bold}
-	// DefaultAddressColours defines the default colours used for addresses
+	// DefaultAddressColours defines the default colours used for addresses.
 	DefaultAddressColours = text.Colors{text.FgHiMagenta}
-	// DefaultBooleanColoursTrue defines the default colours used for boolean true values
+	// DefaultBooleanColoursTrue defines the default colours used for boolean true values.
 	DefaultBooleanColoursTrue = text.Colors{text.FgHiGreen}
-	// DefaultBooleanColoursFalse defines the default colours used for boolean false values
+	// DefaultBooleanColoursFalse defines the default colours used for boolean false values.
 	DefaultBooleanColoursFalse = text.Colors{text.FgHiBlack}
-	// DefaultNoteColours defines the default colours used for notes
+	// DefaultNoteColours defines the default colours used for notes.
 	DefaultNoteColours = text.Colors{text.FgHiBlack}
 )
 
-// FormatBool return v formatted (eg. colourised)
+// FormatBool return v formatted (eg. colourised).
 func FormatBool(v bool) string {
 	if v {
 		return DefaultBooleanColoursTrue.Sprint("yes")
@@ -31,7 +31,7 @@ func FormatBool(v bool) string {
 	return DefaultBooleanColoursFalse.Sprint("no")
 }
 
-// FormatRange takes start and end value and generates a ranged value
+// FormatRange takes start and end value and generates a ranged value.
 func FormatRange(start, end string) string {
 	if start == end {
 		if start == "" {
@@ -48,7 +48,7 @@ func FormatRange(start, end string) string {
 	return fmt.Sprintf("%s →\n%s", start, end)
 }
 
-// ConcatStrings like join but handles well the empty strings
+// ConcatStrings like join but handles well the empty strings.
 func ConcatStrings(strs ...string) string {
 	ret := fmt.Sprintf(strs[0])
 

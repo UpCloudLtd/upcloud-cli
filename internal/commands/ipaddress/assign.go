@@ -23,7 +23,7 @@ type assignCommand struct {
 	zone       string
 }
 
-// AssignCommand creates the 'ip-address assign' command
+// AssignCommand creates the 'ip-address assign' command.
 func AssignCommand() commands.Command {
 	return &assignCommand{
 		BaseCommand: commands.New(
@@ -42,7 +42,7 @@ const (
 	defaultFamily = upcloud.IPAddressFamilyIPv4
 )
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *assignCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.access, "access", defaultAccess, "Is address for utility or public network.")
@@ -54,7 +54,7 @@ func (s *assignCommand) InitCommand() {
 	s.AddFlags(fs)
 }
 
-// ExecuteWithoutArguments implements commands.NoArgumentCommand
+// ExecuteWithoutArguments implements commands.NoArgumentCommand.
 func (s *assignCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	if s.floating.Value() && s.zone == "" && s.mac == "" {
 		return nil, fmt.Errorf("MAC or zone is required for floating IP")

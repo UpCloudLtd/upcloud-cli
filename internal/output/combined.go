@@ -10,17 +10,17 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// CombinedSection represents a single section of a combined output
+// CombinedSection represents a single section of a combined output.
 type CombinedSection struct {
 	Key      string
 	Title    string
 	Contents Output
 }
 
-// Combined represents multiple outputs combined and displayed sequentially (or wrapped into the same object)
+// Combined represents multiple outputs combined and displayed sequentially (or wrapped into the same object).
 type Combined []CombinedSection
 
-// MarshalJSON implements json.Marshaler
+// MarshalJSON implements json.Marshaler.
 func (m Combined) MarshalJSON() ([]byte, error) {
 	return json.MarshalIndent(flattenSections(m), "", "  ")
 }
@@ -63,7 +63,7 @@ func flattenSections(m Combined) map[string]interface{} {
 	return out
 }
 
-// MarshalHuman returns output in a human-readable form
+// MarshalHuman returns output in a human-readable form.
 func (m Combined) MarshalHuman() ([]byte, error) {
 	out := []byte{}
 
@@ -103,7 +103,7 @@ func prefixLines(marshaled []byte, s string) (out []byte) {
 	return
 }
 
-// MarshalRawMap implements output.Output
+// MarshalRawMap implements output.Output.
 func (m Combined) MarshalRawMap() (map[string]interface{}, error) {
 	return nil, errors.New("multiple output cannot nest, raw output is undefined")
 }

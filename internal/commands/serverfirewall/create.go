@@ -34,7 +34,7 @@ type createCommand struct {
 	resolver.CachingServer
 }
 
-// CreateCommand creates the "server filewall create" command
+// CreateCommand creates the "server filewall create" command.
 func CreateCommand() commands.Command {
 	return &createCommand{
 		BaseCommand: commands.New(
@@ -46,12 +46,12 @@ func CreateCommand() commands.Command {
 	}
 }
 
-// MaximumExecutions implements Command.MaximumExecutions
+// MaximumExecutions implements Command.MaximumExecutions.
 func (s *createCommand) MaximumExecutions() int {
 	return 10
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *createCommand) InitCommand() {
 	flagSet := &pflag.FlagSet{}
 
@@ -72,7 +72,7 @@ func (s *createCommand) InitCommand() {
 	s.AddFlags(flagSet)
 }
 
-// Execute implements commands.MultipleArgumentCommand
+// Execute implements commands.MultipleArgumentCommand.
 func (s *createCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	if s.direction == "" {
 		return nil, fmt.Errorf("direction is required")

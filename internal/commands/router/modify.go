@@ -19,7 +19,7 @@ type modifyCommand struct {
 	completion.Router
 }
 
-// ModifyCommand creates the "router modify" command
+// ModifyCommand creates the "router modify" command.
 func ModifyCommand() commands.Command {
 	return &modifyCommand{
 		BaseCommand: commands.New(
@@ -31,14 +31,14 @@ func ModifyCommand() commands.Command {
 	}
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *modifyCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.name, "name", "", "New router name.")
 	s.AddFlags(fs)
 }
 
-// ExecuteSingleArgument implements commands.SingleArgumentCommand
+// ExecuteSingleArgument implements commands.SingleArgumentCommand.
 func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string) (output.Output, error) {
 	if s.name == "" {
 		return nil, fmt.Errorf("name is required")

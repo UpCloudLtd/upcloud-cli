@@ -49,7 +49,7 @@ func formatFlags(fs *pflag.FlagSet) string {
 	return t.Render()
 }
 
-// Taken from cobra as they are private
+// Taken from cobra as they are private.
 func trimRightSpace(s string) string {
 	return strings.TrimRightFunc(s, unicode.IsSpace)
 }
@@ -59,7 +59,7 @@ func rpad(s string, padding int) string {
 	return fmt.Sprintf(padTemplate, s)
 }
 
-// CommandUsageTemplate returns the template for usage
+// CommandUsageTemplate returns the template for usage.
 func CommandUsageTemplate() string {
 	return `Usage:{{if .Runnable}}
 {{.UseLine}}{{end}}{{if .HasAvailableSubCommands}}
@@ -87,7 +87,7 @@ Use "{{.CommandPath}} [command] --help" for more information about a command.{{e
 `
 }
 
-// UsageFunc is used to override cobra's default usage func to get some more stylistic control
+// UsageFunc is used to override cobra's default usage func to get some more stylistic control.
 func UsageFunc(cmd *cobra.Command) error {
 	t := template.New("top")
 	t.Funcs(templateFuncs)

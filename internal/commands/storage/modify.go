@@ -39,7 +39,7 @@ var defaultBackupRuleParams = upcloud.BackupRule{
 	Retention: 7,
 }
 
-// ModifyCommand creates the "storage modify" command
+// ModifyCommand creates the "storage modify" command.
 func ModifyCommand() commands.Command {
 	return &modifyCommand{
 		BaseCommand: commands.New(
@@ -51,12 +51,12 @@ func ModifyCommand() commands.Command {
 	}
 }
 
-// MaximumExecutions implements command.Command
+// MaximumExecutions implements command.Command.
 func (s *modifyCommand) MaximumExecutions() int {
 	return maxStorageActions
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *modifyCommand) InitCommand() {
 	s.params = modifyParams{ModifyStorageRequest: request.ModifyStorageRequest{}}
 
@@ -127,7 +127,7 @@ func setBackupFields(storageUUID string, p modifyParams, service service.Storage
 	return nil
 }
 
-// Execute implements commands.MultipleArgumentCommand
+// Execute implements commands.MultipleArgumentCommand.
 func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Storage()
 	msg := fmt.Sprintf("modifing storage %v", uuid)

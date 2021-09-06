@@ -8,7 +8,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 )
 
-// ListCommand creates the "server list" command
+// ListCommand creates the "server list" command.
 func ListCommand() commands.Command {
 	return &listCommand{
 		BaseCommand: commands.New("list", "List current servers", "upctl server list"),
@@ -19,7 +19,7 @@ type listCommand struct {
 	*commands.BaseCommand
 }
 
-// ExecuteWithoutArguments implements commands.NoArgumentCommand
+// ExecuteWithoutArguments implements commands.NoArgumentCommand.
 func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	svc := exec.Server()
 	servers, err := svc.GetServers()

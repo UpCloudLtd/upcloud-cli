@@ -8,7 +8,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 )
 
-// ShowCommand creates the 'account show' command
+// ShowCommand creates the 'account show' command.
 func ShowCommand() commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New("show", "Show account", "upctl account show"),
@@ -19,7 +19,7 @@ type showCommand struct {
 	*commands.BaseCommand
 }
 
-// ExecuteWithoutArguments implements commands.NoArgumentCommand
+// ExecuteWithoutArguments implements commands.NoArgumentCommand.
 func (s *showCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	svc := exec.Account()
 	account, err := svc.GetAccount()

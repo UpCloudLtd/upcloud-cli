@@ -41,7 +41,7 @@ var defaultTemplatizeParams = &templatizeParams{
 	TemplatizeStorageRequest: request.TemplatizeStorageRequest{},
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *templatizeCommand) InitCommand() {
 	s.params = templatizeParams{TemplatizeStorageRequest: request.TemplatizeStorageRequest{}}
 
@@ -51,7 +51,7 @@ func (s *templatizeCommand) InitCommand() {
 	s.AddFlags(flagSet)
 }
 
-// Execute implements commands.MultipleArgumentCommand
+// Execute implements commands.MultipleArgumentCommand.
 func (s *templatizeCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	if s.params.Title == "" {
 		return nil, fmt.Errorf("title is required")

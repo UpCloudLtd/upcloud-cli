@@ -11,10 +11,10 @@ import (
 type Storage struct {
 }
 
-// make sure Storage implements the interface
+// make sure Storage implements the interface.
 var _ Provider = Storage{}
 
-// CompleteArgument implements completion.Provider
+// CompleteArgument implements completion.Provider.
 func (s Storage) CompleteArgument(svc service.AllServices, toComplete string) ([]string, cobra.ShellCompDirective) {
 	storages, err := svc.GetStorages(&request.GetStoragesRequest{})
 	if err != nil {

@@ -8,7 +8,7 @@ import (
 
 const maxNetworkInterfaceActions = 10
 
-// BaseNetworkInterfaceCommand creates the "network-interface" command
+// BaseNetworkInterfaceCommand creates the "network-interface" command.
 func BaseNetworkInterfaceCommand() commands.Command {
 	return &networkInterfaceCommand{commands.New("network-interface", "Manage network interface")}
 }

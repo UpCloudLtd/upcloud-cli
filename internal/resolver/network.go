@@ -8,12 +8,12 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 )
 
-// CachingNetwork implements resolver for networks, caching the results
+// CachingNetwork implements resolver for networks, caching the results.
 type CachingNetwork struct {
 	cached []upcloud.Network
 }
 
-// make sure we implement the ResolutionProvider interface
+// make sure we implement the ResolutionProvider interface.
 var _ ResolutionProvider = &CachingNetwork{}
 
 func networkMatcher(cached []upcloud.Network) func(arg string) (uuid string, err error) {
@@ -34,7 +34,7 @@ func networkMatcher(cached []upcloud.Network) func(arg string) (uuid string, err
 	}
 }
 
-// Get implements ResolutionProvider.Get
+// Get implements ResolutionProvider.Get.
 func (s *CachingNetwork) Get(svc internal.AllServices) (Resolver, error) {
 	networks, err := svc.GetNetworks()
 	if err != nil {
@@ -44,7 +44,7 @@ func (s *CachingNetwork) Get(svc internal.AllServices) (Resolver, error) {
 	return networkMatcher(s.cached), nil
 }
 
-// GetCached is a helper method for commands to use when they need to get an item from the cached results
+// GetCached is a helper method for commands to use when they need to get an item from the cached results.
 func (s *CachingNetwork) GetCached(uuid string) (upcloud.Network, error) {
 	if s.cached == nil {
 		return upcloud.Network{}, errors.New("caching network does not have a cache initialized")
@@ -57,7 +57,7 @@ func (s *CachingNetwork) GetCached(uuid string) (upcloud.Network, error) {
 	return upcloud.Network{}, NotFoundError(uuid)
 }
 
-// Resolve is a helper method for commands to resolve networks inside Execute(), outside arguments
+// Resolve is a helper method for commands to resolve networks inside Execute(), outside arguments.
 func (s *CachingNetwork) Resolve(arg string) (resolved string, err error) {
 	if s.cached == nil {
 		return "", errors.New("caching network does not have a cache initialized")
@@ -66,7 +66,7 @@ func (s *CachingNetwork) Resolve(arg string) (resolved string, err error) {
 	return networkMatcher(s.cached)(arg)
 }
 
-// PositionalArgumentHelp implements resolver.ResolutionProvider
+// PositionalArgumentHelp implements resolver.ResolutionProvider.
 func (s *CachingNetwork) PositionalArgumentHelp() string {
 	return "<UUID/Name...>"
 }

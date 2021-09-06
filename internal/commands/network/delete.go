@@ -17,7 +17,7 @@ type deleteCommand struct {
 	resolver.CachingNetwork
 }
 
-// DeleteCommand creates the 'network delete' command
+// DeleteCommand creates the 'network delete' command.
 func DeleteCommand() commands.Command {
 	return &deleteCommand{
 		BaseCommand: commands.New(
@@ -30,11 +30,11 @@ func DeleteCommand() commands.Command {
 	}
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *deleteCommand) InitCommand() {
 }
 
-// Execute implements commands.MultipleArgumentCommand
+// Execute implements commands.MultipleArgumentCommand.
 func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	svc := exec.Network()
 	msg := fmt.Sprintf("deleting network %v", arg)

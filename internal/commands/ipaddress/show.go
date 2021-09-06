@@ -9,7 +9,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 )
 
-// ShowCommand creates the 'ip-address show' command
+// ShowCommand creates the 'ip-address show' command.
 func ShowCommand() commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New(
@@ -27,7 +27,7 @@ type showCommand struct {
 	resolver.CachingIPAddress
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *showCommand) InitCommand() {
 }
 

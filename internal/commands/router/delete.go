@@ -17,7 +17,7 @@ type deleteCommand struct {
 	completion.Router
 }
 
-// DeleteCommand creates the "delete router" command
+// DeleteCommand creates the "delete router" command.
 func DeleteCommand() commands.Command {
 	return &deleteCommand{
 		BaseCommand: commands.New(
@@ -29,16 +29,16 @@ func DeleteCommand() commands.Command {
 	}
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *deleteCommand) InitCommand() {
 }
 
-// MaximumExecutions implements Command.MaximumExecutions
+// MaximumExecutions implements Command.MaximumExecutions.
 func (s *deleteCommand) MaximumExecutions() int {
 	return maxRouterActions
 }
 
-// Execute implements commands.MultipleArgumentCommand
+// Execute implements commands.MultipleArgumentCommand.
 func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	msg := fmt.Sprintf("Deleting router %s", arg)
 	logline := exec.NewLogEntry(msg)

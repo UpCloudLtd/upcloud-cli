@@ -21,7 +21,7 @@ type modifyCommand struct {
 	completion.IPAddress
 }
 
-// ModifyCommand creates the 'ip-address modify' command
+// ModifyCommand creates the 'ip-address modify' command.
 func ModifyCommand() commands.Command {
 	return &modifyCommand{
 		BaseCommand: commands.New(
@@ -33,7 +33,7 @@ func ModifyCommand() commands.Command {
 	}
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *modifyCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.mac, "mac", "", "MAC address of server interface to attach floating IP to.")
@@ -41,12 +41,12 @@ func (s *modifyCommand) InitCommand() {
 	s.AddFlags(fs)
 }
 
-// MaximumExecutions implements Command.MaximumExecutions
+// MaximumExecutions implements Command.MaximumExecutions.
 func (s *modifyCommand) MaximumExecutions() int {
 	return maxIPAddressActions
 }
 
-// Execute implements commands.MultipleArgumentCommand
+// Execute implements commands.MultipleArgumentCommand.
 func (s *modifyCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	if arg == "" {
 		return nil, errors.New("need ip address to modify")

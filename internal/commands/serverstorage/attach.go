@@ -27,7 +27,7 @@ type attachParams struct {
 	bootable config.OptionalBoolean
 }
 
-// AttachCommand creates the "server storage attach" command
+// AttachCommand creates the "server storage attach" command.
 func AttachCommand() commands.Command {
 	return &attachCommand{
 		BaseCommand: commands.New(
@@ -48,7 +48,7 @@ var defaultAttachParams = &attachParams{
 	},
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *attachCommand) InitCommand() {
 	s.params = attachParams{AttachStorageRequest: request.AttachStorageRequest{}}
 
@@ -61,12 +61,12 @@ func (s *attachCommand) InitCommand() {
 	s.AddFlags(flagSet)
 }
 
-// MaximumExecutions implements command.Command
+// MaximumExecutions implements command.Command.
 func (s *attachCommand) MaximumExecutions() int {
 	return maxServerStorageActions
 }
 
-// ExecuteSingleArgument implements command.SingleArgumentCommand
+// ExecuteSingleArgument implements command.SingleArgumentCommand.
 func (s *attachCommand) ExecuteSingleArgument(exec commands.Executor, uuid string) (output.Output, error) {
 	storageSvc := exec.Storage()
 

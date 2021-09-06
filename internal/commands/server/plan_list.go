@@ -5,7 +5,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 )
 
-// PlanListCommand creates the "server plans" command
+// PlanListCommand creates the "server plans" command.
 func PlanListCommand() commands.Command {
 	return &planListCommand{
 		BaseCommand: commands.New("plans", "List server plans", "upctl server plans"),
@@ -16,7 +16,7 @@ type planListCommand struct {
 	*commands.BaseCommand
 }
 
-// ExecuteWithoutArguments implements commands.NoArgumentCommand
+// ExecuteWithoutArguments implements commands.NoArgumentCommand.
 func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	svc := exec.Plan()
 	plans, err := svc.GetPlans()

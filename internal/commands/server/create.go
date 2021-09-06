@@ -23,7 +23,7 @@ import (
 
 const defaultIPAddressFamily = upcloud.IPAddressFamilyIPv4
 
-// CreateCommand creates the "server create" command
+// CreateCommand creates the "server create" command.
 func CreateCommand() commands.Command {
 	return &createCommand{
 		BaseCommand: commands.New(
@@ -244,7 +244,7 @@ type createCommand struct {
 	createPassword config.OptionalBoolean
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *createCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 	s.params = createParams{CreateServerRequest: request.CreateServerRequest{}}
@@ -281,7 +281,7 @@ func (s *createCommand) InitCommand() {
 	s.AddFlags(fs)
 }
 
-// ExecuteWithoutArguments implements commands.NoArgumentCommand
+// ExecuteWithoutArguments implements commands.NoArgumentCommand.
 func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	if s.params.Hostname == "" || s.params.Zone == "" {
 		return nil, fmt.Errorf("hostname, zone and some password delivery method are required")

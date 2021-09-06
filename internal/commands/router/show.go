@@ -11,7 +11,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 )
 
-// ShowCommand creates the "router show" command
+// ShowCommand creates the "router show" command.
 func ShowCommand() commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New(
@@ -30,11 +30,11 @@ type showCommand struct {
 	completion.Router
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *showCommand) InitCommand() {
 }
 
-// Execute implements commands.MultipleArgumentCommand
+// Execute implements commands.MultipleArgumentCommand.
 func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	router, err := s.CachingRouter.GetCached(arg)
 	if err != nil {

@@ -12,7 +12,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 )
 
-// ShowCommand creates the "network show" command
+// ShowCommand creates the "network show" command.
 func ShowCommand() commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New(
@@ -34,7 +34,7 @@ type showCommand struct {
 func (s *showCommand) InitCommand() {
 }
 
-// Execute implements commands.MultipleArgumentCommand
+// Execute implements commands.MultipleArgumentCommand.
 func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	network, err := s.CachingNetwork.GetCached(arg)
 	if err != nil {

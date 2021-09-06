@@ -20,7 +20,7 @@ type deleteCommand struct {
 	completion.Server
 }
 
-// DeleteCommand creates the "network-interface delete" command
+// DeleteCommand creates the "network-interface delete" command.
 func DeleteCommand() commands.Command {
 	return &deleteCommand{
 		BaseCommand: commands.New(
@@ -32,19 +32,19 @@ func DeleteCommand() commands.Command {
 	}
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *deleteCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 	fs.IntVar(&s.interfaceIndex, "index", 0, "Interface index.")
 	s.AddFlags(fs)
 }
 
-// MaximumExecutions implements Command.MaximumExecutions
+// MaximumExecutions implements Command.MaximumExecutions.
 func (s *deleteCommand) MaximumExecutions() int {
 	return maxNetworkInterfaceActions
 }
 
-// ExecuteSingleArgument implements commands.SingleArgumentCommand
+// ExecuteSingleArgument implements commands.SingleArgumentCommand.
 func (s *deleteCommand) ExecuteSingleArgument(exec commands.Executor, arg string) (output.Output, error) {
 	if s.interfaceIndex == 0 {
 		return nil, fmt.Errorf("interface index is required")

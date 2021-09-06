@@ -4,7 +4,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 )
 
-// BaseServerFirewallCommand is the root command for all 'server firewall' commands
+// BaseServerFirewallCommand is the root command for all 'server firewall' commands.
 func BaseServerFirewallCommand() commands.Command {
 	return &serverFirewallCommand{
 		commands.New(

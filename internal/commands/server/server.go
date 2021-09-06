@@ -10,14 +10,14 @@ import (
 const (
 	minStorageSize   = 10
 	maxServerActions = 10
-	// Server state related consts
+	// Server state related consts.
 	defaultStopType             = request.ServerStopTypeSoft
 	defaultRestartTimeout       = time.Duration(120) * time.Second
 	defaultRestartTimeoutAction = request.RestartTimeoutActionIgnore
 	customPlan                  = "custom"
 )
 
-// BaseServerCommand crestes the base "server" command
+// BaseServerCommand crestes the base "server" command.
 func BaseServerCommand() commands.Command {
 	return &serverCommand{
 		commands.New("server", "Manage servers"),

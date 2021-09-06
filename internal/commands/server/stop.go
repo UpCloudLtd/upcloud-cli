@@ -13,7 +13,7 @@ import (
 	"github.com/spf13/pflag"
 )
 
-// StopCommand creates the "server stop" command
+// StopCommand creates the "server stop" command.
 func StopCommand() commands.Command {
 	return &stopCommand{
 		BaseCommand: commands.New(
@@ -33,7 +33,7 @@ type stopCommand struct {
 	completion.Server
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *stopCommand) InitCommand() {
 	//XXX: findout what to do with risky params (timeout actions)
 	flags := &pflag.FlagSet{}
@@ -41,7 +41,7 @@ func (s *stopCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
-// Execute implements commands.MultipleArgumentCommand
+// Execute implements commands.MultipleArgumentCommand.
 func (s *stopCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Server()
 	msg := fmt.Sprintf("stopping server %v", uuid)

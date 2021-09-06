@@ -28,7 +28,7 @@ var defaultDetachParams = &detachParams{
 	DetachStorageRequest: request.DetachStorageRequest{},
 }
 
-// DetachCommand creates the "server storage detach" command
+// DetachCommand creates the "server storage detach" command.
 func DetachCommand() commands.Command {
 	return &detachCommand{
 		BaseCommand: commands.New(
@@ -40,7 +40,7 @@ func DetachCommand() commands.Command {
 	}
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *detachCommand) InitCommand() {
 	s.params = detachParams{DetachStorageRequest: request.DetachStorageRequest{}}
 
@@ -50,12 +50,12 @@ func (s *detachCommand) InitCommand() {
 	s.AddFlags(flagSet)
 }
 
-// MaximumExecutions implements command.Command
+// MaximumExecutions implements command.Command.
 func (s *detachCommand) MaximumExecutions() int {
 	return maxServerStorageActions
 }
 
-// ExecuteSingleArgument implements command.SingleArgumentCommand
+// ExecuteSingleArgument implements command.SingleArgumentCommand.
 func (s *detachCommand) ExecuteSingleArgument(exec commands.Executor, uuid string) (output.Output, error) {
 	storageSvc := exec.Storage()
 

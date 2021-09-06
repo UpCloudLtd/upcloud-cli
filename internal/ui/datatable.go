@@ -95,7 +95,7 @@ func styleFlagsTable() table.Style {
 	}
 }
 
-// NewDataTable returns a new output data container for tabulated data
+// NewDataTable returns a new output data container for tabulated data.
 func NewDataTable(columnKeys ...string) *DataTable {
 	t := &DataTable{columnKeys: columnKeys}
 	t.init()
@@ -104,7 +104,7 @@ func NewDataTable(columnKeys ...string) *DataTable {
 	return t
 }
 
-// DataTable is a container for tabulated output data
+// DataTable is a container for tabulated output data.
 type DataTable struct {
 	t                  *table.Table
 	header             table.Row
@@ -128,7 +128,7 @@ func (s *DataTable) setStyle(style table.Style) {
 	s.t.SetStyle(style)
 }
 
-// SetHeader sets the header row for the DataTable
+// SetHeader sets the header row for the DataTable.
 func (s *DataTable) SetHeader(hdr table.Row) {
 	if hdr != nil && len(hdr) != len(s.columnKeys) {
 		panic("uneven number of columns and headers")
@@ -136,7 +136,7 @@ func (s *DataTable) SetHeader(hdr table.Row) {
 	s.header = hdr
 }
 
-// OverrideColumnKeys overrides column visibility and order
+// OverrideColumnKeys overrides column visibility and order.
 func (s *DataTable) OverrideColumnKeys(keys ...string) {
 	if len(keys) == 0 {
 		return
@@ -144,7 +144,7 @@ func (s *DataTable) OverrideColumnKeys(keys ...string) {
 	s.overrideColumnKeys = keys
 }
 
-// SetColumnConfig sets the configuration for a particular column, defined by key
+// SetColumnConfig sets the configuration for a particular column, defined by key.
 func (s *DataTable) SetColumnConfig(key string, config table.ColumnConfig) {
 	if _, ok := s.columnKeyPos[key]; !ok {
 		panic(fmt.Sprintf("undeclared column key %q", key))
@@ -152,7 +152,7 @@ func (s *DataTable) SetColumnConfig(key string, config table.ColumnConfig) {
 	s.columnConfig[key] = &config
 }
 
-// Render renders the DataTable
+// Render renders the DataTable.
 func (s *DataTable) Render() string {
 	s.t.ResetHeaders()
 	s.t.ResetFooters()
@@ -232,7 +232,7 @@ func (s *DataTable) Render() string {
 	return s.t.Render()
 }
 
-// Append appends new rows to the DataTable
+// Append appends new rows to the DataTable.
 func (s *DataTable) Append(rows ...table.Row) {
 	for _, row := range rows {
 		if len(row) != len(s.columnKeys) {

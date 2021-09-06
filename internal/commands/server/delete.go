@@ -14,7 +14,7 @@ import (
 	"github.com/spf13/pflag"
 )
 
-// DeleteCommand creates the "server delete" command
+// DeleteCommand creates the "server delete" command.
 func DeleteCommand() commands.Command {
 	return &deleteCommand{
 		BaseCommand: commands.New(
@@ -34,14 +34,14 @@ type deleteCommand struct {
 	deleteStorages config.OptionalBoolean
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *deleteCommand) InitCommand() {
 	flags := &pflag.FlagSet{}
 	config.AddToggleFlag(flags, &s.deleteStorages, "delete-storages", false, "Delete storages that are attached to the server.")
 	s.AddFlags(flags)
 }
 
-// Execute implements commands.MultipleArgumentCommand
+// Execute implements commands.MultipleArgumentCommand.
 func (s *deleteCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Server()
 	msg := fmt.Sprintf("deleting server %v", uuid)

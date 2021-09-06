@@ -4,13 +4,13 @@ import (
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 )
 
-// CachingServer implements resolver for servers, caching the results
+// CachingServer implements resolver for servers, caching the results.
 type CachingServer struct{}
 
-// make sure we implement the ResolutionProvider interface
+// make sure we implement the ResolutionProvider interface.
 var _ ResolutionProvider = CachingServer{}
 
-// Get implements ResolutionProvider.Get
+// Get implements ResolutionProvider.Get.
 func (s CachingServer) Get(svc internal.AllServices) (Resolver, error) {
 	servers, err := svc.GetServers()
 	if err != nil {
@@ -33,7 +33,7 @@ func (s CachingServer) Get(svc internal.AllServices) (Resolver, error) {
 	}, nil
 }
 
-// PositionalArgumentHelp implements resolver.ResolutionProvider
+// PositionalArgumentHelp implements resolver.ResolutionProvider.
 func (s CachingServer) PositionalArgumentHelp() string {
 	return "<UUID/Title/Hostname...>"
 }

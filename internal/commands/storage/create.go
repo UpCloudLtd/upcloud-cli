@@ -13,7 +13,7 @@ import (
 	"github.com/spf13/pflag"
 )
 
-// CreateCommand creates the "storage create" command
+// CreateCommand creates the "storage create" command.
 func CreateCommand() commands.Command {
 	return &createCommand{
 		BaseCommand: commands.New(
@@ -78,7 +78,7 @@ func applyCreateFlags(fs *pflag.FlagSet, dst, def *createParams) {
 	fs.IntVar(&dst.BackupRule.Retention, "backup-retention", def.BackupRule.Retention, "How long to store the backups in days. The accepted range is 1-1095")
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *createCommand) InitCommand() {
 	s.flagSet = &pflag.FlagSet{}
 	s.params = newCreateParams()
@@ -86,7 +86,7 @@ func (s *createCommand) InitCommand() {
 	s.AddFlags(s.flagSet)
 }
 
-// ExecuteWithoutArguments implements commands.NoArgumentCommand
+// ExecuteWithoutArguments implements commands.NoArgumentCommand.
 func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	svc := exec.Storage()
 

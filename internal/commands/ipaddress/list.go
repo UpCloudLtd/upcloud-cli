@@ -6,7 +6,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 )
 
-// ListCommand creates the "ip-address list" command
+// ListCommand creates the "ip-address list" command.
 func ListCommand() commands.Command {
 	return &listCommand{
 		BaseCommand: commands.New("list", "List IP addresses", "upctl ip-address list"),
@@ -17,7 +17,7 @@ type listCommand struct {
 	*commands.BaseCommand
 }
 
-// InitCommand implements Command.MakeExecuteCommand
+// InitCommand implements Command.MakeExecuteCommand.
 func (s *listCommand) InitCommand() {
 	// TODO: reimplement
 	//	flags := &pflag.FlagSet{}
@@ -25,7 +25,7 @@ func (s *listCommand) InitCommand() {
 	//	s.AddFlags(flags)
 }
 
-// ExecuteWithoutArguments implements commands.NoArgumentCommand
+// ExecuteWithoutArguments implements commands.NoArgumentCommand.
 func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	ips, err := exec.IPAddress().GetIPAddresses()
 	if err != nil {

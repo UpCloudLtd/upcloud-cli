@@ -17,7 +17,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 )
 
-// ShowCommand is the 'server firewall show' command, displaying firewall details
+// ShowCommand is the 'server firewall show' command, displaying firewall details.
 func ShowCommand() commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New(
@@ -36,7 +36,7 @@ type showCommand struct {
 	completion.Server
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *showCommand) InitCommand() {
 }
 
@@ -53,7 +53,7 @@ type fwProto struct {
 	ICMPType string `json:"icmptype,omitempty"`
 }
 
-// Execute implements commands.MultipleArgumentCommand
+// Execute implements commands.MultipleArgumentCommand.
 func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	// TODO(aakso): implement prompting with readline support
 	if arg == "" {

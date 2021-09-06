@@ -11,7 +11,7 @@ import (
 // OptionalBoolean represents a boolean that can also be 'not set', eg. having three possible states.
 // OptionalBoolean implements pflag.Value and flag.Value and as such, can be used with flag.Var() and friends.
 // However, it does not allow to be set more than once, in order to support multiple flags touching the
-// same boolean, eg. when the use case is --enable-something'/--disable-something
+// same boolean, eg. when the use case is --enable-something'/--disable-something.
 type OptionalBoolean int
 
 // TODO: figure out if the default value handling could be done in a nicer way - maybe a separate type instead of trying
@@ -21,25 +21,25 @@ type OptionalBoolean int
 // an error when trying to set a non-Unset OptionalBoolean
 
 const (
-	// FalseFlagValue false Bool String value
+	// FalseFlagValue false Bool String value.
 	FalseFlagValue = "false"
-	// TrueFlagValue true Bool String value
+	// TrueFlagValue true Bool String value.
 	TrueFlagValue = "true"
 )
 
 const (
-	// Unset is the OptionalBoolean value representing not set
+	// Unset is the OptionalBoolean value representing not set.
 	Unset OptionalBoolean = iota // 0
-	// True is the OptionalBoolean value representing true
+	// True is the OptionalBoolean value representing true.
 	True
-	// False is the OptionalBoolean value representing false
+	// False is the OptionalBoolean value representing false.
 	False
 
 	// DefaultTrue is the OptionalBoolean value representing not set, but with a default value of true.
-	// It returns false from IsSet, to allow for overriding the default (once)
+	// It returns false from IsSet, to allow for overriding the default (once).
 	DefaultTrue
 	// DefaultFalse is the OptionalBoolean value representing not set, but with a default value of false.
-	// It returns false from IsSet, to allow for overriding the default (once)
+	// It returns false from IsSet, to allow for overriding the default (once).
 	DefaultFalse
 )
 
@@ -93,19 +93,19 @@ func AddToggleFlag(flags *pflag.FlagSet, target *OptionalBoolean, name string, d
 	}
 }
 
-// String implements flag.Value
+// String implements flag.Value.
 func (s OptionalBoolean) String() string {
 	return fmt.Sprintf("%t", s.Value())
 }
 
 // Value returns the underlying bool for OptionalBoolean.
-// nb. returns false if flag is not set
+// nb. returns false if flag is not set.
 func (s OptionalBoolean) Value() bool {
 	b := boolFromSetBool(s)
 	return b
 }
 
-// Type implements pflag.Value
+// Type implements pflag.Value.
 func (s OptionalBoolean) Type() string {
 	// return empty type in order to not display the parameter in help texts
 	// seems like this has no other meaning(?)
@@ -114,7 +114,7 @@ func (s OptionalBoolean) Type() string {
 
 // Set implements flag.Value
 // nb. OptionalBoolean will not allow itself to be set twice, if you want to have an underlying
-// default value, use SetDefault()
+// default value, use SetDefault().
 func (s *OptionalBoolean) Set(value string) error {
 	if s.IsSet() {
 		return fmt.Errorf("cannot set twice")
@@ -127,12 +127,12 @@ func (s *OptionalBoolean) Set(value string) error {
 	return nil
 }
 
-// IsSet returns true if OptionalBoolean has been set
+// IsSet returns true if OptionalBoolean has been set.
 func (s OptionalBoolean) IsSet() bool {
 	return s == True || s == False
 }
 
-// OverrideNotSet returns a OptionalBoolean set to b if the original OptionalBoolean was not set
+// OverrideNotSet returns a OptionalBoolean set to b if the original OptionalBoolean was not set.
 func (s OptionalBoolean) OverrideNotSet(b bool) OptionalBoolean {
 	if s.IsSet() {
 		return s
@@ -141,7 +141,7 @@ func (s OptionalBoolean) OverrideNotSet(b bool) OptionalBoolean {
 }
 
 // AsUpcloudBoolean return OptionalBoolean as upcloud.Boolean
-// nb. DefaultTrue and DefaultEmpty return upcloud.Empty, as upcloud.Boolean has no concept of default values
+// nb. DefaultTrue and DefaultEmpty return upcloud.Empty, as upcloud.Boolean has no concept of default values.
 func (s OptionalBoolean) AsUpcloudBoolean() upcloud.Boolean {
 	switch s {
 	case Unset:
@@ -159,7 +159,7 @@ func (s OptionalBoolean) AsUpcloudBoolean() upcloud.Boolean {
 }
 
 // SetDefault sets the default value of OptionalBoolean to b
-// Default value is returned from Value() if the OptionalBoolean has not been set
+// Default value is returned from Value() if the OptionalBoolean has not been set.
 func (s *OptionalBoolean) SetDefault(b bool) {
 	if b {
 		*s = DefaultTrue

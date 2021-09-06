@@ -20,7 +20,7 @@ var (
 		Details:    text.Colors{text.FgHiBlack},
 		Time:       text.Colors{text.FgHiCyan},
 	}
-	// LiveLogDefaultConfig represents the default settings for live log
+	// LiveLogDefaultConfig represents the default settings for live log.
 	LiveLogDefaultConfig = LiveLogConfig{
 		EntryMaxWidth:        0,
 		renderPending:        true,
@@ -28,7 +28,7 @@ var (
 		Colours:              liveLogDefaultColours,
 	}
 	// LiveLogEntryErrorColours specifies the colour used for errors in LiveLog
-	// TODO: remove cross-package dependency and make this private
+	// TODO: remove cross-package dependency and make this private.
 	LiveLogEntryErrorColours = text.FgHiRed
 )
 
@@ -40,7 +40,7 @@ type liveLogColours struct {
 	Time       text.Colors
 }
 
-// LiveLogConfig is a configuration for rendering live logs
+// LiveLogConfig is a configuration for rendering live logs.
 type LiveLogConfig struct {
 	// EntryMaxWidth sets the forced maximum width of live log lines. Use 0 for detecting terminal width.
 	EntryMaxWidth        int
@@ -49,7 +49,7 @@ type LiveLogConfig struct {
 	Colours              liveLogColours
 }
 
-// LiveLog represents the internal state of a live log renderer
+// LiveLog represents the internal state of a live log renderer.
 type LiveLog struct {
 	mu                sync.Mutex
 	config            LiveLogConfig
@@ -62,19 +62,19 @@ type LiveLog struct {
 	resizeListener    *terminal.ResizeListener
 }
 
-// NewLiveLog returns a new renderer for live logs
+// NewLiveLog returns a new renderer for live logs.
 func NewLiveLog(out io.Writer, style LiveLogConfig) *LiveLog {
 	llog := &LiveLog{out: out, config: style}
 	llog.resizeListener = terminal.NewResizeListener(llog.Render)
 	return llog
 }
 
-// Close closes the LiveLog and cleans up related resources
+// Close closes the LiveLog and cleans up related resources.
 func (s *LiveLog) Close() {
 	s.resizeListener.Close()
 }
 
-// AddEntries adds log entries to LiveLog
+// AddEntries adds log entries to LiveLog.
 func (s *LiveLog) AddEntries(entries ...*LogEntry) {
 	for _, e := range entries {
 		if e == nil {
@@ -105,7 +105,7 @@ func (s *LiveLog) unlockActiveEntries(locks []*sync.Mutex) {
 	}
 }
 
-// Render renders the LiveLog
+// Render renders the LiveLog.
 func (s *LiveLog) Render() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -238,12 +238,12 @@ func (s *LiveLog) MaxWidth() int {
 	return terminal.GetTerminalWidth()
 }
 
-// NewLogEntry creates a new LogEntry with the specified message
+// NewLogEntry creates a new LogEntry with the specified message.
 func NewLogEntry(msg string) *LogEntry {
 	return &LogEntry{msg: msg}
 }
 
-// LogEntry represents a single log entry in a live log
+// LogEntry represents a single log entry in a live log.
 type LogEntry struct {
 	mu            sync.Mutex
 	msg           string
@@ -253,14 +253,14 @@ type LogEntry struct {
 	done          bool
 }
 
-// SetMessage sets the message of the LogEntry
+// SetMessage sets the message of the LogEntry.
 func (s *LogEntry) SetMessage(msg string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.msg = msg
 }
 
-// SetDetails sets the details of the LogEntry
+// SetDetails sets the details of the LogEntry.
 func (s *LogEntry) SetDetails(details, prefix string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -268,14 +268,14 @@ func (s *LogEntry) SetDetails(details, prefix string) {
 	s.detailsPrefix = prefix
 }
 
-// StartedNow sets the LogEntry time to time.Now
+// StartedNow sets the LogEntry time to time.Now.
 func (s *LogEntry) StartedNow() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.started = time.Now()
 }
 
-// MarkDone marks the LogEntry as done
+// MarkDone marks the LogEntry as done.
 func (s *LogEntry) MarkDone() {
 	s.mu.Lock()
 	defer s.mu.Unlock()

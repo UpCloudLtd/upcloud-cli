@@ -11,7 +11,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 )
 
-// DetailRow represents a single row in the details view, with a title and a value
+// DetailRow represents a single row in the details view, with a title and a value.
 type DetailRow struct {
 	Title  string // used for human-readable representations
 	Key    string // user for machine-readable (json, yaml) representations
@@ -20,14 +20,14 @@ type DetailRow struct {
 	Format func(val interface{}) (text.Colors, string, error)
 }
 
-// DetailSection represents a section in the details view
+// DetailSection represents a section in the details view.
 type DetailSection struct {
 	Title string // used for human-readable representations
 	Key   string // user for machine-readable (json, yaml) representations
 	Rows  []DetailRow
 }
 
-// MarshalJSON implements json.Marshaler
+// MarshalJSON implements json.Marshaler.
 func (d DetailSection) MarshalJSON() ([]byte, error) {
 	jsonObject := map[string]interface{}{}
 	for _, r := range d.Rows {
@@ -36,12 +36,12 @@ func (d DetailSection) MarshalJSON() ([]byte, error) {
 	return json.Marshal(jsonObject)
 }
 
-// Details implements output.Output for a details-style view
+// Details implements output.Output for a details-style view.
 type Details struct {
 	Sections []DetailSection
 }
 
-// MarshalJSON implements json.Marshaler
+// MarshalJSON implements json.Marshaler.
 func (d Details) MarshalJSON() ([]byte, error) {
 	return json.MarshalIndent(mapSections(d.Sections), "", "  ")
 }
@@ -69,12 +69,12 @@ func mapSectionRows(rows []DetailRow) map[string]interface{} {
 }
 
 // MarshalYAML marshals details and returns the YAML as []byte
-// nb. does *not* implement yaml.Marshaler
+// nb. does *not* implement yaml.Marshaler.
 func (d Details) MarshalYAML() ([]byte, error) {
 	return yaml.Marshal(mapSections(d.Sections))
 }
 
-// MarshalHuman marshals details and returns a human readable []byte
+// MarshalHuman marshals details and returns a human readable []byte.
 func (d Details) MarshalHuman() ([]byte, error) {
 	layout := ui.ListLayoutDefault
 	l := ui.NewListLayout(layout)
@@ -109,7 +109,7 @@ func (d Details) MarshalHuman() ([]byte, error) {
 	return append([]byte(l.Render()), '\n'), nil
 }
 
-// MarshalRawMap implements output.Output
+// MarshalRawMap implements output.Output.
 func (d Details) MarshalRawMap() (map[string]interface{}, error) {
 	return mapSections(d.Sections), nil
 }

@@ -50,12 +50,12 @@ type MultipleArgumentCommand interface {
 	Execute(exec Executor, arg string) (output.Output, error)
 }
 
-// CobraCommand is an interface for commands that can refer back to their base cobra.Command
+// CobraCommand is an interface for commands that can refer back to their base cobra.Command.
 type CobraCommand interface {
 	Cobra() *cobra.Command
 }
 
-// BuildCommand sets up a Command with the specified config and adds it to Cobra
+// BuildCommand sets up a Command with the specified config and adds it to Cobra.
 func BuildCommand(child Command, parent *cobra.Command, config *config.Config) Command {
 	child.Cobra().Flags().SortFlags = false
 
@@ -105,17 +105,17 @@ func BuildCommand(child Command, parent *cobra.Command, config *config.Config) C
 	return child
 }
 
-// BaseCommand is the base type for all commands, implementing Command
+// BaseCommand is the base type for all commands, implementing Command.
 type BaseCommand struct {
 	cobra *cobra.Command
 }
 
-// MaximumExecutions return the max executed workers
+// MaximumExecutions return the max executed workers.
 func (s *BaseCommand) MaximumExecutions() int {
 	return 1
 }
 
-// AddFlags adds a flagset to the command and binds config value into it with namespace
+// AddFlags adds a flagset to the command and binds config value into it with namespace.
 func (s *BaseCommand) AddFlags(flags *pflag.FlagSet) {
 	if flags == nil {
 		panic("Nil flagset")
@@ -132,7 +132,7 @@ func (s *BaseCommand) AddFlags(flags *pflag.FlagSet) {
 func (s *BaseCommand) InitCommand() {
 }
 
-// Cobra returns the underlying *cobra.Command
+// Cobra returns the underlying *cobra.Command.
 func (s *BaseCommand) Cobra() *cobra.Command {
 	return s.cobra
 }

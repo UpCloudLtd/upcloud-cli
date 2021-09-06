@@ -12,7 +12,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 )
 
-// ShowCommand creates the "storage show" command
+// ShowCommand creates the "storage show" command.
 func ShowCommand() commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New(
@@ -31,11 +31,11 @@ type showCommand struct {
 	completion.Storage
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *showCommand) InitCommand() {
 }
 
-// Execute implements commands.MultipleArgumentCommand
+// Execute implements commands.MultipleArgumentCommand.
 func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	storageSvc := exec.Storage()
 	storage, err := storageSvc.GetStorageDetails(

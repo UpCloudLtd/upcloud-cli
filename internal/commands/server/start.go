@@ -12,7 +12,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 )
 
-// StartCommand creates the "server start" command
+// StartCommand creates the "server start" command.
 func StartCommand() commands.Command {
 	return &startCommand{
 		BaseCommand: commands.New(
@@ -31,11 +31,11 @@ type startCommand struct {
 	resolver.CachingServer
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *startCommand) InitCommand() {
 }
 
-// Execute implements commands.MultipleArgumentCommand
+// Execute implements commands.MultipleArgumentCommand.
 func (s *startCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Server()
 	msg := fmt.Sprintf("starting server %v", uuid)

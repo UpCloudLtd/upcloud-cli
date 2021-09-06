@@ -8,12 +8,12 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 )
 
-// VersionCommand reports the current version of upctl
+// VersionCommand reports the current version of upctl.
 type VersionCommand struct {
 	*commands.BaseCommand
 }
 
-// ExecuteWithoutArguments implements commands.NoArgumentCommand
+// ExecuteWithoutArguments implements commands.NoArgumentCommand.
 func (s *VersionCommand) ExecuteWithoutArguments(_ commands.Executor) (output.Output, error) {
 	return output.Details{Sections: []output.DetailSection{
 		{Rows: []output.DetailRow{

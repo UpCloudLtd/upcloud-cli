@@ -8,13 +8,13 @@ import (
 )
 
 // MarshaledWithHumanDetails implements output.Command for a return value that is only displayed as raw marshaled in JSON and YAML
-// eg. most 'state change' commands
+// eg. most 'state change' commands.
 type MarshaledWithHumanDetails struct {
 	Value   interface{}
 	Details []DetailRow
 }
 
-// MarshalJSON implements json.Marshaler and output.Output
+// MarshalJSON implements json.Marshaler and output.Output.
 func (d MarshaledWithHumanDetails) MarshalJSON() ([]byte, error) {
 	if errValue, ok := d.Value.(error); ok {
 		return json.MarshalIndent(map[string]interface{}{
@@ -25,7 +25,7 @@ func (d MarshaledWithHumanDetails) MarshalJSON() ([]byte, error) {
 }
 
 // MarshalYAML implements output.Output, it marshals the value and returns the YAML as []byte
-// nb. does *not* implement yaml.Marshaler
+// nb. does *not* implement yaml.Marshaler.
 func (d MarshaledWithHumanDetails) MarshalYAML() ([]byte, error) {
 	if errValue, ok := d.Value.(error); ok {
 		return yaml.Marshal(map[string]interface{}{
@@ -36,14 +36,14 @@ func (d MarshaledWithHumanDetails) MarshalYAML() ([]byte, error) {
 }
 
 // MarshalHuman implements output.Output
-// For MarshaledWithHumanDetails outputs, we return *only* the details part in humanized output
+// For MarshaledWithHumanDetails outputs, we return *only* the details part in humanized output.
 func (d MarshaledWithHumanDetails) MarshalHuman() ([]byte, error) {
 	return Details{Sections: []DetailSection{
 		{Rows: d.Details},
 	}}.MarshalHuman()
 }
 
-// MarshalRawMap implements output.Output
+// MarshalRawMap implements output.Output.
 func (d MarshaledWithHumanDetails) MarshalRawMap() (map[string]interface{}, error) {
 	return nil, errors.New("marshaledwithhumandetails output should not be used as part of multiple output, raw output is undefined")
 }

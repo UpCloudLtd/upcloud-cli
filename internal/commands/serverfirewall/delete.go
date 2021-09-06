@@ -19,7 +19,7 @@ type deleteCommand struct {
 	resolver.CachingServer
 }
 
-// DeleteCommand creates the "server firewall delete" command
+// DeleteCommand creates the "server firewall delete" command.
 func DeleteCommand() commands.Command {
 	return &deleteCommand{
 		BaseCommand: commands.New(
@@ -30,14 +30,14 @@ func DeleteCommand() commands.Command {
 	}
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *deleteCommand) InitCommand() {
 	flagSet := &pflag.FlagSet{}
 	flagSet.IntVar(&s.rulePosition, "position", 0, "Rule position. Available: 1-1000")
 	s.AddFlags(flagSet)
 }
 
-// Execute implements commands.MultipleArgumentCommand
+// Execute implements commands.MultipleArgumentCommand.
 func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	if s.rulePosition == 0 {
 		return nil, fmt.Errorf("position is required")

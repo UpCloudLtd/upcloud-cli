@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/pflag"
 )
 
-// ListCommand creates the "router list" command
+// ListCommand creates the "router list" command.
 func ListCommand() commands.Command {
 	return &listCommand{
 		BaseCommand: commands.New(
@@ -28,7 +28,7 @@ type listCommand struct {
 	serviceRouters config.OptionalBoolean
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *listCommand) InitCommand() {
 	//	s.header = table.Row{"UUID", "Name", "Type"}
 	flags := &pflag.FlagSet{}
@@ -40,7 +40,7 @@ func (s *listCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
-// ExecuteWithoutArguments implements commands.NoArgumentCommand
+// ExecuteWithoutArguments implements commands.NoArgumentCommand.
 func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	routers, err := exec.Network().GetRouters()
 	if err != nil {

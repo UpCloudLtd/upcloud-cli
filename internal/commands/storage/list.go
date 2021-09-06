@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/pflag"
 )
 
-// ListCommand creates the "storage list" command
+// ListCommand creates the "storage list" command.
 func ListCommand() commands.Command {
 	return &listCommand{
 		BaseCommand: commands.New(
@@ -34,7 +34,7 @@ type listCommand struct {
 	template config.OptionalBoolean
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *listCommand) InitCommand() {
 	flags := &pflag.FlagSet{}
 	config.AddToggleFlag(flags, &s.all, "all", false, "Show all storages.")
@@ -48,7 +48,7 @@ func (s *listCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
-// ExecuteWithoutArguments implements commands.NoArgumentCommand
+// ExecuteWithoutArguments implements commands.NoArgumentCommand.
 func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	svc := exec.Storage()
 

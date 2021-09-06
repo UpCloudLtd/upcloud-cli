@@ -14,7 +14,7 @@ type ResizeListener struct {
 	signal chan os.Signal
 }
 
-// NewResizeListener creates a new ResizeListener
+// NewResizeListener creates a new ResizeListener.
 func NewResizeListener(callback func()) *ResizeListener {
 	signalCh := make(chan os.Signal, 1)
 	signal.Notify(signalCh, syscall.SIGWINCH)
@@ -28,7 +28,7 @@ func NewResizeListener(callback func()) *ResizeListener {
 	}
 }
 
-// Close stops ResizeListener listening and cleans up associated resources
+// Close stops ResizeListener listening and cleans up associated resources.
 func (s *ResizeListener) Close() {
 	signal.Stop(s.signal)
 	close(s.signal)

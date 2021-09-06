@@ -28,7 +28,7 @@ type createCommand struct {
 	completion.Server
 }
 
-// CreateCommand creates the "network-interface create" command
+// CreateCommand creates the "network-interface create" command.
 func CreateCommand() commands.Command {
 	return &createCommand{
 		BaseCommand: commands.New(
@@ -47,7 +47,7 @@ const (
 	defaultIPAddressFamily = upcloud.IPAddressFamilyIPv4
 )
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *createCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.networkUUID, "network", "", "Virtual network ID or name to join.")
@@ -60,12 +60,12 @@ func (s *createCommand) InitCommand() {
 	s.AddFlags(fs)
 }
 
-// MaximumExecutions implements Command.MaximumExecutions
+// MaximumExecutions implements Command.MaximumExecutions.
 func (s *createCommand) MaximumExecutions() int {
 	return maxNetworkInterfaceActions
 }
 
-// ExecuteSingleArgument implements commands.SingleArgumentCommand
+// ExecuteSingleArgument implements commands.SingleArgumentCommand.
 func (s *createCommand) ExecuteSingleArgument(exec commands.Executor, arg string) (output.Output, error) {
 	ipAddresses := []request.CreateNetworkInterfaceIPAddress{}
 	if len(s.ipAddresses) == 0 {

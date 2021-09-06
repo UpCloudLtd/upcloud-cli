@@ -14,10 +14,10 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/validation"
 )
 
-// TableRow represents a single row of data in a table
+// TableRow represents a single row of data in a table.
 type TableRow []interface{}
 
-// TableColumn defines how a particular column is rendered
+// TableColumn defines how a particular column is rendered.
 type TableColumn struct {
 	Header string
 	Key    string
@@ -27,7 +27,7 @@ type TableColumn struct {
 	Format func(val interface{}) (text.Colors, string, error)
 }
 
-// Table represents command output rendered as a table
+// Table represents command output rendered as a table.
 type Table struct {
 	Columns    []TableColumn
 	Rows       []TableRow
@@ -46,7 +46,7 @@ func (s Table) asListOfMaps() []map[string]interface{} {
 	return jmap
 }
 
-// MarshalJSON implements json.Marshaler
+// MarshalJSON implements json.Marshaler.
 func (s Table) MarshalJSON() ([]byte, error) {
 	return json.MarshalIndent(s.asListOfMaps(), "", "  ")
 }
@@ -56,7 +56,7 @@ func (s Table) MarshalYAML() ([]byte, error) {
 	return yaml.Marshal(s.asListOfMaps())
 }
 
-// MarshalHuman returns table output in a human-readable form
+// MarshalHuman returns table output in a human-readable form.
 func (s Table) MarshalHuman() ([]byte, error) {
 	t := &table.Table{}
 	columnKeyPos := make(map[string]int)
@@ -153,7 +153,7 @@ func (s Table) MarshalHuman() ([]byte, error) {
 	return append([]byte{'\n'}, append([]byte(t.Render()), '\n')...), nil
 }
 
-// MarshalRawMap implements output.Output
+// MarshalRawMap implements output.Output.
 func (s Table) MarshalRawMap() (map[string]interface{}, error) {
 	// TODO: make this better..
 	return map[string]interface{}{

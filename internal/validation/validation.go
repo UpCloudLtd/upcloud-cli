@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-// Value return nil if val is equal (reflect.DeepEqual) to any of the values in validVals
+// Value return nil if val is equal (reflect.DeepEqual) to any of the values in validVals.
 func Value(val interface{}, validVals ...interface{}) error {
 	for _, t := range validVals {
 		if reflect.DeepEqual(val, t) {
@@ -21,7 +21,7 @@ func Value(val interface{}, validVals ...interface{}) error {
 	return fmt.Errorf("%q is not any of %s", val, strings.Join(sValidVals, ", "))
 }
 
-// UUID4 return nil if val is a valid uuid
+// UUID4 return nil if val is a valid uuid.
 func UUID4(val string) error {
 	b := []byte(strings.ToLower(val))
 	if len(b) != 36 {

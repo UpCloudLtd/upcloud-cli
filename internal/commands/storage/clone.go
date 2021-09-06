@@ -25,7 +25,7 @@ type cloneParams struct {
 	request.CloneStorageRequest
 }
 
-// CloneCommand creates the "storage clone" command
+// CloneCommand creates the "storage clone" command.
 func CloneCommand() commands.Command {
 	return &cloneCommand{
 		BaseCommand: commands.New(
@@ -44,7 +44,7 @@ var defaultCloneParams = &cloneParams{
 	},
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *cloneCommand) InitCommand() {
 	s.params = cloneParams{CloneStorageRequest: request.CloneStorageRequest{}}
 
@@ -56,7 +56,7 @@ func (s *cloneCommand) InitCommand() {
 	s.AddFlags(flagSet)
 }
 
-// Execute implements commands.MultipleArgumentCommand
+// Execute implements commands.MultipleArgumentCommand.
 func (s *cloneCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	if s.params.Zone == "" || s.params.Title == "" {
 		return nil, fmt.Errorf("title and zone are required")

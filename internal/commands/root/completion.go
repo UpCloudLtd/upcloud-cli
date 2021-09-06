@@ -9,13 +9,13 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 )
 
-// CompletionCommand creates shell completion scripts
+// CompletionCommand creates shell completion scripts.
 type CompletionCommand struct {
 	*commands.BaseCommand
 	resolver.CompletionResolver
 }
 
-// ExecuteSingleArgument implements commands.SingleArgumentCommand
+// ExecuteSingleArgument implements commands.SingleArgumentCommand.
 func (s *CompletionCommand) ExecuteSingleArgument(_ commands.Executor, arg string) (output.Output, error) {
 	if arg == "bash" {
 		completion := new(bytes.Buffer)

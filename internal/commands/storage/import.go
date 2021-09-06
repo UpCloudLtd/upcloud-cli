@@ -22,7 +22,7 @@ import (
 	"github.com/spf13/pflag"
 )
 
-// ImportCommand creates the "storage import" command
+// ImportCommand creates the "storage import" command.
 func ImportCommand() commands.Command {
 	return &importCommand{
 		BaseCommand: commands.New(
@@ -39,7 +39,7 @@ type readerCounter struct {
 	read   int64
 }
 
-// Read implements io.Reader
+// Read implements io.Reader.
 func (s *readerCounter) Read(p []byte) (n int, err error) {
 	n, err = s.source.Read(p)
 	atomic.AddInt64(&s.read, int64(n))
@@ -62,7 +62,7 @@ type importCommand struct {
 	Resolver resolver.CachingStorage
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *importCommand) InitCommand() {
 	flagSet := &pflag.FlagSet{}
 	flagSet.StringVar(&s.sourceLocation, "source-location", "", "Location of the source of the import. Can be a file or a URL.")
@@ -81,7 +81,7 @@ type storageImportStatus struct {
 	complete bool
 }
 
-// ExecuteWithoutArguments implements commands.NoArgumentCommand
+// ExecuteWithoutArguments implements commands.NoArgumentCommand.
 func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	// initial argument validation
 	if s.sourceLocation == "" {

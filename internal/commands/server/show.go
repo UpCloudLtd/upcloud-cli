@@ -15,7 +15,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 )
 
-// ShowCommand creates the "server show" command
+// ShowCommand creates the "server show" command.
 func ShowCommand() commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New(
@@ -38,7 +38,7 @@ type showCommand struct {
 func (s *showCommand) InitCommand() {
 }
 
-// Execute implements commands.MultipleArgumentCommand
+// Execute implements commands.MultipleArgumentCommand.
 func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	var (
 		wg        sync.WaitGroup

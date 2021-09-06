@@ -9,10 +9,10 @@ import (
 type Server struct {
 }
 
-// make sure Server implements the interface
+// make sure Server implements the interface.
 var _ Provider = Server{}
 
-// CompleteArgument implements completion.Provider
+// CompleteArgument implements completion.Provider.
 func (s Server) CompleteArgument(svc service.AllServices, toComplete string) ([]string, cobra.ShellCompDirective) {
 	servers, err := svc.GetServers()
 	if err != nil {

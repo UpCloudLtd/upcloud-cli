@@ -29,7 +29,7 @@ type listLayoutConfig struct {
 	NoteSeparator bool
 }
 
-// ListLayoutDefault defines the default config used for rendering lists
+// ListLayoutDefault defines the default config used for rendering lists.
 var ListLayoutDefault = listLayoutConfig{
 	MarginLeft:    true,
 	MarginTop:     true,
@@ -39,7 +39,7 @@ var ListLayoutDefault = listLayoutConfig{
 	NoteSeparator: true,
 }
 
-// ListLayoutNestedTable defines the configuration used for rendering nested tables
+// ListLayoutNestedTable defines the configuration used for rendering nested tables.
 var ListLayoutNestedTable = listLayoutConfig{
 	MarginLeft:    false,
 	MarginTop:     false,
@@ -49,13 +49,13 @@ var ListLayoutNestedTable = listLayoutConfig{
 	NoteSeparator: true,
 }
 
-// ListLayout is a renderer of list data
+// ListLayout is a renderer of list data.
 type ListLayout struct {
 	l     list.Writer
 	style listLayoutConfig
 }
 
-// NewListLayout returns a a new list data renderer
+// NewListLayout returns a a new list data renderer.
 func NewListLayout(style listLayoutConfig) *ListLayout {
 	l := list.NewWriter()
 	l.SetStyle(defaultListStyle)
@@ -66,19 +66,19 @@ func NewListLayout(style listLayoutConfig) *ListLayout {
 	}
 }
 
-// WrapWithListLayout returns a list data renderer wrapping given text
+// WrapWithListLayout returns a list data renderer wrapping given text.
 func WrapWithListLayout(text string, style listLayoutConfig) *ListLayout {
 	l := NewListLayout(style)
 	l.appendSection("", "", []string{text})
 	return l
 }
 
-// AppendSectionWithNote appends a section with a note to a list
+// AppendSectionWithNote appends a section with a note to a list.
 func (s *ListLayout) AppendSectionWithNote(title, sectionBody, note string) {
 	s.appendSection(title, note, []string{sectionBody})
 }
 
-// AppendSection appends a section to a list
+// AppendSection appends a section to a list.
 func (s *ListLayout) AppendSection(title string, sectionBody ...string) {
 	s.appendSection(title, "", sectionBody)
 }
@@ -116,7 +116,7 @@ func (s *ListLayout) appendSection(title, note string, sectionBody []string) {
 	}
 }
 
-// Render renders the ListLayout as configured
+// Render renders the ListLayout as configured.
 func (s *ListLayout) Render() string {
 	if s.style.MarginLeft {
 		return s.l.Render()

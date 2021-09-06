@@ -17,7 +17,7 @@ type removeCommand struct {
 	resolver.CachingIPAddress
 }
 
-// RemoveCommand creates the 'ip-address remove' command
+// RemoveCommand creates the 'ip-address remove' command.
 func RemoveCommand() commands.Command {
 	// TODO: should this be 'release'? inconsistent with libs now
 	return &removeCommand{
@@ -30,16 +30,16 @@ func RemoveCommand() commands.Command {
 	}
 }
 
-// MaximumExecutions implements Command.MaximumExecutions
+// MaximumExecutions implements Command.MaximumExecutions.
 func (s *removeCommand) MaximumExecutions() int {
 	return maxIPAddressActions
 }
 
-// InitCommand implements Command.MakeExecuteCommand
+// InitCommand implements Command.MakeExecuteCommand.
 func (s *removeCommand) InitCommand() {
 }
 
-// Execute implements commands.MultipleArgumentCommand
+// Execute implements commands.MultipleArgumentCommand.
 func (s *removeCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	msg := fmt.Sprintf("removing ip-address %v", arg)
 	logline := exec.NewLogEntry(msg)

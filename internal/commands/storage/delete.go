@@ -12,7 +12,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
 )
 
-// DeleteCommand creates the "storage delete" command
+// DeleteCommand creates the "storage delete" command.
 func DeleteCommand() commands.Command {
 	return &deleteCommand{
 		BaseCommand: commands.New(
@@ -31,16 +31,16 @@ type deleteCommand struct {
 	completion.Storage
 }
 
-// InitCommand implements Command.InitCommand
+// InitCommand implements Command.InitCommand.
 func (s *deleteCommand) InitCommand() {
 }
 
-// MaximumExecutions implements command.Command
+// MaximumExecutions implements command.Command.
 func (s *deleteCommand) MaximumExecutions() int {
 	return maxStorageActions
 }
 
-// Execute implements commands.MultipleArgumentCommand
+// Execute implements commands.MultipleArgumentCommand.
 func (s *deleteCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Storage()
 	msg := fmt.Sprintf("deleting storage %v", uuid)
