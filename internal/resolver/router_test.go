@@ -46,6 +46,7 @@ var unambiguousRouters = []upcloud.Router{
 	Router3,
 }
 
+//nolint:dupl // seems very similar, but is a false positive
 func TestRouterResolution(t *testing.T) {
 	t.Run("resolve uuid", func(t *testing.T) {
 		mService := &smock.Service{}

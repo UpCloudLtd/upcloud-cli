@@ -140,11 +140,10 @@ func TestServerResolution(t *testing.T) {
 		// make sure caching works, eg. we didn't call GetServers more than once
 		mService.AssertNumberOfCalls(t, "GetServers", 1)
 	})
-
+	//nolint:dupl // seems very similar, but is a false positive
 	t.Run("failure situations", func(t *testing.T) {
 		mService := &smock.Service{}
 		mService.On("GetServers").Return(allServers, nil)
-
 		res := resolver.CachingServer{}
 		argResolver, err := res.Get(mService)
 		assert.NoError(t, err)

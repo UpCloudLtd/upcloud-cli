@@ -42,6 +42,7 @@ var Network4 = upcloud.Network{
 var networks = &upcloud.Networks{Networks: []upcloud.Network{Network1, Network2, Network3, Network4}}
 var unambiguousNetworks = []upcloud.Network{Network2, Network3}
 
+//nolint:dupl // seems very similar, but is a false positive
 func TestNetworkResolution(t *testing.T) {
 	t.Run("resolve uuid", func(t *testing.T) {
 		mService := &smock.Service{}

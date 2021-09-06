@@ -20,23 +20,14 @@ var mockIPs = &upcloud.IPAddresses{IPAddresses: []upcloud.IPAddress{
 }}
 
 func TestIPAddress_CompleteArgument(t *testing.T) {
-	for _, test := range []struct {
-		name              string
-		complete          string
-		expectedMatches   []string
-		expectedDirective cobra.ShellCompDirective
-	}{
+	for _, test := range []completionTest{
 		{name: "basic ptr", complete: "localh", expectedMatches: []string{"localhost"}, expectedDirective: cobra.ShellCompDirectiveNoFileComp},
 		{name: "basic ip", complete: "128", expectedMatches: []string{"128.0.0.3"}, expectedDirective: cobra.ShellCompDirectiveNoFileComp},
 		{name: "multiple ptrs", complete: "local", expectedMatches: []string{"localhost", "localmost"}, expectedDirective: cobra.ShellCompDirectiveNoFileComp},
 		{name: "multiple ips", complete: "127", expectedMatches: []string{"127.0.0.1", "127.0.0.2"}, expectedDirective: cobra.ShellCompDirectiveNoFileComp},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mService := new(smock.Service)
-			mService.On("GetIPAddresses", mock.Anything).Return(mockIPs, nil)
-			ips, directive := completion.IPAddress{}.CompleteArgument(mService, test.complete)
-			assert.Equal(t, test.expectedMatches, ips)
-			assert.Equal(t, test.expectedDirective, directive)
+			testCompletion(t, "GetIPAddresses", mockIPs, completion.IPAddress{}, test.complete, test.expectedMatches, test.expectedDirective)
 		})
 	}
 }

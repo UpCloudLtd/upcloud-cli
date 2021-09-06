@@ -49,10 +49,11 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 		BackupRule: &upcloud.BackupRule{Time: "", Interval: "", Retention: 0},
 	}
 
-	for _, test1 := range []struct {
+	for _, test := range []struct {
 		name        string
 		args        []string
 		storage     upcloud.Storage
+		details     upcloud.StorageDetails
 		methodCalls int
 		expected    request.ModifyStorageRequest
 		error       string
@@ -61,6 +62,7 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 			name:        "without backup rule update of existing backup rule",
 			args:        []string{"--size", "50"},
 			storage:     Storage1,
+			details:     StorageDetails1,
 			methodCalls: 1,
 			expected: request.ModifyStorageRequest{
 				UUID:       Storage1.UUID,
@@ -72,6 +74,7 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 			name:        "modifying existing backup rule without time",
 			args:        []string{"--size", "50", "--backup-interval", "mon"},
 			storage:     Storage1,
+			details:     StorageDetails1,
 			methodCalls: 1,
 			expected: request.ModifyStorageRequest{
 				UUID: Storage1.UUID,
@@ -83,46 +86,11 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 				},
 			},
 		},
-	} {
-		t.Run(test1.name, func(t *testing.T) {
-			CachedStorages = nil
-			conf := config.New()
-			testCmd := ModifyCommand()
-			mService := new(smock.Service)
-
-			conf.Service = internal.Wrapper{Service: mService}
-			mService.On("GetStorages").Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1}}, nil)
-			mService.On(targetMethod, &test1.expected).Return(&StorageDetails1, nil)
-			mService.On("GetStorageDetails", &request.GetStorageDetailsRequest{UUID: Storage1.UUID}).Return(&StorageDetails1, nil)
-
-			c := commands.BuildCommand(testCmd, nil, conf)
-			err := c.Cobra().Flags().Parse(test1.args)
-			assert.NoError(t, err)
-
-			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService, flume.New("test")), test1.storage.UUID)
-
-			if test1.error != "" {
-				assert.Error(t, err)
-				assert.Equal(t, test1.error, err.Error())
-			} else {
-				assert.Nil(t, err)
-				mService.AssertNumberOfCalls(t, targetMethod, test1.methodCalls)
-			}
-		})
-	}
-
-	for _, test2 := range []struct {
-		name        string
-		args        []string
-		storage     upcloud.Storage
-		methodCalls int
-		expected    request.ModifyStorageRequest
-		error       string
-	}{
 		{
 			name:        "modifying existing backup rule without time",
 			args:        []string{"--size", "50", "--backup-interval", "mon"},
 			storage:     Storage1,
+			details:     StorageDetails1,
 			methodCalls: 1,
 			expected: request.ModifyStorageRequest{
 				UUID: Storage1.UUID,
@@ -134,46 +102,11 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 				},
 			},
 		},
-	} {
-		t.Run(test2.name, func(t *testing.T) {
-			CachedStorages = nil
-			conf := config.New()
-			testCmd := ModifyCommand()
-			mService := new(smock.Service)
-
-			conf.Service = internal.Wrapper{Service: mService}
-			mService.On("GetStorages").Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1}}, nil)
-			mService.On(targetMethod, &test2.expected).Return(&StorageDetails1, nil)
-			mService.On("GetStorageDetails", &request.GetStorageDetailsRequest{UUID: Storage1.UUID}).Return(&StorageDetails1, nil)
-
-			c := commands.BuildCommand(testCmd, nil, config.New())
-			err := c.Cobra().Flags().Parse(test2.args)
-			assert.NoError(t, err)
-
-			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService, flume.New("test")), test2.storage.UUID)
-
-			if test2.error != "" {
-				assert.Error(t, err)
-				assert.Equal(t, test2.error, err.Error())
-			} else {
-				assert.Nil(t, err)
-				mService.AssertNumberOfCalls(t, targetMethod, test2.methodCalls)
-			}
-		})
-	}
-
-	for _, test3 := range []struct {
-		name        string
-		args        []string
-		storage     upcloud.Storage
-		methodCalls int
-		expected    request.ModifyStorageRequest
-		error       string
-	}{
 		{
 			name:        "without backup rule update of non-existing backup rule",
 			args:        []string{"--size", "50"},
 			storage:     Storage2,
+			details:     StorageDetails2,
 			methodCalls: 1,
 			expected: request.ModifyStorageRequest{
 				UUID: Storage2.UUID,
@@ -184,6 +117,7 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 			name:        "adding backup rule",
 			args:        []string{"--size", "50", "--backup-time", "12:00"},
 			storage:     Storage2,
+			details:     StorageDetails2,
 			methodCalls: 1,
 			expected: request.ModifyStorageRequest{
 				UUID: Storage2.UUID,
@@ -199,33 +133,34 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 			name:        "adding backup rule without backup time",
 			args:        []string{"--size", "50", "--backup-retention", "10"},
 			storage:     Storage2,
+			details:     StorageDetails2,
 			methodCalls: 1,
 			error:       "backup-time is required",
 		},
 	} {
-		t.Run(test3.name, func(t *testing.T) {
+		t.Run(test.name, func(t *testing.T) {
 			CachedStorages = nil
 			conf := config.New()
 			testCmd := ModifyCommand()
 			mService := new(smock.Service)
 
 			conf.Service = internal.Wrapper{Service: mService}
-			mService.On("GetStorages").Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage2}}, nil)
-			mService.On(targetMethod, &test3.expected).Return(&StorageDetails2, nil)
-			mService.On("GetStorageDetails", &request.GetStorageDetailsRequest{UUID: Storage2.UUID}).Return(&StorageDetails2, nil)
+			mService.On("GetStorages").Return(&upcloud.Storages{Storages: []upcloud.Storage{test.storage}}, nil)
+			mService.On(targetMethod, &test.expected).Return(&test.details, nil)
+			mService.On("GetStorageDetails", &request.GetStorageDetailsRequest{UUID: test.storage.UUID}).Return(&test.details, nil)
 
-			c := commands.BuildCommand(testCmd, nil, config.New())
-			err := c.Cobra().Flags().Parse(test3.args)
+			c := commands.BuildCommand(testCmd, nil, conf)
+			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 
-			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService, flume.New("test")), test3.storage.UUID)
+			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService, flume.New("test")), test.storage.UUID)
 
-			if test3.error != "" {
+			if test.error != "" {
 				assert.Error(t, err)
-				assert.Equal(t, test3.error, err.Error())
+				assert.Equal(t, test.error, err.Error())
 			} else {
 				assert.Nil(t, err)
-				mService.AssertNumberOfCalls(t, targetMethod, test3.methodCalls)
+				mService.AssertNumberOfCalls(t, targetMethod, test.methodCalls)
 			}
 		})
 	}

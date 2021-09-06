@@ -3,16 +3,8 @@ package server
 import (
 	"testing"
 
-	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
-	"github.com/UpCloudLtd/upcloud-cli/internal/config"
-	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
-	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
-
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/gemalto/flume"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 )
 
 func TestStartCommand(t *testing.T) {
@@ -55,26 +47,7 @@ func TestStartCommand(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			conf := config.New()
-			testCmd := StartCommand()
-			mService := new(smock.Service)
-
-			conf.Service = internal.Wrapper{Service: mService}
-			mService.On("GetServers", mock.Anything).Return(servers, nil)
-			mService.On("GetServerDetails", &request.GetServerDetailsRequest{UUID: Server1.UUID}).Return(&details2, nil)
-			mService.On(targetMethod, &test.startReq).Return(&details, nil)
-
-			c := commands.BuildCommand(testCmd, nil, conf)
-			err := c.Cobra().Flags().Parse(test.args)
-			assert.NoError(t, err)
-
-			_, err = c.(commands.MultipleArgumentCommand).Execute(
-				commands.NewExecutor(conf, mService, flume.New("test")),
-				Server1.UUID,
-			)
-			assert.NoError(t, err)
-
-			mService.AssertNumberOfCalls(t, targetMethod, 1)
+			testSimpleServerCommand(t, StartCommand(), servers, Server1, details2, targetMethod, &test.startReq, &details, test.args)
 		})
 	}
 }

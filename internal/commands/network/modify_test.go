@@ -144,26 +144,7 @@ func TestModifyCommandAttach(t *testing.T) {
 	} {
 		targetMethod := "AttachNetworkRouter"
 		t.Run(test.name, func(t *testing.T) {
-			mService := smock.Service{}
-			mService.On(targetMethod, &test.expected).Return(nil)
-			mService.On("GetNetworkDetails", &request.GetNetworkDetailsRequest{UUID: n.UUID}).Return(&n, nil)
-			mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{n}}, nil)
-			mService.On("GetRouters").Return(&upcloud.Routers{Routers: []upcloud.Router{r}}, nil)
-			conf := config.New()
-			c := commands.BuildCommand(ModifyCommand(), nil, conf)
-			err := c.Cobra().Flags().Parse(test.flags)
-			assert.NoError(t, err)
-
-			_, err = c.(commands.SingleArgumentCommand).ExecuteSingleArgument(
-				commands.NewExecutor(conf, &mService, flume.New("test")),
-				n.UUID,
-			)
-
-			if err != nil {
-				assert.EqualError(t, err, test.error)
-			} else {
-				mService.AssertNumberOfCalls(t, targetMethod, 1)
-			}
+			testSimpleModifyCommand(t, test.flags, test.error, n, r, targetMethod, &test.expected)
 		})
 	}
 }
@@ -198,27 +179,33 @@ func TestModifyCommandDetach(t *testing.T) {
 	} {
 		targetMethod := "DetachNetworkRouter"
 		t.Run(test.name, func(t *testing.T) {
-			mService := smock.Service{}
-			mService.On(targetMethod, &test.expected).Return(nil)
-			mService.On("GetNetworkDetails", &request.GetNetworkDetailsRequest{UUID: n.UUID}).Return(&n, nil)
-			mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{n}}, nil)
-			mService.On("GetRouters").Return(&upcloud.Routers{Routers: []upcloud.Router{r}}, nil)
-			conf := config.New()
-			c := commands.BuildCommand(ModifyCommand(), nil, conf)
-			err := c.Cobra().Flags().Parse(test.flags)
-			assert.NoError(t, err)
-
-			_, err = c.(commands.SingleArgumentCommand).ExecuteSingleArgument(
-				commands.NewExecutor(conf, &mService, flume.New("test")),
-				n.UUID,
-			)
-
-			if err != nil {
-				assert.EqualError(t, err, test.error)
-			} else {
-				mService.AssertNumberOfCalls(t, targetMethod, 1)
-			}
+			testSimpleModifyCommand(t, test.flags, test.error, n, r, targetMethod, &test.expected)
 		})
+	}
+}
+
+func testSimpleModifyCommand(t *testing.T, flags []string, expectedError string, network upcloud.Network, router upcloud.Router, calledMethod string, expectedRequest interface{}) {
+	t.Helper()
+	mService := smock.Service{}
+	mService.On(calledMethod, expectedRequest).Return(nil)
+	mService.On("GetNetworkDetails", &request.GetNetworkDetailsRequest{UUID: network.UUID}).Return(&network, nil)
+	mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{network}}, nil)
+	mService.On("GetRouters").Return(&upcloud.Routers{Routers: []upcloud.Router{router}}, nil)
+	conf := config.New()
+	c := commands.BuildCommand(ModifyCommand(), nil, conf)
+	err := c.Cobra().Flags().Parse(flags)
+	assert.NoError(t, err)
+
+	_, err = c.(commands.SingleArgumentCommand).ExecuteSingleArgument(
+		commands.NewExecutor(conf, &mService, flume.New("test")),
+		network.UUID,
+	)
+
+	if err != nil {
+		assert.EqualError(t, err, expectedError)
+	} else {
+		assert.Equal(t, "", expectedError, "expected error but received none")
+		mService.AssertNumberOfCalls(t, calledMethod, 1)
 	}
 }
 

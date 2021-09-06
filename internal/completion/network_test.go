@@ -1,3 +1,4 @@
+//nolint:dupl // completion tests look *very* similar, but this is a false positive
 package completion_test
 
 import (
@@ -22,23 +23,14 @@ var mockNetworks = &upcloud.Networks{Networks: []upcloud.Network{
 }}
 
 func TestNetwork_CompleteArgument(t *testing.T) {
-	for _, test := range []struct {
-		name              string
-		complete          string
-		expectedMatches   []string
-		expectedDirective cobra.ShellCompDirective
-	}{
+	for _, test := range []completionTest{
 		{name: "basic uuid", complete: "pqr", expectedMatches: []string{"pqrstu"}, expectedDirective: cobra.ShellCompDirectiveNoFileComp},
 		{name: "basic name", complete: "dock", expectedMatches: []string{"dock1"}, expectedDirective: cobra.ShellCompDirectiveNoFileComp},
 		{name: "multiple uuids", complete: "abc", expectedMatches: []string{"abcdef", "abcghi"}, expectedDirective: cobra.ShellCompDirectiveNoFileComp},
 		{name: "multiple names", complete: "bock", expectedMatches: []string{"bock1", "bock2"}, expectedDirective: cobra.ShellCompDirectiveNoFileComp},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mService := new(smock.Service)
-			mService.On("GetNetworks", mock.Anything).Return(mockNetworks, nil)
-			ips, directive := completion.Network{}.CompleteArgument(mService, test.complete)
-			assert.Equal(t, test.expectedMatches, ips)
-			assert.Equal(t, test.expectedDirective, directive)
+			testCompletion(t, "GetNetworks", mockNetworks, completion.Network{}, test.complete, test.expectedMatches, test.expectedDirective)
 		})
 	}
 }

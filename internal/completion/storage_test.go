@@ -1,3 +1,4 @@
+//nolint:dupl // completion tests look *very* similar, but this is a false positive
 package completion_test
 
 import (
@@ -22,23 +23,14 @@ var mockStorages = &upcloud.Storages{Storages: []upcloud.Storage{
 }}
 
 func TestStorage_CompleteArgument(t *testing.T) {
-	for _, test := range []struct {
-		name              string
-		complete          string
-		expectedMatches   []string
-		expectedDirective cobra.ShellCompDirective
-	}{
+	for _, test := range []completionTest{
 		{name: "basic uuid", complete: "pqr", expectedMatches: []string{"pqrstu"}, expectedDirective: cobra.ShellCompDirectiveNoFileComp},
 		{name: "basic title", complete: "dock", expectedMatches: []string{"dock1"}, expectedDirective: cobra.ShellCompDirectiveNoFileComp},
 		{name: "multiple uuids", complete: "abc", expectedMatches: []string{"abcdef", "abcghi"}, expectedDirective: cobra.ShellCompDirectiveNoFileComp},
 		{name: "multiple titles", complete: "bock", expectedMatches: []string{"bock1", "bock2"}, expectedDirective: cobra.ShellCompDirectiveNoFileComp},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mService := new(smock.Service)
-			mService.On("GetStorages", mock.Anything).Return(mockStorages, nil)
-			ips, directive := completion.Storage{}.CompleteArgument(mService, test.complete)
-			assert.Equal(t, test.expectedMatches, ips)
-			assert.Equal(t, test.expectedDirective, directive)
+			testCompletion(t, "GetStorages", mockStorages, completion.Storage{}, test.complete, test.expectedMatches, test.expectedDirective)
 		})
 	}
 }

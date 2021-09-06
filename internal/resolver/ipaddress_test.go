@@ -114,6 +114,7 @@ func TestIPAddressResolution(t *testing.T) {
 		mService.AssertNumberOfCalls(t, "GetIPAddresses", 1)
 	})
 
+	//nolint:dupl // seems very similar, but is a false positive
 	t.Run("failure situations", func(t *testing.T) {
 		mService := &smock.Service{}
 		mService.On("GetIPAddresses").Return(addresses, nil)

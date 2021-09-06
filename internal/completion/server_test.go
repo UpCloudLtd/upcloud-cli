@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
-	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+
+	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
+	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 )
 
 var mockServers = &upcloud.Servers{Servers: []upcloud.Server{
@@ -21,12 +22,7 @@ var mockServers = &upcloud.Servers{Servers: []upcloud.Server{
 }}
 
 func TestServer_CompleteArgument(t *testing.T) {
-	for _, test := range []struct {
-		name              string
-		complete          string
-		expectedMatches   []string
-		expectedDirective cobra.ShellCompDirective
-	}{
+	for _, test := range []completionTest{
 		{name: "basic uuid", complete: "pqr", expectedMatches: []string{"pqrstu"}, expectedDirective: cobra.ShellCompDirectiveNoFileComp},
 		{name: "basic title", complete: "dock", expectedMatches: []string{"dock1"}, expectedDirective: cobra.ShellCompDirectiveNoFileComp},
 		{name: "basic hostname", complete: "fa", expectedMatches: []string{"faa"}, expectedDirective: cobra.ShellCompDirectiveNoFileComp},
@@ -36,11 +32,7 @@ func TestServer_CompleteArgument(t *testing.T) {
 		{name: "hostnames and titles", complete: "b", expectedMatches: []string{"bock1", "bock2", "bfoo"}, expectedDirective: cobra.ShellCompDirectiveNoFileComp},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mService := new(smock.Service)
-			mService.On("GetServers", mock.Anything).Return(mockServers, nil)
-			ips, directive := completion.Server{}.CompleteArgument(mService, test.complete)
-			assert.Equal(t, test.expectedMatches, ips)
-			assert.Equal(t, test.expectedDirective, directive)
+			testCompletion(t, "GetServers", mockServers, completion.Server{}, test.complete, test.expectedMatches, test.expectedDirective)
 		})
 	}
 }
