@@ -240,6 +240,7 @@ func parseSource(location string) (parsedLocation *url.URL, sourceType string, f
 		// we managed to open a local file with this path, so use that
 		sourceType = upcloud.StorageImportSourceDirectUpload
 		parsedLocation = &url.URL{Path: location}
+		//nolint:nilerr // this is a false positive, err == nil in the return.
 		return
 	}
 	parsedLocation, err = url.Parse(location)
