@@ -1,7 +1,6 @@
 package ui
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/jedib0t/go-pretty/v6/text"
@@ -67,7 +66,7 @@ func TestShowDetailsRender(t *testing.T) {
 			text.DisableColors()
 			view := NewListLayout(testcase.style)
 			testcase.buildViewFn(view)
-			fmt.Println(view.Render())
+			// fmt.Println(view.Render())
 			assert.Equal(t, testcase.expectedOutput, view.Render())
 		})
 	}

@@ -1,7 +1,6 @@
 package serverfirewall
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
@@ -61,7 +60,7 @@ func TestDeleteServerFirewallRuleCommand(t *testing.T) {
 
 			_, err = cc.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService, flume.New("test")), Server1.UUID)
 			if test.error != "" {
-				fmt.Println("ERROR", test.error, "==", err)
+				// fmt.Println("ERROR", test.error, "==", err)
 				assert.EqualError(t, err, test.error)
 				mService.AssertNumberOfCalls(t, deleteRuleMethod, 0)
 			} else {

@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/url"
@@ -30,7 +29,7 @@ func TestReaderCounterInterface(t *testing.T) {
 func TestImportCommand(t *testing.T) {
 	tmpFile, err := ioutil.TempFile(os.TempDir(), "pre-")
 	if err != nil {
-		fmt.Println("Cannot create temporary file", err)
+		t.Fatalf("Cannot create temporary file: %v", err)
 	}
 
 	defer os.Remove(tmpFile.Name())
