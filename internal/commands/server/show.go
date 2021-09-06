@@ -66,7 +66,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 	}
 
 	planOutput := server.Plan
-	if planOutput == "custom" {
+	if server.Plan == "custom" {
 		memory := server.MemoryAmount / 1024
 		planOutput = fmt.Sprintf("%dxCPU-%dGB (custom)", server.CoreNumber, memory)
 	}

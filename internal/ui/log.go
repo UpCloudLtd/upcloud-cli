@@ -221,8 +221,7 @@ func (s *LiveLog) eraseLine() {
 }
 
 func (s *LiveLog) write(str string) {
-	_, err := fmt.Fprint(s.out, str)
-	if err != nil {
+	if _, err := fmt.Fprint(s.out, str); err != nil {
 		panic(fmt.Sprintf("LiveLog rendering error: %v", err))
 	}
 }

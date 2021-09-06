@@ -48,8 +48,7 @@ func (s *restoreBackupCommand) Execute(exec commands.Executor, uuid string) (out
 	req := s.params.RestoreBackupRequest
 	req.UUID = uuid
 
-	err := svc.RestoreBackup(&req)
-	if err != nil {
+	if err := svc.RestoreBackup(&req); err != nil {
 		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
 		logline.SetDetails(err.Error(), "error: ")
 		return nil, err

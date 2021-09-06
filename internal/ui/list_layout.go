@@ -87,9 +87,8 @@ func (s *ListLayout) appendSection(title, note string, sectionBody []string) {
 	if s.style.MarginTop {
 		s.appendLine()
 	}
-	titleAvailable := title != ""
 
-	if titleAvailable {
+	if title != "" {
 		s.l.AppendItem(DefaultHeaderColours.Sprint(title))
 		s.l.Indent()
 	}
@@ -111,7 +110,7 @@ func (s *ListLayout) appendSection(title, note string, sectionBody []string) {
 	if s.style.MarginBottom {
 		s.appendLine()
 	}
-	if titleAvailable {
+	if title != "" {
 		s.l.UnIndent()
 	}
 }
