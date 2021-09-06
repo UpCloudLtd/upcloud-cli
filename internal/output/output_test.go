@@ -20,6 +20,7 @@ type outputTestCase struct {
 
 func (c outputTestCase) Generate() func(t *testing.T) {
 	return func(t *testing.T) {
+		t.Helper()
 		text.DisableColors()
 		if c.expectedErrorMessage == "" {
 			bytes, err := c.input.MarshalHuman()

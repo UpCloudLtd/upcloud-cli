@@ -66,6 +66,7 @@ func TestRender(t *testing.T) {
 }
 
 func validateOutput(t *testing.T, expectedOutput string, expectedErrorMessage string, output []byte, err error) {
+	t.Helper()
 	if expectedErrorMessage != "" {
 		assert.EqualError(t, err, expectedErrorMessage)
 		assert.Equal(t, 0, len(output))

@@ -16,6 +16,7 @@ import (
 )
 
 func testSimpleServerCommand(t *testing.T, testCmd commands.Command, servers *upcloud.Servers, server upcloud.Server, details upcloud.ServerDetails, methodName string, madeRequest interface{}, requestResponse interface{}, args []string) {
+	t.Helper()
 	conf := config.New()
 	mService := new(smock.Service)
 
