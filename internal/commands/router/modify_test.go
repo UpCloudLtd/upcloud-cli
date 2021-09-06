@@ -15,6 +15,7 @@ import (
 )
 
 func TestModifyCommand(t *testing.T) {
+	t.Parallel()
 	router := upcloud.Router{Name: "test-router", UUID: "123123"}
 	modifiedRouter := upcloud.Router{Name: "test-router-b", UUID: "123123"}
 
@@ -45,8 +46,11 @@ func TestModifyCommand(t *testing.T) {
 			req:     request.ModifyRouterRequest{Name: "router-2-b", UUID: router.UUID},
 		},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		targetMethod := "ModifyRouter"
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			mService := smock.Service{}
 			mService.On(targetMethod, &test.req).Return(test.returns, nil)
 			mService.On("GetRouters", mock.Anything).Return(&upcloud.Routers{Routers: []upcloud.Router{router}}, nil)

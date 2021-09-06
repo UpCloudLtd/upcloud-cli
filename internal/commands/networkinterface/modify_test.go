@@ -14,6 +14,7 @@ import (
 )
 
 func TestModifyCommand(t *testing.T) {
+	t.Parallel()
 	targetMethod := "ModifyNetworkInterface"
 
 	server := upcloud.Server{UUID: "c4cb35bc-3fb5-4cce-9951-79cab2225417"}
@@ -62,7 +63,10 @@ func TestModifyCommand(t *testing.T) {
 			},
 		},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			mService := smock.Service{}
 			mService.On("GetNetworks").Return(&networks, nil)
 			mService.On(targetMethod, &test.req).Return(&upcloud.Interface{}, nil)

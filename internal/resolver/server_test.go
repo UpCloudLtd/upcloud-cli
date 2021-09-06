@@ -12,6 +12,7 @@ import (
 )
 
 func TestServerResolution(t *testing.T) {
+	t.Parallel()
 	Server1 := upcloud.Server{
 		CoreNumber:   1,
 		Hostname:     "server-1-hostname",
@@ -97,6 +98,7 @@ func TestServerResolution(t *testing.T) {
 	}
 
 	t.Run("resolve uuid", func(t *testing.T) {
+		t.Parallel()
 		mService := &smock.Service{}
 		mService.On("GetServers").Return(allServers, nil)
 		res := resolver.CachingServer{}
@@ -112,6 +114,7 @@ func TestServerResolution(t *testing.T) {
 	})
 
 	t.Run("resolve hostname", func(t *testing.T) {
+		t.Parallel()
 		mService := &smock.Service{}
 		mService.On("GetServers").Return(allServers, nil)
 		res := resolver.CachingServer{}
@@ -127,6 +130,7 @@ func TestServerResolution(t *testing.T) {
 	})
 
 	t.Run("resolve title", func(t *testing.T) {
+		t.Parallel()
 		mService := &smock.Service{}
 		mService.On("GetServers").Return(allServers, nil)
 		res := resolver.CachingServer{}
@@ -140,44 +144,20 @@ func TestServerResolution(t *testing.T) {
 		// make sure caching works, eg. we didn't call GetServers more than once
 		mService.AssertNumberOfCalls(t, "GetServers", 1)
 	})
-	//nolint:dupl // seems very similar, but is a false positive
+
 	t.Run("failure situations", func(t *testing.T) {
-		mService := &smock.Service{}
-		mService.On("GetServers").Return(allServers, nil)
-		res := resolver.CachingServer{}
-		argResolver, err := res.Get(mService)
-		assert.NoError(t, err)
-
-		// ambigous hostname
-		resolved, err := argResolver(Server4.Hostname)
-		if !assert.Error(t, err) {
-			t.FailNow()
-		}
-		assert.ErrorIs(t, err, resolver.AmbiguousResolutionError(Server4.Hostname))
-		assert.Equal(t, "", resolved)
-
-		// ambigous title
-		resolved, err = argResolver(Server1.Title)
-		if !assert.Error(t, err) {
-			t.FailNow()
-		}
-		assert.ErrorIs(t, err, resolver.AmbiguousResolutionError(Server1.Title))
-		assert.Equal(t, "", resolved)
-
-		// not found
-		resolved, err = argResolver("notfounf")
-		if !assert.Error(t, err) {
-			t.FailNow()
-		}
-		assert.ErrorIs(t, err, resolver.NotFoundError("notfounf"))
-		assert.Equal(t, "", resolved)
-
-		// make sure caching works, eg. we didn't call GetServers more than once
-		mService.AssertNumberOfCalls(t, "GetServers", 1)
+		t.Parallel()
+		testResolutionFailure(t, "GetServers", allServers, resolver.CachingServer{}, []string{
+			Server4.Hostname,
+			Server1.Title,
+		}, []string{
+			"notfounf",
+		})
 	})
 }
 
 func TestFailingServerResolution(t *testing.T) {
+	t.Parallel()
 	mService := &smock.Service{}
 	var nilResponse *upcloud.Servers
 	mService.On("GetServers").Return(nilResponse, errors.New("MOCKERROR"))

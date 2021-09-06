@@ -7,6 +7,7 @@ import (
 )
 
 func TestOnlyMarshaled(t *testing.T) {
+	t.Parallel()
 	marshaledOnlyTests := []outputTestCase{
 		{
 			name:               "nil",
@@ -35,6 +36,11 @@ func TestOnlyMarshaled(t *testing.T) {
 	}
 
 	for _, test := range marshaledOnlyTests {
-		t.Run(test.name, test.Generate())
+		// grab a local reference for parallel tests
+		test := test
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			test.Generate()(t)
+		})
 	}
 }

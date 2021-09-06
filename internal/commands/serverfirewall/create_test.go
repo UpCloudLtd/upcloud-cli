@@ -15,6 +15,7 @@ import (
 )
 
 func TestCreateFirewallRuleCommand(t *testing.T) {
+	t.Parallel()
 	Server1 := upcloud.Server{
 		CoreNumber:   1,
 		Hostname:     "server-1-hostname",
@@ -80,7 +81,10 @@ func TestCreateFirewallRuleCommand(t *testing.T) {
 			},
 		},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			mService := smock.Service{}
 			if test.expectedReq != nil {
 				mService.On("CreateFirewallRule", test.expectedReq).Return(&upcloud.FirewallRule{}, nil)

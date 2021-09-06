@@ -14,6 +14,7 @@ import (
 )
 
 func TestCreateCommand(t *testing.T) {
+	t.Parallel()
 	targetMethod := "CreateNetwork"
 
 	n := upcloud.Network{
@@ -92,7 +93,10 @@ func TestCreateCommand(t *testing.T) {
 			},
 		},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			mService := smock.Service{}
 			mService.On(targetMethod, &test.expected).Return(&upcloud.Network{}, nil)
 			conf := config.New()

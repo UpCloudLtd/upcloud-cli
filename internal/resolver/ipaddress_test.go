@@ -12,6 +12,7 @@ import (
 )
 
 func TestIPAddressResolution(t *testing.T) {
+	t.Parallel()
 	ipAddress1 := upcloud.IPAddress{
 		Address:    "94.237.117.151",
 		Access:     "public",
@@ -85,6 +86,7 @@ func TestIPAddressResolution(t *testing.T) {
 	unambiguousAddresses := []upcloud.IPAddress{ipAddress1, ipAddress2, ipAddress3}
 
 	t.Run("resolve address", func(t *testing.T) {
+		t.Parallel()
 		mService := &smock.Service{}
 		mService.On("GetIPAddresses").Return(addresses, nil)
 		res := resolver.CachingIPAddress{}
@@ -100,6 +102,7 @@ func TestIPAddressResolution(t *testing.T) {
 	})
 
 	t.Run("resolve ptr records", func(t *testing.T) {
+		t.Parallel()
 		mService := &smock.Service{}
 		mService.On("GetIPAddresses").Return(addresses, nil)
 		res := resolver.CachingIPAddress{}
@@ -114,44 +117,19 @@ func TestIPAddressResolution(t *testing.T) {
 		mService.AssertNumberOfCalls(t, "GetIPAddresses", 1)
 	})
 
-	//nolint:dupl // seems very similar, but is a false positive
 	t.Run("failure situations", func(t *testing.T) {
-		mService := &smock.Service{}
-		mService.On("GetIPAddresses").Return(addresses, nil)
-		res := resolver.CachingIPAddress{}
-		argResolver, err := res.Get(mService)
-		assert.NoError(t, err)
-
-		// ambigous address
-		resolved, err := argResolver(ipAddress4.Address)
-		if !assert.Error(t, err) {
-			t.FailNow()
-		}
-		assert.ErrorIs(t, err, resolver.AmbiguousResolutionError(ipAddress4.Address))
-		assert.Equal(t, "", resolved)
-
-		// ambigous ptr record
-		resolved, err = argResolver(ipAddress4.PTRRecord)
-		if !assert.Error(t, err) {
-			t.FailNow()
-		}
-		assert.ErrorIs(t, err, resolver.AmbiguousResolutionError(ipAddress4.PTRRecord))
-		assert.Equal(t, "", resolved)
-
-		// not found
-		resolved, err = argResolver("notfounf")
-		if !assert.Error(t, err) {
-			t.FailNow()
-		}
-		assert.ErrorIs(t, err, resolver.NotFoundError("notfounf"))
-		assert.Equal(t, "", resolved)
-
-		// make sure caching works, eg. we didn't call GetServers more than once
-		mService.AssertNumberOfCalls(t, "GetIPAddresses", 1)
+		t.Parallel()
+		testResolutionFailure(t, "GetIPAddresses", addresses, resolver.CachingIPAddress{}, []string{
+			ipAddress4.Address,
+			ipAddress4.PTRRecord,
+		}, []string{
+			"notfounf",
+		})
 	})
 }
 
 func TestFailingIPAddressResolution(t *testing.T) {
+	t.Parallel()
 	mService := &smock.Service{}
 	var nilResponse *upcloud.IPAddresses
 	mService.On("GetIPAddresses").Return(nilResponse, errors.New("MOCKERROR"))

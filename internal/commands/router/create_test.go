@@ -14,6 +14,7 @@ import (
 )
 
 func TestCreateCommand(t *testing.T) {
+	t.Parallel()
 	targetMethod := "CreateRouter"
 
 	router := upcloud.Router{Name: "test-router"}
@@ -35,7 +36,10 @@ func TestCreateCommand(t *testing.T) {
 			req:   request.CreateRouterRequest{Name: router.Name},
 		},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			mService := smock.Service{}
 			mService.On(targetMethod, &test.req).Return(&router, nil)
 

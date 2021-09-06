@@ -15,6 +15,7 @@ import (
 )
 
 func TestModifyCommand(t *testing.T) {
+	t.Parallel()
 	n := upcloud.Network{
 		UUID:   "9abccbe8-8d47-40dd-a5af-c6598f38b11b",
 		Name:   "test-network",
@@ -79,8 +80,11 @@ func TestModifyCommand(t *testing.T) {
 			},
 		},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		targetMethod := "ModifyNetwork"
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			mService := smock.Service{}
 			mService.On(targetMethod, &test.expected).Return(&upcloud.Network{}, nil)
 			mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{n}}, nil)
@@ -104,6 +108,7 @@ func TestModifyCommand(t *testing.T) {
 }
 
 func TestModifyCommandAttach(t *testing.T) {
+	t.Parallel()
 	n := upcloud.Network{
 		UUID:   "9abccbe8-8d47-40dd-a5af-c6598f38b11b",
 		Name:   "test-network",
@@ -143,13 +148,17 @@ func TestModifyCommandAttach(t *testing.T) {
 		},
 	} {
 		targetMethod := "AttachNetworkRouter"
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			testSimpleModifyCommand(t, test.flags, test.error, n, r, targetMethod, &test.expected)
 		})
 	}
 }
 
 func TestModifyCommandDetach(t *testing.T) {
+	t.Parallel()
 	n := upcloud.Network{
 		UUID:   "9abccbe8-8d47-40dd-a5af-c6598f38b11b",
 		Name:   "test-network",
@@ -178,7 +187,10 @@ func TestModifyCommandDetach(t *testing.T) {
 		},
 	} {
 		targetMethod := "DetachNetworkRouter"
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			testSimpleModifyCommand(t, test.flags, test.error, n, r, targetMethod, &test.expected)
 		})
 	}
@@ -210,6 +222,7 @@ func testSimpleModifyCommand(t *testing.T, flags []string, expectedError string,
 }
 
 func TestModifyCommandModifyAndAttach(t *testing.T) {
+	t.Parallel()
 	n := upcloud.Network{
 		UUID:   "9abccbe8-8d47-40dd-a5af-c6598f38b11b",
 		Name:   "test-network",
@@ -259,7 +272,10 @@ func TestModifyCommandModifyAndAttach(t *testing.T) {
 			},
 		},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			mService := smock.Service{}
 			mService.On("AttachNetworkRouter", &test.expectedAttach).Return(nil)
 			mService.On("ModifyNetwork", &test.expectedModify).Return(&n, nil)
@@ -291,6 +307,7 @@ func TestModifyCommandModifyAndAttach(t *testing.T) {
 }
 
 func TestModifyCommandModifyAndDetach(t *testing.T) {
+	t.Parallel()
 	n := upcloud.Network{
 		UUID:   "9abccbe8-8d47-40dd-a5af-c6598f38b11b",
 		Name:   "test-network",
@@ -319,7 +336,10 @@ func TestModifyCommandModifyAndDetach(t *testing.T) {
 			},
 		},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			mService := smock.Service{}
 			mService.On("DetachNetworkRouter", &test.expectedDetach).Return(nil)
 			mService.On("ModifyNetwork", &test.expectedModify).Return(&n, nil)

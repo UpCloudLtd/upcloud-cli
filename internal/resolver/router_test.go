@@ -51,7 +51,9 @@ var unambiguousRouters = []upcloud.Router{
 
 //nolint:dupl // seems very similar, but is a false positive
 func TestRouterResolution(t *testing.T) {
+	t.Parallel()
 	t.Run("resolve uuid", func(t *testing.T) {
+		t.Parallel()
 		mService := &smock.Service{}
 		mService.On("GetRouters").Return(allRouters, nil)
 		res := resolver.CachingRouter{}
@@ -67,6 +69,7 @@ func TestRouterResolution(t *testing.T) {
 	})
 
 	t.Run("resolve hostname", func(t *testing.T) {
+		t.Parallel()
 		mService := &smock.Service{}
 		mService.On("GetRouters").Return(allRouters, nil)
 		res := resolver.CachingRouter{}
@@ -82,35 +85,17 @@ func TestRouterResolution(t *testing.T) {
 	})
 
 	t.Run("failure situations", func(t *testing.T) {
-		mService := &smock.Service{}
-		mService.On("GetRouters").Return(allRouters, nil)
-
-		res := resolver.CachingRouter{}
-		argResolver, err := res.Get(mService)
-		assert.NoError(t, err)
-
-		// ambigous name
-		resolved, err := argResolver(Router1.Name)
-		if !assert.Error(t, err) {
-			t.FailNow()
-		}
-		assert.ErrorIs(t, err, resolver.AmbiguousResolutionError(Router1.Name))
-		assert.Equal(t, "", resolved)
-
-		// not found
-		resolved, err = argResolver("notfounf")
-		if !assert.Error(t, err) {
-			t.FailNow()
-		}
-		assert.ErrorIs(t, err, resolver.NotFoundError("notfounf"))
-		assert.Equal(t, "", resolved)
-
-		// make sure caching works, eg. we didn't call GetServers more than once
-		mService.AssertNumberOfCalls(t, "GetRouters", 1)
+		t.Parallel()
+		testResolutionFailure(t, "GetRouters", allRouters, &resolver.CachingRouter{}, []string{
+			Router1.Name,
+		}, []string{
+			"notfounf",
+		})
 	})
 }
 
 func TestFailingRouterResolution(t *testing.T) {
+	t.Parallel()
 	mService := &smock.Service{}
 	var nilResponse *upcloud.Routers
 	mService.On("GetRouters").Return(nilResponse, errors.New("MOCKERROR"))
@@ -121,6 +106,7 @@ func TestFailingRouterResolution(t *testing.T) {
 }
 
 func TestCachingRouter_GetCached(t *testing.T) {
+	t.Parallel()
 	mService := &smock.Service{}
 	mService.On("GetRouters").Return(allRouters, nil)
 	res := resolver.CachingRouter{}

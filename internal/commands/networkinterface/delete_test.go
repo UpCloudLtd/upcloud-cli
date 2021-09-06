@@ -14,6 +14,7 @@ import (
 )
 
 func TestDeleteCommand(t *testing.T) {
+	t.Parallel()
 	targetMethod := "DeleteNetworkInterface"
 
 	server := upcloud.Server{UUID: "97fbd082-30b0-11eb-adc1-0242ac120002", Title: "test-server"}
@@ -43,7 +44,10 @@ func TestDeleteCommand(t *testing.T) {
 			error: "index is required",
 		},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			mService := smock.Service{}
 			mService.On(targetMethod, &test.req).Return(nil)
 

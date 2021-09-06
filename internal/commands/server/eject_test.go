@@ -16,6 +16,7 @@ import (
 )
 
 func TestEjectCDROMCommand(t *testing.T) {
+	t.Parallel()
 	targetMethod := "EjectCDROM"
 
 	Server1 := upcloud.Server{
@@ -54,7 +55,10 @@ func TestEjectCDROMCommand(t *testing.T) {
 			},
 		},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			conf := config.New()
 			testCmd := EjectCommand()
 			mService := new(smock.Service)

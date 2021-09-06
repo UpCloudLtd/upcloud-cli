@@ -11,6 +11,7 @@ import (
 )
 
 func TestConfig_LoadInvalidYAML(t *testing.T) {
+	t.Parallel()
 	cfg := New()
 	tmpFile, err := ioutil.TempFile(os.TempDir(), "")
 	assert.NoError(t, err)
@@ -23,6 +24,7 @@ func TestConfig_LoadInvalidYAML(t *testing.T) {
 }
 
 func TestConfig_Load(t *testing.T) {
+	t.Parallel()
 	cfg := New()
 	tmpFile, err := ioutil.TempFile(os.TempDir(), "")
 	assert.NoError(t, err)
@@ -37,6 +39,7 @@ func TestConfig_Load(t *testing.T) {
 }
 
 func TestConfig_LoadNotFound(t *testing.T) {
+	t.Parallel()
 	cfg := New()
 	cfg.GlobalFlags.ConfigFile = "foobar"
 	err := cfg.Load()

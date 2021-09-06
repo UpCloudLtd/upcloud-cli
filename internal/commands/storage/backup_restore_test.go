@@ -17,6 +17,7 @@ import (
 )
 
 func TestRestoreBackupCommand(t *testing.T) {
+	t.Parallel()
 	targetMethod := "RestoreBackup"
 
 	Storage2 := upcloud.Storage{
@@ -42,7 +43,10 @@ func TestRestoreBackupCommand(t *testing.T) {
 			expected:    request.RestoreBackupRequest{UUID: Storage2.UUID},
 		},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			conf := config.New()
 			mService := new(smock.Service)
 

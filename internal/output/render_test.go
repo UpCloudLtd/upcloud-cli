@@ -18,6 +18,7 @@ func (f failWriter) Write(_ []byte) (n int, err error) {
 }
 
 func TestRenderFailingWriter(t *testing.T) {
+	t.Parallel()
 	fw := failWriter{}
 	cfg := config.New()
 	cfg.Viper().Set(config.KeyOutput, "human")
@@ -26,6 +27,7 @@ func TestRenderFailingWriter(t *testing.T) {
 }
 
 func TestRender(t *testing.T) {
+	t.Parallel()
 	renderTests := []outputTestCase{
 		{
 			name:                "none",
@@ -44,7 +46,10 @@ func TestRender(t *testing.T) {
 		},
 	}
 	for _, test := range renderTests {
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			out := new(bytes.Buffer)
 			cfg := config.New()
 

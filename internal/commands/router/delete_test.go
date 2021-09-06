@@ -15,6 +15,7 @@ import (
 )
 
 func TestDeleteCommand(t *testing.T) {
+	t.Parallel()
 	targetMethod := "DeleteRouter"
 
 	router := upcloud.Router{
@@ -34,7 +35,10 @@ func TestDeleteCommand(t *testing.T) {
 			req:  request.DeleteRouterRequest{UUID: router.UUID},
 		},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			mService := smock.Service{}
 			mService.On(targetMethod, &test.req).Return(nil)
 			mService.On("GetRouters", mock.Anything).Return(&upcloud.Routers{Routers: []upcloud.Router{router}}, nil)

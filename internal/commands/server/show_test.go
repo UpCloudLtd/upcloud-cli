@@ -17,6 +17,7 @@ import (
 )
 
 func TestServerHumanOutput(t *testing.T) {
+	t.Parallel()
 	text.DisableColors()
 	uuid := "0077fa3d-32db-4b09-9f5f-30d9e9afb565"
 	srv := &upcloud.ServerDetails{

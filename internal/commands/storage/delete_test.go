@@ -16,6 +16,7 @@ import (
 )
 
 func TestDeleteStorageCommand(t *testing.T) {
+	t.Parallel()
 	targetMethod := "DeleteStorage"
 	Storage2 := upcloud.Storage{
 		UUID:   UUID2,
@@ -40,7 +41,10 @@ func TestDeleteStorageCommand(t *testing.T) {
 			expected:    request.DeleteStorageRequest{UUID: Storage2.UUID},
 		},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			CachedStorages = nil
 			conf := config.New()
 			testCmd := DeleteCommand()

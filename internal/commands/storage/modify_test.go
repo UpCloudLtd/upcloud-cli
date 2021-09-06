@@ -15,6 +15,7 @@ import (
 )
 
 func TestModifyCommandExistingBackupRule(t *testing.T) {
+	t.Parallel()
 	targetMethod := "ModifyStorage"
 	Storage1 := upcloud.Storage{
 		UUID:   UUID1,
@@ -138,7 +139,9 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 			error:       "backup-time is required",
 		},
 	} {
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			CachedStorages = nil
 			conf := config.New()
 			testCmd := ModifyCommand()

@@ -9,6 +9,7 @@ import (
 )
 
 func TestMatchStringPrefix(t *testing.T) {
+	t.Parallel()
 	for _, test := range []struct {
 		name          string
 		vals          []string
@@ -66,7 +67,10 @@ func TestMatchStringPrefix(t *testing.T) {
 			expected:      []string{"\"a a \"", "\"a(0)\"", "aab", "a;<!`'"},
 		},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			result := completion.MatchStringPrefix(test.vals, test.key, test.caseSensitive)
 			assert.Len(t, result, len(test.expected))
 			if len(test.expected) > 0 {
@@ -78,6 +82,7 @@ func TestMatchStringPrefix(t *testing.T) {
 }
 
 func TestEscape(t *testing.T) {
+	t.Parallel()
 	for _, test := range []struct {
 		name     string
 		in       string
@@ -109,7 +114,9 @@ func TestEscape(t *testing.T) {
 			expected: "a;<!`'",
 		},
 	} {
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			assert.Equal(t, test.expected, completion.Escape(test.in))
 		})
 	}

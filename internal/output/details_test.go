@@ -7,6 +7,7 @@ import (
 )
 
 func TestDetails(t *testing.T) {
+	t.Parallel()
 	detailTests := []outputTestCase{
 		{
 			name:                "no content",
@@ -27,6 +28,11 @@ func TestDetails(t *testing.T) {
 	}
 
 	for _, test := range detailTests {
-		t.Run(test.name, test.Generate())
+		// grab a local reference for parallel tests
+		test := test
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			test.Generate()(t)
+		})
 	}
 }

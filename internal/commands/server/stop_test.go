@@ -8,6 +8,7 @@ import (
 )
 
 func TestStopCommand(t *testing.T) {
+	t.Parallel()
 	targetMethod := "StopServer"
 
 	Server1 := upcloud.Server{
@@ -58,7 +59,10 @@ func TestStopCommand(t *testing.T) {
 			},
 		},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			testSimpleServerCommand(t, StopCommand(), servers, Server1, details2, targetMethod, &test.stopReq, &details, test.args)
 		})
 	}

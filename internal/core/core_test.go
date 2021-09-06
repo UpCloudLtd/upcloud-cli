@@ -11,12 +11,15 @@ import (
 )
 
 func TestInputValidation(t *testing.T) {
+	t.Parallel()
 	tmpFile, err := ioutil.TempFile(os.TempDir(), "prefix-")
 	if err != nil {
 		t.Fatal("Cannot create temporary file", err)
 	}
 
-	defer os.Remove(tmpFile.Name())
+	t.Cleanup(func() {
+		_ = os.Remove(tmpFile.Name())
+	})
 
 	for _, test := range []struct {
 		name         string
@@ -101,7 +104,10 @@ func TestInputValidation(t *testing.T) {
 			},
 		},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			cmd := BuildCLI()
 			stdout := bytes.NewBufferString("")
 

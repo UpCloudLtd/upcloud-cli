@@ -30,7 +30,9 @@ var (
 	MockPublicIPv6     = "2001:DB8::1"
 )
 
+//nolint:tparallel,paralleltest // subtests do not work in parallel
 func TestCreateServer(t *testing.T) {
+	t.Parallel()
 	Plans := upcloud.Plans{
 		Plans: []upcloud.Plan{
 			{

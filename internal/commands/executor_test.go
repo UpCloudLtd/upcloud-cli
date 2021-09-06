@@ -13,6 +13,7 @@ import (
 )
 
 func TestExecutor_WaitFor(t *testing.T) {
+	t.Parallel()
 	mService := &smock.Service{}
 	cfg := config.New()
 	exec := NewExecutor(cfg, mService, flume.New("test"))
@@ -32,6 +33,7 @@ func TestExecutor_WaitFor(t *testing.T) {
 }
 
 func TestExecutor_WaitForTimeout(t *testing.T) {
+	t.Parallel()
 	mService := &smock.Service{}
 	cfg := config.New()
 	exec := NewExecutor(cfg, mService, flume.New("test"))
@@ -43,6 +45,7 @@ func TestExecutor_WaitForTimeout(t *testing.T) {
 }
 
 func TestExecutor_WaitForError(t *testing.T) {
+	t.Parallel()
 	mService := &smock.Service{}
 	cfg := config.New()
 	exec := NewExecutor(cfg, mService, flume.New("test"))
@@ -92,6 +95,7 @@ func (m mockLogger) With(args ...interface{}) flume.Logger {
 }
 
 func TestExecutor_Logging(t *testing.T) {
+	t.Parallel()
 	mService := &smock.Service{}
 	cfg := config.New()
 	logger := &mockLogger{context: []interface{}{"base", "context"}}

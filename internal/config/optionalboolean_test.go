@@ -8,6 +8,7 @@ import (
 )
 
 func TestSetBoolFlag_EnableDisableFlags(t *testing.T) {
+	t.Parallel()
 	for _, test := range []struct {
 		name          string
 		args          []string
@@ -35,7 +36,10 @@ func TestSetBoolFlag_EnableDisableFlags(t *testing.T) {
 			expectedError: "invalid argument \"false\" for \"--disable-test\" flag: cannot set twice",
 		},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			fs := &pflag.FlagSet{}
 			var target OptionalBoolean
 			AddEnableDisableFlags(fs, &target, "test", "testing")
@@ -51,6 +55,7 @@ func TestSetBoolFlag_EnableDisableFlags(t *testing.T) {
 }
 
 func TestSetBoolFlag_EnableOrDisableFlag(t *testing.T) {
+	t.Parallel()
 	for _, test := range []struct {
 		name          string
 		defaultValue  bool
@@ -95,7 +100,10 @@ func TestSetBoolFlag_EnableOrDisableFlag(t *testing.T) {
 			expectedError: "unknown flag: --disable-test",
 		},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			fs := &pflag.FlagSet{}
 			target := Unset
 			AddEnableOrDisableFlag(fs, &target, test.defaultValue, "test", "testing")

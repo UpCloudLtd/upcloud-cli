@@ -14,6 +14,7 @@ import (
 )
 
 func TestModifyCommand(t *testing.T) {
+	t.Parallel()
 	targetMethod := "ModifyIPAddress"
 
 	ip := upcloud.IPAddress{
@@ -42,7 +43,10 @@ func TestModifyCommand(t *testing.T) {
 			},
 		},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			mService := smock.Service{}
 			mService.On(targetMethod, &test.expected).Return(&ip, nil)
 			mService.On("GetIPAddresses").Return(&upcloud.IPAddresses{IPAddresses: []upcloud.IPAddress{ip}}, nil)

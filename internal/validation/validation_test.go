@@ -3,6 +3,7 @@ package validation
 import "testing"
 
 func TestUuid4(t *testing.T) {
+	t.Parallel()
 	type args struct {
 		val string
 	}
@@ -19,7 +20,10 @@ func TestUuid4(t *testing.T) {
 		{"invalid chars", args{"61cX19f4-5702-4120-b0e4-82dce36e7b88"}, true},
 	}
 	for _, tt := range tests {
+		// grab local reference for parallel tests
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			if err := UUID4(tt.args.val); (err != nil) != tt.wantErr {
 				t.Errorf("UUID4() error = %v, wantErr %v", err, tt.wantErr)
 			}

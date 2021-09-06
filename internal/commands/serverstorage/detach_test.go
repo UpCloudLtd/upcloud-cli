@@ -16,6 +16,7 @@ import (
 )
 
 func TestDetachCommand(t *testing.T) {
+	t.Parallel()
 	targetMethod := "DetachStorage"
 
 	Server1 := upcloud.Server{
@@ -61,7 +62,10 @@ func TestDetachCommand(t *testing.T) {
 			},
 		},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			conf := config.New()
 			mService := new(smock.Service)
 

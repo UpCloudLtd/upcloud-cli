@@ -115,7 +115,9 @@ func (m *mockMultiResolver) Execute(exec Executor, arg string) (output.Output, e
 	return args.Get(0).(output.Output), args.Error(1)
 }
 
+//nolint:paralleltest,tparallel // subtests do not actually work in parallel (due to stdout grabbing?)
 func TestRunCommand(t *testing.T) {
+	t.Parallel()
 	for _, test := range []struct {
 		name             string
 		args             []string
@@ -211,6 +213,7 @@ func TestRunCommand(t *testing.T) {
 }
 
 func TestExecute_Resolution(t *testing.T) {
+	t.Parallel()
 	cmd := &mockMultiResolver{Command: &cobra.Command{}}
 	mService := &smock.Service{}
 	cfg := config.New()
@@ -240,6 +243,7 @@ func TestExecute_Resolution(t *testing.T) {
 }
 
 func TestExecute_Error(t *testing.T) {
+	t.Parallel()
 	cmd := &mockMulti{Command: &cobra.Command{}}
 	cmd.On("Execute", mock.Anything, mock.MatchedBy(func(arg string) bool {
 		return len(arg) < 5

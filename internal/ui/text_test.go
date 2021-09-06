@@ -3,6 +3,7 @@ package ui
 import "testing"
 
 func TestIndentText(t *testing.T) {
+	t.Parallel()
 	type args struct {
 		s                      string
 		prefix                 string
@@ -30,7 +31,10 @@ func TestIndentText(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
+		// grab local reference for parallel tests
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			if got := IndentText(tt.args.s, tt.args.prefix, tt.args.repeatedPrefixAsSpaces); got != tt.want {
 				t.Errorf("IndentText() = %q, want %q	", got, tt.want)
 			}

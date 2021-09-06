@@ -14,6 +14,7 @@ import (
 )
 
 func TestListStorages(t *testing.T) {
+	t.Parallel()
 	Storage1 := upcloud.Storage{
 		UUID:   UUID1,
 		Title:  Title1,
@@ -111,8 +112,11 @@ func TestListStorages(t *testing.T) {
 			},
 		},
 	} {
+		// grab a local reference for parallel tests
+		testcase := testcase
 		t.Run(testcase.name, func(t *testing.T) {
-			CachedStorages = nil
+			t.Parallel()
+			//			CachedStorages = nil
 			conf := config.New()
 			mService := new(smock.Service)
 

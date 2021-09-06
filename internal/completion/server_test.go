@@ -22,6 +22,7 @@ var mockServers = &upcloud.Servers{Servers: []upcloud.Server{
 }}
 
 func TestServer_CompleteArgument(t *testing.T) {
+	t.Parallel()
 	for _, test := range []completionTest{
 		{name: "basic uuid", complete: "pqr", expectedMatches: []string{"pqrstu"}, expectedDirective: cobra.ShellCompDirectiveNoFileComp},
 		{name: "basic title", complete: "dock", expectedMatches: []string{"dock1"}, expectedDirective: cobra.ShellCompDirectiveNoFileComp},
@@ -31,13 +32,17 @@ func TestServer_CompleteArgument(t *testing.T) {
 		{name: "multiple hostnames", complete: "f", expectedMatches: []string{"foo", "faa", "fii"}, expectedDirective: cobra.ShellCompDirectiveNoFileComp},
 		{name: "hostnames and titles", complete: "b", expectedMatches: []string{"bock1", "bock2", "bfoo"}, expectedDirective: cobra.ShellCompDirectiveNoFileComp},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			testCompletion(t, "GetServers", mockServers, completion.Server{}, test.complete, test.expectedMatches, test.expectedDirective)
 		})
 	}
 }
 
 func TestServer_CompleteArgumentServiceFail(t *testing.T) {
+	t.Parallel()
 	mService := new(smock.Service)
 	mService.On("GetServers", mock.Anything).Return(nil, fmt.Errorf("MOCKFAIL"))
 	ips, directive := completion.Server{}.CompleteArgument(mService, "127")

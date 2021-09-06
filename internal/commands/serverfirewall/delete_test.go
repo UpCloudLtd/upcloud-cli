@@ -14,6 +14,7 @@ import (
 )
 
 func TestDeleteServerFirewallRuleCommand(t *testing.T) {
+	t.Parallel()
 	Server1 := upcloud.Server{
 		CoreNumber:   1,
 		Hostname:     "server-1-hostname",
@@ -48,8 +49,11 @@ func TestDeleteServerFirewallRuleCommand(t *testing.T) {
 			error: "invalid position (1-1000 allowed)",
 		},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		deleteRuleMethod := "DeleteFirewallRule"
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			mService := new(smock.Service)
 			mService.On(deleteRuleMethod, mock.Anything).Return(nil, nil)
 

@@ -17,6 +17,7 @@ import (
 )
 
 func TestShowCommand(t *testing.T) {
+	t.Parallel()
 	text.DisableColors()
 	ipAddress := upcloud.IPAddress{
 		Address:    "94.237.117.150",

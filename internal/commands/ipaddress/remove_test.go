@@ -14,6 +14,7 @@ import (
 )
 
 func TestRemoveCommand(t *testing.T) {
+	t.Parallel()
 	ip := upcloud.IPAddress{
 		Address:   "127.0.0.1",
 		PTRRecord: "old.ptr.com",
@@ -33,8 +34,11 @@ func TestRemoveCommand(t *testing.T) {
 			},
 		},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		targetMethod := "ReleaseIPAddress"
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			mService := smock.Service{}
 			mService.On(targetMethod, &test.expected).Return(nil)
 			mService.On("GetIPAddresses").Return(&upcloud.IPAddresses{IPAddresses: []upcloud.IPAddress{ip}}, nil)

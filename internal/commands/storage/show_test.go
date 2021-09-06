@@ -19,6 +19,7 @@ import (
 )
 
 func TestStorageHumanOutput(t *testing.T) {
+	t.Parallel()
 	text.DisableColors()
 	storage := upcloud.Storage{
 		Access:     "private",

@@ -14,6 +14,7 @@ import (
 )
 
 func TestAssignCommand(t *testing.T) {
+	t.Parallel()
 	targetMethod := "AssignIPAddress"
 
 	s1 := upcloud.Server{UUID: "f2e42635-b8b8-48ed-aa44-a494ef438f83", Title: "s1"}
@@ -62,7 +63,9 @@ func TestAssignCommand(t *testing.T) {
 			},
 		},
 	} {
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			mService := smock.Service{}
 			mService.On(targetMethod, &test.expected).Return(&ip, nil)
 			mService.On("GetServers").Return(&servers, nil)

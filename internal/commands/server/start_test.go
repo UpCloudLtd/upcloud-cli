@@ -8,6 +8,7 @@ import (
 )
 
 func TestStartCommand(t *testing.T) {
+	t.Parallel()
 	targetMethod := "StartServer"
 
 	Server1 := upcloud.Server{
@@ -46,7 +47,10 @@ func TestStartCommand(t *testing.T) {
 			},
 		},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			testSimpleServerCommand(t, StartCommand(), servers, Server1, details2, targetMethod, &test.startReq, &details, test.args)
 		})
 	}

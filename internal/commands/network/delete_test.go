@@ -14,6 +14,7 @@ import (
 )
 
 func TestDeleteCommand(t *testing.T) {
+	t.Parallel()
 	targetMethod := "DeleteNetwork"
 
 	n := upcloud.Network{UUID: "0a30b5ca-d0e3-4f7c-81d0-f77d42ea6366", Name: "test-network"}
@@ -31,7 +32,10 @@ func TestDeleteCommand(t *testing.T) {
 			req:  request.DeleteNetworkRequest{UUID: n.UUID},
 		},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			mService := smock.Service{}
 			mService.On(targetMethod, &test.req).Return(nil)
 			mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{n}}, nil)

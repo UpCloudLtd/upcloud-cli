@@ -27,7 +27,9 @@ var (
 )
 
 func TestStorageResolution(t *testing.T) {
+	t.Parallel()
 	t.Run("resolve uuid", func(t *testing.T) {
+		t.Parallel()
 		mService := &smock.Service{}
 		mService.On("GetStorages", mock.Anything).Return(mockStorages, nil)
 		res := resolver.CachingStorage{}
@@ -43,6 +45,7 @@ func TestStorageResolution(t *testing.T) {
 	})
 
 	t.Run("resolve title", func(t *testing.T) {
+		t.Parallel()
 		mService := &smock.Service{}
 		mService.On("GetStorages", mock.Anything).Return(mockStorages, nil)
 		res := resolver.CachingStorage{}
@@ -58,6 +61,7 @@ func TestStorageResolution(t *testing.T) {
 	})
 
 	t.Run("failure situations", func(t *testing.T) {
+		t.Parallel()
 		mService := &smock.Service{}
 		mService.On("GetStorages", mock.Anything).Return(mockStorages, nil)
 
@@ -95,6 +99,7 @@ func TestStorageResolution(t *testing.T) {
 }
 
 func TestFailingStorageResolution(t *testing.T) {
+	t.Parallel()
 	mService := &smock.Service{}
 	mService.On("GetStorages", mock.Anything).Return(nil, errors.New("MOCKERROR"))
 	res := resolver.CachingStorage{}

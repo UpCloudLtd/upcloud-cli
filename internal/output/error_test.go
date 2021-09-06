@@ -8,6 +8,7 @@ import (
 )
 
 func TestError(t *testing.T) {
+	t.Parallel()
 	errorTests := []outputTestCase{
 		{
 			name:                "nil",
@@ -25,6 +26,11 @@ func TestError(t *testing.T) {
 		},
 	}
 	for _, test := range errorTests {
-		t.Run(test.name, test.Generate())
+		// grab a local reference for parallel tests
+		test := test
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			test.Generate()(t)
+		})
 	}
 }

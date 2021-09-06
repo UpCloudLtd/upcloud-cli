@@ -8,6 +8,7 @@ import (
 )
 
 func TestMarshaledWithHumanDetails(t *testing.T) {
+	t.Parallel()
 	marshaledWithHumanDetailsTests := []outputTestCase{
 		{
 			name:                "nil",
@@ -66,6 +67,11 @@ func TestMarshaledWithHumanDetails(t *testing.T) {
 		},
 	}
 	for _, test := range marshaledWithHumanDetailsTests {
-		t.Run(test.name, test.Generate())
+		// grab a local reference for parallel tests
+		test := test
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			test.Generate()(t)
+		})
 	}
 }

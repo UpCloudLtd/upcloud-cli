@@ -7,6 +7,7 @@ import (
 )
 
 func TestCombined(t *testing.T) {
+	t.Parallel()
 	combinedTests := []outputTestCase{
 		{
 			name:               "no content",
@@ -119,6 +120,11 @@ test2:
 		},
 	}
 	for _, test := range combinedTests {
-		t.Run(test.name, test.Generate())
+		// grab a local reference for parallel tests
+		test := test
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			test.Generate()(t)
+		})
 	}
 }

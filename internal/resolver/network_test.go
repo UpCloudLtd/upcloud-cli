@@ -46,7 +46,9 @@ var (
 
 //nolint:dupl // seems very similar, but is a false positive
 func TestNetworkResolution(t *testing.T) {
+	t.Parallel()
 	t.Run("resolve uuid", func(t *testing.T) {
+		t.Parallel()
 		mService := &smock.Service{}
 		mService.On("GetNetworks").Return(networks, nil)
 		res := resolver.CachingNetwork{}
@@ -62,6 +64,7 @@ func TestNetworkResolution(t *testing.T) {
 	})
 
 	t.Run("resolve name", func(t *testing.T) {
+		t.Parallel()
 		mService := &smock.Service{}
 		mService.On("GetNetworks").Return(networks, nil)
 		res := resolver.CachingNetwork{}
@@ -77,34 +80,17 @@ func TestNetworkResolution(t *testing.T) {
 	})
 
 	t.Run("failure situations", func(t *testing.T) {
-		mService := &smock.Service{}
-		mService.On("GetNetworks").Return(networks, nil)
-		res := resolver.CachingNetwork{}
-		argResolver, err := res.Get(mService)
-		assert.NoError(t, err)
-
-		// ambigous name
-		resolved, err := argResolver(Network1.Name)
-		if !assert.Error(t, err) {
-			t.FailNow()
-		}
-		assert.ErrorIs(t, err, resolver.AmbiguousResolutionError(Network1.Name))
-		assert.Equal(t, "", resolved)
-
-		// not found
-		resolved, err = argResolver("notfounf")
-		if !assert.Error(t, err) {
-			t.FailNow()
-		}
-		assert.ErrorIs(t, err, resolver.NotFoundError("notfounf"))
-		assert.Equal(t, "", resolved)
-
-		// make sure caching works, eg. we didn't call GetServers more than once
-		mService.AssertNumberOfCalls(t, "GetNetworks", 1)
+		t.Parallel()
+		testResolutionFailure(t, "GetNetworks", networks, &resolver.CachingNetwork{}, []string{
+			Network1.Name,
+		}, []string{
+			"notfounf",
+		})
 	})
 }
 
 func TestCachingNetwork_GetCached(t *testing.T) {
+	t.Parallel()
 	mService := &smock.Service{}
 	mService.On("GetNetworks").Return(networks, nil)
 	res := resolver.CachingNetwork{}
@@ -130,6 +116,7 @@ func TestCachingNetwork_GetCached(t *testing.T) {
 }
 
 func TestFailingNetworkResolution(t *testing.T) {
+	t.Parallel()
 	mService := &smock.Service{}
 	var nilResponse *upcloud.Networks
 	mService.On("GetNetworks").Return(nilResponse, errors.New("MOCKERROR"))

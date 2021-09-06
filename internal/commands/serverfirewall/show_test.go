@@ -17,6 +17,7 @@ import (
 )
 
 func TestFirewallShowHumanOutput(t *testing.T) {
+	t.Parallel()
 	text.DisableColors()
 	serverDetails := &upcloud.ServerDetails{
 		Server: upcloud.Server{

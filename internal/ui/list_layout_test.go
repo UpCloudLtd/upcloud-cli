@@ -8,6 +8,7 @@ import (
 )
 
 func TestShowDetailsRender(t *testing.T) {
+	t.Parallel()
 	for _, testcase := range []struct {
 		name           string
 		buildViewFn    func(*ListLayout)
@@ -62,7 +63,10 @@ func TestShowDetailsRender(t *testing.T) {
   (note)`,
 		},
 	} {
+		// grab local reference for parallel tests
+		testcase := testcase
 		t.Run(testcase.name, func(t *testing.T) {
+			t.Parallel()
 			text.DisableColors()
 			view := NewListLayout(testcase.style)
 			testcase.buildViewFn(view)

@@ -16,6 +16,7 @@ import (
 )
 
 func TestListCommand(t *testing.T) {
+	t.Parallel()
 	Network1 := upcloud.Network{
 		Name: "network-1",
 		UUID: "28e15cf5-8817-42ab-b017-970666be96ec",
@@ -72,7 +73,10 @@ func TestListCommand(t *testing.T) {
 			expected: []upcloud.Network{Network3},
 		},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			mService := smock.Service{}
 			mService.On("GetNetworks").Return(networks, nil)
 			mService.On("GetNetworksInZone", &request.GetNetworksInZoneRequest{Zone: "fi-hel1"}).Return(&upcloud.Networks{Networks: []upcloud.Network{Network1, Network2}}, nil)

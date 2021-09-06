@@ -15,6 +15,7 @@ import (
 )
 
 func TestDeleteServerCommand(t *testing.T) {
+	t.Parallel()
 	deleteServerMethod := "DeleteServer"
 	deleteServerAndStoragesMethod := "DeleteServerAndStorages"
 
@@ -56,7 +57,10 @@ func TestDeleteServerCommand(t *testing.T) {
 			deleteServStorageCalls: 0,
 		},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			conf := config.New()
 			testCmd := DeleteCommand()
 			mService := new(smock.Service)

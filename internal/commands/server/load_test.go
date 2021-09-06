@@ -16,6 +16,7 @@ import (
 )
 
 func TestLoadCDROMCommand(t *testing.T) {
+	t.Parallel()
 	targetMethod := "LoadCDROM"
 
 	Server1 := upcloud.Server{
@@ -77,7 +78,9 @@ func TestLoadCDROMCommand(t *testing.T) {
 			},
 		},
 	} {
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			conf := config.New()
 			testCmd := LoadCommand()
 			mService := new(smock.Service)

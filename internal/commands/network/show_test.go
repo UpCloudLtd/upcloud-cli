@@ -18,6 +18,7 @@ import (
 )
 
 func TestShowCommand(t *testing.T) {
+	t.Parallel()
 	text.DisableColors()
 	server1 := upcloud.Server{
 		CoreNumber:   1,

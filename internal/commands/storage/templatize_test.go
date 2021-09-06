@@ -16,6 +16,7 @@ import (
 )
 
 func TestTemplatizeCommand(t *testing.T) {
+	t.Parallel()
 	targetMethod := "TemplatizeStorage"
 	Storage1 := upcloud.Storage{
 		UUID:   UUID1,
@@ -60,7 +61,10 @@ func TestTemplatizeCommand(t *testing.T) {
 			},
 		},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			CachedStorages = nil
 			conf := config.New()
 			mService := new(smock.Service)

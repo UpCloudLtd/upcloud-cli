@@ -17,6 +17,7 @@ import (
 )
 
 func TestShowCommand(t *testing.T) {
+	t.Parallel()
 	text.DisableColors()
 	account := upcloud.Account{
 		Credits:  42,

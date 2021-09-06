@@ -23,19 +23,24 @@ var mockRouters = &upcloud.Routers{Routers: []upcloud.Router{
 }}
 
 func TestRouter_CompleteArgument(t *testing.T) {
+	t.Parallel()
 	for _, test := range []completionTest{
 		{name: "basic uuid", complete: "pqr", expectedMatches: []string{"pqrstu"}, expectedDirective: cobra.ShellCompDirectiveNoFileComp},
 		{name: "basic name", complete: "dock", expectedMatches: []string{"dock1"}, expectedDirective: cobra.ShellCompDirectiveNoFileComp},
 		{name: "multiple uuids", complete: "abc", expectedMatches: []string{"abcdef", "abcghi"}, expectedDirective: cobra.ShellCompDirectiveNoFileComp},
 		{name: "multiple names", complete: "bock", expectedMatches: []string{"bock1", "bock2"}, expectedDirective: cobra.ShellCompDirectiveNoFileComp},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			testCompletion(t, "GetRouters", mockRouters, completion.Router{}, test.complete, test.expectedMatches, test.expectedDirective)
 		})
 	}
 }
 
 func TestRouter_CompleteArgumentServiceFail(t *testing.T) {
+	t.Parallel()
 	mService := new(smock.Service)
 	mService.On("GetRouters", mock.Anything).Return(nil, fmt.Errorf("MOCKFAIL"))
 	ips, directive := completion.Router{}.CompleteArgument(mService, "127")

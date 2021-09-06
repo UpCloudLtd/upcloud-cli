@@ -22,17 +22,21 @@ import (
 )
 
 func TestReaderCounterInterface(t *testing.T) {
+	t.Parallel()
 	rc := &readerCounter{}
 	var _ io.Reader = rc
 }
 
 func TestImportCommand(t *testing.T) {
+	t.Parallel()
 	tmpFile, err := ioutil.TempFile(os.TempDir(), "pre-")
 	if err != nil {
 		t.Fatalf("Cannot create temporary file: %v", err)
 	}
 
-	defer os.Remove(tmpFile.Name())
+	t.Cleanup(func() {
+		_ = os.Remove(tmpFile.Name())
+	})
 
 	Storage1 := upcloud.Storage{
 		UUID:   UUID1,
@@ -122,7 +126,10 @@ func TestImportCommand(t *testing.T) {
 			windowsError: "cannot get file size: CreateFile testfile: The system cannot find the file specified.",
 		},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			CachedStorages = nil
 			conf := config.New()
 			mService := new(smock.Service)
@@ -156,6 +163,7 @@ func TestImportCommand(t *testing.T) {
 }
 
 func TestParseSource(t *testing.T) {
+	t.Parallel()
 	for _, test := range []struct {
 		name                    string
 		input                   string
@@ -211,7 +219,10 @@ func TestParseSource(t *testing.T) {
 			expectedError: "unsupported URL scheme 'ftp'",
 		},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			var (
 				purl  *url.URL
 				stype string

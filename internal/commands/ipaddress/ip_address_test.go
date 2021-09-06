@@ -8,6 +8,7 @@ import (
 )
 
 func TestGetFamily(t *testing.T) {
+	t.Parallel()
 	for _, test := range []struct {
 		name     string
 		address  string
@@ -44,7 +45,10 @@ func TestGetFamily(t *testing.T) {
 			expected: "2001:0db8:85a3:0000:0000:8a2e:0370:g539 is an invalid ip address",
 		},
 	} {
+		// grab a local reference for parallel tests
+		test := test
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			family, err := GetFamily(test.address)
 			if err != nil {
 				assert.Equal(t, test.expected, err.Error())
