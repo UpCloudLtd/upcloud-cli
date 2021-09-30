@@ -51,7 +51,7 @@ var defaultCreateParams = &createParams{
 	osStorageSize:  0,
 	sshKeys:        nil,
 	username:       "",
-	createPassword: true,
+	createPassword: false,
 }
 
 type createParams struct {
@@ -288,6 +288,10 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	}
 	if s.params.os == defaultCreateParams.os && s.params.PasswordDelivery == "none" && s.params.sshKeys == nil {
 		return nil, fmt.Errorf("a password-delivery method, ssh-keys or a custom image must be specified")
+	}
+
+	if !s.createPassword.Value() && s.params.PasswordDelivery != "none" {
+		_ = s.createPassword.Set("true")
 	}
 
 	if s.params.Title == "" {
