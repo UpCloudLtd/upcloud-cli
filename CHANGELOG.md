@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.2] - 2022-01-21
+### Fixed
+- New Homebrew release to fix deprecation notice
+
 ## [1.1.1] - 2021-09-30
 ### Changed
 - Change password creation to be disabled by default in server creation
@@ -66,10 +70,12 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v1.1.2...HEAD
 [0.1.0]: https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v0.1.0
 [0.1.1]: https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v0.1.1
 [0.5.0]: https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v0.5.0
 [0.6.0]: https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v0.6.0
 [1.0.0]: https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v1.0.0
 [1.1.0]: https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v1.1.0
+[1.1.1]: https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v1.1.1
+[1.1.2]: https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v1.1.2
