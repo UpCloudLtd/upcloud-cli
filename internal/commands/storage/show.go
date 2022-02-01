@@ -63,7 +63,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 						{Title: "Size:", Key: "size", Value: storage.Size},
 						{Title: "Tier:", Key: "tier", Value: storage.Tier},
 						{Title: "Zone:", Key: "zone", Value: storage.Zone},
-						{Title: "Server:", Key: "zone", Value: attachedToServer},
+						{Title: "Server:", Key: "server", Value: attachedToServer},
 						{Title: "Origin:", Key: "origin", Value: storage.Origin, Colour: ui.DefaultUUUIDColours},
 						{Title: "Created:", Key: "created", Value: storage.Created},
 						{Title: "Licence:", Key: "licence", Value: storage.License},
