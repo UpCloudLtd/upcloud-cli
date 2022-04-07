@@ -1,9 +1,9 @@
 package mock
 
 import (
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
+	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/service"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -36,6 +36,7 @@ var _ service.Storage = &Service{}
 var _ service.Firewall = &Service{}
 var _ service.Network = &Service{}
 var _ service.Plans = &Service{}
+var _ service.Account = &Service{}
 
 // GetServerConfigurations implements service.Server.GetServerConfigurations
 func (m *Service) GetServerConfigurations() (*upcloud.ServerConfigurations, error) {
@@ -492,4 +493,58 @@ func (m *Service) ModifyIPAddress(r *request.ModifyIPAddressRequest) (*upcloud.I
 func (m *Service) ReleaseIPAddress(r *request.ReleaseIPAddressRequest) error {
 	args := m.Called(r)
 	return args.Error(0)
+}
+
+// ResizeStorageFilesystem implements service.Storage.ResizeStorageFilesystem
+func (m *Service) ResizeStorageFilesystem(r *request.ResizeStorageFilesystemRequest) (*upcloud.ResizeStorageFilesystemBackup, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.ResizeStorageFilesystemBackup), args.Error(1)
+}
+
+// CreateSubaccount implements service.Account.CreateSubaccount
+func (m *Service) CreateSubaccount(r *request.CreateSubaccountRequest) (*upcloud.AccountDetails, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.AccountDetails), args.Error(1)
+}
+
+// GetAccountList implements service.Account.GetAccountList
+func (m *Service) GetAccountList() (upcloud.AccountList, error) {
+	args := m.Called()
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(upcloud.AccountList), args.Error(1)
+}
+
+// GetAccountDetails implements service.Account.GetAccountDetails
+func (m *Service) GetAccountDetails(r *request.GetAccountDetailsRequest) (*upcloud.AccountDetails, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.AccountDetails), args.Error(1)
+}
+
+// ModifySubaccount implements service.Account.ModifySubaccount
+func (m *Service) ModifySubaccount(r *request.ModifySubaccountRequest) (*upcloud.AccountDetails, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.AccountDetails), args.Error(1)
+}
+
+// DeleteSubaccount implements service.Account.DeleteSubaccount
+func (m *Service) DeleteSubaccount(r *request.DeleteSubaccountRequest) error {
+	args := m.Called(r)
+	if args[0] == nil {
+		return args.Error(1)
+	}
+	return nil
 }
