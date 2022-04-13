@@ -210,6 +210,17 @@ func TestRunCommand(t *testing.T) {
 	}
 }
 
+func TestExecute_Offline(t *testing.T) {
+	cmd := &mockNone{Command: &cobra.Command{}}
+	cmd.On("ExecuteWithoutArguments", mock.Anything).Return(output.OnlyMarshaled{Value: "mock"}, nil)
+
+	cfg := config.New()
+	cfg.Viper().Set(config.KeyOutput, config.ValueOutputJSON)
+
+	err := commandRunE(cmd, nil, cfg, []string{})
+	assert.NoError(t, err)
+}
+
 func TestExecute_Resolution(t *testing.T) {
 	cmd := &mockMultiResolver{Command: &cobra.Command{}}
 	mService := &smock.Service{}

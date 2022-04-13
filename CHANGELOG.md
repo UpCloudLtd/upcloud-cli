@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
 - Improved errors relating to argument resolver failures
+- Print version info, instead of missing credentials error, when runnning `upctl version` without credentials
 
 ## [1.1.3] - 2022-02-24
 ### Changed

@@ -17,10 +17,13 @@ type VersionCommand struct {
 func (s *VersionCommand) ExecuteWithoutArguments(_ commands.Executor) (output.Output, error) {
 	return output.Details{Sections: []output.DetailSection{
 		{Rows: []output.DetailRow{
-			{Title: "Version", Key: "version", Value: config.Version},
+			{Title: "Version:", Key: "version", Value: config.Version},
 			{Title: "Build date:", Key: "build_date", Value: config.BuildDate},
 			{Title: "Built with:", Key: "built_with", Value: runtime.Version()},
 		},
 		}},
 	}, nil
 }
+
+// DoesNotUseServices implements commands.OfflineCommand as this command does not use services
+func (s *VersionCommand) DoesNotUseServices() {}
