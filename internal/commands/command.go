@@ -30,6 +30,11 @@ type Command interface {
 	CobraCommand
 }
 
+// OfflineCommand is a command that does not need connect to the API, e.g. upctl version.
+type OfflineCommand interface {
+	DoesNotUseServices()
+}
+
 // NoArgumentCommand is a command that does not care about the positional arguments.
 type NoArgumentCommand interface {
 	Command
@@ -95,6 +100,11 @@ func BuildCommand(child Command, parent *cobra.Command, config *config.Config) C
 
 	// Set run
 	child.Cobra().RunE = func(cmd *cobra.Command, args []string) error {
+		// Do not create service for offline commands, e.g. upctl version
+		if _, ok := child.(OfflineCommand); ok {
+			return commandRunE(child, nil, config, args)
+		}
+
 		service, err := config.CreateService()
 		if err != nil {
 			return fmt.Errorf("cannot create service: %w", err)

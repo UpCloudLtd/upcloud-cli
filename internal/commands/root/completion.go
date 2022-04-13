@@ -26,3 +26,6 @@ func (s *CompletionCommand) ExecuteSingleArgument(_ commands.Executor, arg strin
 
 	return nil, fmt.Errorf("completion for %s is not supported", arg)
 }
+
+// DoesNotUseServices implements commands.OfflineCommand as this command does not use services
+func (s *CompletionCommand) DoesNotUseServices() {}
