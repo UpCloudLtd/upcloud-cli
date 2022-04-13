@@ -85,7 +85,7 @@ func resolveArguments(nc Command, svc internal.AllServices, args []string) (out 
 	if resolve, ok := nc.(resolver.ResolutionProvider); ok {
 		argumentResolver, err := resolve.Get(svc)
 		if err != nil {
-			return nil, fmt.Errorf("cannot create resolver: %w", err)
+			return nil, fmt.Errorf("cannot get resolver: %w", err)
 		}
 		for _, arg := range args {
 			resolved, err := argumentResolver(arg)
@@ -102,7 +102,7 @@ func resolveArguments(nc Command, svc internal.AllServices, args []string) (out 
 func execute(command Command, executor Executor, args []string, parallelRuns int, executeCommand func(exec Executor, arg string) (output.Output, error)) ([]executeResult, error) {
 	resolvedArgs, err := resolveArguments(command, executor.All(), args)
 	if err != nil {
-		return nil, fmt.Errorf("cannot create resolver: %w", err)
+		return nil, fmt.Errorf("cannot resolve command line arguments: %w", err)
 	}
 
 	returnChan := make(chan executeResult)

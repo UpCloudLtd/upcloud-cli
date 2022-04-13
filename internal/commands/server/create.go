@@ -6,9 +6,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/service"
+	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/service"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/pflag"
 	"golang.org/x/crypto/ssh"
@@ -51,7 +51,7 @@ var defaultCreateParams = &createParams{
 	osStorageSize:  0,
 	sshKeys:        nil,
 	username:       "",
-	createPassword: true,
+	createPassword: false,
 }
 
 type createParams struct {
@@ -288,6 +288,10 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	}
 	if s.params.os == defaultCreateParams.os && s.params.PasswordDelivery == "none" && s.params.sshKeys == nil {
 		return nil, fmt.Errorf("a password-delivery method, ssh-keys or a custom image must be specified")
+	}
+
+	if !s.createPassword.Value() && s.params.PasswordDelivery != "none" {
+		_ = s.createPassword.Set("true")
 	}
 
 	if s.params.Title == "" {

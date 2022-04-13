@@ -10,8 +10,8 @@ import (
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
 	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -132,6 +132,7 @@ func TestCreateServer(t *testing.T) {
 				"--zone", "uk-lon1",
 				"--os", Storage1.UUID,
 				"--os-storage-size", "100",
+				"--password-delivery", "email",
 			},
 			createServerReq: request.CreateServerRequest{
 				VideoModel:       "vga",
@@ -140,7 +141,7 @@ func TestCreateServer(t *testing.T) {
 				Hostname:         "example.com",
 				Title:            "test-server",
 				Zone:             "uk-lon1",
-				PasswordDelivery: "none",
+				PasswordDelivery: "email",
 				LoginUser:        &request.LoginUser{CreatePassword: "yes"},
 				StorageDevices: request.CreateServerStorageDeviceSlice{request.CreateServerStorageDevice{
 					Action:  "clone",

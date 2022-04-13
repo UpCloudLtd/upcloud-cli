@@ -6,11 +6,11 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
 	"github.com/spf13/pflag"
 )
 
@@ -64,8 +64,8 @@ func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 	}
 	// initialize bootable and filtering flags as empty
 	var empty = upcloud.Empty
-	var bootable *upcloud.Boolean = &empty
-	var sourceIPFiltering *upcloud.Boolean = &empty
+	var bootable = &empty
+	var sourceIPFiltering = &empty
 	if s.bootable != "" {
 		bootable, err = commands.BoolFromString(s.bootable)
 		if err != nil {
