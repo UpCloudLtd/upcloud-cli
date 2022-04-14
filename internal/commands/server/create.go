@@ -32,6 +32,7 @@ func CreateCommand() commands.Command {
 			"upctl server create --title myapp --zone fi-hel1 --hostname myapp --password-delivery email",
 			"upctl server create --title \"My Server\" --zone fi-hel1 --hostname myapp --password-delivery email",
 			"upctl server create --zone fi-hel1 --hostname myapp --password-delivery email --plan 2xCPU-4GB",
+			"upctl server create --zone fi-hel1 --hostname myapp --password-delivery email --plan custom --cores 2 --memory 4096",
 			"upctl server create --zone fi-hel1 --hostname myapp --password-delivery email --os \"Debian GNU/Linux 10 (Buster)\"",
 			"upctl server create --zone fi-hel1 --hostname myapp --ssh-keys /path/to/publickey --network type=private,network=037a530b-533e-4cef-b6ad-6af8094bb2bc,ip-address=10.0.0.1",
 		),
@@ -253,11 +254,11 @@ func (s *createCommand) InitCommand() {
 	fs.IntVar(&s.params.Host, "host", def.Host, "Use this to start a VM on a specific private cloud host. Refers to value from host -attribute. Only available in private clouds.")
 	fs.StringVar(&s.params.BootOrder, "boot-order", def.BootOrder, "The boot device order, disk / cdrom / network or comma separated combination.")
 	fs.StringVar(&s.params.UserData, "user-data", def.UserData, "Defines URL for a server setup script, or the script body itself.")
-	fs.IntVar(&s.params.CoreNumber, "cores", def.CoreNumber, "Number of cores. Use only when defining a flexible (\"custom\") plan.")
-	fs.IntVar(&s.params.MemoryAmount, "memory", def.MemoryAmount, "Memory amount in MiB. Use only when defining a flexible (\"custom\") plan.")
+	fs.StringVar(&s.params.Plan, "plan", def.Plan, "Server plan name. See \"server plans\" command for valid plans. Set to \"custom\" and use `cores` and `memory` options for flexible plan.")
+	fs.IntVar(&s.params.CoreNumber, "cores", def.CoreNumber, "Number of cores. Only allowed if `plan` option is set to \"custom\".")
+	fs.IntVar(&s.params.MemoryAmount, "memory", def.MemoryAmount, "Memory amount in MiB. Only allowed if `plan` option is set to \"custom\".")
 	fs.StringVar(&s.params.Title, "title", def.Title, "A short, informational description.")
 	fs.StringVar(&s.params.Hostname, "hostname", def.Hostname, "Server hostname.")
-	fs.StringVar(&s.params.Plan, "plan", def.Plan, "Server plan name. See \"server plans\" command for valid plans. Set --cores and --memory for a flexible plan.")
 	fs.StringVar(&s.params.os, "os", def.os, "Server OS to use (will be the first storage device). Set to empty to fully customise the storages.")
 	fs.IntVar(&s.params.osStorageSize, "os-storage-size", def.osStorageSize, "OS storage size in GiB. This is only applicable if `os` is also set. Zero value makes the disk equal to the minimum size of the template.")
 	fs.StringVar(&s.params.Zone, "zone", def.Zone, "Zone where to create the server.")
@@ -266,16 +267,16 @@ func (s *createCommand) InitCommand() {
 	fs.StringVar(&s.params.TimeZone, "time-zone", def.TimeZone, "Time zone to set the RTC to.")
 	fs.StringVar(&s.params.VideoModel, "video-model", def.VideoModel, "Video interface model of the server. Available: vga, cirrus")
 	config.AddEnableOrDisableFlag(fs, &s.firewall, def.firewall, "firewall", "firewall")
-	// ----------- fs.BoolVar(&s.params.firewall, "firewall", def.firewall, "Enables the firewall. You can manage firewall rules with the firewall command.")
+	// fs.BoolVar(&s.params.firewall, "firewall", def.firewall, "Enables the firewall. You can manage firewall rules with the firewall command.")
 	config.AddEnableOrDisableFlag(fs, &s.metadata, def.metadata, "metadata", "metadata service")
-	// ----------- fs.BoolVar(&s.params.metadata, "metadata", def.metadata, "Enable metadata service.")
+	// fs.BoolVar(&s.params.metadata, "metadata", def.metadata, "Enable metadata service.")
 	fs.StringArrayVar(&s.params.storages, "storage", def.storages, "A storage connected to the server, multiple can be declared.\nUsage: --storage action=attach,storage=01000000-0000-4000-8000-000020010301,type=cdrom")
 	fs.StringArrayVar(&s.params.networks, "network", def.networks, "A network interface for the server, multiple can be declared.\nUsage: --network family=IPv4,type=public\n\n--network type=private,network=037a530b-533e-4cef-b6ad-6af8094bb2bc,ip-address=10.0.0.1")
 	config.AddToggleFlag(fs, &s.createPassword, "create-password", def.createPassword, "Create an admin password.")
 	fs.StringVar(&s.params.username, "username", def.username, "Admin account username.")
 	fs.StringSliceVar(&s.params.sshKeys, "ssh-keys", def.sshKeys, "Add one or more SSH keys to the admin account. Accepted values are SSH public keys or filenames from where to read the keys.")
 	config.AddEnableOrDisableFlag(fs, &s.remoteAccess, def.remoteAccess, "remote-access", "remote access")
-	// ----------- fs.BoolVar(&s.params.remoteAccess, "remote-access-enabled", def.remoteAccess, "Enables or disables the remote access.")
+	// fs.BoolVar(&s.params.remoteAccess, "remote-access-enabled", def.remoteAccess, "Enables or disables the remote access.")
 	fs.StringVar(&s.params.RemoteAccessType, "remote-access-type", def.RemoteAccessType, "Set a remote access type. Available: vnc, spice")
 	fs.StringVar(&s.params.RemoteAccessPassword, "remote-access-password", def.RemoteAccessPassword, "Defines the remote access password.")
 	s.AddFlags(fs)
