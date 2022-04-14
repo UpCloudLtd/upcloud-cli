@@ -371,17 +371,37 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 
 	return output.MarshaledWithHumanDetails{Value: res, Details: []output.DetailRow{
 		{Title: "UUID", Value: res.UUID, Colour: ui.DefaultUUUIDColours},
-		{Title: "IP Addresses", Value: res.IPAddresses, Format: formatIPAddresses},
+		{Title: "IP Addresses", Value: res, Format: formatIPAddresses},
 	}}, nil
 }
 
 func formatIPAddresses(val interface{}) (text.Colors, string, error) {
-	if ipAddresses, ok := val.(upcloud.IPAddressSlice); ok {
-		strs := make([]string, len(ipAddresses))
-		for i, ipa := range ipAddresses {
-			strs[i] = ipa.Address
-		}
-		return nil, strings.Join(strs, ",\n"), nil
+	server, ok := val.(*upcloud.ServerDetails)
+	if !ok {
+		return nil, fmt.Sprint(val), nil
 	}
-	return nil, fmt.Sprint(val), nil
+
+	// Store addresses in map keys to avoid duplicate addresses
+	addresses := make(map[string]bool)
+
+	// Get public addressses from ip_addresses list
+	// Public and utility interfaces created by default (no --network parameters) are only listed here
+	for _, ipa := range server.IPAddresses {
+		addresses[ipa.Address] = true
+	}
+
+	// Get public and private addresses from networking.interfaces list
+	// Public and utility interfaces created with --network are also listed here
+	for _, iface := range server.Networking.Interfaces {
+		for _, ipa := range iface.IPAddresses {
+			addresses[ipa.Address] = true
+		}
+	}
+
+	var strs []string
+	for ipa := range addresses {
+		strs = append(strs, ipa)
+	}
+
+	return nil, strings.Join(strs, ",\n"), nil
 }
