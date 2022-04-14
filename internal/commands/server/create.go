@@ -306,7 +306,7 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 			return nil, fmt.Errorf("both --cores and --memory must be defined for custom plans")
 		}
 
-		if s.params.Plan != "" && s.params.Plan != customPlan {
+		if s.params.Plan != customPlan {
 			return nil, fmt.Errorf("--plan needs to be 'custom' when --cores and --memory are specified")
 		}
 	}
