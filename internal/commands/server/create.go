@@ -266,16 +266,16 @@ func (s *createCommand) InitCommand() {
 	fs.StringVar(&s.params.TimeZone, "time-zone", def.TimeZone, "Time zone to set the RTC to.")
 	fs.StringVar(&s.params.VideoModel, "video-model", def.VideoModel, "Video interface model of the server. Available: vga, cirrus")
 	config.AddEnableOrDisableFlag(fs, &s.firewall, def.firewall, "firewall", "firewall")
-	// fs.BoolVar(&s.params.firewall, "firewall", def.firewall, "Enables the firewall. You can manage firewall rules with the firewall command.")
+	// ----------- fs.BoolVar(&s.params.firewall, "firewall", def.firewall, "Enables the firewall. You can manage firewall rules with the firewall command.")
 	config.AddEnableOrDisableFlag(fs, &s.metadata, def.metadata, "metadata", "metadata service")
-	// fs.BoolVar(&s.params.metadata, "metadata", def.metadata, "Enable metadata service.")
+	// ----------- fs.BoolVar(&s.params.metadata, "metadata", def.metadata, "Enable metadata service.")
 	fs.StringArrayVar(&s.params.storages, "storage", def.storages, "A storage connected to the server, multiple can be declared.\nUsage: --storage action=attach,storage=01000000-0000-4000-8000-000020010301,type=cdrom")
 	fs.StringArrayVar(&s.params.networks, "network", def.networks, "A network interface for the server, multiple can be declared.\nUsage: --network family=IPv4,type=public\n\n--network type=private,network=037a530b-533e-4cef-b6ad-6af8094bb2bc,ip-address=10.0.0.1")
 	config.AddToggleFlag(fs, &s.createPassword, "create-password", def.createPassword, "Create an admin password.")
 	fs.StringVar(&s.params.username, "username", def.username, "Admin account username.")
 	fs.StringSliceVar(&s.params.sshKeys, "ssh-keys", def.sshKeys, "Add one or more SSH keys to the admin account. Accepted values are SSH public keys or filenames from where to read the keys.")
 	config.AddEnableOrDisableFlag(fs, &s.remoteAccess, def.remoteAccess, "remote-access", "remote access")
-	// fs.BoolVar(&s.params.remoteAccess, "remote-access-enabled", def.remoteAccess, "Enables or disables the remote access.")
+	// ----------- fs.BoolVar(&s.params.remoteAccess, "remote-access-enabled", def.remoteAccess, "Enables or disables the remote access.")
 	fs.StringVar(&s.params.RemoteAccessType, "remote-access-type", def.RemoteAccessType, "Set a remote access type. Available: vnc, spice")
 	fs.StringVar(&s.params.RemoteAccessPassword, "remote-access-password", def.RemoteAccessPassword, "Defines the remote access password.")
 	s.AddFlags(fs)
@@ -283,6 +283,8 @@ func (s *createCommand) InitCommand() {
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
+	fmt.Printf("\033[31m Plan: %s | Cores: %d | Mem: %d\033[0m", s.params.Plan, s.params.CoreNumber, s.params.MemoryAmount)
+
 	if s.params.Hostname == "" || s.params.Zone == "" {
 		return nil, fmt.Errorf("hostname, zone and some password delivery method are required")
 	}
@@ -304,10 +306,8 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		}
 
 		if s.params.Plan != "" && s.params.Plan != customPlan {
-			return nil, fmt.Errorf("--plan needs to be 'custom' or omitted when --cores and --memory are specified")
+			return nil, fmt.Errorf("--plan needs to be 'custom' when --cores and --memory are specified")
 		}
-
-		s.params.Plan = customPlan // Valid for all custom plans.
 	}
 
 	serverSvc := exec.Server()
