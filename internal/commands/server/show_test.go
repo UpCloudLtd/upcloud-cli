@@ -173,11 +173,11 @@ func TestServerHumanOutput(t *testing.T) {
     
   NICs: (Flags: S = source IP filtering, B = bootable)
 
-     #   Type      IP Address                                            MAC Address         Network                                Flags 
-    ─── ───────── ───────────────────────────────────────────────────── ─────────────────── ────────────────────────────────────── ───────
-     1   public    IPv4: 94.237.0.207                                    de:ff:ff:ff:66:89   037fcf2a-6745-45dd-867e-f9479ea8c044         
-     2   utility   IPv4: 10.6.3.95 (f)                                   de:ff:ff:ff:ed:85   03000000-0000-4000-8045-000000000000         
-     3   public    IPv6: xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx    de:ff:ff:ff:cc:20   03c93fd8-cc60-4849-91b8-6e404b228e2a         
+     #   Type      IP Address                                           MAC Address         Network                                Flags 
+    ─── ───────── ──────────────────────────────────────────────────── ─────────────────── ────────────────────────────────────── ───────
+     1   public    IPv4: 94.237.0.207                                   de:ff:ff:ff:66:89   037fcf2a-6745-45dd-867e-f9479ea8c044         
+     2   utility   IPv4: 10.6.3.95 (f)                                  de:ff:ff:ff:ed:85   03000000-0000-4000-8045-000000000000         
+     3   public    IPv6: xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx   de:ff:ff:ff:cc:20   03c93fd8-cc60-4849-91b8-6e404b228e2a         
     
   Firewall Rules:
 
