@@ -106,13 +106,13 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 		for _, addr := range nic.IPAddresses {
 			var floating string
 			if addr.Floating.Bool() {
-				floating = "(f)"
+				floating = " (f)"
 			}
 
 			addrs = append(
 				addrs,
 				fmt.Sprintf(
-					"%v: %s %s",
+					"%v: %s%s",
 					addr.Family,
 					ui.DefaultAddressColours.Sprint(addr.Address),
 					floating),
