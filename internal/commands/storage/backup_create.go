@@ -74,5 +74,7 @@ func (s *createBackupCommand) Execute(exec commands.Executor, uuid string) (outp
 	logline.SetMessage(fmt.Sprintf("%s: success", msg))
 	logline.MarkDone()
 
-	return output.OnlyMarshaled{Value: res}, nil
+	return output.MarshaledWithHumanDetails{Value: res, Details: []output.DetailRow{
+		{Title: "UUID", Value: res.UUID, Colour: ui.DefaultUUUIDColours},
+	}}, nil
 }

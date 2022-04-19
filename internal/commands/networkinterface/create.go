@@ -2,6 +2,7 @@ package networkinterface
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
@@ -9,6 +10,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
+	"github.com/jedib0t/go-pretty/v6/text"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
@@ -107,5 +109,23 @@ func (s *createCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 	logline.SetMessage(fmt.Sprintf("%s: done", msg))
 	logline.MarkDone()
 
-	return output.OnlyMarshaled{Value: res}, nil
+	return output.MarshaledWithHumanDetails{Value: res, Details: []output.DetailRow{
+		{Title: "MAC Address", Value: res.MAC},
+		{Title: "IP Addresses", Value: res, Format: formatIPAddresses},
+	}}, nil
+}
+
+func formatIPAddresses(val interface{}) (text.Colors, string, error) {
+	iface, ok := val.(*upcloud.Interface)
+	if !ok {
+		return nil, "", fmt.Errorf("cannot parse IP addresses from %T, expected *upcloud.Interface", val)
+	}
+
+	strs := make([]string, len(iface.IPAddresses))
+
+	for i, ipa := range iface.IPAddresses {
+		strs[i] = ui.DefaultAddressColours.Sprint(ipa.Address)
+	}
+
+	return nil, strings.Join(strs, ",\n"), nil
 }
