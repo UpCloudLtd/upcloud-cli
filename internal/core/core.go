@@ -35,6 +35,8 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 				text.EnableColors()
 			case conf.GlobalFlags.NoColours == config.True:
 				text.DisableColors()
+			case conf.GlobalFlags.OutputFormat != config.ValueOutputHuman:
+				text.DisableColors()
 			default:
 				if terminal.IsStdoutTerminal() {
 					text.EnableColors()

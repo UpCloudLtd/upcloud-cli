@@ -27,3 +27,7 @@ vendor/
 
 .DS_Store
 dist/
+
+# Visual Studio Code
+.vscode
+
