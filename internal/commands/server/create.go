@@ -400,7 +400,7 @@ func formatIPAddresses(val interface{}) (text.Colors, string, error) {
 
 	var strs []string
 	for ipa := range addresses {
-		strs = append(strs, ipa)
+		strs = append(strs, ui.DefaultAddressColours.Sprint(ipa))
 	}
 
 	return nil, strings.Join(strs, ",\n"), nil

@@ -59,5 +59,7 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	logline.SetMessage(fmt.Sprintf("%s: done", msg))
 	logline.MarkDone()
 
-	return output.OnlyMarshaled{Value: res}, nil
+	return output.MarshaledWithHumanDetails{Value: res, Details: []output.DetailRow{
+		{Title: "UUID", Value: res.UUID, Colour: ui.DefaultUUUIDColours},
+	}}, nil
 }

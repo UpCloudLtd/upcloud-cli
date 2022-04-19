@@ -92,5 +92,7 @@ func (s *assignCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	}
 	logline.SetMessage(fmt.Sprintf("%s: success", msg))
 	logline.MarkDone()
-	return output.OnlyMarshaled{Value: res}, nil
+	return output.MarshaledWithHumanDetails{Value: res, Details: []output.DetailRow{
+		{Title: "IP Address", Value: res.Address, Colour: ui.DefaultAddressColours},
+	}}, nil
 }
