@@ -156,21 +156,34 @@ func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Out
 		return nil, err
 	}
 
-	logline.SetMessage(fmt.Sprintf("%s: done", msg))
+	// If autoresize is not enabled, then just consider the whole operation done and output the modify API call response
+	if !s.autoresizePartitionFilesystem.Value() {
+		logline.SetMessage(fmt.Sprintf("%s: done", msg))
+		logline.MarkDone()
 
-	if s.autoresizePartitionFilesystem.Value() {
-		logline.SetMessage(fmt.Sprintf("%s: starting partition and filesystem resize", msg))
-
-		backup, err := svc.ResizeStorageFilesystem(&request.ResizeStorageFilesystemRequest{UUID: uuid})
-		if err != nil {
-			logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: partition and filesystem resize failed (%v); storage restored with the pre-resize attepmt backup", msg, err.Error()))
-			logline.SetDetails(err.Error(), "error: ")
-		} else {
-			logline.SetMessage(fmt.Sprintf("%s: parition and filesystem resize done; created backup with UUID: %s", msg, backup.UUID))
-		}
+		return output.OnlyMarshaled{Value: res}, nil
 	}
 
+	logline.SetMessage(fmt.Sprintf("%s: resizing partition and filesystem", msg))
+	backup, err := svc.ResizeStorageFilesystem(&request.ResizeStorageFilesystemRequest{UUID: uuid})
+
+	// If there was an error during resize attempt, we consider the overall modify operation successful and just log warning about failed resize
+	if err != nil {
+		logline.SetMessage(ui.LiveLogEntryWarningColours.Sprintf("%s: done, but partition and filesystem resize failed; storage was restored using backed taken right before resize attempt", msg))
+		logline.SetDetails(err.Error(), "error: ")
+		return output.OnlyMarshaled{Value: res}, nil
+	}
+
+	logline.SetMessage(fmt.Sprintf("%s: done", msg))
 	logline.MarkDone()
 
-	return output.OnlyMarshaled{Value: res}, nil
+	out := struct {
+		upcloud.StorageDetails
+		LatestResizeBackup string `json:"latest_resize_backup,omitempty"`
+	}{
+		StorageDetails:     *res,
+		LatestResizeBackup: backup.UUID,
+	}
+
+	return output.OnlyMarshaled{Value: out}, nil
 }
