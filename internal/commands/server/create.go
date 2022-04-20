@@ -378,7 +378,7 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 func formatIPAddresses(val interface{}) (text.Colors, string, error) {
 	server, ok := val.(*upcloud.ServerDetails)
 	if !ok {
-		return nil, fmt.Sprint(val), nil
+		return nil, "", fmt.Errorf("cannot parse IP addresses from %T, expected *upcloud.ServerDetails", val)
 	}
 
 	// Store addresses in map keys to avoid duplicate addresses
