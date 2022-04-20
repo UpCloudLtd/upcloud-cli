@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Print version info, instead of missing credentials error, when runnning `upctl version` without credentials
 - Disable colors when outputting in JSON or YAML format
 - Display both public and private addresses in `server create` output
+- Render livelog messages of commands which execution takes less than render tick interval
 
 ## [1.1.3] - 2022-02-24
 ### Changed
