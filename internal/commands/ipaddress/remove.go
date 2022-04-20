@@ -41,7 +41,7 @@ func (s *removeCommand) InitCommand() {
 
 // Execute implements commands.MultipleArgumentCommand
 func (s *removeCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
-	msg := fmt.Sprintf("removing ip-address %v", arg)
+	msg := fmt.Sprintf("Removing ip-address %v", arg)
 	logline := exec.NewLogEntry(msg)
 
 	logline.StartedNow()

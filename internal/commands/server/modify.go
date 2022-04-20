@@ -98,7 +98,7 @@ func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Out
 		s.params.Plan = "custom" // Valid for all custom plans.
 	}
 
-	msg := fmt.Sprintf("modifying server %v", uuid)
+	msg := fmt.Sprintf("Modifying server %v", uuid)
 	logline := exec.NewLogEntry(msg)
 
 	logline.StartedNow()

@@ -51,7 +51,7 @@ func (s *modifyCommand) Execute(exec commands.Executor, arg string) (output.Outp
 	if arg == "" {
 		return nil, errors.New("need ip address to modify")
 	}
-	msg := fmt.Sprintf("modifying ip-address %v", arg)
+	msg := fmt.Sprintf("Modifying ip-address %v", arg)
 	logline := exec.NewLogEntry(msg)
 
 	logline.StartedNow()

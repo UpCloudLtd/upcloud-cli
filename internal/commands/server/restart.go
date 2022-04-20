@@ -56,7 +56,7 @@ func (s *restartCommand) MaximumExecutions() int {
 // Execute implements commands.MultipleArgumentCommand
 func (s *restartCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Server()
-	msg := fmt.Sprintf("restarting server %v", uuid)
+	msg := fmt.Sprintf("Restarting server %v", uuid)
 	logline := exec.NewLogEntry(msg)
 
 	logline.StartedNow()

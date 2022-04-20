@@ -101,7 +101,7 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	}
 	svc := exec.Network()
 
-	msg := fmt.Sprintf("creating network %v", s.name)
+	msg := fmt.Sprintf("Creating network %v", s.name)
 	logline := exec.NewLogEntry(msg)
 	logline.StartedNow()
 

@@ -312,7 +312,7 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	serverSvc := exec.Server()
 	planSvc := exec.Plan()
 	storageSvc := exec.Storage()
-	msg := fmt.Sprintf("creating server %v", s.params.Hostname)
+	msg := fmt.Sprintf("Creating server %v", s.params.Hostname)
 	logline := exec.NewLogEntry(msg)
 
 	logline.StartedNow()

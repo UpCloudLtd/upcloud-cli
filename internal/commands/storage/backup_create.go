@@ -57,7 +57,7 @@ func (s *createBackupCommand) Execute(exec commands.Executor, uuid string) (outp
 	if s.params.Title == "" {
 		return nil, fmt.Errorf("title is required")
 	}
-	msg := fmt.Sprintf("backing up %v", uuid)
+	msg := fmt.Sprintf("Backing up storage %v to %v", uuid, s.params.Title)
 	logline := exec.NewLogEntry(msg)
 	logline.StartedNow()
 
