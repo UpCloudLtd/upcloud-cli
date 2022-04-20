@@ -37,7 +37,7 @@ func (s *deleteCommand) InitCommand() {
 // Execute implements commands.MultipleArgumentCommand
 func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	svc := exec.Network()
-	msg := fmt.Sprintf("deleting network %v", arg)
+	msg := fmt.Sprintf("Deleting network %v", arg)
 	logline := exec.NewLogEntry(msg)
 	logline.StartedNow()
 	err := svc.DeleteNetwork(&request.DeleteNetworkRequest{

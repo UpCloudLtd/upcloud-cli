@@ -38,7 +38,7 @@ func (s *startCommand) InitCommand() {
 // Execute implements commands.MultipleArgumentCommand
 func (s *startCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Server()
-	msg := fmt.Sprintf("starting server %v", uuid)
+	msg := fmt.Sprintf("Starting server %v", uuid)
 	logline := exec.NewLogEntry(msg)
 
 	logline.StartedNow()

@@ -43,7 +43,7 @@ func (s *deleteCommand) MaximumExecutions() int {
 // Execute implements commands.MultipleArgumentCommand
 func (s *deleteCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Storage()
-	msg := fmt.Sprintf("deleting storage %v", uuid)
+	msg := fmt.Sprintf("Deleting storage %v", uuid)
 	logline := exec.NewLogEntry(msg)
 
 	logline.StartedNow()
@@ -58,6 +58,7 @@ func (s *deleteCommand) Execute(exec commands.Executor, uuid string) (output.Out
 	}
 
 	logline.SetMessage(fmt.Sprintf("%s: done", msg))
+	logline.MarkDone()
 
 	return output.None{}, nil
 }

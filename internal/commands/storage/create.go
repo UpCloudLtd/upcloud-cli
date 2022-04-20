@@ -98,7 +98,7 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		return nil, err
 	}
 
-	msg := "creating storage"
+	msg := fmt.Sprintf("Creating storage %s", s.params.Title)
 	logline := exec.NewLogEntry(msg)
 	logline.StartedNow()
 
