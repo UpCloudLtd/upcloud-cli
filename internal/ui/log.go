@@ -129,6 +129,20 @@ func (s *LiveLog) Render() {
 		s.eraseLine()                   // erase the end of line
 		s.write(text.CursorUp.Sprint()) // and move up
 	}
+
+	// Move pending entries that have started to in progress
+	newPending := s.entriesPending[:0]
+	for _, entry := range s.entriesPending {
+		isStarted := !entry.started.IsZero()
+		if !isStarted {
+			newPending = append(newPending, entry)
+			continue
+		}
+		s.entriesInProgress = append(s.entriesInProgress, entry)
+	}
+	s.entriesPending = newPending
+
+	// Move in progress entries that have completed to done
 	newInProgress := s.entriesInProgress[:0]
 	// Render any completed
 	for _, entry := range s.entriesInProgress {
@@ -146,18 +160,6 @@ func (s *LiveLog) Render() {
 		}
 	}
 	s.entriesInProgress = newInProgress
-
-	// Add any pending entries that have started
-	newPending := s.entriesPending[:0]
-	for _, entry := range s.entriesPending {
-		isStarted := !entry.started.IsZero()
-		if !isStarted {
-			newPending = append(newPending, entry)
-			continue
-		}
-		s.entriesInProgress = append(s.entriesInProgress, entry)
-	}
-	s.entriesPending = newPending
 
 	if s.config.DisableLiveRendering {
 		return
