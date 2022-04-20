@@ -6,6 +6,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
@@ -20,7 +21,8 @@ type modifyCommand struct {
 	*commands.BaseCommand
 	completion.Storage
 	resolver.CachingStorage
-	params modifyParams
+	params                        modifyParams
+	autoresizePartitionFilesystem config.OptionalBoolean
 }
 
 type modifyParams struct {
@@ -66,6 +68,7 @@ func (s *modifyCommand) InitCommand() {
 	flagSet.StringVar(&s.params.backupTime, "backup-time", s.params.backupTime, "The time when to create a backup in HH:MM. Empty value means no backups.")
 	flagSet.StringVar(&s.params.backupInterval, "backup-interval", "", "The interval of the backup.\nAvailable: daily,mon,tue,wed,thu,fri,sat,sun")
 	flagSet.IntVar(&s.params.backupRetention, "backup-retention", 0, "How long to store the backups in days. The accepted range is 1-1095.")
+	config.AddEnableOrDisableFlag(flagSet, &s.autoresizePartitionFilesystem, false, "filesystem-autoresize", "automatic resize of partition and filesystem when modifying storage size. Note that before the resize attempt is made, backup of the storage will be taken. If the resize attempt fails, the backup will be used to restore the storage and then deleted. If the resize attempt succeeds, backup will be kept. Taking and keeping backups incure costs.")
 
 	s.AddFlags(flagSet)
 }
@@ -129,6 +132,10 @@ func setBackupFields(storageUUID string, p modifyParams, service service.Storage
 
 // Execute implements commands.MultipleArgumentCommand
 func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
+	if s.autoresizePartitionFilesystem.Value() && s.params.Size == 0 {
+		return nil, fmt.Errorf("filesystem autoresize is enabled, but new size is not specified")
+	}
+
 	svc := exec.Storage()
 	msg := fmt.Sprintf("modifing storage %v", uuid)
 	logline := exec.NewLogEntry(msg)
@@ -150,6 +157,19 @@ func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Out
 	}
 
 	logline.SetMessage(fmt.Sprintf("%s: done", msg))
+
+	if s.autoresizePartitionFilesystem.Value() {
+		logline.SetMessage(fmt.Sprintf("%s: starting partition and filesystem resize", msg))
+
+		backup, err := svc.ResizeStorageFilesystem(&request.ResizeStorageFilesystemRequest{UUID: uuid})
+		if err != nil {
+			logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: partition and filesystem resize failed (%v); storage restored with the pre-resize attepmt backup", msg, err.Error()))
+			logline.SetDetails(err.Error(), "error: ")
+		} else {
+			logline.SetMessage(fmt.Sprintf("%s: parition and filesystem resize done; created backup with UUID: %s", msg, backup.UUID))
+		}
+	}
+
 	logline.MarkDone()
 
 	return output.OnlyMarshaled{Value: res}, nil
