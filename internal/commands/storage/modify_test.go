@@ -230,3 +230,46 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 		})
 	}
 }
+
+func TestModifyCommandAutoresize(t *testing.T) {
+	t.Run("modifying storage size with filesystem autoresize enabled", func(t *testing.T) {
+		conf := config.New()
+		testCmd := ModifyCommand()
+		mService := new(smock.Service)
+		UUID := "some_storage_id"
+
+		mGetDetailsResponse := upcloud.StorageDetails{
+			Storage:    upcloud.Storage{Size: 45},
+			BackupRule: &upcloud.BackupRule{},
+		}
+
+		mModifyResponse := upcloud.StorageDetails{
+			Storage: upcloud.Storage{
+				Size: 50,
+			},
+		}
+
+		mResizeResponse := upcloud.ResizeStorageFilesystemBackup{
+			UUID: "resize_backup",
+		}
+
+		conf.Service = internal.Wrapper{Service: mService}
+		mService.On("ModifyStorage", &request.ModifyStorageRequest{UUID: UUID, Size: 50}).Return(&mModifyResponse, nil)
+		mService.On("ResizeStorageFilesystem", &request.ResizeStorageFilesystemRequest{UUID: UUID}).Return(&mResizeResponse, nil)
+		mService.On("GetStorageDetails", &request.GetStorageDetailsRequest{UUID: UUID}).Return(&mGetDetailsResponse, nil)
+
+		c := commands.BuildCommand(testCmd, nil, conf)
+		err := c.Cobra().Flags().Parse([]string{"--size", "50", "--enable-filesystem-autoresize"})
+		assert.NoError(t, err)
+
+		output, err := c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService, flume.New("test")), UUID)
+		assert.NoError(t, err)
+		mService.AssertNumberOfCalls(t, "ModifyStorage", 1)
+		mService.AssertNumberOfCalls(t, "ResizeStorageFilesystem", 1)
+
+		json, err := output.MarshalJSON()
+		assert.NoError(t, err)
+		assert.Contains(t, string(json), "latest_resize_backup")
+		assert.Contains(t, string(json), "resize_backup")
+	})
+}
