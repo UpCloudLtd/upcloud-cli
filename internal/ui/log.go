@@ -133,8 +133,7 @@ func (s *LiveLog) Render() {
 	// Move pending entries that have started to in progress
 	newPending := s.entriesPending[:0]
 	for _, entry := range s.entriesPending {
-		isStarted := !entry.started.IsZero()
-		if !isStarted {
+		if entry.started.IsZero() {
 			newPending = append(newPending, entry)
 			continue
 		}
