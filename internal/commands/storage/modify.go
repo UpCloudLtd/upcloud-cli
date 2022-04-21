@@ -171,6 +171,7 @@ func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Out
 	if err != nil {
 		logline.SetMessage(ui.LiveLogEntryWarningColours.Sprintf("%s: done, but partition and filesystem resize failed; storage was restored using backed taken right before resize attempt", msg))
 		logline.SetDetails(err.Error(), "error: ")
+		logline.MarkDone()
 		return output.OnlyMarshaled{Value: res}, nil
 	}
 
