@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `storage modify` command now accepts `enable-filesystem-autoresize` flag. When that flag is set upctl will attempt to resize partition and filesystem after storage size has been modified.
 
 ### Changed
-- New go-api version v4.3.0
+- New go-api version v4.5.0
 
 ### Fixed
 - Improved errors relating to argument resolver failures

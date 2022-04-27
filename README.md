@@ -188,6 +188,9 @@ fmt                  Run gofmt on all source files
 clean                Cleanup everything
 ```
 
+### Debugging
+Environment variables `UPCLOUD_DEBUG_API_BASE_URL` and `UPCLOUD_DEBUG_SKIP_CERTIFICATE_VERIFY` can be used for HTTP client debugging purposes.
+
 ### Requirements
 
 This repository uses [pre-commit](https://pre-commit.com/#install) and [go-critic](https://github.com/go-critic/go-critic)
