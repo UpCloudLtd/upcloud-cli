@@ -156,7 +156,7 @@ The detailed documentation can be found [here](docs/upctl.md)
 ## Contributing
 
 Contributions from the community are much appreciated! Please note that all features using our
-API should be implemented with [UpCloud Golang API SDK](https://github.com/UpCloudLtd/upcloud-go-api).
+API should be implemented with [UpCloud Go API SDK](https://github.com/UpCloudLtd/upcloud-go-api).
 If something is missing from there, add an issue or PR in that repository instead before implementing it here.
 
 * Check GitHub issues and pull requests before creating new ones
@@ -168,10 +168,10 @@ If something is missing from there, add an issue or PR in that repository instea
 
 ## Development
 
-* upctl uses [UpCloud Golang API SDK](https://github.com/UpCloudLtd/upcloud-go-api)
+* upctl uses [UpCloud Go API SDK](https://github.com/UpCloudLtd/upcloud-go-api)
 * upctl is built on [Cobra](https://cobra.dev)
 
-You need a Golang version 1.11+ installed on your development machine.
+You need a Go version 1.11+ installed on your development machine.
 Use `make` to build and test the CLI. Makefile help can be found:
 
 ```
@@ -187,6 +187,9 @@ test                 Run tests
 fmt                  Run gofmt on all source files
 clean                Cleanup everything
 ```
+
+### Debugging
+Environment variables `UPCLOUD_DEBUG_API_BASE_URL` and `UPCLOUD_DEBUG_SKIP_CERTIFICATE_VERIFY` can be used for HTTP client debugging purposes. More information can be found in the client's [README](https://github.com/UpCloudLtd/upcloud-go-api/blob/986ca6da9ca85ff51ecacc588215641e2e384cfa/README.md#debugging) file.
 
 ### Requirements
 
