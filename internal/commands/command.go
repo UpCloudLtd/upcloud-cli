@@ -107,6 +107,9 @@ func BuildCommand(child Command, parent *cobra.Command, config *config.Config) C
 
 		service, err := config.CreateService()
 		if err != nil {
+			// Error was caused by missing credentials, not incorrect command
+			child.Cobra().SilenceUsage = true
+
 			return fmt.Errorf("cannot create service: %w", err)
 		}
 		return commandRunE(child, service, config, args)
