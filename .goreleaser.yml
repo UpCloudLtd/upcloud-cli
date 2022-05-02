@@ -199,7 +199,7 @@ dockers:
     # different kinds in the future.
     goos: linux
     goarch: amd64
-    use_buildx: true
+    use: buildx
     dockerfile: Dockerfile.goreleaser
 
     image_templates:
