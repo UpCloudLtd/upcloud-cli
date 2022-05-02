@@ -222,6 +222,7 @@ Once the pull request is created, please make changes to your branch based on th
 Current release process:
 
 * Update CHANGELOG.md
+* Test GoReleaser config with `goreleaser check`
 * Tag a commit with the version you want to release e.g. `v1.2.3`
 * Push the tag & commit to GitHub
   * GitHub actions will automatically set the version based on the tag, create a GitHub release, build the project, and upload binaries & SHA sum to the GitHub release
