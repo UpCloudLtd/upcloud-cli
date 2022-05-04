@@ -5,11 +5,10 @@
 `upctl` provides a command-line interface to UpCloud services. It allows you
 to control your resources from the command line or any compatible interface.
 
-```bash
+```txt
 upctl a CLI tool for managing your UpCloud services.
 
 Usage:
-upctl [flags]
 upctl [command]
 
 Available Commands:
@@ -22,15 +21,20 @@ router      Manage router
 server      Manage servers
 storage     Manage storages
 version     Display software information
+zone        Display zone information
 
 Options:
   -t, --client-timeout duration   CLI timeout when using interactive mode on some commands
-                                  Default: 1m0s
-
-  --colours bool                  Use terminal colours (supported: auto, true, false)
-                                  Default: true
+                                  Default: 0s
 
   --config string                 Config file
+
+  --debug bool                    Print out more verbose debug logs
+                                  Default: false
+
+  --force-colours                 force coloured output despite detected terminal support
+
+  --no-colours                    disable coloured output despite detected terminal support
 
   -o, --output string             Output format (supported: json, yaml and human)
                                   Default: human
