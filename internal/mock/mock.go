@@ -21,6 +21,15 @@ func (m *Service) GetAccount() (*upcloud.Account, error) {
 	return args[0].(*upcloud.Account), args.Error(1)
 }
 
+// GetZones implements service.Zones.GetZones
+func (m *Service) GetZones() (*upcloud.Zones, error) {
+	args := m.Called()
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.Zones), args.Error(1)
+}
+
 // GetPlans implements service.Plan.GetPlans
 func (m *Service) GetPlans() (*upcloud.Plans, error) {
 	args := m.Called()

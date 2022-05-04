@@ -12,6 +12,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/serverfirewall"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/serverstorage"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/storage"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/zone"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 
 	"github.com/spf13/cobra"
@@ -92,6 +93,10 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	// Account
 	accountCommand := commands.BuildCommand(account.BaseAccountCommand(), rootCmd, conf)
 	commands.BuildCommand(account.ShowCommand(), accountCommand.Cobra(), conf)
+
+	// Zone
+	zoneCommand := commands.BuildCommand(zone.BaseZoneCommand(), rootCmd, conf)
+	commands.BuildCommand(zone.ListCommand(), zoneCommand.Cobra(), conf)
 
 	// Misc
 	commands.BuildCommand(

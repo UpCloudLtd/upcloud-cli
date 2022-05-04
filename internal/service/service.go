@@ -13,6 +13,7 @@ type AllServices interface {
 	service.IpAddress
 	service.Plans
 	service.Account
+	service.Zones
 }
 
 // Wrapper is a temporary reimplementation fo upcloud-go-api which prevents
