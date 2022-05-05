@@ -30,6 +30,7 @@ func CreateCommand() commands.Command {
 			"create",
 			"Create a server",
 			"upctl server create --title myapp --zone fi-hel1 --hostname myapp --password-delivery email",
+			"upctl server create --wait --title myapp --zone fi-hel1 --hostname myapp --password-delivery email",
 			"upctl server create --title \"My Server\" --zone fi-hel1 --hostname myapp --password-delivery email",
 			"upctl server create --zone fi-hel1 --hostname myapp --password-delivery email --plan 2xCPU-4GB",
 			"upctl server create --zone fi-hel1 --hostname myapp --password-delivery email --plan custom --cores 2 --memory 4096",
@@ -243,6 +244,7 @@ type createCommand struct {
 	metadata       config.OptionalBoolean
 	remoteAccess   config.OptionalBoolean
 	createPassword config.OptionalBoolean
+	wait           config.OptionalBoolean
 }
 
 // InitCommand implements Command.InitCommand
@@ -275,6 +277,7 @@ func (s *createCommand) InitCommand() {
 	fs.StringVar(&s.params.UserData, "user-data", def.UserData, "Defines URL for a server setup script, or the script body itself.")
 	fs.StringVar(&s.params.username, "username", def.username, "Admin account username.")
 	fs.StringVar(&s.params.VideoModel, "video-model", def.VideoModel, "Video interface model of the server. Available: vga, cirrus")
+	config.AddToggleFlag(fs, &s.wait, "wait", false, "Wait for server to be in started state before returning.")
 	fs.StringVar(&s.params.Zone, "zone", def.Zone, "Zone where to create the server.")
 	// fs.BoolVar(&s.params.firewall, "firewall", def.firewall, "Enables the firewall. You can manage firewall rules with the firewall command.")
 	// fs.BoolVar(&s.params.metadata, "metadata", def.metadata, "Enable metadata service.")
@@ -368,6 +371,13 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 
 	logline.SetMessage(fmt.Sprintf("%s: request sent", msg))
 	logline.MarkDone()
+
+	if s.wait.Value() {
+		logline := exec.NewLogEntry(msg)
+		if err := waitForServerState(res.UUID, upcloud.ServerStateStarted, serverSvc, logline); err != nil {
+			return nil, err
+		}
+	}
 
 	return output.MarshaledWithHumanDetails{Value: res, Details: []output.DetailRow{
 		{Title: "UUID", Value: res.UUID, Colour: ui.DefaultUUUIDColours},

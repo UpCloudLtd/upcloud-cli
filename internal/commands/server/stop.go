@@ -5,10 +5,12 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 
+	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
 	"github.com/spf13/pflag"
 )
@@ -22,6 +24,7 @@ func StopCommand() commands.Command {
 			"upctl server stop 00cbe2f3-4cf9-408b-afee-bd340e13cdd8",
 			"upctl server stop 00cbe2f3-4cf9-408b-afee-bd340e13cdd8 0053a6f5-e6d1-4b0b-b9dc-b90d0894e8d0",
 			"upctl server stop my_server",
+			"upctl server stop --wait my_server",
 		),
 	}
 }
@@ -29,6 +32,7 @@ func StopCommand() commands.Command {
 type stopCommand struct {
 	*commands.BaseCommand
 	StopType string
+	wait     config.OptionalBoolean
 	resolver.CachingServer
 	completion.Server
 }
@@ -38,6 +42,7 @@ func (s *stopCommand) InitCommand() {
 	//XXX: findout what to do with risky params (timeout actions)
 	flags := &pflag.FlagSet{}
 	flags.StringVar(&s.StopType, "type", defaultStopType, "The type of stop operation. Available: soft, hard")
+	config.AddToggleFlag(flags, &s.wait, "wait", false, "Wait for server to be in stopped state before returning.")
 	s.AddFlags(flags)
 }
 
@@ -62,6 +67,13 @@ func (s *stopCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 
 	logline.SetMessage(fmt.Sprintf("%s: request sent", msg))
 	logline.MarkDone()
+
+	if s.wait.Value() {
+		logline := exec.NewLogEntry(msg)
+		if err := waitForServerState(uuid, upcloud.ServerStateStopped, svc, logline); err != nil {
+			return nil, err
+		}
+	}
 
 	return output.OnlyMarshaled{Value: res}, nil
 }

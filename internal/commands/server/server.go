@@ -1,10 +1,13 @@
 package server
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/service"
 )
 
 const (
@@ -28,20 +31,23 @@ type serverCommand struct {
 	*commands.BaseCommand
 }
 
-// TODO: re-add when wait flag is refactored
-/*func serverStateWaiter(uuid, state, msg string, service service.Server, logline *ui.LogEntry) func() error {
-	return func() error {
-		for {
-			time.Sleep(100 * time.Millisecond)
-			details, err := service.GetServerDetails(&request.GetServerDetailsRequest{UUID: uuid})
-			if err != nil {
-				return err
-			}
-			if details.State == state {
-				return nil
-			}
-			logline.SetMessage(fmt.Sprintf("%s: waiting to start (%v)", msg, details.State))
-		}
+func waitForServerState(uuid, state string, service service.Server, logline *ui.LogEntry) error {
+	msg := fmt.Sprintf("Waiting for server %s to be in %s state", uuid, state)
+	logline.SetMessage(fmt.Sprintf("%s: polling", msg))
+	logline.StartedNow()
+
+	if _, err := service.WaitForServerState(&request.WaitForServerStateRequest{
+		UUID:         uuid,
+		DesiredState: state,
+		Timeout:      5 * time.Minute,
+	}); err != nil {
+		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
+		logline.SetDetails(err.Error(), "error: ")
+		return err
 	}
+
+	logline.SetMessage(fmt.Sprintf("%s: done", msg))
+	logline.MarkDone()
+
+	return nil
 }
-*/

@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Add `zone list` command that lists available zones.
+- Add `--wait` flag to `server create` and `server stop` commands to wait until server is in `started` and `stopped` state, respectively.
 
 ### Fixed
 - Do not display usage if execution fails because of missing credentials
