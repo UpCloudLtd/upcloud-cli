@@ -53,7 +53,7 @@ func (s *startCommand) Execute(exec commands.Executor, uuid string) (output.Outp
 		return nil, err
 	}
 
-	logline.SetMessage(fmt.Sprintf("%s: request sent", msg))
+	logline.SetMessage(fmt.Sprintf("%s: done", msg))
 	logline.MarkDone()
 
 	return output.OnlyMarshaled{Value: res}, nil
