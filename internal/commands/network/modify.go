@@ -12,7 +12,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
-	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 )
 
 type modifyCommand struct {
@@ -89,9 +88,7 @@ func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 			IPNetworks: networks,
 		})
 		if err != nil {
-			logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
-			logline.SetDetails(err.Error(), "error: ")
-			return nil, err
+			return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
 		}
 		// store the result in order to return it
 		network = res
@@ -113,8 +110,7 @@ func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 			RouterUUID:  routerUUID,
 		})
 		if err != nil {
-			logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
-			logline.SetDetails(err.Error(), "error: ")
+			commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err) // nolint:errcheck
 			return nil, fmt.Errorf("cannot attach router '%s': %w", s.attachRouter, err)
 		}
 		// update the stored result (if we have one) manually to avoid refetching later
@@ -127,8 +123,7 @@ func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 			NetworkUUID: arg,
 		})
 		if err != nil {
-			logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
-			logline.SetDetails(err.Error(), "error: ")
+			commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err) // nolint:errcheck
 			return nil, fmt.Errorf("cannot detach router '%s': %w", s.attachRouter, err)
 		}
 		// update the stored result (if we have one) manually to avoid refetching later

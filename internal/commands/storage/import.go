@@ -195,9 +195,7 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		switch {
 		case statusUpdate.err != nil:
 			// we received an error, clean up log and return the error
-			logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, statusUpdate.err.Error()))
-			logline.SetDetails(statusUpdate.err.Error(), "error: ")
-			return nil, statusUpdate.err
+			return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), statusUpdate.err)
 		case statusUpdate.complete:
 			// we're complete, clean up log and return the result
 			logline.SetMessage(fmt.Sprintf("%s: done", msg))
@@ -273,8 +271,7 @@ func createStorage(exec commands.Executor, params *createParams) (upcloud.Storag
 	logline.StartedNow()
 	details, err := exec.Storage().CreateStorage(&params.CreateStorageRequest)
 	if err != nil {
-		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed", msg))
-		logline.SetDetails(err.Error(), "error: ")
+		commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err) // nolint:errcheck
 		return upcloud.Storage{}, err
 	}
 	logline.SetMessage(fmt.Sprintf("%s: done", msg))

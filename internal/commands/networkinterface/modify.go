@@ -9,7 +9,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
-	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
 	"github.com/spf13/pflag"
 )
@@ -90,9 +89,7 @@ func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 		Bootable:          *bootable,
 	})
 	if err != nil {
-		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
-		logline.SetDetails(err.Error(), "error: ")
-		return nil, err
+		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
 	}
 
 	logline.SetMessage(fmt.Sprintf("%s: done", msg))

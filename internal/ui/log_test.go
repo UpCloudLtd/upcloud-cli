@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -25,6 +26,36 @@ func TestLogRender(t *testing.T) {
 	livelog.Render()
 	livelog.Close()
 
+	assert.Equal(t, entry.result, logEntrySuccess)
 	assert.Contains(t, b.String(), msg)
 	assert.Contains(t, b.String(), ": Done")
+}
+
+func TestLogErrors(t *testing.T) {
+	text.EnableColors()
+
+	var b bytes.Buffer
+	config := LiveLogDefaultConfig
+	config.EntryMaxWidth = 50
+	livelog := NewLiveLog(&b, config)
+
+	failedEntry := NewLogEntry("MarkFailed")
+	warningEntry := NewLogEntry("MarkWarning")
+	livelog.AddEntries(failedEntry, warningEntry)
+
+	failedEntry.StartedNow()
+	warningEntry.StartedNow()
+	livelog.Render()
+
+	failedEntry.MarkFailed()
+	warningEntry.MarkWarning()
+	livelog.Render()
+	livelog.Close()
+
+	assert.Equal(t, failedEntry.result, logEntryFailed)
+	assert.Equal(t, warningEntry.result, logEntryWarning)
+
+	// Test that output contains partial ANSI code before message
+	assert.Contains(t, b.String(), `[91mMarkFailed`)
+	assert.Contains(t, b.String(), `[93mMarkWarning`)
 }

@@ -107,19 +107,17 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 
 	req, err := s.buildRequest()
 	if err != nil {
-		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
-		logline.SetDetails(err.Error(), "error: ")
-		return nil, err
+		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
 	}
 
 	res, err := svc.CreateNetwork(req)
 	if err != nil {
-		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
-		logline.SetDetails(err.Error(), "error: ")
-		return nil, err
+		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
 	}
+
 	logline.SetMessage(fmt.Sprintf("%s: success", msg))
 	logline.MarkDone()
+
 	return output.MarshaledWithHumanDetails{Value: res, Details: []output.DetailRow{
 		{Title: "UUID", Value: res.UUID, Colour: ui.DefaultUUUIDColours},
 	}}, nil

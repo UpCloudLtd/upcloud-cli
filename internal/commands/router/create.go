@@ -51,9 +51,7 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 
 	res, err := exec.Network().CreateRouter(&request.CreateRouterRequest{Name: s.name})
 	if err != nil {
-		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
-		logline.SetDetails(err.Error(), "error: ")
-		return nil, err
+		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
 	}
 
 	logline.SetMessage(fmt.Sprintf("%s: done", msg))

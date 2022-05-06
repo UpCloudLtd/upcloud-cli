@@ -9,7 +9,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
-	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
@@ -144,16 +143,12 @@ func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Out
 
 	req := s.params.ModifyStorageRequest
 	if err := setBackupFields(uuid, s.params, svc, &req); err != nil {
-		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
-		logline.SetDetails(err.Error(), "error: ")
-		return nil, err
+		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
 	}
 
 	res, err := svc.ModifyStorage(&req)
 	if err != nil {
-		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
-		logline.SetDetails(err.Error(), "error: ")
-		return nil, err
+		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
 	}
 
 	// If autoresize is not enabled, then just consider the whole operation done and output the modify API call response
@@ -169,9 +164,10 @@ func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Out
 
 	// If there was an error during resize attempt, we consider the overall modify operation successful and just log warning about failed resize
 	if err != nil {
-		logline.SetMessage(ui.LiveLogEntryWarningColours.Sprintf("%s: done, but partition and filesystem resize failed; storage was restored using backed taken right before resize attempt", msg))
-		logline.SetDetails(err.Error(), "error: ")
-		logline.MarkDone()
+		logline.SetMessage(fmt.Sprintf("%s: partially done", msg))
+		logline.SetDetails(fmt.Sprintf("Partition and filesystem resize failed; storage was restored using backup taken right before resize attempt (%s)", err.Error()), "Error: ")
+		logline.MarkWarning()
+
 		return output.OnlyMarshaled{Value: res}, nil
 	}
 

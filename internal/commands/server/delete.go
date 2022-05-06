@@ -8,7 +8,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
-	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
 	"github.com/spf13/pflag"
@@ -62,9 +61,7 @@ func (s *deleteCommand) Execute(exec commands.Executor, uuid string) (output.Out
 		})
 	}
 	if err != nil {
-		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
-		logline.SetDetails(err.Error(), "error: ")
-		return nil, err
+		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
 	}
 
 	logline.SetMessage(fmt.Sprintf("%s: done", msg))

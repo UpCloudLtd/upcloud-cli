@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Do not display usage if execution fails because of missing credentials
+- Mark error and warning livelogs finished when they will not be updated anymore: this stops the timer in the end of the row and stops livelog from refreshing these lines.
 
 ## [1.2.0] - 2022-04-29
 ### Added

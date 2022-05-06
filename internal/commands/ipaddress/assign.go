@@ -86,12 +86,12 @@ func (s *assignCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		Zone:       s.zone,
 	})
 	if err != nil {
-		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
-		logline.SetDetails(err.Error(), "error: ")
-		return nil, err
+		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
 	}
+
 	logline.SetMessage(fmt.Sprintf("%s: success", msg))
 	logline.MarkDone()
+
 	return output.MarshaledWithHumanDetails{Value: res, Details: []output.DetailRow{
 		{Title: "IP Address", Value: res.Address, Colour: ui.DefaultAddressColours},
 	}}, nil

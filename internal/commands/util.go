@@ -9,6 +9,8 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 	"github.com/jedib0t/go-pretty/v6/text"
 
+	"github.com/UpCloudLtd/upcloud-cli/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-cli/internal/validation"
 )
 
@@ -114,4 +116,13 @@ func BoolFromString(b string) (*upcloud.Boolean, error) {
 		return nil, fmt.Errorf("invalid boolean value %s", b)
 	}
 	return &result, nil
+}
+
+// HandleError logs error in livelog by setting message to msg and details to err. Returns (nil, err), where err is the err passed in as input.
+func HandleError(logline *ui.LogEntry, msg string, err error) (output.Output, error) {
+	logline.SetMessage(msg)
+	logline.SetDetails(err.Error(), "Error: ")
+	logline.MarkFailed()
+
+	return nil, err
 }

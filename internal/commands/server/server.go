@@ -40,8 +40,9 @@ func waitForServerState(uuid, state string, service service.Server, logline *ui.
 		DesiredState: state,
 		Timeout:      5 * time.Minute,
 	}); err != nil {
-		logline.SetMessage(ui.LiveLogEntryWarningColours.Sprintf("%s: partially done (%v)", msg, err.Error()))
-		logline.SetDetails(err.Error(), "error: ")
+		logline.SetMessage(fmt.Sprintf("%s: partially done", msg))
+		logline.SetDetails(err.Error(), "Error: ")
+		logline.MarkWarning()
 
 		return
 	}
