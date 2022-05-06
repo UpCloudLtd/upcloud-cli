@@ -101,9 +101,7 @@ func (s *createCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 		Bootable:          s.bootable.AsUpcloudBoolean(),
 	})
 	if err != nil {
-		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
-		logline.SetDetails(err.Error(), "error: ")
-		return nil, err
+		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
 	}
 
 	logline.SetMessage(fmt.Sprintf("%s: done", msg))

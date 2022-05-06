@@ -7,7 +7,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
-	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
 )
@@ -50,9 +49,7 @@ func (s *restoreBackupCommand) Execute(exec commands.Executor, uuid string) (out
 
 	err := svc.RestoreBackup(&req)
 	if err != nil {
-		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
-		logline.SetDetails(err.Error(), "error: ")
-		return nil, err
+		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
 	}
 
 	logline.SetMessage(fmt.Sprintf("%s: success", msg))

@@ -104,9 +104,7 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 
 	res, err := svc.CreateStorage(&s.params.CreateStorageRequest)
 	if err != nil {
-		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
-		logline.SetDetails(err.Error(), "error: ")
-		return nil, err
+		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
 	}
 
 	logline.SetMessage(fmt.Sprintf("%s: success", msg))

@@ -17,6 +17,8 @@ var (
 		Pending:    text.Colors{text.FgHiBlack},
 		InProgress: text.Colors{text.FgHiBlue, text.Bold},
 		Done:       text.Colors{text.FgHiGreen},
+		Warning:    text.Colors{text.FgHiYellow},
+		Failed:     text.Colors{text.FgHiRed},
 		Details:    text.Colors{text.FgHiBlack},
 		Time:       text.Colors{text.FgHiCyan},
 	}
@@ -27,17 +29,14 @@ var (
 		DisableLiveRendering: !terminal.IsStdoutTerminal(),
 		Colours:              liveLogDefaultColours,
 	}
-	// LiveLogEntryWarningColours specifies the colour used for warnings in LiveLog
-	// TODO: remove cross-package dependency and make those private
-	LiveLogEntryWarningColours = text.FgHiYellow
-	// LiveLogEntryErrorColours specifies the colour used for errors in LiveLog
-	LiveLogEntryErrorColours = text.FgHiRed
 )
 
 type liveLogColours struct {
 	Pending    text.Colors
 	InProgress text.Colors
 	Done       text.Colors
+	Warning    text.Colors
+	Failed     text.Colors
 	Details    text.Colors
 	Time       text.Colors
 }
@@ -147,7 +146,7 @@ func (s *LiveLog) Render() {
 	newInProgress := s.entriesInProgress[:0]
 	// Render any completed
 	for _, entry := range s.entriesInProgress {
-		if !entry.done {
+		if !entry.finished {
 			newInProgress = append(newInProgress, entry)
 			continue
 		}
@@ -169,7 +168,7 @@ func (s *LiveLog) Render() {
 	s.height = 0
 	// Render in-progress entries
 	for _, entry := range s.entriesInProgress {
-		if entry.done {
+		if entry.finished {
 			continue
 		}
 		s.height++
@@ -194,8 +193,12 @@ func (s *LiveLog) renderEntry(entry *LogEntry) {
 	switch {
 	case entry.started.IsZero():
 		lineColour = s.config.Colours.Pending
-	case entry.done:
+	case entry.finished && entry.result == logEntrySuccess:
 		lineColour = s.config.Colours.Done
+	case entry.finished && entry.result == logEntryWarning:
+		lineColour = s.config.Colours.Warning
+	case entry.finished && entry.result == logEntryFailed:
+		lineColour = s.config.Colours.Failed
 	default:
 		lineColour = s.config.Colours.InProgress
 	}
@@ -246,6 +249,12 @@ func NewLogEntry(msg string) *LogEntry {
 	return &LogEntry{msg: msg}
 }
 
+const (
+	logEntrySuccess = "success"
+	logEntryWarning = "warning"
+	logEntryFailed  = "failed"
+)
+
 // LogEntry represents a single log entry in a live log
 type LogEntry struct {
 	mu            sync.Mutex
@@ -253,7 +262,8 @@ type LogEntry struct {
 	details       string
 	detailsPrefix string
 	started       time.Time
-	done          bool
+	finished      bool
+	result        string
 }
 
 // SetMessage sets the message of the LogEntry
@@ -278,9 +288,24 @@ func (s *LogEntry) StartedNow() {
 	s.started = time.Now()
 }
 
-// MarkDone marks the LogEntry as done
-func (s *LogEntry) MarkDone() {
+func (s *LogEntry) finishedNow(result string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.done = true
+	s.finished = true
+	s.result = result
+}
+
+// MarkDone marks the LogEntry as finished with success
+func (s *LogEntry) MarkDone() {
+	s.finishedNow(logEntrySuccess)
+}
+
+// MarkFailed marks the LogEntry as as finished with warning
+func (s *LogEntry) MarkWarning() {
+	s.finishedNow(logEntryWarning)
+}
+
+// MarkFailed marks the LogEntry as as finished with failure
+func (s *LogEntry) MarkFailed() {
+	s.finishedNow(logEntryFailed)
 }
