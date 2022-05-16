@@ -65,14 +65,11 @@ func (s *stopCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 		return nil, err
 	}
 
-	logline.SetMessage(fmt.Sprintf("%s: request sent", msg))
-	logline.MarkDone()
-
 	if s.wait.Value() {
-		logline := exec.NewLogEntry(msg)
-		if err := waitForServerState(uuid, upcloud.ServerStateStopped, svc, logline); err != nil {
-			return nil, err
-		}
+		waitForServerState(uuid, upcloud.ServerStateStopped, svc, logline, msg)
+	} else {
+		logline.SetMessage(fmt.Sprintf("%s: request sent", msg))
+		logline.MarkDone()
 	}
 
 	return output.OnlyMarshaled{Value: res}, nil

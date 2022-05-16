@@ -31,23 +31,21 @@ type serverCommand struct {
 	*commands.BaseCommand
 }
 
-func waitForServerState(uuid, state string, service service.Server, logline *ui.LogEntry) error {
-	msg := fmt.Sprintf("Waiting for server %s to be in %s state", uuid, state)
-	logline.SetMessage(fmt.Sprintf("%s: polling", msg))
-	logline.StartedNow()
+// waitForServerState waits for server to reach given state and updates given logline with wait progress. Finally, logline is updated with given msg and either done state or timeout warning.
+func waitForServerState(uuid, state string, service service.Server, logline *ui.LogEntry, msg string) {
+	logline.SetMessage(fmt.Sprintf("Waiting for server %s to be in %s state: polling", uuid, state))
 
 	if _, err := service.WaitForServerState(&request.WaitForServerStateRequest{
 		UUID:         uuid,
 		DesiredState: state,
 		Timeout:      5 * time.Minute,
 	}); err != nil {
-		logline.SetMessage(ui.LiveLogEntryErrorColours.Sprintf("%s: failed (%v)", msg, err.Error()))
+		logline.SetMessage(ui.LiveLogEntryWarningColours.Sprintf("%s: partially done (%v)", msg, err.Error()))
 		logline.SetDetails(err.Error(), "error: ")
-		return err
+
+		return
 	}
 
 	logline.SetMessage(fmt.Sprintf("%s: done", msg))
 	logline.MarkDone()
-
-	return nil
 }

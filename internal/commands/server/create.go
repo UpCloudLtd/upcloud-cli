@@ -369,14 +369,11 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		return nil, err
 	}
 
-	logline.SetMessage(fmt.Sprintf("%s: request sent", msg))
-	logline.MarkDone()
-
 	if s.wait.Value() {
-		logline := exec.NewLogEntry(msg)
-		if err := waitForServerState(res.UUID, upcloud.ServerStateStarted, serverSvc, logline); err != nil {
-			return nil, err
-		}
+		waitForServerState(res.UUID, upcloud.ServerStateStarted, serverSvc, logline, msg)
+	} else {
+		logline.SetMessage(fmt.Sprintf("%s: request sent", msg))
+		logline.MarkDone()
 	}
 
 	return output.MarshaledWithHumanDetails{Value: res, Details: []output.DetailRow{
