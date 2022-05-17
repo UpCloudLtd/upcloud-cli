@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `zone list` command that lists available zones.
 - Add `--wait` flag to `server create` and `server stop` commands to wait until server is in `started` and `stopped` state, respectively.
 
+### Changed
+- Update `upcloud-go-api`to `v4.5.2`
+
 ### Fixed
 - Do not display usage if execution fails because of missing credentials
 - Mark error and warning livelogs finished when they will not be updated anymore: this stops the timer in the end of the row and stops livelog from refreshing these lines.
