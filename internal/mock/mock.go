@@ -557,3 +557,71 @@ func (m *Service) DeleteSubaccount(r *request.DeleteSubaccountRequest) error {
 	}
 	return nil
 }
+
+func (m *Service) CancelManagedDatabaseConnection(r *request.CancelManagedDatabaseConnection) error {
+	return nil
+}
+
+func (m *Service) CloneManagedDatabase(r *request.CloneManagedDatabaseRequest) (*upcloud.ManagedDatabase, error) {
+	return nil, nil
+}
+
+func (m *Service) CreateManagedDatabase(r *request.CreateManagedDatabaseRequest) (*upcloud.ManagedDatabase, error) {
+	return nil, nil
+}
+
+func (m *Service) GetManagedDatabase(r *request.GetManagedDatabaseRequest) (*upcloud.ManagedDatabase, error) {
+	return nil, nil
+}
+
+func (m *Service) GetManagedDatabases(r *request.GetManagedDatabasesRequest) ([]upcloud.ManagedDatabase, error) {
+	return nil, nil
+}
+
+func (m *Service) GetManagedDatabaseConnections(r *request.GetManagedDatabaseConnectionsRequest) ([]upcloud.ManagedDatabaseConnection, error) {
+	return nil, nil
+}
+
+func (m *Service) GetManagedDatabaseMetrics(r *request.GetManagedDatabaseMetricsRequest) (*upcloud.ManagedDatabaseMetrics, error) {
+	return nil, nil
+}
+
+func (m *Service) GetManagedDatabaseLogs(r *request.GetManagedDatabaseLogsRequest) (*upcloud.ManagedDatabaseLogs, error) {
+	return nil, nil
+}
+
+func (m *Service) GetManagedDatabaseQueryStatisticsMySQL(r *request.GetManagedDatabaseQueryStatisticsRequest) ([]upcloud.ManagedDatabaseQueryStatisticsMySQL, error) {
+	return nil, nil
+}
+
+func (m *Service) GetManagedDatabaseQueryStatisticsPostgreSQL(r *request.GetManagedDatabaseQueryStatisticsRequest) ([]upcloud.ManagedDatabaseQueryStatisticsPostgreSQL, error) {
+	return nil, nil
+}
+
+func (m *Service) DeleteManagedDatabase(r *request.DeleteManagedDatabaseRequest) error {
+	return nil
+}
+
+func (m *Service) ModifyManagedDatabase(r *request.ModifyManagedDatabaseRequest) (*upcloud.ManagedDatabase, error) {
+	return nil, nil
+}
+
+func (m *Service) UpgradeManagedDatabaseVersion(r *request.UpgradeManagedDatabaseVersionRequest) (*upcloud.ManagedDatabase, error) {
+	return nil, nil
+}
+
+func (m *Service) GetManagedDatabaseVersions(r *request.GetManagedDatabaseVersionsRequest) ([]string, error) {
+	return nil, nil
+}
+
+func (m *Service) StartManagedDatabase(r *request.StartManagedDatabaseRequest) (*upcloud.ManagedDatabase, error) {
+	return nil, nil
+}
+
+func (m *Service) ShutdownManagedDatabase(r *request.ShutdownManagedDatabaseRequest) (*upcloud.ManagedDatabase, error) {
+	return nil, nil
+}
+
+func (m *Service) WaitForManagedDatabaseState(r *request.WaitForManagedDatabaseStateRequest) (*upcloud.ManagedDatabase, error) {
+	return nil, nil
+}

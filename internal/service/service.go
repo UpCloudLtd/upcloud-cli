@@ -14,6 +14,7 @@ type AllServices interface {
 	service.Plans
 	service.Account
 	service.Zones
+	service.ManagedDatabaseServiceManager
 }
 
 // Wrapper is a temporary reimplementation fo upcloud-go-api which prevents
