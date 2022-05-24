@@ -3,6 +3,7 @@ package all
 import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/account"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/database"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/ipaddress"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/network"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/networkinterface"
@@ -66,7 +67,7 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	commands.BuildCommand(storage.CreateBackupCommand(), backupCommand.Cobra(), conf)
 	commands.BuildCommand(storage.RestoreBackupCommand(), backupCommand.Cobra(), conf)
 
-	// // IP Addresses
+	// IP Addresses
 	ipAddressCommand := commands.BuildCommand(ipaddress.BaseIPAddressCommand(), rootCmd, conf)
 	commands.BuildCommand(ipaddress.ListCommand(), ipAddressCommand.Cobra(), conf)
 	commands.BuildCommand(ipaddress.ShowCommand(), ipAddressCommand.Cobra(), conf)
@@ -97,6 +98,10 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	// Zone
 	zoneCommand := commands.BuildCommand(zone.BaseZoneCommand(), rootCmd, conf)
 	commands.BuildCommand(zone.ListCommand(), zoneCommand.Cobra(), conf)
+
+	// Databases
+	databaseCommand := commands.BuildCommand(database.BaseDatabaseCommand(), rootCmd, conf)
+	commands.BuildCommand(database.ListCommand(), databaseCommand.Cobra(), conf)
 
 	// Misc
 	commands.BuildCommand(
