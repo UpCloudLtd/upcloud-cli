@@ -1,14 +1,10 @@
 package output
 
 import (
-	"encoding/json"
 	"errors"
-
-	"gopkg.in/yaml.v2"
 )
 
-// MarshaledWithHumanDetails implements output.Command for a return value that is only displayed as raw marshaled in JSON and YAML
-// eg. most 'state change' commands
+// MarshaledWithHumanDetails implements output.Command for a return value that is displayed as raw marshaled in JSON and YAML or as human details, such as UUID or IP address, eg. most create commands.
 type MarshaledWithHumanDetails struct {
 	Value   interface{}
 	Details []DetailRow
@@ -16,23 +12,13 @@ type MarshaledWithHumanDetails struct {
 
 // MarshalJSON implements json.Marshaler and output.Output
 func (d MarshaledWithHumanDetails) MarshalJSON() ([]byte, error) {
-	if errValue, ok := d.Value.(error); ok {
-		return json.MarshalIndent(map[string]interface{}{
-			"error": errValue.Error(),
-		}, "", "  ")
-	}
-	return json.MarshalIndent(d.Value, "", "  ")
+	return OnlyMarshaled{Value: d.Value}.MarshalJSON()
 }
 
 // MarshalYAML implements output.Output, it marshals the value and returns the YAML as []byte
 // nb. does *not* implement yaml.Marshaler
 func (d MarshaledWithHumanDetails) MarshalYAML() ([]byte, error) {
-	if errValue, ok := d.Value.(error); ok {
-		return yaml.Marshal(map[string]interface{}{
-			"error": errValue.Error(),
-		})
-	}
-	return yaml.Marshal(d.Value)
+	return OnlyMarshaled{Value: d.Value}.MarshalYAML()
 }
 
 // MarshalHuman implements output.Output
@@ -45,5 +31,5 @@ func (d MarshaledWithHumanDetails) MarshalHuman() ([]byte, error) {
 
 // MarshalRawMap implements output.Output
 func (d MarshaledWithHumanDetails) MarshalRawMap() (map[string]interface{}, error) {
-	return nil, errors.New("marshaledwithhumandetails output should not be used as part of multiple output, raw output is undefined")
+	return nil, errors.New("MarshaledWithHumanDetails output should not be used as part of multiple output, raw output is undefined")
 }
