@@ -34,12 +34,15 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 			memory := s.MemoryAmount / 1024
 			plan = fmt.Sprintf("%dxCPU-%dGB (custom)", s.CoreNumber, memory)
 		}
+
+		coloredState := commands.ServerStateColour(s.State).Sprint(s.State)
+
 		rows = append(rows, output.TableRow{
 			s.UUID,
 			s.Hostname,
 			plan,
 			s.Zone,
-			s.State,
+			coloredState,
 		})
 	}
 
