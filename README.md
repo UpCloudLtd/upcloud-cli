@@ -14,6 +14,7 @@ upctl [command]
 Available Commands:
 account     Manage account
 completion  Generates shell completion
+database    Manage databases
 help        Help about any command
 ip-address  Manage ip address
 network     Manage network
