@@ -28,13 +28,15 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 
 	rows := []output.TableRow{}
 	for _, db := range databases {
+		coloredState := commands.DatabaseStateColour(db.State).Sprint(db.State)
+
 		rows = append(rows, output.TableRow{
 			db.UUID,
 			db.Title,
 			db.Type,
 			db.Plan,
 			db.Zone,
-			db.State,
+			coloredState,
 		})
 	}
 
