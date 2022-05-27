@@ -4,13 +4,13 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 )
 
-// BaseZoneCommand creates the base "zone" command
+// BaseDatabaseCommand creates the base "zone" command
 func BaseDatabaseCommand() commands.Command {
-	return &zoneCommand{
+	return &databaseCommand{
 		commands.New("database", "Manage databases"),
 	}
 }
 
-type zoneCommand struct {
+type databaseCommand struct {
 	*commands.BaseCommand
 }
