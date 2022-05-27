@@ -575,7 +575,11 @@ func (m *Service) GetManagedDatabase(r *request.GetManagedDatabaseRequest) (*upc
 }
 
 func (m *Service) GetManagedDatabases(r *request.GetManagedDatabasesRequest) ([]upcloud.ManagedDatabase, error) {
-	return nil, nil
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].([]upcloud.ManagedDatabase), args.Error(1)
 }
 
 func (m *Service) GetManagedDatabaseConnections(r *request.GetManagedDatabaseConnectionsRequest) ([]upcloud.ManagedDatabaseConnection, error) {
