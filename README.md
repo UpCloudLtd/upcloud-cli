@@ -195,7 +195,7 @@ If something is missing from there, add an issue or PR in that repository instea
 * upctl uses [UpCloud Go API SDK](https://github.com/UpCloudLtd/upcloud-go-api)
 * upctl is built on [Cobra](https://cobra.dev)
 
-You need a Go version 1.11+ installed on your development machine.
+You need a Go version 1.18+ installed on your development machine.
 Use `make` to build and test the CLI. Makefile help can be found:
 
 ```
