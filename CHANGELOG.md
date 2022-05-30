@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Color server state in `server list` output similarly than in `server show` output.
+- Update Go version to 1.18
 
 ## [1.3.0] - 2022-05-17
 ### Added
