@@ -103,6 +103,7 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	databaseCommand := commands.BuildCommand(database.BaseDatabaseCommand(), rootCmd, conf)
 	commands.BuildCommand(database.ListCommand(), databaseCommand.Cobra(), conf)
 	commands.BuildCommand(database.ShowCommand(), databaseCommand.Cobra(), conf)
+	commands.BuildCommand(database.TypesCommand(), databaseCommand.Cobra(), conf)
 
 	// Misc
 	commands.BuildCommand(
