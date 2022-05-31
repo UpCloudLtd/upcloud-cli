@@ -602,6 +602,22 @@ func (m *Service) GetManagedDatabaseQueryStatisticsPostgreSQL(r *request.GetMana
 	return nil, nil
 }
 
+func (m *Service) GetManagedDatabaseServiceType(r *request.GetManagedDatabaseServiceTypeRequest) (*upcloud.ManagedDatabaseType, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.ManagedDatabaseType), args.Error(1)
+}
+
+func (m *Service) GetManagedDatabaseServiceTypes(r *request.GetManagedDatabaseServiceTypesRequest) (map[string]upcloud.ManagedDatabaseType, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(map[string]upcloud.ManagedDatabaseType), args.Error(1)
+}
+
 func (m *Service) DeleteManagedDatabase(r *request.DeleteManagedDatabaseRequest) error {
 	return nil
 }
