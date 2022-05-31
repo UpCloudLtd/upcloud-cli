@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Add `database list` and `database show` commands.
+- Add `database list`, `database show`,`database plans`, and `database types` commands.
 
 ### Changed
 - Color server state in `server list` output similarly than in `server show` output.
