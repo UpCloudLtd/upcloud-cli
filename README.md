@@ -59,10 +59,12 @@ upctl -h
 Setting up bash completion requires a few commands more.
 
 ```bash
+# If you have not installed bash-completion already
 brew install bash-completion
-sudo upctl completion bash > /usr/local/etc/bash_completion.d/upctl
-echo "[ -f /usr/local/etc/bash_completion ] && . /usr/local/etc/bash_completion" >> ~/.bash_profile
-. /usr/local/etc/bash_completion
+echo '[ -f "$(brew --prefix)/etc/bash_completion" ] && . "$(brew --prefix)/etc/bash_completion"' >> ~/.bash_profile
+
+upctl completion bash > $(brew --prefix)/etc/bash_completion.d/upctl
+. $(brew --prefix)/etc/bash_completion
 ```
 
 ### Linux
@@ -74,20 +76,22 @@ yay -S upcloud-cli
 
 #### Other Linux distros
 
-Use the package corresponding to your distro (deb, rpm, apk), example for Debian like:
+Use the package corresponding to your distro (deb, rpm, apk) from the [releases page](https://github.com/UpCloudLtd/upcloud-cli/releases), example for Debian like:
 
 ```bash
-sudo curl -o upcloud.deb https://github.com/UpCloudLtd/upcloud-cli/releases/download/v<VERSION>/upcloud-cli-<VERSION>_amd64.deb
-sudo dpkg -i upcloud.deb
-sudo chmod +x /usr/local/bin/upctl
+# Replace <VERSION> with the version you want to install
+curl -Lo upcloud-cli.deb https://github.com/UpCloudLtd/upcloud-cli/releases/download/v<VERSION>/upcloud-cli-<VERSION>_amd64.deb
+sudo dpkg -i upcloud-cli.deb
 upctl -h
 ```
 
 Bash completion can also be set up with some extra commands. You should adapt this for your package manager.
 ```bash
+# If you have not installed bash-completion already
 sudo apt install bash-completion
-sudo upctl completion bash > /etc/bash_completion.d/upctl
 echo "[ -f /etc/bash_completion ] && . /etc/bash_completion" >> ~/.bash_profile
+
+upctl completion bash | sudo tee /etc/bash_completion.d/upctl > /dev/null
 . /etc/bash_completion
 ```
 
