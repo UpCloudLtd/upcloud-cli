@@ -58,11 +58,16 @@ upctl -h
 
 Setting up bash completion requires a few commands more.
 
+First, install `bash-completion`, if it is not installed already.
+
 ```bash
-# If you have not installed bash-completion already
 brew install bash-completion
 echo '[ -f "$(brew --prefix)/etc/bash_completion" ] && . "$(brew --prefix)/etc/bash_completion"' >> ~/.bash_profile
+```
 
+Then configure the shell completions for `upctl` by saving the output of `upctl completion bash` in `upctl` file under `/etc/bash_completion.d/`:
+
+```bash
 upctl completion bash > $(brew --prefix)/etc/bash_completion.d/upctl
 . $(brew --prefix)/etc/bash_completion
 ```
@@ -86,11 +91,21 @@ upctl -h
 ```
 
 Bash completion can also be set up with some extra commands. You should adapt this for your package manager.
-```bash
-# If you have not installed bash-completion already
-sudo apt install bash-completion
-echo "[ -f /etc/bash_completion ] && . /etc/bash_completion" >> ~/.bash_profile
 
+First, install `bash-completion`, if it is not installed already.
+
+```bash
+sudo apt install bash-completion
+echo "[ -f /etc/bash_completion ] && . /etc/bash_completion" >> ~/.bashrc
+```
+
+Then configure the shell completions for `upctl` by either sourcing `upctl completion bash` output in your bash `.bashrc` or by saving the output of that command in `upctl` file under `/etc/bash_completion.d/`:
+
+```bash
+# First alternative
+echo 'source <(upctl completion bash)' >>~/.bashrc
+
+# Second alternative
 upctl completion bash | sudo tee /etc/bash_completion.d/upctl > /dev/null
 . /etc/bash_completion
 ```
