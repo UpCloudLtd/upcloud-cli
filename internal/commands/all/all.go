@@ -110,6 +110,7 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	// LoadBalancers
 	loadbalancerCommand := commands.BuildCommand(loadbalancer.BaseLoadBalancerCommand(), rootCmd, conf)
 	commands.BuildCommand(loadbalancer.ListCommand(), loadbalancerCommand.Cobra(), conf)
+	commands.BuildCommand(loadbalancer.ShowCommand(), loadbalancerCommand.Cobra(), conf)
 
 	// Misc
 	commands.BuildCommand(
