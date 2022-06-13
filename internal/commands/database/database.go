@@ -14,3 +14,8 @@ func BaseDatabaseCommand() commands.Command {
 type databaseCommand struct {
 	*commands.BaseCommand
 }
+
+// InitCommand implements Command.InitCommand
+func (db *databaseCommand) InitCommand() {
+	db.Cobra().Aliases = []string{"db"}
+}
