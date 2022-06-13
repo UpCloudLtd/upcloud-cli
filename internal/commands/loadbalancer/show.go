@@ -2,7 +2,9 @@ package loadbalancer
 
 import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
 	"github.com/jedib0t/go-pretty/v6/text"
@@ -22,8 +24,8 @@ func ShowCommand() commands.Command {
 
 type showCommand struct {
 	*commands.BaseCommand
-	// resolver.CachingLoadBalancer
-	// completion.LoadBalancer
+	resolver.CachingLoadBalancer
+	completion.LoadBalancer
 }
 
 // Execute implements commands.MultipleArgumentCommand

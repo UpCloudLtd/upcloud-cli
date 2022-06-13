@@ -647,7 +647,11 @@ func (m *Service) WaitForManagedDatabaseState(r *request.WaitForManagedDatabaseS
 }
 
 func (m *Service) GetLoadBalancers(r *request.GetLoadBalancersRequest) ([]upcloud.LoadBalancer, error) {
-	return nil, nil
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].([]upcloud.LoadBalancer), args.Error(1)
 }
 
 func (m *Service) GetLoadBalancer(r *request.GetLoadBalancerRequest) (*upcloud.LoadBalancer, error) {
