@@ -5,6 +5,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/account"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/database"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/ipaddress"
+	"github.com/UpCloudLtd/upcloud-cli/internal/commands/loadbalancer"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/network"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/networkinterface"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/root"
@@ -105,6 +106,10 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	commands.BuildCommand(database.ShowCommand(), databaseCommand.Cobra(), conf)
 	commands.BuildCommand(database.TypesCommand(), databaseCommand.Cobra(), conf)
 	commands.BuildCommand(database.PlansCommand(), databaseCommand.Cobra(), conf)
+
+	// LoadBalancers
+	loadbalancerCommand := commands.BuildCommand(loadbalancer.BaseLoadBalancerCommand(), rootCmd, conf)
+	commands.BuildCommand(loadbalancer.ListCommand(), loadbalancerCommand.Cobra(), conf)
 
 	// Misc
 	commands.BuildCommand(

@@ -84,6 +84,18 @@ func DatabaseStateColour(state upcloud.ManagedDatabaseState) text.Colors {
 	}
 }
 
+// LoadBalancerOperationalStateColour maps load balancer states to colours
+func LoadBalancerOperationalStateColour(state upcloud.LoadBalancerOperationalState) text.Colors {
+	switch state {
+	case upcloud.LoadBalancerOperationalStateRunning:
+		return text.Colors{text.FgGreen}
+	case upcloud.LoadBalancerOperationalStateCheckup, upcloud.LoadBalancerOperationalStatePending, upcloud.LoadBalancerOperationalStateSetupAgent, upcloud.LoadBalancerOperationalStateSetupDNS, upcloud.LoadBalancerOperationalStateSetupLB, upcloud.LoadBalancerOperationalStateSetupNetwork, upcloud.LoadBalancerOperationalStateSetupServer:
+		return text.Colors{text.FgYellow}
+	default:
+		return text.Colors{text.FgHiBlack}
+	}
+}
+
 // ServerStateColour is a helper mapping server states to colours
 func ServerStateColour(state string) text.Colors {
 	switch state {
