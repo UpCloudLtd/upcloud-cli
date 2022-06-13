@@ -1,6 +1,8 @@
 package loadbalancer
 
 import (
+	"strings"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
@@ -69,6 +71,19 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 		})
 	}
 
+	resolverRows := []output.TableRow{}
+	for _, resolver := range lb.Resolvers {
+		var nameservers []string
+		for _, nameserver := range resolver.Nameservers {
+			nameservers = append(nameservers, ui.DefaultAddressColours.Sprint(nameserver))
+		}
+
+		resolverRows = append(resolverRows, output.TableRow{
+			resolver.Name,
+			strings.Join(nameservers, ", "),
+		})
+	}
+
 	// For JSON and YAML output, passthrough API response
 	return output.MarshaledWithHumanOutput{
 		Value: lb,
@@ -115,6 +130,16 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 						{Key: "rules", Header: "Rules"},
 					},
 					Rows: frontEndRows,
+				},
+			},
+			output.CombinedSection{
+				Title: "Resolvers:",
+				Contents: output.Table{
+					Columns: []output.TableColumn{
+						{Key: "name", Header: "Name"},
+						{Key: "nameservers", Header: "Nameservers"},
+					},
+					Rows: resolverRows,
 				},
 			},
 		},
