@@ -645,3 +645,171 @@ func (m *Service) ShutdownManagedDatabase(r *request.ShutdownManagedDatabaseRequ
 func (m *Service) WaitForManagedDatabaseState(r *request.WaitForManagedDatabaseStateRequest) (*upcloud.ManagedDatabase, error) {
 	return nil, nil
 }
+
+func (m *Service) GetLoadBalancers(r *request.GetLoadBalancersRequest) ([]upcloud.LoadBalancer, error) {
+	return nil, nil
+}
+
+func (m *Service) GetLoadBalancer(r *request.GetLoadBalancerRequest) (*upcloud.LoadBalancer, error) {
+	return nil, nil
+}
+
+func (m *Service) CreateLoadBalancer(r *request.CreateLoadBalancerRequest) (*upcloud.LoadBalancer, error) {
+	return nil, nil
+}
+
+func (m *Service) ModifyLoadBalancer(r *request.ModifyLoadBalancerRequest) (*upcloud.LoadBalancer, error) {
+	return nil, nil
+}
+
+func (m *Service) DeleteLoadBalancer(r *request.DeleteLoadBalancerRequest) error {
+	return nil
+}
+
+func (m *Service) GetLoadBalancerBackends(r *request.GetLoadBalancerBackendsRequest) ([]upcloud.LoadBalancerBackend, error) {
+	return nil, nil
+}
+
+func (m *Service) GetLoadBalancerBackend(r *request.GetLoadBalancerBackendRequest) (*upcloud.LoadBalancerBackend, error) {
+	return nil, nil
+}
+
+func (m *Service) CreateLoadBalancerBackend(r *request.CreateLoadBalancerBackendRequest) (*upcloud.LoadBalancerBackend, error) {
+	return nil, nil
+}
+
+func (m *Service) ModifyLoadBalancerBackend(r *request.ModifyLoadBalancerBackendRequest) (*upcloud.LoadBalancerBackend, error) {
+	return nil, nil
+}
+
+func (m *Service) DeleteLoadBalancerBackend(r *request.DeleteLoadBalancerBackendRequest) error {
+	return nil
+}
+
+func (m *Service) GetLoadBalancerBackendMembers(r *request.GetLoadBalancerBackendMembersRequest) ([]upcloud.LoadBalancerBackendMember, error) {
+	return nil, nil
+}
+
+func (m *Service) GetLoadBalancerBackendMember(r *request.GetLoadBalancerBackendMemberRequest) (*upcloud.LoadBalancerBackendMember, error) {
+	return nil, nil
+}
+
+func (m *Service) CreateLoadBalancerBackendMember(r *request.CreateLoadBalancerBackendMemberRequest) (*upcloud.LoadBalancerBackendMember, error) {
+	return nil, nil
+}
+
+func (m *Service) ModifyLoadBalancerBackendMember(r *request.ModifyLoadBalancerBackendMemberRequest) (*upcloud.LoadBalancerBackendMember, error) {
+	return nil, nil
+}
+
+func (m *Service) DeleteLoadBalancerBackendMember(r *request.DeleteLoadBalancerBackendMemberRequest) error {
+	return nil
+}
+
+func (m *Service) GetLoadBalancerResolvers(r *request.GetLoadBalancerResolversRequest) ([]upcloud.LoadBalancerResolver, error) {
+	return nil, nil
+}
+
+func (m *Service) CreateLoadBalancerResolver(r *request.CreateLoadBalancerResolverRequest) (*upcloud.LoadBalancerResolver, error) {
+	return nil, nil
+}
+
+func (m *Service) GetLoadBalancerResolver(r *request.GetLoadBalancerResolverRequest) (*upcloud.LoadBalancerResolver, error) {
+	return nil, nil
+}
+
+func (m *Service) ModifyLoadBalancerResolver(r *request.ModifyLoadBalancerResolverRequest) (*upcloud.LoadBalancerResolver, error) {
+	return nil, nil
+}
+
+func (m *Service) DeleteLoadBalancerResolver(r *request.DeleteLoadBalancerResolverRequest) error {
+	return nil
+}
+
+func (m *Service) GetLoadBalancerPlans(r *request.GetLoadBalancerPlansRequest) ([]upcloud.LoadBalancerPlan, error) {
+	return nil, nil
+}
+
+func (m *Service) GetLoadBalancerFrontends(r *request.GetLoadBalancerFrontendsRequest) ([]upcloud.LoadBalancerFrontend, error) {
+	return nil, nil
+}
+
+func (m *Service) GetLoadBalancerFrontend(r *request.GetLoadBalancerFrontendRequest) (*upcloud.LoadBalancerFrontend, error) {
+	return nil, nil
+}
+
+func (m *Service) CreateLoadBalancerFrontend(r *request.CreateLoadBalancerFrontendRequest) (*upcloud.LoadBalancerFrontend, error) {
+	return nil, nil
+}
+
+func (m *Service) ModifyLoadBalancerFrontend(r *request.ModifyLoadBalancerFrontendRequest) (*upcloud.LoadBalancerFrontend, error) {
+	return nil, nil
+}
+
+func (m *Service) DeleteLoadBalancerFrontend(r *request.DeleteLoadBalancerFrontendRequest) error {
+	return nil
+}
+
+func (m *Service) GetLoadBalancerFrontendRules(r *request.GetLoadBalancerFrontendRulesRequest) ([]upcloud.LoadBalancerFrontendRule, error) {
+	return nil, nil
+}
+
+func (m *Service) GetLoadBalancerFrontendRule(r *request.GetLoadBalancerFrontendRuleRequest) (*upcloud.LoadBalancerFrontendRule, error) {
+	return nil, nil
+}
+
+func (m *Service) CreateLoadBalancerFrontendRule(r *request.CreateLoadBalancerFrontendRuleRequest) (*upcloud.LoadBalancerFrontendRule, error) {
+	return nil, nil
+}
+
+func (m *Service) ModifyLoadBalancerFrontendRule(r *request.ModifyLoadBalancerFrontendRuleRequest) (*upcloud.LoadBalancerFrontendRule, error) {
+	return nil, nil
+}
+
+func (m *Service) ReplaceLoadBalancerFrontendRule(r *request.ReplaceLoadBalancerFrontendRuleRequest) (*upcloud.LoadBalancerFrontendRule, error) {
+	return nil, nil
+}
+
+func (m *Service) DeleteLoadBalancerFrontendRule(r *request.DeleteLoadBalancerFrontendRuleRequest) error {
+	return nil
+}
+
+func (m *Service) GetLoadBalancerFrontendTLSConfigs(r *request.GetLoadBalancerFrontendTLSConfigsRequest) ([]upcloud.LoadBalancerFrontendTLSConfig, error) {
+	return nil, nil
+}
+
+func (m *Service) GetLoadBalancerFrontendTLSConfig(r *request.GetLoadBalancerFrontendTLSConfigRequest) (*upcloud.LoadBalancerFrontendTLSConfig, error) {
+	return nil, nil
+}
+
+func (m *Service) CreateLoadBalancerFrontendTLSConfig(r *request.CreateLoadBalancerFrontendTLSConfigRequest) (*upcloud.LoadBalancerFrontendTLSConfig, error) {
+	return nil, nil
+}
+
+func (m *Service) ModifyLoadBalancerFrontendTLSConfig(r *request.ModifyLoadBalancerFrontendTLSConfigRequest) (*upcloud.LoadBalancerFrontendTLSConfig, error) {
+	return nil, nil
+}
+
+func (m *Service) DeleteLoadBalancerFrontendTLSConfig(r *request.DeleteLoadBalancerFrontendTLSConfigRequest) error {
+	return nil
+}
+
+func (m *Service) GetLoadBalancerCertificateBundles(r *request.GetLoadBalancerCertificateBundlesRequest) ([]upcloud.LoadBalancerCertificateBundle, error) {
+	return nil, nil
+}
+
+func (m *Service) GetLoadBalancerCertificateBundle(r *request.GetLoadBalancerCertificateBundleRequest) (*upcloud.LoadBalancerCertificateBundle, error) {
+	return nil, nil
+}
+
+func (m *Service) CreateLoadBalancerCertificateBundle(r *request.CreateLoadBalancerCertificateBundleRequest) (*upcloud.LoadBalancerCertificateBundle, error) {
+	return nil, nil
+}
+
+func (m *Service) ModifyLoadBalancerCertificateBundle(r *request.ModifyLoadBalancerCertificateBundleRequest) (*upcloud.LoadBalancerCertificateBundle, error) {
+	return nil, nil
+}
+
+func (m *Service) DeleteLoadBalancerCertificateBundle(r *request.DeleteLoadBalancerCertificateBundleRequest) error {
+	return nil
+}
