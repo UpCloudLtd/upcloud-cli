@@ -14,3 +14,8 @@ func BaseLoadBalancerCommand() commands.Command {
 type loadbalancerCommand struct {
 	*commands.BaseCommand
 }
+
+// InitCommand implements Command.InitCommand
+func (lb *loadbalancerCommand) InitCommand() {
+	lb.Cobra().Aliases = []string{"lb"}
+}
