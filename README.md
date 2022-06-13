@@ -12,17 +12,18 @@ Usage:
 upctl [command]
 
 Available Commands:
-account     Manage account
-completion  Generates shell completion
-database    Manage databases
-help        Help about any command
-ip-address  Manage ip address
-network     Manage network
-router      Manage router
-server      Manage servers
-storage     Manage storages
-version     Display software information
-zone        Display zone information
+account      Manage account
+completion   Generates shell completion
+database     Manage databases
+help         Help about any command
+ip-address   Manage ip address
+loadbalancer Manage load balancers
+network      Manage network
+router       Manage router
+server       Manage servers
+storage      Manage storages
+version      Display software information
+zone         Display zone information
 
 Options:
   -t, --client-timeout duration   CLI timeout when using interactive mode on some commands
