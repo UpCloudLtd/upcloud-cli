@@ -3,7 +3,7 @@ module github.com/UpCloudLtd/upcloud-cli
 go 1.18
 
 require (
-	github.com/UpCloudLtd/upcloud-go-api/v4 v4.6.0
+	github.com/UpCloudLtd/upcloud-go-api/v4 v4.8.0
 	github.com/adrg/xdg v0.3.2
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d
 	github.com/gemalto/flume v0.12.0

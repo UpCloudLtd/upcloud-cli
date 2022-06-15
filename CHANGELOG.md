@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Color server state in `server list` output similarly than in `server show` output.
 - Update Go version to 1.18
-- Update `upcloud-go-api` to `v4.6.0`
+- Update `upcloud-go-api` to `v4.8.0`
 
 ## [1.3.0] - 2022-05-17
 ### Added
