@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2022-06-15
 ### Added
 - Add `database list`, `database show`,`database plans`, and `database types` commands.
 - Add `loadbalancer list` and `loadbalancer show` commands.
@@ -114,7 +115,7 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v1.4.0...HEAD
 [0.1.0]: https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v0.1.0
 [0.1.1]: https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v0.1.1
 [0.5.0]: https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v0.5.0
@@ -126,3 +127,4 @@ Initial public beta release :tada:
 [1.1.3]: https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v1.1.3
 [1.2.0]: https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v1.2.0
 [1.3.0]: https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v1.3.0
+[1.4.0]: https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v1.4.0
