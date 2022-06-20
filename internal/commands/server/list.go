@@ -7,7 +7,6 @@ import (
 	"sync"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
-	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/service"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
@@ -20,7 +19,13 @@ import (
 // ListCommand creates the "server list" command
 func ListCommand() commands.Command {
 	return &listCommand{
-		BaseCommand: commands.New("list", "List current servers", "upctl server list"),
+		BaseCommand: commands.New(
+			"list",
+			"List current servers",
+			"upctl server list",
+			"upctl server list --show-ip-addresses",
+			"upctl server list --show-ip-addresses=public",
+		),
 	}
 }
 
@@ -38,13 +43,14 @@ type listServerIpaddresses struct {
 
 type listCommand struct {
 	*commands.BaseCommand
-	showIPAddresses config.OptionalBoolean
+	showIPAddresses string
 }
 
 // InitCommand implements Command.InitCommand
 func (ls *listCommand) InitCommand() {
 	flags := &pflag.FlagSet{}
-	config.AddToggleFlag(flags, &ls.showIPAddresses, "show-ip-addresses", false, "Show IP addresses of the servers in the output.")
+	flags.StringVar(&ls.showIPAddresses, "show-ip-addresses", "none", "Show servers IP addresses of specified access type in the output or all ip addresses if argument value is \"all\" or no argument is specified.")
+	flags.Lookup("show-ip-addresses").NoOptDefVal = "all"
 	ls.AddFlags(flags)
 }
 
@@ -83,8 +89,8 @@ func (ls *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.O
 		{Key: "state", Header: "State"},
 	}
 
-	if ls.showIPAddresses.Value() {
-		ipaddressMap, err := getIPAddressesByServerUUID(servers, svc)
+	if ls.showIPAddresses != "none" {
+		ipaddressMap, err := getIPAddressesByServerUUID(servers, ls.showIPAddresses, svc)
 		if err != nil {
 			return nil, err
 		}
@@ -115,7 +121,7 @@ func (ls *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.O
 }
 
 // getIPAddressesByServerUUID returns IP addresses grouped by server UUID. This function will be removed when server end-point response includes IP addresses.
-func getIPAddressesByServerUUID(servers *upcloud.Servers, svc service.AllServices) (map[string]listServerIpaddresses, error) {
+func getIPAddressesByServerUUID(servers *upcloud.Servers, accessType string, svc service.AllServices) (map[string]listServerIpaddresses, error) {
 	returnChan := make(chan listServerIpaddresses)
 	var wg sync.WaitGroup
 
@@ -123,7 +129,7 @@ func getIPAddressesByServerUUID(servers *upcloud.Servers, svc service.AllService
 		wg.Add(1)
 		go func(server upcloud.Server) {
 			defer wg.Done()
-			ipaddresses, err := getServerIPAddresses(server.UUID, svc)
+			ipaddresses, err := getServerIPAddresses(server.UUID, accessType, svc)
 			returnChan <- listServerIpaddresses{
 				ServerUUID:  server.UUID,
 				IPAddresses: ipaddresses,
@@ -145,7 +151,7 @@ func getIPAddressesByServerUUID(servers *upcloud.Servers, svc service.AllService
 	return ipaddressMap, nil
 }
 
-func getServerIPAddresses(uuid string, svc service.AllServices) ([]listIPAddress, error) {
+func getServerIPAddresses(uuid, accessType string, svc service.AllServices) ([]listIPAddress, error) {
 	server, err := svc.GetServerNetworks(&request.GetServerNetworksRequest{ServerUUID: uuid})
 	if err != nil {
 		return nil, err
@@ -154,11 +160,13 @@ func getServerIPAddresses(uuid string, svc service.AllServices) ([]listIPAddress
 	var ipaddresses []listIPAddress
 	for _, iface := range server.Interfaces {
 		for _, ipa := range iface.IPAddresses {
-			ipaddresses = append(ipaddresses, listIPAddress{
-				Access:   iface.Type,
-				Address:  ipa.Address,
-				Floating: ipa.Floating.Bool(),
-			})
+			if accessType == "all" || iface.Type == accessType {
+				ipaddresses = append(ipaddresses, listIPAddress{
+					Access:   iface.Type,
+					Address:  ipa.Address,
+					Floating: ipa.Floating.Bool(),
+				})
+			}
 		}
 	}
 
