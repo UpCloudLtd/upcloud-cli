@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"strings"
+	"sync"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
@@ -10,6 +11,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/service"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/pflag"
 )
@@ -25,6 +27,12 @@ type listIPAddress struct {
 	Access   string `json:"access"`
 	Address  string `json:"address"`
 	Floating bool   `json:"floating"`
+}
+
+type listServerIpaddresses struct {
+	ServerUUID  string
+	IPAddresses []listIPAddress
+	Error       error
 }
 
 type listCommand struct {
@@ -75,7 +83,7 @@ func (ls *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.O
 	}
 
 	if ls.showIPAddresses.Value() {
-		ipaddressMap, err := getIPAddressesByServerUUID(svc)
+		ipaddressMap, err := getIPAddressesByServerUUID(servers, svc)
 		if err != nil {
 			return nil, err
 		}
@@ -84,14 +92,8 @@ func (ls *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.O
 			uuid := row[0].(string)
 
 			var listIpaddresses []listIPAddress
-			if apiIpaddresses, ok := ipaddressMap[uuid]; ok {
-				for _, ipa := range apiIpaddresses {
-					listIpaddresses = append(listIpaddresses, listIPAddress{
-						Access:   ipa.Access,
-						Address:  ipa.Address,
-						Floating: ipa.Floating.Bool(),
-					})
-				}
+			if serverIpaddresses, ok := ipaddressMap[uuid]; ok {
+				listIpaddresses = append(listIpaddresses, serverIpaddresses.IPAddresses...)
 			}
 			row = append(row[:3], row[2:]...)
 			row[2] = listIpaddresses
@@ -112,23 +114,54 @@ func (ls *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.O
 }
 
 // getIPAddressesByServerUUID returns IP addresses grouped by server UUID. This function will be removed when server end-point response includes IP addresses.
-func getIPAddressesByServerUUID(svc service.AllServices) (map[string][]upcloud.IPAddress, error) {
-	ipaddresses, err := svc.GetIPAddresses()
+func getIPAddressesByServerUUID(servers *upcloud.Servers, svc service.AllServices) (map[string]listServerIpaddresses, error) {
+	returnChan := make(chan listServerIpaddresses)
+	var wg sync.WaitGroup
+
+	for _, server := range servers.Servers {
+		wg.Add(1)
+		go func(server upcloud.Server) {
+			defer wg.Done()
+			ipaddresses, err := getServerIPAddresses(server.UUID, svc)
+			returnChan <- listServerIpaddresses{
+				ServerUUID:  server.UUID,
+				IPAddresses: ipaddresses,
+				Error:       err,
+			}
+		}(server)
+	}
+
+	go func() {
+		wg.Wait()
+		close(returnChan)
+	}()
+
+	ipaddressMap := make(map[string]listServerIpaddresses)
+	for response := range returnChan {
+		ipaddressMap[response.ServerUUID] = response
+	}
+
+	return ipaddressMap, nil
+}
+
+func getServerIPAddresses(uuid string, svc service.AllServices) ([]listIPAddress, error) {
+	server, err := svc.GetServerNetworks(&request.GetServerNetworksRequest{ServerUUID: uuid})
 	if err != nil {
 		return nil, err
 	}
 
-	ipaddressMap := make(map[string][]upcloud.IPAddress)
-	for _, ipaddress := range ipaddresses.IPAddresses {
-		current, ok := ipaddressMap[ipaddress.ServerUUID]
-		if ok {
-			ipaddressMap[ipaddress.ServerUUID] = append(current, ipaddress)
-		} else {
-			ipaddressMap[ipaddress.ServerUUID] = []upcloud.IPAddress{ipaddress}
+	var ipaddresses []listIPAddress
+	for _, iface := range server.Interfaces {
+		for _, ipa := range iface.IPAddresses {
+			ipaddresses = append(ipaddresses, listIPAddress{
+				Access:   iface.Type,
+				Address:  ipa.Address,
+				Floating: ipa.Floating.Bool(),
+			})
 		}
 	}
 
-	return ipaddressMap, nil
+	return ipaddresses, nil
 }
 
 func formatListIPAddresses(val interface{}) (text.Colors, string, error) {
