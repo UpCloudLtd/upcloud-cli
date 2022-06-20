@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 	"sync"
 
@@ -160,6 +161,24 @@ func getServerIPAddresses(uuid string, svc service.AllServices) ([]listIPAddress
 			})
 		}
 	}
+
+	sort.Slice(ipaddresses, func(i, j int) bool {
+		accessMap := map[string]int{
+			"public":  3,
+			"private": 2,
+			"utility": 1,
+		}
+		floatingMap := map[bool]int{
+			true:  1,
+			false: 0,
+		}
+
+		if accessMap[ipaddresses[i].Access] != accessMap[ipaddresses[j].Access] {
+			return accessMap[ipaddresses[i].Access] > accessMap[ipaddresses[j].Access]
+		}
+
+		return floatingMap[ipaddresses[i].Floating] > floatingMap[ipaddresses[j].Floating]
+	})
 
 	return ipaddresses, nil
 }
