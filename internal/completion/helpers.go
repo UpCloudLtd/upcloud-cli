@@ -9,12 +9,10 @@ import (
 func MatchStringPrefix(vals []string, key string, caseSensitive bool) []string {
 	var r []string
 	key = strings.Trim(key, "'\"")
-	if caseSensitive {
-		key = strings.ToLower(key)
-	}
+
 	for _, v := range vals {
 		if (caseSensitive && strings.HasPrefix(v, key)) ||
-			(!caseSensitive && strings.HasPrefix(strings.ToLower(v), key)) ||
+			(!caseSensitive && strings.HasPrefix(strings.ToLower(v), strings.ToLower(key))) ||
 			key == "" {
 			r = append(r, Escape(v))
 		}

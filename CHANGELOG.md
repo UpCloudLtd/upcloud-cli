@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Add `--show-ip-addresses` flag to `server list` command to optionally include IP addresses in command output. 
+- Add `--show-ip-addresses` flag to `server list` command to optionally include IP addresses in command output.
+
+### Fixed
+- Complete shell input with uppercase letters (e.g., `Cap` to `CapitalizedName` will now work)
 
 ## [1.4.0] - 2022-06-15
 ### Added

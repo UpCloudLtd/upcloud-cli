@@ -31,6 +31,13 @@ func TestMatchStringPrefix(t *testing.T) {
 			expected:      []string{"aba"},
 		},
 		{
+			name:          "capitalized",
+			vals:          []string{"Capitalized", "capitalized"},
+			key:           "Cap",
+			caseSensitive: true,
+			expected:      []string{"Capitalized"},
+		},
+		{
 			name:          "doublequotedkey",
 			vals:          []string{"aba", "bba", "cba"},
 			key:           "\"ab\"",
@@ -52,9 +59,16 @@ func TestMatchStringPrefix(t *testing.T) {
 			expected:      []string{"aba"},
 		},
 		{
-			name:          "case insensitive",
+			name:          "case insensitive (lowercase key)",
 			vals:          []string{"aba", "aBa", "Aba", "aab"},
 			key:           "ab",
+			caseSensitive: false,
+			expected:      []string{"aba", "aBa", "Aba"},
+		},
+		{
+			name:          "case insensitive (uppercase key)",
+			vals:          []string{"aba", "aBa", "Aba", "aab"},
+			key:           "AB",
 			caseSensitive: false,
 			expected:      []string{"aba", "aBa", "Aba"},
 		},
