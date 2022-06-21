@@ -86,8 +86,6 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 		},
 	}
 
-	rootCmd.BashCompletionFunction = commands.CustomBashCompletionFunc(rootCmd.Use)
-
 	flags := &pflag.FlagSet{}
 	flags.StringVarP(
 		&conf.GlobalFlags.ConfigFile, "config", "", "", "Configuration file path.",

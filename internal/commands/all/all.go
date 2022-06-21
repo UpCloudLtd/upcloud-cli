@@ -143,15 +143,6 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 
 	// Misc
 	commands.BuildCommand(
-		&root.CompletionCommand{
-			BaseCommand: commands.New(
-				"completion",
-				"Generates shell completion",
-				"upctl completion bash",
-			),
-		}, rootCmd, conf,
-	)
-	commands.BuildCommand(
 		&root.VersionCommand{
 			BaseCommand: commands.New(
 				"version",
