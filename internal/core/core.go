@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/all"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/internal/terminal"
@@ -77,8 +76,6 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 			return nil
 		},
 	}
-
-	rootCmd.BashCompletionFunction = commands.CustomBashCompletionFunc(rootCmd.Use)
 
 	flags := &pflag.FlagSet{}
 	flags.StringVarP(
