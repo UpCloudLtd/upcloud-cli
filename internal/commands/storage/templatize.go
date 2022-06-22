@@ -7,6 +7,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
+	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
 	"github.com/spf13/pflag"
@@ -73,5 +74,7 @@ func (s *templatizeCommand) Execute(exec commands.Executor, uuid string) (output
 	logline.SetMessage(fmt.Sprintf("%s: success", msg))
 	logline.MarkDone()
 
-	return output.OnlyMarshaled{Value: res}, nil
+	return output.MarshaledWithHumanDetails{Value: res, Details: []output.DetailRow{
+		{Title: "UUID", Value: res.UUID, Colour: ui.DefaultUUUIDColours},
+	}}, nil
 }
