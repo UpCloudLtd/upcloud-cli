@@ -263,7 +263,7 @@ func (s *createCommand) InitCommand() {
 	fs.StringVar(&s.params.Hostname, "hostname", def.Hostname, "Server hostname.")
 	fs.IntVar(&s.params.MemoryAmount, "memory", def.MemoryAmount, "Memory amount in MiB. Only allowed if `plan` option is set to \"custom\".")
 	fs.StringArrayVar(&s.params.networks, "network", def.networks, "A network interface for the server, multiple can be declared.\nUsage: --network family=IPv4,type=public\n\n--network type=private,network=037a530b-533e-4cef-b6ad-6af8094bb2bc,ip-address=10.0.0.1")
-	fs.StringVar(&s.params.os, "os", def.os, "Server OS to use (will be the first storage device). Set to empty to fully customise the storages.")
+	fs.StringVar(&s.params.os, "os", def.os, "Server OS to use (will be the first storage device). The value should be title or UUID of an either public or private template. Set to empty to fully customise the storages.")
 	fs.IntVar(&s.params.osStorageSize, "os-storage-size", def.osStorageSize, "OS storage size in GiB. This is only applicable if `os` is also set. Zero value makes the disk equal to the minimum size of the template.")
 	fs.StringVar(&s.params.PasswordDelivery, "password-delivery", def.PasswordDelivery, "Defines how password is delivered. Available: email, sms")
 	fs.StringVar(&s.params.Plan, "plan", def.Plan, "Server plan name. See \"server plans\" command for valid plans. Set to \"custom\" and use `cores` and `memory` options for flexible plan.")
