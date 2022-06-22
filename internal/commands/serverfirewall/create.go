@@ -38,6 +38,7 @@ func CreateCommand() commands.Command {
 		BaseCommand: commands.New(
 			"create",
 			"Create a new firewall rule",
+			"upctl server firewall create 00038afc-d526-4148-af0e-d2f1eeaded9b --direction in --action drop",
 			"upctl server firewall create 00038afc-d526-4148-af0e-d2f1eeaded9b --direction in --action accept --family IPv4",
 			"upctl server firewall create 00038afc-d526-4148-af0e-d2f1eeaded9b --direction in --action drop --family IPv4 --src-ipaddress-block 10.11.0.88/24",
 		),
@@ -51,6 +52,13 @@ func (s *createCommand) MaximumExecutions() int {
 
 // InitCommand implements Command.InitCommand
 func (s *createCommand) InitCommand() {
+	s.Cobra().Long = `Create a new firewall rule
+
+To edit the default rule of the firewall, set only --direction and --action
+parameters. This creates catch-all rule that will take effect when no other rule
+matches. Note that the default rule must be positioned after all other rules.
+Use --position parameter or create default rule after other rules.`
+
 	flagSet := &pflag.FlagSet{}
 
 	flagSet.StringVar(&s.direction, "direction", "", "Rule direction. Available: in / out")
@@ -80,11 +88,7 @@ func (s *createCommand) Execute(exec commands.Executor, arg string) (output.Outp
 		return nil, fmt.Errorf("action is required")
 	}
 
-	if s.family == "" {
-		return nil, fmt.Errorf("family (IPv4/IPv6) is required")
-	}
-
-	if s.family != "IPv4" && s.family != "IPv6" {
+	if s.family != "" && s.family != "IPv4" && s.family != "IPv6" {
 		return nil, fmt.Errorf("invalid family, use either IPv4 or IPv6")
 	}
 
@@ -133,6 +137,7 @@ func (s *createCommand) Execute(exec commands.Executor, arg string) (output.Outp
 	msg := fmt.Sprintf("creating firewall rule for server %v", arg)
 	logline := exec.NewLogEntry(msg)
 	logline.StartedNow()
+
 	res, err := exec.Firewall().CreateFirewallRule(&request.CreateFirewallRuleRequest{
 		ServerUUID: arg,
 		FirewallRule: upcloud.FirewallRule{
