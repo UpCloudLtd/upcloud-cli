@@ -52,14 +52,20 @@ func TestCreateFirewallRuleCommand(t *testing.T) {
 			error: "action is required",
 		},
 		{
-			name: "Family is required",
+			name: "FirewallRule, drop incoming by default",
 			flags: []string{
 				Server1.UUID,
 				"--direction", "in",
-				"--action", "accept",
+				"--action", "drop",
 			},
-			arg:   Server1.UUID,
-			error: "family (IPv4/IPv6) is required",
+			arg: Server1.UUID,
+			expectedReq: &request.CreateFirewallRuleRequest{
+				FirewallRule: upcloud.FirewallRule{
+					Direction: "in",
+					Action:    "drop",
+				},
+				ServerUUID: Server1.UUID,
+			},
 		},
 		{
 			name: "FirewallRule, accept incoming IPv6",
