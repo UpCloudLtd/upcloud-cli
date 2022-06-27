@@ -1,17 +1,15 @@
 package server
 
 import (
-	"bytes"
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
-	"github.com/UpCloudLtd/upcloud-cli/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/internal/mockexecute"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
-	"github.com/gemalto/flume"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/stretchr/testify/assert"
 )
@@ -202,8 +200,6 @@ func TestServerHumanOutput(t *testing.T) {
 	mService.On("GetFirewallRules", &request.GetFirewallRulesRequest{ServerUUID: uuid}).Return(firewallRules, nil)
 
 	conf := config.New()
-	// force human output
-	conf.Viper().Set(config.KeyOutput, config.ValueOutputHuman)
 
 	command := commands.BuildCommand(ShowCommand(), nil, conf)
 
@@ -212,12 +208,10 @@ func TestServerHumanOutput(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	res, err := command.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService, flume.New("test")), uuid)
 
-	assert.Nil(t, err)
+	command.Cobra().SetArgs([]string{uuid})
+	output, err := mockexecute.MockExecute(command, &mService, conf)
 
-	buf := bytes.NewBuffer(nil)
-	err = output.Render(buf, conf, res)
 	assert.NoError(t, err)
-	assert.Equal(t, expected, buf.String())
+	assert.Equal(t, expected, output)
 }

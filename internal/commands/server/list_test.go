@@ -1,18 +1,16 @@
 package server
 
 import (
-	"bytes"
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
-	"github.com/UpCloudLtd/upcloud-cli/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/internal/mockexecute"
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
-	"github.com/gemalto/flume"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/stretchr/testify/assert"
 )
@@ -128,7 +126,6 @@ func TestListServers(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			conf := config.New()
-			conf.Viper().Set(config.KeyOutput, config.ValueOutputHuman)
 
 			testCmd := ListCommand()
 			mService := new(smock.Service)
@@ -138,23 +135,17 @@ func TestListServers(t *testing.T) {
 			mService.On("GetServerNetworks", &request.GetServerNetworksRequest{ServerUUID: uuid}).Return(&serverNetworks, nil)
 
 			c := commands.BuildCommand(testCmd, nil, conf)
-			err := c.Cobra().Flags().Parse(test.args)
-			assert.NoError(t, err)
+			c.Cobra().SetArgs(test.args)
 
-			res, err := c.(commands.NoArgumentCommand).ExecuteWithoutArguments(commands.NewExecutor(conf, mService, flume.New("test")))
+			output, err := mockexecute.MockExecute(c, mService, conf)
 			assert.NoError(t, err)
-
-			buf := bytes.NewBuffer(nil)
-			err = output.Render(buf, conf, res)
-			assert.NoError(t, err)
-			str := buf.String()
 
 			for _, contains := range test.outputContains {
-				assert.Contains(t, str, contains)
+				assert.Contains(t, output, contains)
 			}
 
 			for _, notContains := range test.outputNotContains {
-				assert.NotContains(t, str, notContains)
+				assert.NotContains(t, output, notContains)
 			}
 		})
 	}

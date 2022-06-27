@@ -12,13 +12,18 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/service"
 )
 
-func MockExecute(command commands.Command, service service.AllServices, config *config.Config) (string, error) {
+func MockExecute(command commands.Command, service service.AllServices, conf *config.Config) (string, error) {
 	buf := bytes.NewBuffer(nil)
 	command.Cobra().SetErr(buf)
 	command.Cobra().SetOut(buf)
 
+	// Use human output if nothing else is defined
+	if !conf.IsSet(config.KeyOutput) {
+		conf.Viper().Set(config.KeyOutput, config.ValueOutputHuman)
+	}
+
 	command.Cobra().RunE = func(_ *cobra.Command, args []string) error {
-		return mockRunE(command, service, config, args)
+		return mockRunE(command, service, conf, args)
 	}
 	err := command.Cobra().Execute()
 
@@ -38,8 +43,8 @@ func mockRunE(command commands.Command, service service.AllServices, config *con
 	case commands.MultipleArgumentCommand:
 		out, err = typedCommand.Execute(executor, args[0])
 	}
-
-	_ = output.Render(command.Cobra().OutOrStdout(), config, out)
-
-	return err
+	if err != nil {
+		return err
+	}
+	return output.Render(command.Cobra().OutOrStdout(), config, out)
 }
