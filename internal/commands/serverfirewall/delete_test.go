@@ -7,9 +7,9 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
+	"github.com/UpCloudLtd/upcloud-cli/internal/mockexecute"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
-	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -37,7 +37,7 @@ func TestDeleteServerFirewallRuleCommand(t *testing.T) {
 		{
 			name:  "no position",
 			flags: []string{},
-			error: "position is required",
+			error: `required flag(s) "position" not set`,
 		},
 		{
 			name:  "position 1",
@@ -56,10 +56,10 @@ func TestDeleteServerFirewallRuleCommand(t *testing.T) {
 
 			conf := config.New()
 			cc := commands.BuildCommand(DeleteCommand(), nil, conf)
-			err := cc.Cobra().Flags().Parse(test.flags)
-			assert.NoError(t, err)
 
-			_, err = cc.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService, flume.New("test")), Server1.UUID)
+			cc.Cobra().SetArgs(append(test.flags, Server1.UUID))
+			_, err := mockexecute.MockExecute(cc, mService, conf)
+
 			if test.error != "" {
 				fmt.Println("ERROR", test.error, "==", err)
 				assert.EqualError(t, err, test.error)

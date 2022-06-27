@@ -6,10 +6,10 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
+	"github.com/UpCloudLtd/upcloud-cli/internal/mockexecute"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
-	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -40,7 +40,7 @@ func TestCreateFirewallRuleCommand(t *testing.T) {
 			name:  "Empty info",
 			flags: []string{},
 			arg:   Server1.UUID,
-			error: "direction is required",
+			error: `required flag(s) "direction", "action" not set`,
 		},
 		{
 			name: "Action is required",
@@ -49,7 +49,7 @@ func TestCreateFirewallRuleCommand(t *testing.T) {
 				"--direction", "in",
 			},
 			arg:   Server1.UUID,
-			error: "action is required",
+			error: `required flag(s) "action" not set`,
 		},
 		{
 			name: "FirewallRule, drop incoming by default",
@@ -96,10 +96,10 @@ func TestCreateFirewallRuleCommand(t *testing.T) {
 
 			conf := config.New()
 			cc := commands.BuildCommand(CreateCommand(), nil, conf)
-			err := cc.Cobra().Flags().Parse(test.flags)
-			assert.NoError(t, err)
 
-			_, err = cc.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService, flume.New("test")), test.arg)
+			cc.Cobra().SetArgs(append(test.flags, test.arg))
+			_, err := mockexecute.MockExecute(cc, &mService, conf)
+
 			if test.error != "" {
 				assert.Error(t, err)
 				assert.Equal(t, test.error, err.Error())

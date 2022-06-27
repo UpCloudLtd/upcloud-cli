@@ -34,13 +34,12 @@ func (s *deleteCommand) InitCommand() {
 	flagSet := &pflag.FlagSet{}
 	flagSet.IntVar(&s.rulePosition, "position", 0, "Rule position. Available: 1-1000")
 	s.AddFlags(flagSet)
+
+	s.Cobra().MarkFlagRequired("position") //nolint:errcheck
 }
 
 // Execute implements commands.MultipleArgumentCommand
 func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
-	if s.rulePosition == 0 {
-		return nil, fmt.Errorf("position is required")
-	}
 	if s.rulePosition < 1 || s.rulePosition > 1000 {
 		return nil, fmt.Errorf("invalid position (1-1000 allowed)")
 	}

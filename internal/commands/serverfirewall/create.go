@@ -76,36 +76,16 @@ Use --position parameter or create default rule after other rules.`
 	flagSet.StringVar(&s.comment, "comment", "", "Freeform comment that can include 0-250 characters.")
 
 	s.AddFlags(flagSet)
+	s.Cobra().MarkFlagRequired("direction") //nolint:errcheck
+	s.Cobra().MarkFlagRequired("action")    //nolint:errcheck
+	s.Cobra().MarkFlagsRequiredTogether("destination-port-start", "destination-port-end")
+	s.Cobra().MarkFlagsRequiredTogether("source-port-start", "source-port-end")
 }
 
 // Execute implements commands.MultipleArgumentCommand
 func (s *createCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
-	if s.direction == "" {
-		return nil, fmt.Errorf("direction is required")
-	}
-
-	if s.action == "" {
-		return nil, fmt.Errorf("action is required")
-	}
-
 	if s.family != "" && s.family != "IPv4" && s.family != "IPv6" {
 		return nil, fmt.Errorf("invalid family, use either IPv4 or IPv6")
-	}
-
-	if s.destinationPortStart == "" && s.destinationPortEnd != "" {
-		return nil, fmt.Errorf("destination-port-start is required if destination-port-end is set")
-	}
-
-	if s.destinationPortEnd == "" && s.destinationPortStart != "" {
-		return nil, fmt.Errorf("destination-port-end is required if destination-port-start is set")
-	}
-
-	if s.sourcePortStart == "" && s.sourcePortEnd != "" {
-		return nil, fmt.Errorf("source-port-start is required if source-port-end is set")
-	}
-
-	if s.sourcePortEnd == "" && s.sourcePortStart != "" {
-		return nil, fmt.Errorf("source-port-end is required if source-port-start is set")
 	}
 
 	var (
