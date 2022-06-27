@@ -47,15 +47,13 @@ func (s *loadCommand) InitCommand() {
 	flagSet.StringVar(&s.params.StorageUUID, "storage", defaultLoadParams.StorageUUID, "The UUID of the storage to be loaded in the CD-ROM device.")
 
 	s.AddFlags(flagSet)
+
+	s.Cobra().MarkFlagRequired("storage") //nolint:errcheck
 }
 
 // Execute implements commands.MultipleArgumentCommand
 func (s *loadCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Storage()
-
-	if s.params.StorageUUID == "" {
-		return nil, fmt.Errorf("storage is required")
-	}
 
 	strg, err := storage.SearchSingleStorage(s.params.StorageUUID, svc)
 	if err != nil {
