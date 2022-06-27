@@ -8,11 +8,11 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/storage"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
+	"github.com/UpCloudLtd/upcloud-cli/internal/mockexecute"
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
-	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -376,7 +376,7 @@ func TestCreateServer(t *testing.T) {
 				"--title", "title",
 				"--zone", "zone",
 			},
-			error: "hostname, zone and some password delivery method are required",
+			error: `required flag(s) "hostname" not set`,
 		},
 		{
 			name: "zone is missing",
@@ -384,7 +384,7 @@ func TestCreateServer(t *testing.T) {
 				"--title", "title",
 				"--hostname", "hostname",
 			},
-			error: "hostname, zone and some password delivery method are required",
+			error: `required flag(s) "zone" not set`,
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
@@ -399,10 +399,9 @@ func TestCreateServer(t *testing.T) {
 			mService.On("GetStorages", mock.Anything).Return(storages, nil)
 
 			c := commands.BuildCommand(testCmd, nil, conf)
-			err := c.Cobra().Flags().Parse(test.args)
-			assert.NoError(t, err)
 
-			_, err = c.(commands.NoArgumentCommand).ExecuteWithoutArguments(commands.NewExecutor(conf, mService, flume.New("test")))
+			c.Cobra().SetArgs(test.args)
+			_, err := mockexecute.MockExecute(c, mService, conf)
 
 			if test.error != "" {
 				if err == nil {

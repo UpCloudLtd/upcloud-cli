@@ -283,13 +283,13 @@ func (s *createCommand) InitCommand() {
 	// fs.BoolVar(&s.params.metadata, "metadata", def.metadata, "Enable metadata service.")
 	// fs.BoolVar(&s.params.remoteAccess, "remote-access-enabled", def.remoteAccess, "Enables or disables the remote access.")
 	s.AddFlags(fs)
+
+	s.Cobra().MarkFlagRequired("hostname") //nolint:errcheck
+	s.Cobra().MarkFlagRequired("zone")     //nolint:errcheck
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
-	if s.params.Hostname == "" || s.params.Zone == "" {
-		return nil, fmt.Errorf("hostname, zone and some password delivery method are required")
-	}
 	if s.params.os == defaultCreateParams.os && s.params.PasswordDelivery == "none" && s.params.sshKeys == nil {
 		return nil, fmt.Errorf("a password-delivery method, ssh-keys or a custom image must be specified")
 	}
