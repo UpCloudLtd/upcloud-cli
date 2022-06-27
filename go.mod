@@ -20,6 +20,8 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 )
 
+replace github.com/spf13/cobra => github.com/kangasta/cobra v1.5.1-0.20220623204649-b02e41b5a36d
+
 require (
 	github.com/ansel1/merry v1.5.0 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
