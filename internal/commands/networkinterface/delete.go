@@ -1,7 +1,6 @@
 package networkinterface
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
@@ -35,7 +34,9 @@ func DeleteCommand() commands.Command {
 func (s *deleteCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 	fs.IntVar(&s.interfaceIndex, "index", 0, "Interface index.")
+
 	s.AddFlags(fs)
+	s.Cobra().MarkFlagRequired("index") //nolint:errcheck
 }
 
 // MaximumExecutions implements Command.MaximumExecutions
@@ -45,12 +46,6 @@ func (s *deleteCommand) MaximumExecutions() int {
 
 // ExecuteSingleArgument implements commands.SingleArgumentCommand
 func (s *deleteCommand) ExecuteSingleArgument(exec commands.Executor, arg string) (output.Output, error) {
-	if s.interfaceIndex == 0 {
-		return nil, fmt.Errorf("interface index is required")
-	}
-	if arg == "" {
-		return nil, errors.New("single server uuid is required")
-	}
 	msg := fmt.Sprintf("Deleting network interface %d of server %s", s.interfaceIndex, arg)
 	logline := exec.NewLogEntry(msg)
 	logline.StartedNow()

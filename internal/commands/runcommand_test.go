@@ -145,7 +145,7 @@ func TestRunCommand(t *testing.T) {
 			name:             "single arg with no args",
 			args:             []string{},
 			command:          &mockSingle{Command: &cobra.Command{}},
-			expectedRunError: "exactly one argument is required",
+			expectedRunError: "exactly one positional argument is required",
 		},
 		{
 			name:           "multi args",
@@ -157,7 +157,7 @@ func TestRunCommand(t *testing.T) {
 			name:             "multiarg with no args",
 			args:             []string{},
 			command:          &mockMulti{Command: &cobra.Command{}},
-			expectedRunError: "at least one argument is required",
+			expectedRunError: "at least one positional argument is required",
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
