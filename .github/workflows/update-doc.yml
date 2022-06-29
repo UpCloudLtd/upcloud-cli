@@ -3,7 +3,7 @@ name: documentation
 on:
   push:
     branches:
-      - "master"
+      - "main"
       - "test-doc-generator" # for testing
 
 jobs:
