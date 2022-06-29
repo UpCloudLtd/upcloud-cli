@@ -44,7 +44,9 @@ func (s *modifyCommand) InitCommand() {
 	fs.StringVar(&s.bootable, "bootable", s.bootable, "Whether to try booting through the interface.")
 	fs.StringVar(&s.sourceIPfiltering, "source-ip-filtering", s.sourceIPfiltering, "Whether source IP filtering is enabled on the interface. Disabling it is allowed only for SDN private interfaces.")
 	fs.StringSliceVar(&s.ipAddresses, "ip-addresses", s.ipAddresses, "A comma-separated list of IP addresses, multiple can be declared\nUsage: --ip-address address=94.237.112.143,family=IPv4")
-	s.AddFlags(fs) // TODO(ana): replace usage with examples once the refactor is done.
+
+	s.AddFlags(fs)                      // TODO(ana): replace usage with examples once the refactor is done.
+	s.Cobra().MarkFlagRequired("index") //nolint:errcheck
 }
 
 // MaximumExecutions implements Command.MaximumExecutions
@@ -54,9 +56,6 @@ func (s *modifyCommand) MaximumExecutions() int {
 
 // ExecuteSingleArgument implements commands.SingleArgumentCommand
 func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string) (output.Output, error) {
-	if s.currentIndex == 0 {
-		return nil, fmt.Errorf("index is required")
-	}
 	ipAddresses, err := mapIPAddressesToRequest(s.ipAddresses)
 	if err != nil {
 		return nil, err

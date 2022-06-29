@@ -38,7 +38,7 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 		cmdLogger.Debug("executing single argument", "arguments", args)
 		// make sure we have an argument
 		if len(args) != 1 || args[0] == "" {
-			return fmt.Errorf("exactly one argument is required")
+			return fmt.Errorf("exactly one positional argument is required")
 		}
 		results, err := execute(typedCommand, executor, args, 1, typedCommand.ExecuteSingleArgument)
 		if err != nil {
@@ -49,7 +49,7 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 		cmdLogger.Debug("executing multi argument", "arguments", args)
 		// make sure we have arguments
 		if len(args) < 1 {
-			return fmt.Errorf("at least one argument is required")
+			return fmt.Errorf("at least one positional argument is required")
 		}
 		results, err := execute(typedCommand, executor, args, typedCommand.MaximumExecutions(), typedCommand.Execute)
 		if err != nil {

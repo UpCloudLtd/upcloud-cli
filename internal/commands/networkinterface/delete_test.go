@@ -6,10 +6,10 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
+	"github.com/UpCloudLtd/upcloud-cli/internal/mockexecute"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
-	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -33,14 +33,9 @@ func TestDeleteCommand(t *testing.T) {
 			req:   request.DeleteNetworkInterfaceRequest{ServerUUID: server.UUID, Index: 4},
 		},
 		{
-			name:  "server is missing",
-			flags: []string{"--index", "4"},
-			error: "single server uuid is required",
-		},
-		{
 			name:  "index is missing",
 			arg:   server.UUID,
-			error: "interface index is required",
+			error: `required flag(s) "index" not set`,
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
@@ -51,14 +46,14 @@ func TestDeleteCommand(t *testing.T) {
 			conf := config.New()
 
 			c := commands.BuildCommand(DeleteCommand(), nil, conf)
-			err := c.Cobra().Flags().Parse(test.flags)
-			assert.NoError(t, err)
 
-			_, err = c.(commands.SingleArgumentCommand).ExecuteSingleArgument(commands.NewExecutor(conf, &mService, flume.New("test")), test.arg)
+			c.Cobra().SetArgs(append(test.flags, test.arg))
+			_, err := mockexecute.MockExecute(c, &mService, conf)
 
 			if test.error != "" {
 				assert.EqualError(t, err, test.error)
 			} else {
+				assert.NoError(t, err)
 				mService.AssertNumberOfCalls(t, targetMethod, 1)
 			}
 		})
