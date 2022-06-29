@@ -55,10 +55,6 @@ type fwProto struct {
 
 // Execute implements commands.MultipleArgumentCommand
 func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
-	// TODO(aakso): implement prompting with readline support
-	if arg == "" {
-		return nil, fmt.Errorf("one server hostname, title or uuid is required")
-	}
 	// get rules and server details in parallel
 	var wg sync.WaitGroup
 	var rules *upcloud.FirewallRules
