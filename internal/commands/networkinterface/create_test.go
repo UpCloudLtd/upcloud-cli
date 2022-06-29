@@ -127,7 +127,7 @@ func TestCreateCommand(t *testing.T) {
 			_, err = c.(commands.SingleArgumentCommand).ExecuteSingleArgument(commands.NewExecutor(conf, &mService, flume.New("test")), server.UUID)
 
 			if test.error != "" {
-				assert.Errorf(t, err, test.error)
+				assert.EqualError(t, err, test.error)
 			} else {
 				mService.AssertNumberOfCalls(t, targetMethod, 1)
 			}
