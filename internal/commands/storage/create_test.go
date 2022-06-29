@@ -6,11 +6,11 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
+	"github.com/UpCloudLtd/upcloud-cli/internal/mockexecute"
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
-	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -92,7 +92,7 @@ func TestCreateCommand(t *testing.T) {
 				"--size", "10",
 				"--zone", "zone",
 			},
-			error: "size, title and zone are required",
+			error: `required flag(s) "title" not set`,
 		},
 		{
 			name: "zone is missing",
@@ -100,7 +100,7 @@ func TestCreateCommand(t *testing.T) {
 				"--title", "title",
 				"--size", "10",
 			},
-			error: "size, title and zone are required",
+			error: `required flag(s) "zone" not set`,
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
@@ -112,13 +112,15 @@ func TestCreateCommand(t *testing.T) {
 			mService.On(targetMethod, &test.expected).Return(&details, nil)
 
 			c := commands.BuildCommand(testCmd, nil, config.New())
-			err := c.Cobra().Flags().Parse(test.args)
-			assert.NoError(t, err)
 
-			_, err = c.(commands.NoArgumentCommand).ExecuteWithoutArguments(commands.NewExecutor(conf, mService, flume.New("test")))
+			c.Cobra().SetArgs(test.args)
+			_, err := mockexecute.MockExecute(c, mService, conf)
+
 			if test.error != "" {
-				assert.Errorf(t, err, test.error)
+				assert.Error(t, err)
+				assert.Equal(t, test.error, err.Error())
 			} else {
+				assert.NoError(t, err)
 				mService.AssertNumberOfCalls(t, targetMethod, 1)
 			}
 		})

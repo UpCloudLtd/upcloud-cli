@@ -6,9 +6,9 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
+	"github.com/UpCloudLtd/upcloud-cli/internal/mockexecute"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
-	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -53,84 +53,78 @@ func TestListStorages(t *testing.T) {
 	var Storage6 = Storage3
 	Storage6.Title = "mock-storage-title6"
 	Storage6.Type = upcloud.StorageTypeBackup
-	storages := upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2, Storage3, Storage4, Storage5, Storage6}}
 
-	for _, testcase := range []struct {
-		name    string
-		private bool
-		public  bool
-		args    []string
-		testFn  func(res upcloud.Storages, e error)
+	allStorages := upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2, Storage3, Storage4, Storage5, Storage6}}
+	storageTitles := make([]string, 6)
+	for i, storage := range allStorages.Storages {
+		storageTitles[i] = storage.Title
+	}
+
+	for _, test := range []struct {
+		name              string
+		private           bool
+		public            bool
+		args              []string
+		outputContains    []string
+		outputNotContains []string
 	}{
 		{
-			name: "List storages",
-			args: []string{"--all"},
-			testFn: func(res upcloud.Storages, e error) {
-				assert.ElementsMatch(t, res.Storages, storages.Storages)
-				assert.Nil(t, e)
-			},
+			name:           "List storages",
+			args:           []string{"--all"},
+			outputContains: storageTitles,
 		},
 		{
-			name: "List public storages",
-			args: []string{"--public"},
-			testFn: func(res upcloud.Storages, e error) {
-				assert.ElementsMatch(t, res.Storages, []upcloud.Storage{Storage3, Storage6})
-				assert.Nil(t, e)
-			},
+			name:              "List public storages",
+			args:              []string{"--public"},
+			outputContains:    []string{Storage3.Title, Storage6.Title},
+			outputNotContains: []string{Storage1.Title, Storage2.Title, Storage4.Title, Storage5.Title},
 		},
 		{
-			name: "List private by default",
-			args: []string{},
-			testFn: func(res upcloud.Storages, e error) {
-				assert.ElementsMatch(t, res.Storages, []upcloud.Storage{Storage1, Storage2, Storage4, Storage5})
-				assert.Nil(t, e)
-			},
+			name:              "List private by default",
+			args:              []string{},
+			outputContains:    []string{Storage1.Title, Storage2.Title, Storage4.Title, Storage5.Title},
+			outputNotContains: []string{Storage3.Title, Storage6.Title},
 		},
 		{
-			name: "List cdrom",
-			args: []string{"--cdrom"},
-			testFn: func(res upcloud.Storages, e error) {
-				assert.ElementsMatch(t, res.Storages, []upcloud.Storage{Storage4})
-				assert.Nil(t, e)
-			},
+			name:              "List cdrom",
+			args:              []string{"--cdrom"},
+			outputContains:    []string{Storage4.Title},
+			outputNotContains: []string{Storage1.Title, Storage2.Title, Storage3.Title, Storage5.Title, Storage6.Title},
 		},
 		{
-			name: "List public backup",
-			args: []string{"--public", "--backup"},
-			testFn: func(res upcloud.Storages, e error) {
-				assert.ElementsMatch(t, res.Storages, []upcloud.Storage{Storage6})
-				assert.Nil(t, e)
-			},
+			name:              "List public backup",
+			args:              []string{"--public", "--backup"},
+			outputContains:    []string{Storage6.Title},
+			outputNotContains: []string{Storage1.Title, Storage2.Title, Storage3.Title, Storage4.Title, Storage5.Title},
 		},
 		{
-			name: "List public template",
-			args: []string{"--public", "--template"},
-			testFn: func(res upcloud.Storages, e error) {
-				assert.ElementsMatch(t, res.Storages, []upcloud.Storage{})
-				assert.Nil(t, e)
-			},
+			name:              "List public template",
+			args:              []string{"--public", "--template"},
+			outputNotContains: []string{Storage1.Title, Storage2.Title, Storage3.Title, Storage4.Title, Storage5.Title, Storage6.Title},
 		},
 	} {
-		t.Run(testcase.name, func(t *testing.T) {
+		t.Run(test.name, func(t *testing.T) {
 			CachedStorages = nil
 			conf := config.New()
 			mService := new(smock.Service)
 
-			storages := upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2, Storage3, Storage4, Storage5, Storage6}}
-			mService.On("GetStorages", mock.Anything).Return(&storages, nil)
+			mService.On("GetStorages", mock.Anything).Return(&allStorages, nil)
 
 			c := commands.BuildCommand(ListCommand(), nil, config.New())
-			err := c.Cobra().Flags().Parse(testcase.args)
-			assert.NoError(t, err)
 
-			_, err = c.(commands.NoArgumentCommand).ExecuteWithoutArguments(commands.NewExecutor(conf, mService, flume.New("test")))
-			assert.NoError(t, err)
+			c.Cobra().SetArgs(test.args)
+			output, err := mockexecute.MockExecute(c, mService, conf)
 
+			assert.NoError(t, err)
 			mService.AssertNumberOfCalls(t, "GetStorages", 1)
-			// more checks
-			// res, err := lc.MakeExecuteCommand()([]string{})
-			// result := res.(*upcloud.Storages)
-			// testcase.testFn(*result, err)
+
+			for _, contains := range test.outputContains {
+				assert.Contains(t, output, contains)
+			}
+
+			for _, notContains := range test.outputNotContains {
+				assert.NotContains(t, output, notContains)
+			}
 		})
 	}
 }

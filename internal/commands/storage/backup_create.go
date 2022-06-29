@@ -48,15 +48,13 @@ func (s *createBackupCommand) InitCommand() {
 	flagSet.StringVar(&s.params.Title, "title", defaultCreateBackupParams.Title, "A short, informational description.")
 
 	s.AddFlags(flagSet)
+	s.Cobra().MarkFlagRequired("title") //nolint:errcheck
 }
 
 // Execute implements commands.MultipleArgumentCommand
 func (s *createBackupCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Storage()
 
-	if s.params.Title == "" {
-		return nil, fmt.Errorf("title is required")
-	}
 	msg := fmt.Sprintf("Backing up storage %v to %v", uuid, s.params.Title)
 	logline := exec.NewLogEntry(msg)
 	logline.StartedNow()
