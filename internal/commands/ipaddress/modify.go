@@ -1,7 +1,6 @@
 package ipaddress
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
@@ -47,9 +46,6 @@ func (s *modifyCommand) MaximumExecutions() int {
 
 // Execute implements commands.MultipleArgumentCommand
 func (s *modifyCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
-	if arg == "" {
-		return nil, errors.New("need ip address to modify")
-	}
 	msg := fmt.Sprintf("Modifying ip-address %v", arg)
 	logline := exec.NewLogEntry(msg)
 
