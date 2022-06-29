@@ -47,6 +47,7 @@ func (s *detachCommand) InitCommand() {
 	flagSet.StringVar(&s.params.Address, "address", defaultDetachParams.Address, "Detach the storage attached to this address.")
 
 	s.AddFlags(flagSet)
+	s.Cobra().MarkFlagRequired("address") //nolint:errcheck
 }
 
 // MaximumExecutions implements command.Command
@@ -57,10 +58,6 @@ func (s *detachCommand) MaximumExecutions() int {
 // ExecuteSingleArgument implements command.SingleArgumentCommand
 func (s *detachCommand) ExecuteSingleArgument(exec commands.Executor, uuid string) (output.Output, error) {
 	storageSvc := exec.Storage()
-
-	if s.params.Address == "" {
-		return nil, fmt.Errorf("address is required")
-	}
 
 	req := s.params.DetachStorageRequest
 	req.ServerUUID = uuid
