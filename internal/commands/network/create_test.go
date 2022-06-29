@@ -6,10 +6,10 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
+	"github.com/UpCloudLtd/upcloud-cli/internal/mockexecute"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
-	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -32,17 +32,17 @@ func TestCreateCommand(t *testing.T) {
 		{
 			name:  "name is missing",
 			args:  []string{"--zone", n.Zone},
-			error: "name is required",
+			error: `required flag(s) "name", "ip-network" not set`,
 		},
 		{
 			name:  "zone is missing",
 			args:  []string{"--name", n.Name},
-			error: "zone is required",
+			error: `required flag(s) "zone", "ip-network" not set`,
 		},
 		{
 			name:  "without network",
 			args:  []string{"--name", n.Name, "--zone", n.Zone},
-			error: "at least one IP network is required",
+			error: `required flag(s) "ip-network" not set`,
 		},
 		{
 			name: "with single network",
@@ -96,15 +96,16 @@ func TestCreateCommand(t *testing.T) {
 			mService := smock.Service{}
 			mService.On(targetMethod, &test.expected).Return(&upcloud.Network{}, nil)
 			conf := config.New()
+
 			c := commands.BuildCommand(CreateCommand(), nil, conf)
-			err := c.Cobra().Flags().Parse(test.args)
-			assert.NoError(t, err)
 
-			_, err = c.(commands.NoArgumentCommand).ExecuteWithoutArguments(commands.NewExecutor(conf, &mService, flume.New("test")))
+			c.Cobra().SetArgs(test.args)
+			_, err := mockexecute.MockExecute(c, &mService, conf)
 
-			if err != nil {
-				assert.Equal(t, test.error, err.Error())
+			if test.error != "" {
+				assert.EqualError(t, err, test.error)
 			} else {
+				assert.NoError(t, err)
 				mService.AssertNumberOfCalls(t, targetMethod, 1)
 			}
 		})
