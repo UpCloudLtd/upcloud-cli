@@ -38,7 +38,7 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 		cmdLogger.Debug("executing single argument", "arguments", args)
 		// make sure we have an argument
 		if len(args) != 1 || args[0] == "" {
-			return fmt.Errorf("exactly 1 argument is required")
+			return fmt.Errorf("exactly one argument is required")
 		}
 		results, err := execute(typedCommand, executor, args, 1, typedCommand.ExecuteSingleArgument)
 		if err != nil {

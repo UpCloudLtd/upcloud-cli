@@ -34,14 +34,13 @@ func ModifyCommand() commands.Command {
 func (s *modifyCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.name, "name", "", "New router name.")
+
 	s.AddFlags(fs)
+	s.Cobra().MarkFlagRequired("name") //nolint:errcheck
 }
 
 // ExecuteSingleArgument implements commands.SingleArgumentCommand
 func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string) (output.Output, error) {
-	if s.name == "" {
-		return nil, fmt.Errorf("name is required")
-	}
 	msg := fmt.Sprintf("Modifying router %s", s.name)
 	logline := exec.NewLogEntry(msg)
 	logline.StartedNow()
