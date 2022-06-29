@@ -41,7 +41,7 @@ func (s *createCommand) InitCommand() {
 	fs.StringVar(&s.name, "name", s.name, "Names the network.")
 	fs.StringVar(&s.zone, "zone", s.zone, "The zone in which the network is configured.")
 	fs.StringVar(&s.router, "router", s.router, "Add this network to an existing router.")
-	//XXX: handle multiline flag doc (try nested flags)
+	// TODO: handle multiline flag doc (try nested flags)
 	fs.StringArrayVar(&s.networks, "ip-network", s.networks, "A network interface for the server, multiple can be declared.\n\n "+
 		"Fields: \n"+
 		"  address: string \n"+
@@ -50,7 +50,11 @@ func (s *createCommand) InitCommand() {
 		"  dhcp: true/false \n"+
 		"  dhcp-default-route: true/false \n"+
 		"  dhcp-dns: array of strings")
+
 	s.AddFlags(fs)
+	s.Cobra().MarkFlagRequired("name")       //nolint:errcheck
+	s.Cobra().MarkFlagRequired("zone")       //nolint:errcheck
+	s.Cobra().MarkFlagRequired("ip-network") //nolint:errcheck
 }
 
 // MaximumExecutions implements Command.MaximumExecutions
@@ -89,16 +93,6 @@ func (s *createCommand) buildRequest() (*request.CreateNetworkRequest, error) {
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
-	// TODO: should we, for example, accept name as the first argument instead of as a flag?
-	if s.name == "" {
-		return nil, fmt.Errorf("name is required")
-	}
-	if s.zone == "" {
-		return nil, fmt.Errorf("zone is required")
-	}
-	if len(s.networks) == 0 {
-		return nil, fmt.Errorf("at least one IP network is required")
-	}
 	svc := exec.Network()
 
 	msg := fmt.Sprintf("Creating network %v", s.name)
