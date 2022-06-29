@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Make `--family` parameter of `server firewall create` command optional to allow editing the default rules.
+- Update `cobra` to `v1.5.0` and refactor required flag validation code. This affects validation error messages.
 
 ### Fixed
 - Complete shell input with uppercase letters (e.g., `Cap` to `CapitalizedName` will now work)
