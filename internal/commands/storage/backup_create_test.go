@@ -6,11 +6,11 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
+	"github.com/UpCloudLtd/upcloud-cli/internal/mockexecute"
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
-	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -49,7 +49,7 @@ func TestCreateBackupCommand(t *testing.T) {
 		{
 			name:  "title is missing",
 			args:  []string{},
-			error: "title is required",
+			error: `required flag(s) "title" not set`,
 		},
 		{
 			name:     "title is provided",
@@ -67,14 +67,15 @@ func TestCreateBackupCommand(t *testing.T) {
 			mService.On(targetMethod, mock.Anything).Return(&details, nil)
 
 			c := commands.BuildCommand(CreateBackupCommand(), nil, conf)
-			err := c.Cobra().Flags().Parse(test.args)
-			assert.NoError(t, err)
 
-			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService, flume.New("test")), Storage2.UUID)
+			c.Cobra().SetArgs(append(test.args, Storage2.UUID))
+			_, err := mockexecute.MockExecute(c, mService, conf)
 
 			if test.error != "" {
-				assert.Errorf(t, err, test.error)
+				assert.Error(t, err)
+				assert.Equal(t, test.error, err.Error())
 			} else {
+				assert.NoError(t, err)
 				mService.AssertNumberOfCalls(t, targetMethod, 1)
 			}
 		})

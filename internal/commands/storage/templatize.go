@@ -49,14 +49,11 @@ func (s *templatizeCommand) InitCommand() {
 	flagSet.StringVar(&s.params.Title, "title", defaultTemplatizeParams.Title, "A short, informational description.")
 
 	s.AddFlags(flagSet)
+	s.Cobra().MarkFlagRequired("title") //nolint:errcheck
 }
 
 // Execute implements commands.MultipleArgumentCommand
 func (s *templatizeCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
-	if s.params.Title == "" {
-		return nil, fmt.Errorf("title is required")
-	}
-
 	svc := exec.Storage()
 	req := s.params.TemplatizeStorageRequest
 	req.UUID = uuid

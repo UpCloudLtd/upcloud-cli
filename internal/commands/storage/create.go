@@ -83,16 +83,15 @@ func (s *createCommand) InitCommand() {
 	s.flagSet = &pflag.FlagSet{}
 	s.params = newCreateParams()
 	applyCreateFlags(s.flagSet, &s.params, defaultCreateParams)
+
 	s.AddFlags(s.flagSet)
+	s.Cobra().MarkFlagRequired("title") //nolint:errcheck
+	s.Cobra().MarkFlagRequired("zone")  //nolint:errcheck
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	svc := exec.Storage()
-
-	if s.params.Size == 0 || s.params.Zone == "" || s.params.Title == "" {
-		return nil, fmt.Errorf("size, title and zone are required")
-	}
 
 	if err := s.params.processParams(); err != nil {
 		return nil, err

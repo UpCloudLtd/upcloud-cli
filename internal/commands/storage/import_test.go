@@ -13,11 +13,11 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
+	"github.com/UpCloudLtd/upcloud-cli/internal/mockexecute"
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
-	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -68,6 +68,11 @@ func TestImportCommand(t *testing.T) {
 		State: upcloud.StorageImportStateCompleted,
 	}
 
+	fileNotFoundErr := "cannot get file size: stat testfile: no such file or directory"
+	if runtime.GOOS == "windows" {
+		fileNotFoundErr = "cannot get file size: CreateFile testfile: The system cannot find the file specified."
+	}
+
 	for _, test := range []struct {
 		name         string
 		args         []string
@@ -95,7 +100,7 @@ func TestImportCommand(t *testing.T) {
 				"--zone", "fi-hel1",
 				"--title", "test-1",
 			},
-			error: "source-location required",
+			error: `required flag(s) "source-location" not set`,
 		},
 		{
 			name: "http import",
@@ -119,8 +124,7 @@ func TestImportCommand(t *testing.T) {
 				"--zone", "fi-hel1",
 				"--title", "test-2",
 			},
-			error:        "cannot get file size: stat testfile: no such file or directory",
-			windowsError: "cannot get file size: CreateFile testfile: The system cannot find the file specified.",
+			error: fileNotFoundErr,
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
@@ -136,17 +140,12 @@ func TestImportCommand(t *testing.T) {
 			mService.On("CreateStorage", mock.Anything).Return(&StorageDetails1, nil)
 
 			c := commands.BuildCommand(ImportCommand(), nil, conf)
-			err := c.Cobra().Flags().Parse(test.args)
-			assert.NoError(t, err)
 
-			_, err = c.(commands.NoArgumentCommand).ExecuteWithoutArguments(commands.NewExecutor(conf, mService, flume.New("test")))
+			c.Cobra().SetArgs(test.args)
+			_, err := mockexecute.MockExecute(c, mService, conf)
 
 			if test.error != "" {
-				if test.windowsError != "" && runtime.GOOS == "windows" {
-					assert.EqualError(t, err, test.windowsError)
-				} else {
-					assert.EqualError(t, err, test.error)
-				}
+				assert.EqualError(t, err, test.error)
 			} else {
 				mService.AssertNumberOfCalls(t, "CreateStorageImport", 1)
 				mService.AssertNumberOfCalls(t, "GetStorageImportDetails", 1)

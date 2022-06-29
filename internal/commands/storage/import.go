@@ -69,7 +69,9 @@ func (s *importCommand) InitCommand() {
 	flagSet.StringVar(&s.existingStorageUUIDOrName, "storage", "", "Import to an existing storage. Storage must be large enough and must be undetached or the server where the storage is attached must be in shutdown state.")
 	config.AddToggleFlag(flagSet, &s.noWait, "no-wait", false, "Do not wait until the import finishes. Only applicable when importing from a remote URL.")
 	applyCreateFlags(flagSet, &s.createParams, defaultCreateParams)
+
 	s.AddFlags(flagSet)
+	s.Cobra().MarkFlagRequired("source-location") //nolint:errcheck
 }
 
 type storageImportStatus struct {
@@ -83,11 +85,6 @@ type storageImportStatus struct {
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
-	// initial argument validation
-	if s.sourceLocation == "" {
-		return nil, fmt.Errorf("source-location required")
-	}
-
 	if s.existingStorageUUIDOrName == "" {
 		if s.createParams.Zone == "" || s.createParams.Title == "" {
 			return nil, fmt.Errorf("either existing storage or zone and title for a new storage to be created required")

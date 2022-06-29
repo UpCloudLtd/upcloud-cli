@@ -53,14 +53,12 @@ func (s *cloneCommand) InitCommand() {
 	flagSet.StringVar(&s.params.Zone, "zone", defaultCloneParams.Zone, "The zone in which the storage will be created, e.g. fi-hel1.")
 
 	s.AddFlags(flagSet)
+	s.Cobra().MarkFlagRequired("title") //nolint:errcheck
+	s.Cobra().MarkFlagRequired("zone")  //nolint:errcheck
 }
 
 // Execute implements commands.MultipleArgumentCommand
 func (s *cloneCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
-	if s.params.Zone == "" || s.params.Title == "" {
-		return nil, fmt.Errorf("title and zone are required")
-	}
-
 	svc := exec.Storage()
 	req := s.params.CloneStorageRequest
 	req.UUID = uuid
