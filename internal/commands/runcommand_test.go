@@ -145,7 +145,7 @@ func TestRunCommand(t *testing.T) {
 			name:             "single arg with no args",
 			args:             []string{},
 			command:          &mockSingle{Command: &cobra.Command{}},
-			expectedRunError: "exactly 1 argument is required",
+			expectedRunError: "exactly one argument is required",
 		},
 		{
 			name:           "multi args",

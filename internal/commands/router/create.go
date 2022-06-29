@@ -31,7 +31,9 @@ func CreateCommand() commands.Command {
 func (s *createCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.name, "name", s.name, "Router name.")
+
 	s.AddFlags(fs)
+	s.Cobra().MarkFlagRequired("name") //nolint:errcheck
 }
 
 // MaximumExecutions implements Command.MaximumExecutions
@@ -41,10 +43,6 @@ func (s *createCommand) MaximumExecutions() int {
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
-	// TODO: should this be a regular argument?
-	if s.name == "" {
-		return nil, fmt.Errorf("name is required")
-	}
 	msg := fmt.Sprintf("Creating router %s", s.name)
 	logline := exec.NewLogEntry(msg)
 	logline.StartedNow()

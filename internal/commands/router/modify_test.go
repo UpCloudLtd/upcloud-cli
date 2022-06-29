@@ -6,10 +6,10 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
+	"github.com/UpCloudLtd/upcloud-cli/internal/mockexecute"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
-	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -20,29 +20,21 @@ func TestModifyCommand(t *testing.T) {
 
 	for _, test := range []struct {
 		name    string
-		flags   []string
-		arg     string
+		args    []string
 		error   string
 		returns *upcloud.Router
 		req     request.ModifyRouterRequest
 	}{
 		{
-			name:  "arg is missing",
-			flags: []string{},
-			error: "router is required",
-		},
-		{
 			name:  "name is missing",
-			arg:   router.UUID,
-			flags: []string{},
-			error: "name is required",
+			args:  []string{router.UUID},
+			error: `required flag(s) "name" not set`,
 		},
 		{
 			name:    "name is passed",
-			arg:     router.UUID,
-			flags:   []string{"--name", "router-2-b"},
+			args:    []string{"--name", "New name", router.UUID},
 			returns: &modifiedRouter,
-			req:     request.ModifyRouterRequest{Name: "router-2-b", UUID: router.UUID},
+			req:     request.ModifyRouterRequest{Name: "New name", UUID: router.UUID},
 		},
 	} {
 		targetMethod := "ModifyRouter"
@@ -54,14 +46,14 @@ func TestModifyCommand(t *testing.T) {
 			conf := config.New()
 
 			c := commands.BuildCommand(ModifyCommand(), nil, conf)
-			if err := c.Cobra().Flags().Parse(test.flags); err != nil {
-				t.Fatal(err)
-			}
-			_, err := c.(commands.SingleArgumentCommand).ExecuteSingleArgument(commands.NewExecutor(conf, &mService, flume.New("test")), test.arg)
+
+			c.Cobra().SetArgs(test.args)
+			_, err := mockexecute.MockExecute(c, &mService, conf)
 
 			if test.error != "" {
-				assert.Errorf(t, err, test.error)
+				assert.EqualError(t, err, test.error)
 			} else {
+				assert.NoError(t, err)
 				mService.AssertNumberOfCalls(t, targetMethod, 1)
 			}
 		})

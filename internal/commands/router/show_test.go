@@ -1,11 +1,9 @@
 package router
 
 import (
-	"bytes"
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
-	"github.com/gemalto/flume"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -13,7 +11,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
-	"github.com/UpCloudLtd/upcloud-cli/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/internal/mockexecute"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 )
 
@@ -82,11 +80,9 @@ func TestShowCommand(t *testing.T) {
 	_, err := c.(resolver.ResolutionProvider).Get(&mService)
 	assert.NoError(t, err)
 
-	res, err := c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService, flume.New("test")), router.UUID)
-	assert.NoError(t, err)
+	c.Cobra().SetArgs([]string{router.UUID})
+	output, err := mockexecute.MockExecute(c, &mService, conf)
 
-	buf := bytes.NewBuffer(nil)
-	err = output.Render(buf, conf, res)
 	assert.NoError(t, err)
-	assert.Equal(t, expected, buf.String())
+	assert.Equal(t, expected, output)
 }

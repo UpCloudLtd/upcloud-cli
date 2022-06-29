@@ -39,8 +39,10 @@ func mockRunE(command commands.Command, service service.AllServices, config *con
 	case commands.NoArgumentCommand:
 		out, err = typedCommand.ExecuteWithoutArguments(executor)
 	case commands.SingleArgumentCommand:
+		// Panics if called with nil args
 		out, err = typedCommand.ExecuteSingleArgument(executor, args[0])
 	case commands.MultipleArgumentCommand:
+		// Panics if called with nil args
 		out, err = typedCommand.Execute(executor, args[0])
 	}
 	if err != nil {
