@@ -6,11 +6,11 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
+	"github.com/UpCloudLtd/upcloud-cli/internal/mockexecute"
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
-	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -72,7 +72,7 @@ func TestAttachStorageCommand(t *testing.T) {
 		{
 			name:  "storage is missing",
 			args:  []string{},
-			error: "storage is required",
+			error: `required flag(s) "storage" not set`,
 		},
 		{
 			name: "use default values",
@@ -113,15 +113,15 @@ func TestAttachStorageCommand(t *testing.T) {
 			mService.On("GetStorages", mock.Anything).Return(storages, nil)
 
 			c := commands.BuildCommand(AttachCommand(), nil, conf)
-			err := c.Cobra().Flags().Parse(test.args)
-			assert.NoError(t, err)
 
-			_, err = c.(commands.SingleArgumentCommand).ExecuteSingleArgument(commands.NewExecutor(conf, mService, flume.New("test")), Server1.UUID)
+			c.Cobra().SetArgs(append(test.args, Server1.UUID))
+			_, err := mockexecute.MockExecute(c, mService, conf)
 
 			if test.error != "" {
 				assert.Error(t, err)
 				assert.Equal(t, test.error, err.Error())
 			} else {
+				assert.NoError(t, err)
 				mService.AssertNumberOfCalls(t, targetMethod, 1)
 			}
 		})

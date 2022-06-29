@@ -58,6 +58,7 @@ func (s *attachCommand) InitCommand() {
 	config.AddToggleFlag(flagSet, &s.params.bootable, "boot-disk", false, "Set attached device as the server's boot disk.")
 
 	s.AddFlags(flagSet)
+	s.Cobra().MarkFlagRequired("storage") //nolint:errcheck
 }
 
 // MaximumExecutions implements command.Command
@@ -68,10 +69,6 @@ func (s *attachCommand) MaximumExecutions() int {
 // ExecuteSingleArgument implements command.SingleArgumentCommand
 func (s *attachCommand) ExecuteSingleArgument(exec commands.Executor, uuid string) (output.Output, error) {
 	storageSvc := exec.Storage()
-
-	if s.params.StorageUUID == "" {
-		return nil, fmt.Errorf("storage is required")
-	}
 
 	strg, err := storage.SearchSingleStorage(s.params.StorageUUID, storageSvc)
 	if err != nil {
