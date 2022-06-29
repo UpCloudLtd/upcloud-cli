@@ -102,8 +102,7 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService, flume.New("test")), test1.storage.UUID)
 
 			if test1.error != "" {
-				assert.Error(t, err)
-				assert.Equal(t, test1.error, err.Error())
+				assert.EqualError(t, err, test1.error)
 			} else {
 				assert.Nil(t, err)
 				mService.AssertNumberOfCalls(t, targetMethod, test1.methodCalls)
@@ -153,8 +152,7 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService, flume.New("test")), test2.storage.UUID)
 
 			if test2.error != "" {
-				assert.Error(t, err)
-				assert.Equal(t, test2.error, err.Error())
+				assert.EqualError(t, err, test2.error)
 			} else {
 				assert.Nil(t, err)
 				mService.AssertNumberOfCalls(t, targetMethod, test2.methodCalls)
@@ -221,8 +219,7 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService, flume.New("test")), test3.storage.UUID)
 
 			if test3.error != "" {
-				assert.Error(t, err)
-				assert.Equal(t, test3.error, err.Error())
+				assert.EqualError(t, err, test3.error)
 			} else {
 				assert.Nil(t, err)
 				mService.AssertNumberOfCalls(t, targetMethod, test3.methodCalls)

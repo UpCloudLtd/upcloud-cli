@@ -118,8 +118,7 @@ func TestAttachStorageCommand(t *testing.T) {
 			_, err := mockexecute.MockExecute(c, mService, conf)
 
 			if test.error != "" {
-				assert.Error(t, err)
-				assert.Equal(t, test.error, err.Error())
+				assert.EqualError(t, err, test.error)
 			} else {
 				assert.NoError(t, err)
 				mService.AssertNumberOfCalls(t, targetMethod, 1)

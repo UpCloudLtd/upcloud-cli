@@ -1,7 +1,6 @@
 package account
 
 import (
-	"bytes"
 	"testing"
 
 	"github.com/jedib0t/go-pretty/v6/text"
@@ -9,10 +8,9 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
-	"github.com/UpCloudLtd/upcloud-cli/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/internal/mockexecute"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
-	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -58,13 +56,9 @@ func TestShowCommand(t *testing.T) {
 	conf.Viper().Set(config.KeyOutput, config.ValueOutputHuman)
 
 	command := commands.BuildCommand(testCmd, nil, conf)
-	out, err := command.(commands.NoArgumentCommand).ExecuteWithoutArguments(commands.NewExecutor(conf, mService, flume.New("test")))
-	assert.NoError(t, err)
+	output, err := mockexecute.MockExecute(command, mService, conf)
 
-	buf := bytes.NewBuffer(nil)
-	err = output.Render(buf, conf, out)
 	assert.NoError(t, err)
-	assert.Equal(t, expected, buf.String())
-
+	assert.Equal(t, expected, output)
 	mService.AssertNumberOfCalls(t, "GetAccount", 1)
 }

@@ -1,17 +1,15 @@
 package database
 
 import (
-	"bytes"
 	"strings"
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
-	"github.com/UpCloudLtd/upcloud-cli/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/internal/mockexecute"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
-	"github.com/gemalto/flume"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -38,16 +36,10 @@ func TestDatabasePlans_SortedHumanOutput(t *testing.T) {
 
 	command := commands.BuildCommand(PlansCommand(), nil, conf)
 
-	res, err := command.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService, flume.New("test")), "pg")
-
-	assert.Nil(t, err)
-
-	buf := bytes.NewBuffer(nil)
-	err = output.Render(buf, conf, res)
-	output := buf.String()
+	command.Cobra().SetArgs([]string{"pg"})
+	output, err := mockexecute.MockExecute(command, &mService, conf)
 
 	assert.NoError(t, err)
-
 	assert.Less(t, strings.Index(output, "test-plan-1"), strings.Index(output, "test-plan-2"))
 	assert.Less(t, strings.Index(output, "test-plan-2"), strings.Index(output, "test-plan-3"))
 	assert.Less(t, strings.Index(output, "test-plan-3"), strings.Index(output, "test-plan-4"))

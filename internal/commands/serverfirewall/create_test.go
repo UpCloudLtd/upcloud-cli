@@ -101,8 +101,7 @@ func TestCreateFirewallRuleCommand(t *testing.T) {
 			_, err := mockexecute.MockExecute(cc, &mService, conf)
 
 			if test.error != "" {
-				assert.Error(t, err)
-				assert.Equal(t, test.error, err.Error())
+				assert.EqualError(t, err, test.error)
 			} else {
 				assert.NoError(t, err)
 				mService.AssertNumberOfCalls(t, "CreateFirewallRule", 1)

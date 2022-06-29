@@ -43,7 +43,7 @@ func TestDeleteCommand(t *testing.T) {
 			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService, flume.New("test")), test.arg)
 
 			if test.error != "" {
-				assert.Errorf(t, err, test.error)
+				assert.EqualError(t, err, test.error)
 			} else {
 				mService.AssertNumberOfCalls(t, targetMethod, 1)
 			}

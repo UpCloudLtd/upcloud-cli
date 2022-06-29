@@ -35,12 +35,12 @@ func TestDeleteCommand(t *testing.T) {
 		{
 			name:  "server is missing",
 			flags: []string{"--index", "4"},
-			error: "at least one server uuid is required",
+			error: "single server uuid is required",
 		},
 		{
 			name:  "index is missing",
 			arg:   server.UUID,
-			error: "index is required",
+			error: "interface index is required",
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
@@ -57,7 +57,7 @@ func TestDeleteCommand(t *testing.T) {
 			_, err = c.(commands.SingleArgumentCommand).ExecuteSingleArgument(commands.NewExecutor(conf, &mService, flume.New("test")), test.arg)
 
 			if test.error != "" {
-				assert.Errorf(t, err, test.error)
+				assert.EqualError(t, err, test.error)
 			} else {
 				mService.AssertNumberOfCalls(t, targetMethod, 1)
 			}
