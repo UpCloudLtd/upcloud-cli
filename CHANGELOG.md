@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Add `--show-ip-addresses` flag to `server list` command to optionally include IP addresses in command output.
+- Add `database connection list`, and `database connection cancel` commands.
 
 ### Changed
 - Make `--family` parameter of `server firewall create` command optional to allow editing the default rules.
