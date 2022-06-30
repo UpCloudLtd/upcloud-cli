@@ -559,6 +559,10 @@ func (m *Service) DeleteSubaccount(r *request.DeleteSubaccountRequest) error {
 }
 
 func (m *Service) CancelManagedDatabaseConnection(r *request.CancelManagedDatabaseConnection) error {
+	args := m.Called(r)
+	if args[0] != nil {
+		return args.Error(0)
+	}
 	return nil
 }
 
