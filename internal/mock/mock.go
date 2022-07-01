@@ -639,11 +639,19 @@ func (m *Service) GetManagedDatabaseVersions(r *request.GetManagedDatabaseVersio
 }
 
 func (m *Service) StartManagedDatabase(r *request.StartManagedDatabaseRequest) (*upcloud.ManagedDatabase, error) {
-	return nil, nil
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.ManagedDatabase), args.Error(1)
 }
 
 func (m *Service) ShutdownManagedDatabase(r *request.ShutdownManagedDatabaseRequest) (*upcloud.ManagedDatabase, error) {
-	return nil, nil
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.ManagedDatabase), args.Error(1)
 }
 
 func (m *Service) WaitForManagedDatabaseState(r *request.WaitForManagedDatabaseStateRequest) (*upcloud.ManagedDatabase, error) {
