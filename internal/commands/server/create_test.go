@@ -115,7 +115,7 @@ func TestCreateServer(t *testing.T) {
 				LoginUser:        &request.LoginUser{CreatePassword: "yes"},
 				StorageDevices: request.CreateServerStorageDeviceSlice{request.CreateServerStorageDevice{
 					Action:  "clone",
-					Address: "",
+					Address: "virtio",
 					Storage: StorageDef.UUID,
 					Title:   "example.com-OS",
 					Size:    50,
@@ -145,7 +145,7 @@ func TestCreateServer(t *testing.T) {
 				LoginUser:        &request.LoginUser{CreatePassword: "yes"},
 				StorageDevices: request.CreateServerStorageDeviceSlice{request.CreateServerStorageDevice{
 					Action:  "clone",
-					Address: "",
+					Address: "virtio",
 					Storage: Storage1.UUID,
 					Title:   "example.com-OS",
 					Size:    100,
@@ -201,7 +201,7 @@ func TestCreateServer(t *testing.T) {
 				LoginUser:            &request.LoginUser{CreatePassword: "yes", Username: "johndoe"},
 				StorageDevices: request.CreateServerStorageDeviceSlice{request.CreateServerStorageDevice{
 					Action:  "clone",
-					Address: "",
+					Address: "virtio",
 					Storage: StorageDef.UUID,
 					Title:   "example.com-OS",
 					Size:    10,
@@ -233,7 +233,7 @@ func TestCreateServer(t *testing.T) {
 				StorageDevices: request.CreateServerStorageDeviceSlice{
 					request.CreateServerStorageDevice{
 						Action:  "clone",
-						Address: "",
+						Address: "virtio",
 						Storage: StorageDef.UUID,
 						Title:   "example.com-OS",
 						Size:    50,
@@ -289,7 +289,7 @@ func TestCreateServer(t *testing.T) {
 				LoginUser:        &request.LoginUser{CreatePassword: "yes"},
 				StorageDevices: request.CreateServerStorageDeviceSlice{request.CreateServerStorageDevice{
 					Action:  "clone",
-					Address: "",
+					Address: "virtio",
 					Storage: StorageDef.UUID,
 					Title:   "example.com-OS",
 					Size:    50,
