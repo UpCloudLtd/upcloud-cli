@@ -97,7 +97,7 @@ func (s *createParams) processParams(planSvc service.Plans, storageSvc service.S
 
 		s.StorageDevices = append(s.StorageDevices, request.CreateServerStorageDevice{
 			Action:  "clone",
-			Address: "virtio:0",
+			Address: "virtio",
 			Storage: osStorage.UUID,
 			Title:   fmt.Sprintf("%s-OS", ui.TruncateText(s.Hostname, 64-7)),
 			Size:    size,
