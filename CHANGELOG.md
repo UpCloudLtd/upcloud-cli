@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- On `server create`, mount OS disk by default on `virtio` bus. Previously default OS storage address was not explicit and varyed depending on template type.
+
 ## [1.5.0] - 2022-07-05
 ### Added
 - Add `--show-ip-addresses` flag to `server list` command to optionally include IP addresses in command output.
