@@ -88,8 +88,7 @@ func (s *createCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 	}
 
 	msg := fmt.Sprintf("Creating network interface for server %s network %s", arg, s.networkUUID)
-	logline := exec.NewLogEntry(msg)
-	logline.StartedNow()
+	exec.PushProgressStarted(msg)
 
 	res, err := exec.Network().CreateNetworkInterface(&request.CreateNetworkInterfaceRequest{
 		ServerUUID:        arg,
@@ -101,11 +100,10 @@ func (s *createCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 		Bootable:          s.bootable.AsUpcloudBoolean(),
 	})
 	if err != nil {
-		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
+		return commands.HandleError(exec, msg, err)
 	}
 
-	logline.SetMessage(fmt.Sprintf("%s: done", msg))
-	logline.MarkDone()
+	exec.PushProgressSuccess(msg)
 
 	return output.MarshaledWithHumanDetails{Value: res, Details: []output.DetailRow{
 		{Title: "MAC Address", Value: res.MAC},

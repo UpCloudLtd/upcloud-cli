@@ -47,19 +47,17 @@ func (s *deleteCommand) MaximumExecutions() int {
 // ExecuteSingleArgument implements commands.SingleArgumentCommand
 func (s *deleteCommand) ExecuteSingleArgument(exec commands.Executor, arg string) (output.Output, error) {
 	msg := fmt.Sprintf("Deleting network interface %d of server %s", s.interfaceIndex, arg)
-	logline := exec.NewLogEntry(msg)
-	logline.StartedNow()
+	exec.PushProgressStarted(msg)
 
 	err := exec.Network().DeleteNetworkInterface(&request.DeleteNetworkInterfaceRequest{
 		ServerUUID: arg,
 		Index:      s.interfaceIndex,
 	})
 	if err != nil {
-		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
+		return commands.HandleError(exec, msg, err)
 	}
 
-	logline.SetMessage(fmt.Sprintf("%s: done", msg))
-	logline.MarkDone()
+	exec.PushProgressSuccess(msg)
 
 	return output.None{}, nil
 }

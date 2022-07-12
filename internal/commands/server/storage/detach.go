@@ -63,16 +63,14 @@ func (s *detachCommand) ExecuteSingleArgument(exec commands.Executor, uuid strin
 	req.ServerUUID = uuid
 
 	msg := fmt.Sprintf("Detaching storage address %q from server %q", req.Address, req.ServerUUID)
-	logline := exec.NewLogEntry(msg)
-	logline.StartedNow()
+	exec.PushProgressStarted(msg)
 
 	res, err := storageSvc.DetachStorage(&req)
 	if err != nil {
-		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
+		return commands.HandleError(exec, msg, err)
 	}
 
-	logline.SetMessage(fmt.Sprintf("%s: success", msg))
-	logline.MarkDone()
+	exec.PushProgressSuccess(msg)
 
 	return output.OnlyMarshaled{Value: res}, nil
 }

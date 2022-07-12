@@ -49,24 +49,20 @@ func (s *stopCommand) InitCommand() {
 func (s *stopCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Server()
 	msg := fmt.Sprintf("Stopping server %v", uuid)
-	logline := exec.NewLogEntry(msg)
-
-	logline.StartedNow()
-	logline.SetMessage(fmt.Sprintf("%s: sending request", msg))
+	exec.PushProgressStarted(msg)
 
 	res, err := svc.StopServer(&request.StopServerRequest{
 		UUID:     uuid,
 		StopType: s.StopType,
 	})
 	if err != nil {
-		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
+		return commands.HandleError(exec, msg, err)
 	}
 
 	if s.wait.Value() {
-		waitForServerState(uuid, upcloud.ServerStateStopped, svc, logline, msg)
+		waitForServerState(uuid, upcloud.ServerStateStopped, exec, msg)
 	} else {
-		logline.SetMessage(fmt.Sprintf("%s: request sent", msg))
-		logline.MarkDone()
+		exec.PushProgressSuccess(msg)
 	}
 
 	return output.OnlyMarshaled{Value: res}, nil

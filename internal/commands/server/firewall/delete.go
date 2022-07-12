@@ -43,19 +43,18 @@ func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Outp
 	if s.rulePosition < 1 || s.rulePosition > 1000 {
 		return nil, fmt.Errorf("invalid position (1-1000 allowed)")
 	}
-	msg := fmt.Sprintf("deleting firewall rule %d from server %v", s.rulePosition, arg)
-	logline := exec.NewLogEntry(msg)
-	logline.StartedNow()
+	msg := fmt.Sprintf("Deleting firewall rule %d from server %v", s.rulePosition, arg)
+	exec.PushProgressStarted(msg)
+
 	err := exec.Firewall().DeleteFirewallRule(&request.DeleteFirewallRuleRequest{
 		ServerUUID: arg,
 		Position:   s.rulePosition,
 	})
 	if err != nil {
-		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
+		return commands.HandleError(exec, msg, err)
 	}
 
-	logline.SetMessage(fmt.Sprintf("%s: done", msg))
-	logline.MarkDone()
+	exec.PushProgressSuccess(msg)
 
 	return output.None{}, nil
 }

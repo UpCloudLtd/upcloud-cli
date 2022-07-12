@@ -41,19 +41,16 @@ func (s *removeCommand) InitCommand() {
 // Execute implements commands.MultipleArgumentCommand
 func (s *removeCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	msg := fmt.Sprintf("Removing ip-address %v", arg)
-	logline := exec.NewLogEntry(msg)
+	exec.PushProgressStarted(msg)
 
-	logline.StartedNow()
-	logline.SetMessage(fmt.Sprintf("%s: sending request", msg))
 	err := exec.IPAddress().ReleaseIPAddress(&request.ReleaseIPAddressRequest{
 		IPAddress: arg,
 	})
 	if err != nil {
-		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
+		return commands.HandleError(exec, msg, err)
 	}
 
-	logline.SetMessage(fmt.Sprintf("%s: success", msg))
-	logline.MarkDone()
+	exec.PushProgressSuccess(msg)
 
 	return output.None{}, nil
 }

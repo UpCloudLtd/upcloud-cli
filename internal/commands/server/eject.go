@@ -36,21 +36,17 @@ func EjectCommand() commands.Command {
 func (s *ejectCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Storage()
 	msg := fmt.Sprintf("Ejecting CD-ROM from %v", uuid)
-	logline := exec.NewLogEntry(msg)
-
-	logline.StartedNow()
-	logline.SetMessage(fmt.Sprintf("%s: sending request", msg))
+	exec.PushProgressStarted(msg)
 
 	req := s.params.EjectCDROMRequest
 	req.ServerUUID = uuid
 
 	res, err := svc.EjectCDROM(&req)
 	if err != nil {
-		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
+		return commands.HandleError(exec, msg, err)
 	}
 
-	logline.SetMessage(fmt.Sprintf("%s: request sent", msg))
-	logline.MarkDone()
+	exec.PushProgressSuccess(msg)
 
 	return output.OnlyMarshaled{Value: res}, nil
 }

@@ -35,16 +35,14 @@ func (s *deleteCommand) InitCommand() {
 // Execute implements commands.MultipleArgumentCommand
 func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	msg := fmt.Sprintf("Deleting database %s", arg)
-	logline := exec.NewLogEntry(msg)
-	logline.StartedNow()
+	exec.PushProgressStarted(msg)
 
 	err := exec.All().DeleteManagedDatabase(&request.DeleteManagedDatabaseRequest{UUID: arg})
 	if err != nil {
-		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
+		return commands.HandleError(exec, fmt.Sprintf("%s: failed", msg), err)
 	}
 
-	logline.SetMessage(fmt.Sprintf("%s: done", msg))
-	logline.MarkDone()
+	exec.PushProgressSuccess(msg)
 
 	return output.None{}, nil
 }

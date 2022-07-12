@@ -59,17 +59,14 @@ func (s *templatizeCommand) Execute(exec commands.Executor, uuid string) (output
 	req.UUID = uuid
 
 	msg := fmt.Sprintf("Templatise storage %v", uuid)
-	logline := exec.NewLogEntry(msg)
-
-	logline.StartedNow()
+	exec.PushProgressStarted(msg)
 
 	res, err := svc.TemplatizeStorage(&req)
 	if err != nil {
-		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
+		return commands.HandleError(exec, msg, err)
 	}
 
-	logline.SetMessage(fmt.Sprintf("%s: success", msg))
-	logline.MarkDone()
+	exec.PushProgressSuccess(msg)
 
 	return output.MarshaledWithHumanDetails{Value: res, Details: []output.DetailRow{
 		{Title: "UUID", Value: res.UUID, Colour: ui.DefaultUUUIDColours},

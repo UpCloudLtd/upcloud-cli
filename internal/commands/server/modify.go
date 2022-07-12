@@ -98,19 +98,16 @@ func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Out
 	}
 
 	msg := fmt.Sprintf("Modifying server %v", uuid)
-	logline := exec.NewLogEntry(msg)
-
-	logline.StartedNow()
+	exec.PushProgressStarted(msg)
 
 	req := s.params.ModifyServerRequest
 	req.UUID = uuid
 	res, err := svc.ModifyServer(&req)
 	if err != nil {
-		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
+		return commands.HandleError(exec, msg, err)
 	}
 
-	logline.SetMessage(fmt.Sprintf("%s: done", msg))
-	logline.MarkDone()
+	exec.PushProgressSuccess(msg)
 
 	return output.OnlyMarshaled{Value: res}, nil
 }
