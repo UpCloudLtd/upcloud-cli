@@ -65,18 +65,14 @@ func (s *loadCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 	req.ServerUUID = uuid
 
 	msg := fmt.Sprintf("Loading %q as a CD-ROM of server %q", req.StorageUUID, req.ServerUUID)
-	logline := exec.NewLogEntry(msg)
-
-	logline.StartedNow()
-	logline.SetMessage(fmt.Sprintf("%s: sending request", msg))
+	exec.PushProgressStarted(msg)
 
 	res, err := svc.LoadCDROM(&req)
 	if err != nil {
-		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
+		return commands.HandleError(exec, msg, err)
 	}
 
-	logline.SetMessage(fmt.Sprintf("%s: request sent", msg))
-	logline.MarkDone()
+	exec.PushProgressSuccess(msg)
 
 	return output.OnlyMarshaled{Value: res}, nil
 }

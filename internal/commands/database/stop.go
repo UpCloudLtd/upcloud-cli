@@ -38,21 +38,18 @@ func (s *stopCommand) InitCommand() {
 // Execute implements commands.MultipleArgumentCommand
 func (s *stopCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.All()
-	msg := fmt.Sprintf("Stopping database %v", uuid)
-	logline := exec.NewLogEntry(msg)
 
-	logline.StartedNow()
-	logline.SetMessage(fmt.Sprintf("%s: sending request", msg))
+	msg := fmt.Sprintf("Stopping database %v", uuid)
+	exec.PushProgressStarted(msg)
 
 	res, err := svc.ShutdownManagedDatabase(&request.ShutdownManagedDatabaseRequest{
 		UUID: uuid,
 	})
 	if err != nil {
-		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
+		return commands.HandleError(exec, msg, err)
 	}
 
-	logline.SetMessage(fmt.Sprintf("%s: done", msg))
-	logline.MarkDone()
+	exec.PushProgressSuccess(msg)
 
 	return output.OnlyMarshaled{Value: res}, nil
 }

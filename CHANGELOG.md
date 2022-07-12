@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `loadbalancer delete` command.
 - Add `Access` field to `storage show` output.
 
+### Changed
+- Refactor progress logging. This changes the appearance of progress logs. See [UpCloudLtd / progress](https://github.com/UpCloudLtd/progress) for the new implementation.
+
 ### Fixed
 - **Breaking**: Set non-zero exit code if command execution fails.
 - **Breaking**: Render servers IP addresses as array of objects, instead of previous pretty-printed string, in JSON and YAML outputs of `server show`.
@@ -19,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Breaking**: In JSON and YAML output, `storage show` lists attached servers in `servers` list instead of `server` string.
 - **Breaking**: In JSON and YAML output, `network show` lists DHCP DNS values in list instead of string.
 - On `network show`, output server details as unknown instead of outputting an error, if fetching server details fails. This allows displaying network details for networks that contain a load balancer.
+- Progress logging to non TTY output uses now 100 as text width instead of 0.
 
 ## [1.5.1] - 2022-07-15
 ### Fixed

@@ -74,8 +74,7 @@ func (s *assignCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		target = s.zone
 	}
 	msg := fmt.Sprintf("Assigning IP Address to %v", target)
-	logline := exec.NewLogEntry(msg)
-	logline.StartedNow()
+	exec.PushProgressStarted(msg)
 
 	res, err := exec.IPAddress().AssignIPAddress(&request.AssignIPAddressRequest{
 		Access:     s.access,
@@ -86,11 +85,10 @@ func (s *assignCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		Zone:       s.zone,
 	})
 	if err != nil {
-		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
+		return commands.HandleError(exec, msg, err)
 	}
 
-	logline.SetMessage(fmt.Sprintf("%s: success", msg))
-	logline.MarkDone()
+	exec.PushProgressSuccess(msg)
 
 	return output.MarshaledWithHumanDetails{Value: res, Details: []output.DetailRow{
 		{Title: "IP Address", Value: res.Address, Colour: ui.DefaultAddressColours},

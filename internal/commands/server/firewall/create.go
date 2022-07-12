@@ -114,9 +114,8 @@ func (s *createCommand) Execute(exec commands.Executor, arg string) (output.Outp
 		sourceAddressEnd = sourceNetwork.LastIP.String()
 	}
 
-	msg := fmt.Sprintf("creating firewall rule for server %v", arg)
-	logline := exec.NewLogEntry(msg)
-	logline.StartedNow()
+	msg := fmt.Sprintf("Creating firewall rule for server %v", arg)
+	exec.PushProgressStarted(msg)
 
 	res, err := exec.Firewall().CreateFirewallRule(&request.CreateFirewallRuleRequest{
 		ServerUUID: arg,
@@ -139,10 +138,9 @@ func (s *createCommand) Execute(exec commands.Executor, arg string) (output.Outp
 		},
 	})
 	if err != nil {
-		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
+		return commands.HandleError(exec, msg, err)
 	}
-	logline.SetMessage(fmt.Sprintf("%s: done", msg))
-	logline.MarkDone()
+	exec.PushProgressSuccess(msg)
 
 	return output.OnlyMarshaled{Value: res}, nil
 }

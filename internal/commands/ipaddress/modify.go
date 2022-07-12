@@ -47,21 +47,18 @@ func (s *modifyCommand) MaximumExecutions() int {
 // Execute implements commands.MultipleArgumentCommand
 func (s *modifyCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	msg := fmt.Sprintf("Modifying ip-address %v", arg)
-	logline := exec.NewLogEntry(msg)
+	exec.PushProgressStarted(msg)
 
-	logline.StartedNow()
-	logline.SetMessage(fmt.Sprintf("%s: sending request", msg))
 	res, err := exec.IPAddress().ModifyIPAddress(&request.ModifyIPAddressRequest{
 		IPAddress: arg,
 		MAC:       s.mac,
 		PTRRecord: s.ptrrecord,
 	})
 	if err != nil {
-		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
+		return commands.HandleError(exec, msg, err)
 	}
 
-	logline.SetMessage(fmt.Sprintf("%s: success", msg))
-	logline.MarkDone()
+	exec.PushProgressSuccess(msg)
 
 	return output.OnlyMarshaled{Value: res}, nil
 }

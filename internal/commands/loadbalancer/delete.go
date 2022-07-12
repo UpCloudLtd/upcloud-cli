@@ -32,15 +32,16 @@ type deleteCommand struct {
 func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	svc := exec.All()
 	msg := fmt.Sprintf("Deleting load balancer %v", arg)
-	logline := exec.NewLogEntry(msg)
-	logline.StartedNow()
+	exec.PushProgressStarted(msg)
+
 	err := svc.DeleteLoadBalancer(&request.DeleteLoadBalancerRequest{
 		UUID: arg,
 	})
 	if err != nil {
-		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
+		return commands.HandleError(exec, fmt.Sprintf("%s: failed", msg), err)
 	}
-	logline.SetMessage(fmt.Sprintf("%s: success", msg))
-	logline.MarkDone()
+
+	exec.PushProgressSuccess(msg)
+
 	return output.None{}, nil
 }

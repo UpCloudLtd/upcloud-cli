@@ -2,13 +2,13 @@ package commands
 
 import (
 	"fmt"
-	"os"
 	"time"
 
+	"github.com/UpCloudLtd/progress"
+	"github.com/UpCloudLtd/progress/messages"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
-	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/service"
 	"github.com/gemalto/flume"
@@ -16,9 +16,11 @@ import (
 
 // Executor represents the execution context for commands
 type Executor interface {
-	NewLogEntry(s string) *ui.LogEntry
-	Update()
-	Close()
+	PushProgressUpdate(messages.Update)
+	PushProgressStarted(msg string)
+	PushProgressUpdateMessage(key, msg string)
+	PushProgressSuccess(msg string)
+	StopProgressLog()
 	WaitFor(waitFn func() error, timeout time.Duration) error
 	Server() service.Server
 	Storage() service.Storage
@@ -39,10 +41,10 @@ type executeResult struct {
 }
 
 type executorImpl struct {
-	Config  *config.Config
-	LiveLog *ui.LiveLog
-	service internal.AllServices
-	logger  flume.Logger
+	Config   *config.Config
+	progress *progress.Progress
+	service  internal.AllServices
+	logger   flume.Logger
 }
 
 func (e executorImpl) WithLogger(args ...interface{}) Executor {
@@ -68,20 +70,36 @@ func (e *executorImpl) WaitFor(waitFn func() error, timeout time.Duration) error
 	}
 }
 
-func (e *executorImpl) NewLogEntry(message string) *ui.LogEntry {
-	entry := ui.NewLogEntry(message)
-	e.LiveLog.AddEntries(entry)
-	return entry
+func (e *executorImpl) PushProgressUpdate(update messages.Update) {
+	err := e.progress.Push(update)
+	if err != nil {
+		e.Debug(fmt.Sprintf("Failed to push progress update: %s", err.Error()))
+	}
 }
 
-// Update implements Executor
-func (e *executorImpl) Update() {
-	e.LiveLog.Render()
+func (e *executorImpl) PushProgressStarted(msg string) {
+	e.PushProgressUpdate(messages.Update{
+		Message: msg,
+		Status:  messages.MessageStatusStarted,
+	})
 }
 
-// Close implements Executor
-func (e *executorImpl) Close() {
-	e.LiveLog.Close()
+func (e *executorImpl) PushProgressUpdateMessage(key, msg string) {
+	e.PushProgressUpdate(messages.Update{
+		Key:     key,
+		Message: msg,
+	})
+}
+
+func (e *executorImpl) PushProgressSuccess(msg string) {
+	e.PushProgressUpdate(messages.Update{
+		Key:    msg,
+		Status: messages.MessageStatusSuccess,
+	})
+}
+
+func (e *executorImpl) StopProgressLog() {
+	e.progress.Stop()
 }
 
 func (e executorImpl) Server() service.Server {
@@ -118,10 +136,12 @@ func (e executorImpl) All() internal.AllServices {
 
 // NewExecutor creates the default Executor
 func NewExecutor(cfg *config.Config, svc internal.AllServices, logger flume.Logger) Executor {
-	return &executorImpl{
-		Config:  cfg,
-		LiveLog: ui.NewLiveLog(os.Stderr, ui.LiveLogDefaultConfig),
-		logger:  logger,
-		service: svc,
+	executor := &executorImpl{
+		Config:   cfg,
+		progress: progress.NewProgress(config.GetProgressOutputConfig()),
+		logger:   logger,
+		service:  svc,
 	}
+	executor.progress.Start()
+	return executor
 }

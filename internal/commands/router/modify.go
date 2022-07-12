@@ -42,15 +42,14 @@ func (s *modifyCommand) InitCommand() {
 // ExecuteSingleArgument implements commands.SingleArgumentCommand
 func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string) (output.Output, error) {
 	msg := fmt.Sprintf("Modifying router %s", s.name)
-	logline := exec.NewLogEntry(msg)
-	logline.StartedNow()
+	exec.PushProgressStarted(msg)
+
 	res, err := exec.Network().ModifyRouter(&request.ModifyRouterRequest{UUID: arg, Name: s.name})
 	if err != nil {
-		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
+		return commands.HandleError(exec, msg, err)
 	}
 
-	logline.SetMessage(fmt.Sprintf("%s: done", msg))
-	logline.MarkDone()
+	exec.PushProgressSuccess(msg)
 
 	return output.OnlyMarshaled{Value: res}, nil
 }

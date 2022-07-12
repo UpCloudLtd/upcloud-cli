@@ -33,21 +33,18 @@ type startCommand struct {
 // Execute implements commands.MultipleArgumentCommand
 func (s *startCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.All()
-	msg := fmt.Sprintf("Starting database %v", uuid)
-	logline := exec.NewLogEntry(msg)
 
-	logline.StartedNow()
-	logline.SetMessage(fmt.Sprintf("%s: sending request", msg))
+	msg := fmt.Sprintf("Starting database %v", uuid)
+	exec.PushProgressStarted(msg)
 
 	res, err := svc.StartManagedDatabase(&request.StartManagedDatabaseRequest{
 		UUID: uuid,
 	})
 	if err != nil {
-		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
+		return commands.HandleError(exec, msg, err)
 	}
 
-	logline.SetMessage(fmt.Sprintf("%s: done", msg))
-	logline.MarkDone()
+	exec.PushProgressSuccess(msg)
 
 	return output.OnlyMarshaled{Value: res}, nil
 }

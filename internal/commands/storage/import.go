@@ -9,6 +9,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/UpCloudLtd/progress/messages"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
@@ -83,6 +84,17 @@ type storageImportStatus struct {
 	complete bool
 }
 
+func getImportSuccessOutput(res *upcloud.StorageImportDetails) (output.Output, error) {
+	return output.MarshaledWithHumanDetails{
+		Value: res,
+		Details: []output.DetailRow{{
+			Title:  "UUID",
+			Value:  res.UUID,
+			Colour: ui.DefaultUUUIDColours,
+		}},
+	}, nil
+}
+
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	if s.existingStorageUUIDOrName == "" {
@@ -105,9 +117,7 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	fileSizeInGB := int(fileSize/1024/1024/1024) + 1
 
 	// next, figure out if we want to import to an existing storage (and validate it) or create one
-	var (
-		storageToImportTo upcloud.Storage
-	)
+	var storageToImportTo upcloud.Storage
 	if s.existingStorageUUIDOrName != "" {
 		// user specified an existing storage, validate it
 		// initialize resolver
@@ -146,9 +156,9 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	}
 
 	// input has been validated and we have a storage to import to, ready to start the actual import
-	msg := fmt.Sprintf("importing to %v", storageToImportTo.UUID)
-	logline := exec.NewLogEntry(msg)
-	logline.StartedNow()
+	msg := fmt.Sprintf("Importing to %v", storageToImportTo.UUID)
+	exec.PushProgressStarted(msg)
+
 	startTime := time.Now()
 	var (
 		statusChan   = make(chan storageImportStatus)
@@ -165,24 +175,24 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 				SourceLocation: s.sourceLocation,
 			})
 		if err != nil {
-			return nil, fmt.Errorf("failed to import: %w", err)
+			return commands.HandleError(exec, msg, err)
 		}
-		logline.SetMessage(fmt.Sprintf("%s: http import queued", msg))
+
 		if !s.noWait.Value() {
 			// start polling for import status if --no-wait was not entered on the command line
 			go pollStorageImportStatus(exec.Storage(), storageToImportTo.UUID, statusChan)
 		} else {
 			// otherwise, we can just return the result and be done with it
-			logline.SetMessage(fmt.Sprintf("%s: http import request sent", msg))
-			logline.MarkDone()
-			return output.OnlyMarshaled{Value: result}, nil
+			exec.PushProgressSuccess(msg)
+
+			return getImportSuccessOutput(result)
 		}
 	case upcloud.StorageImportSourceDirectUpload:
 		// import from local file
 		transferType = "upload"
 		sourceFile, err := os.Open(parsedSource.Path)
 		if err != nil {
-			return nil, fmt.Errorf("cannot open local file: %w", err)
+			return commands.HandleError(exec, msg, fmt.Errorf("cannot open local file: %w", err))
 		}
 		go importLocalFile(exec.Storage(), storageToImportTo.UUID, sourceFile, statusChan)
 	}
@@ -192,12 +202,11 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		switch {
 		case statusUpdate.err != nil:
 			// we received an error, clean up log and return the error
-			return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), statusUpdate.err)
+			return commands.HandleError(exec, msg, statusUpdate.err)
 		case statusUpdate.complete:
 			// we're complete, clean up log and return the result
-			logline.SetMessage(fmt.Sprintf("%s: done", msg))
-			logline.MarkDone()
-			return output.OnlyMarshaled{Value: statusUpdate.result}, nil
+			exec.PushProgressSuccess(msg)
+			return getImportSuccessOutput(statusUpdate.result)
 		case statusUpdate.bytesTransferred > 0:
 			// got a status update
 			bps := float64(statusUpdate.bytesTransferred) / time.Since(startTime).Seconds()
@@ -208,23 +217,31 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 			}
 			if fileSize > 0 {
 				// we have knowledge of import file size, report progress percentage
-				logline.SetMessage(fmt.Sprintf("%s: %sed %.2f%% (%sBps)",
-					msg, transferType,
-					float64(statusUpdate.bytesTransferred)/float64(fileSize)*100,
-					ui.AbbrevNumBinaryPrefix(uint(bps)),
-				))
+				exec.PushProgressUpdate(messages.Update{
+					Key: msg,
+					ProgressMessage: fmt.Sprintf(
+						"- %sed %.2f%% (%sBps)",
+						transferType,
+						float64(statusUpdate.bytesTransferred)/float64(fileSize)*100,
+						ui.AbbrevNumBinaryPrefix(uint(bps)),
+					),
+				})
 			} else {
 				// we have no knowledge of the remote file size, report bytes uploaded
-				logline.SetMessage(fmt.Sprintf("%s: %sed %sB (%sBps)",
-					msg, transferType,
-					ui.AbbrevNumBinaryPrefix(uint(statusUpdate.bytesTransferred)),
-					ui.AbbrevNumBinaryPrefix(uint(bps)),
-				))
+				exec.PushProgressUpdate(messages.Update{
+					Key: msg,
+					ProgressMessage: fmt.Sprintf(
+						"- %sed %sB (%sBps)",
+						transferType,
+						ui.AbbrevNumBinaryPrefix(uint(statusUpdate.bytesTransferred)),
+						ui.AbbrevNumBinaryPrefix(uint(bps)),
+					),
+				})
 			}
 		}
 	}
 	// status channel was closed but we did not receive either result or an error, fail.*/
-	return nil, fmt.Errorf("upload aborted unexpectedly")
+	return commands.HandleError(exec, msg, fmt.Errorf("upload aborted unexpectedly"))
 }
 
 // TODO: figure out 'local http uploads', eg. piping from a local / non public internet url if required(?)
@@ -263,16 +280,15 @@ func createStorage(exec commands.Executor, params *createParams) (upcloud.Storag
 		return upcloud.Storage{}, err
 	}
 	msg := fmt.Sprintf("Creating storage %q", params.Title)
-	logline := exec.NewLogEntry(msg)
-	logline.StartedNow()
+	exec.PushProgressStarted(msg)
+
 	details, err := exec.Storage().CreateStorage(&params.CreateStorageRequest)
 	if err != nil {
-		_, _ = commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
+		_, _ = commands.HandleError(exec, msg, err)
 		return upcloud.Storage{}, err
 	}
-	logline.SetMessage(fmt.Sprintf("%s: done", msg))
-	logline.SetDetails(details.UUID, "UUID: ")
-	logline.MarkDone()
+
+	exec.PushProgressSuccess(msg)
 	return details.Storage, nil
 }
 

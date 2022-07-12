@@ -44,28 +44,24 @@ func (s *deleteCommand) InitCommand() {
 func (s *deleteCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Server()
 	msg := fmt.Sprintf("Deleting server %v", uuid)
-	logline := exec.NewLogEntry(msg)
-
-	logline.StartedNow()
+	exec.PushProgressStarted(msg)
 
 	var err error
 	if s.deleteStorages.Value() {
-		logline.SetMessage(fmt.Sprintf("%s: deleting server and related storages", msg))
+		exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Deleting server %v and attached storages", uuid))
 		err = svc.DeleteServerAndStorages(&request.DeleteServerAndStoragesRequest{
 			UUID: uuid,
 		})
 	} else {
-		logline.SetMessage(fmt.Sprintf("%s: deleting server", msg))
 		err = svc.DeleteServer(&request.DeleteServerRequest{
 			UUID: uuid,
 		})
 	}
 	if err != nil {
-		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
+		return commands.HandleError(exec, msg, err)
 	}
 
-	logline.SetMessage(fmt.Sprintf("%s: done", msg))
-	logline.MarkDone()
+	exec.PushProgressSuccess(msg)
 
 	return output.None{}, nil
 }

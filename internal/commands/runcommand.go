@@ -3,7 +3,6 @@ package commands
 import (
 	"fmt"
 	"io"
-	"time"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
@@ -21,7 +20,6 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 
 	cmdLogger := logger.With("command", command.Cobra().CommandPath())
 	executor := NewExecutor(config, service, cmdLogger)
-	defer executor.Close()
 	switch typedCommand := command.(type) {
 	case NoArgumentCommand:
 		cmdLogger.Debug("executing without arguments", "arguments", args)
@@ -119,7 +117,6 @@ func execute(command Command, executor Executor, args []string, parallelRuns int
 	argQueue := resolvedArgs
 
 	results := make([]executeResult, 0, len(args))
-	renderTicker := time.NewTicker(100 * time.Millisecond)
 	executor.Debug("starting work", "workers", workerCount)
 	for {
 		select {
@@ -154,12 +151,10 @@ func execute(command Command, executor Executor, args []string, parallelRuns int
 			results = append(results, res)
 			if len(results) >= len(args) {
 				executor.Debug("execute done")
-				// we're done, update ui for the last time and render the results
-				executor.Update()
+				// We're done, update ui for the last time and render the results
+				executor.StopProgressLog()
 				return results, nil
 			}
-		case <-renderTicker.C:
-			executor.Update()
 		}
 	}
 }

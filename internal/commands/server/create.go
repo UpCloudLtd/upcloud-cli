@@ -317,9 +317,7 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	planSvc := exec.Plan()
 	storageSvc := exec.Storage()
 	msg := fmt.Sprintf("Creating server %v", s.params.Hostname)
-	logline := exec.NewLogEntry(msg)
-
-	logline.StartedNow()
+	exec.PushProgressStarted(msg)
 
 	if err := s.params.processParams(planSvc, storageSvc); err != nil {
 		return nil, err
@@ -336,7 +334,7 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		req.LoginUser.CreatePassword = "yes"
 	}
 
-	logline.SetMessage(fmt.Sprintf("%s: creating network interfaces", msg))
+	exec.PushProgressUpdateMessage(msg, fmt.Sprintf("%s: creating network interfaces", msg))
 	var iFaces []request.CreateServerInterface
 	for _, network := range s.params.networks {
 		_interface, err := s.params.handleNetwork(network)
@@ -346,7 +344,7 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		iFaces = append(iFaces, *_interface)
 	}
 
-	logline.SetMessage(fmt.Sprintf("%s: creating storage devices", msg))
+	exec.PushProgressUpdateMessage(msg, fmt.Sprintf("%s: creating storage devices", msg))
 	for _, strg := range s.params.storages {
 		strg, err := s.params.handleStorage(strg, storageSvc)
 		if err != nil {
@@ -363,16 +361,16 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		req.Networking = &request.CreateServerNetworking{Interfaces: iFaces}
 	}
 
+	exec.PushProgressUpdateMessage(msg, msg)
 	res, err := serverSvc.CreateServer(&req)
 	if err != nil {
-		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
+		return commands.HandleError(exec, msg, err)
 	}
 
 	if s.wait.Value() {
-		waitForServerState(res.UUID, upcloud.ServerStateStarted, serverSvc, logline, msg)
+		waitForServerState(res.UUID, upcloud.ServerStateStarted, exec, msg)
 	} else {
-		logline.SetMessage(fmt.Sprintf("%s: request sent", msg))
-		logline.MarkDone()
+		exec.PushProgressSuccess(msg)
 	}
 
 	return output.MarshaledWithHumanDetails{Value: res, Details: []output.DetailRow{

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/UpCloudLtd/progress/messages"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
@@ -136,42 +137,41 @@ func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Out
 	}
 
 	svc := exec.Storage()
-	msg := fmt.Sprintf("modifing storage %v", uuid)
-	logline := exec.NewLogEntry(msg)
-
-	logline.StartedNow()
+	msg := fmt.Sprintf("Modifying storage %v", uuid)
+	exec.PushProgressStarted(msg)
 
 	req := s.params.ModifyStorageRequest
 	if err := setBackupFields(uuid, s.params, svc, &req); err != nil {
-		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
+		return commands.HandleError(exec, msg, err)
 	}
 
 	res, err := svc.ModifyStorage(&req)
 	if err != nil {
-		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
+		return commands.HandleError(exec, msg, err)
 	}
 
 	// If autoresize is not enabled, then just consider the whole operation done and output the modify API call response
 	if !s.autoresizePartitionFilesystem.Value() {
-		logline.SetMessage(fmt.Sprintf("%s: done", msg))
-		logline.MarkDone()
-
+		exec.PushProgressSuccess(msg)
 		return output.OnlyMarshaled{Value: res}, nil
 	}
 
-	logline.SetMessage(fmt.Sprintf("%s: resizing partition and filesystem", msg))
+	exec.PushProgressUpdateMessage(
+		msg,
+		fmt.Sprintf("%s: resizing partition and filesystem", msg),
+	)
 	backup, err := svc.ResizeStorageFilesystem(&request.ResizeStorageFilesystemRequest{UUID: uuid})
 	// If there was an error during resize attempt, we consider the overall modify operation successful and just log warning about failed resize
 	if err != nil {
-		logline.SetMessage(fmt.Sprintf("%s: partially done", msg))
-		logline.SetDetails(fmt.Sprintf("Partition and filesystem resize failed; storage was restored using backup taken right before resize attempt (%s)", err.Error()), "Error: ")
-		logline.MarkWarning()
-
+		exec.PushProgressUpdate(messages.Update{
+			Key:     msg,
+			Status:  messages.MessageStatusWarning,
+			Details: fmt.Sprintf("Error: partition and filesystem resize failed; storage was restored using backup taken right before resize attempt (%s)", err.Error()),
+		})
 		return output.OnlyMarshaled{Value: res}, nil
 	}
 
-	logline.SetMessage(fmt.Sprintf("%s: done", msg))
-	logline.MarkDone()
+	exec.PushProgressSuccess(msg)
 
 	out := struct {
 		upcloud.StorageDetails

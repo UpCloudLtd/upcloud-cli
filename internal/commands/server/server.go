@@ -4,10 +4,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/UpCloudLtd/progress/messages"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
-	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/service"
 )
 
 const (
@@ -31,22 +30,24 @@ type serverCommand struct {
 	*commands.BaseCommand
 }
 
-// waitForServerState waits for server to reach given state and updates given logline with wait progress. Finally, logline is updated with given msg and either done state or timeout warning.
-func waitForServerState(uuid, state string, service service.Server, logline *ui.LogEntry, msg string) {
-	logline.SetMessage(fmt.Sprintf("Waiting for server %s to be in %s state: polling", uuid, state))
+// waitForServerState waits for server to reach given state and updates progress message with key matching given msg. Finally, progress message is updated back to given msg and either done state or timeout warning.
+func waitForServerState(uuid, state string, exec commands.Executor, msg string) {
+	exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Waiting for server %s to be in %s state", uuid, state))
 
-	if _, err := service.WaitForServerState(&request.WaitForServerStateRequest{
+	if _, err := exec.All().WaitForServerState(&request.WaitForServerStateRequest{
 		UUID:         uuid,
 		DesiredState: state,
 		Timeout:      5 * time.Minute,
 	}); err != nil {
-		logline.SetMessage(fmt.Sprintf("%s: partially done", msg))
-		logline.SetDetails(err.Error(), "Error: ")
-		logline.MarkWarning()
-
+		exec.PushProgressUpdate(messages.Update{
+			Key:     msg,
+			Message: msg,
+			Status:  messages.MessageStatusWarning,
+			Details: "Error: " + err.Error(),
+		})
 		return
 	}
 
-	logline.SetMessage(fmt.Sprintf("%s: done", msg))
-	logline.MarkDone()
+	exec.PushProgressUpdateMessage(msg, msg)
+	exec.PushProgressSuccess(msg)
 }

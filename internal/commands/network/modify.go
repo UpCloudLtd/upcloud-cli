@@ -72,15 +72,12 @@ func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 		networks = append(networks, *network)
 	}
 
-	msg := fmt.Sprintf("modifying network %v", arg)
-	logline := exec.NewLogEntry(msg)
-
-	logline.StartedNow()
+	msg := fmt.Sprintf("Modifying network %v", arg)
+	exec.PushProgressStarted(msg)
 
 	var network *upcloud.Network
 	if s.name != "" || len(networks) > 0 {
 		// we want to update name and/or networks
-		logline.SetMessage(fmt.Sprintf("%s: sending modify request", msg))
 		res, err := exec.Network().ModifyNetwork(&request.ModifyNetworkRequest{
 			UUID:       arg,
 			Name:       s.name,
@@ -88,7 +85,7 @@ func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 			IPNetworks: networks,
 		})
 		if err != nil {
-			return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
+			return commands.HandleError(exec, msg, err)
 		}
 		// store the result in order to return it
 		network = res
@@ -97,34 +94,31 @@ func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 	if s.attachRouter != "" {
 		routerResolver, err := s.routerResolver.Get(exec.All())
 		if err != nil {
-			return nil, fmt.Errorf("cannot get router resolver: %w", err)
+			return commands.HandleError(exec, msg, fmt.Errorf("cannot get router resolver: %w", err))
 		}
 		routerUUID, err := routerResolver(s.attachRouter)
 		if err != nil {
-			return nil, fmt.Errorf("cannot get resolve router '%s': %w", s.attachRouter, err)
+			return commands.HandleError(exec, msg, fmt.Errorf("cannot resolve router '%s': %w", s.attachRouter, err))
 		}
-		logline.SetMessage(fmt.Sprintf("%s: attaching router %s", msg, routerUUID))
-		logline.SetDetails(routerUUID, "router UUID: ")
+		exec.PushProgressUpdateMessage(msg, fmt.Sprintf("%s: attaching router %s", msg, routerUUID))
 		err = exec.Network().AttachNetworkRouter(&request.AttachNetworkRouterRequest{
 			NetworkUUID: arg,
 			RouterUUID:  routerUUID,
 		})
 		if err != nil {
-			_, _ = commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
-			return nil, fmt.Errorf("cannot attach router '%s': %w", s.attachRouter, err)
+			return commands.HandleError(exec, msg, fmt.Errorf("cannot attach router '%s': %w", s.attachRouter, err))
 		}
 		// update the stored result (if we have one) manually to avoid refetching later
 		if network != nil {
 			network.Router = routerUUID
 		}
 	} else if s.detachRouter == config.True {
-		logline.SetMessage(fmt.Sprintf("%s: detaching router", msg))
+		exec.PushProgressUpdateMessage(msg, fmt.Sprintf("%s: detaching router", msg))
 		err := exec.Network().DetachNetworkRouter(&request.DetachNetworkRouterRequest{
 			NetworkUUID: arg,
 		})
 		if err != nil {
-			_, _ = commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
-			return nil, fmt.Errorf("cannot detach router '%s': %w", s.attachRouter, err)
+			return commands.HandleError(exec, msg, fmt.Errorf("cannot detach router: %w", err))
 		}
 		// update the stored result (if we have one) manually to avoid refetching later
 		if network != nil {
@@ -132,8 +126,7 @@ func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 		}
 	}
 
-	logline.SetMessage(fmt.Sprintf("%s: success", msg))
-	logline.MarkDone()
+	exec.PushProgressSuccess(msg)
 	if network == nil {
 		// if we're just detaching/attaching, we won't have network returned from the calls so re-fetch
 		details, err := exec.Network().GetNetworkDetails(&request.GetNetworkDetailsRequest{UUID: arg})
