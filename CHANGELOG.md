@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - On `server create`, mount OS disk by default on `virtio` bus. Previously default OS storage address was not explicit and varyed depending on template type.
+- Disable colors if user has set [NO_COLOR](https://no-color.org/) environment variable to non-empty value.
 
 ## [1.5.0] - 2022-07-05
 ### Added
