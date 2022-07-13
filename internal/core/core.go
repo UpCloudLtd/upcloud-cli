@@ -33,7 +33,8 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 			switch {
 			case conf.GlobalFlags.ForceColours == config.True:
 				text.EnableColors()
-			case conf.GlobalFlags.NoColours == config.True:
+			// Environment variable with US spelling to support https://no-color.org
+			case conf.GlobalFlags.NoColours == config.True || os.Getenv("NO_COLOR") != "":
 				text.DisableColors()
 			case conf.GlobalFlags.OutputFormat != config.ValueOutputHuman:
 				text.DisableColors()
@@ -82,22 +83,22 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 
 	flags := &pflag.FlagSet{}
 	flags.StringVarP(
-		&conf.GlobalFlags.ConfigFile, "config", "", "", "Config file",
+		&conf.GlobalFlags.ConfigFile, "config", "", "", "Configuration file path.",
 	)
 	flags.StringVarP(
 		&conf.GlobalFlags.OutputFormat, "output", "o", "human",
 		"Output format (supported: json, yaml and human)",
 	)
-	config.AddToggleFlag(flags, &conf.GlobalFlags.ForceColours, "force-colours", false, "force coloured output despite detected terminal support")
-	config.AddToggleFlag(flags, &conf.GlobalFlags.NoColours, "no-colours", false, "disable coloured output despite detected terminal support")
+	config.AddToggleFlag(flags, &conf.GlobalFlags.ForceColours, "force-colours", false, "Force coloured output despite detected terminal support.")
+	config.AddToggleFlag(flags, &conf.GlobalFlags.NoColours, "no-colours", false, "Disable coloured output despite detected terminal support. Colours can also be disabled by setting NO_COLOR environment variable.")
 	flags.BoolVar(
 		&conf.GlobalFlags.Debug, "debug", false,
-		"Print out more verbose debug logs",
+		"Print out more verbose debug logs.",
 	)
 	flags.DurationVarP(
 		&conf.GlobalFlags.ClientTimeout, "client-timeout", "t",
 		0,
-		"CLI timeout when using interactive mode on some commands",
+		"Client timeout to use in API calls.",
 	)
 
 	// XXX: Apply viper value to the help as default
