@@ -12,24 +12,30 @@ linters:
     - errcheck
     - goconst
     - gocritic
+    # TODO "upgrade" to gofumpt
     - gofmt
     - goimports
     - goprintffuncname
-#    - gosec
+    - gosec
     - gosimple
     - govet
     - ineffassign
+    - makezero
     - misspell
     - nakedret
+    - nilnil
     - nolintlint
+    - nosprintfhostport
+    - predeclared
     - revive
     - rowserrcheck
     - staticcheck
     - structcheck
     - stylecheck
+    - tenv
     - typecheck
     - unconvert
-#    - unparam
+    - unused
     - varcheck
     - whitespace
 
