@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"net/http"
 	"path/filepath"
 	"strings"
 	"time"
@@ -13,7 +12,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/service"
 	"github.com/adrg/xdg"
 	"github.com/gemalto/flume"
-	"github.com/hashicorp/go-cleanhttp"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
@@ -171,13 +169,6 @@ func (s *Config) OutputHuman() bool {
 // ClientTimeout is a convenience method that returns the user specified client timeout
 func (s *Config) ClientTimeout() time.Duration {
 	return s.viper.GetDuration(KeyClientTimeout)
-}
-
-type transport struct{}
-
-// RoundTrip implements http.RoundTripper
-func (t *transport) RoundTrip(req *http.Request) (*http.Response, error) {
-	return cleanhttp.DefaultTransport().RoundTrip(req)
 }
 
 // CreateService creates a new service instance and puts in the conf struct

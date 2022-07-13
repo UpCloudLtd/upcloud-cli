@@ -1,3 +1,4 @@
+//nolint:nilnil // Here nil, nil returns are used in not-implemented methods required to satisfy an interface
 package mock
 
 import (
