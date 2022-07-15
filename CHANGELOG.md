@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.1] - 2022-07-15
 ### Fixed
 - On `server create`, mount OS disk by default on `virtio` bus. Previously default OS storage address was not explicit and varyed depending on template type.
 - Disable colors if user has set [NO_COLOR](https://no-color.org/) environment variable to non-empty value.
@@ -146,3 +147,4 @@ Initial public beta release :tada:
 [1.3.0]: https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v1.3.0
 [1.4.0]: https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v1.4.0
 [1.5.0]: https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v1.5.0
+[1.5.1]: https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v1.5.1
