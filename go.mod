@@ -6,6 +6,7 @@ require (
 	github.com/UpCloudLtd/upcloud-go-api/v4 v4.8.0
 	github.com/adrg/xdg v0.3.2
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d
+	github.com/bradleyjkemp/cupaloy/v2 v2.7.0
 	github.com/gemalto/flume v0.12.0
 	github.com/jedib0t/go-pretty/v6 v6.0.5
 	github.com/m7shapan/cidr v0.0.0-20200427124835-7eba0889a5d2
