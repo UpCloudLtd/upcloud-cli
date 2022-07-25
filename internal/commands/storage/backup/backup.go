@@ -1,10 +1,14 @@
-package storage
+package storagebackup
 
 import "github.com/UpCloudLtd/upcloud-cli/internal/commands"
 
 // BackupCommand creates the "storage backup" command
 func BackupCommand() commands.Command {
-	return &storageCommand{
+	return &backupCommand{
 		commands.New("backup", "Manage backups"),
 	}
+}
+
+type backupCommand struct {
+	*commands.BaseCommand
 }
