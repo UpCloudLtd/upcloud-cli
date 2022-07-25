@@ -26,17 +26,18 @@ version      Display software information
 zone         Display zone information
 
 Options:
-  -t, --client-timeout duration   CLI timeout when using interactive mode on some commands
+  -t, --client-timeout duration   Client timeout to use in API calls.
                                   Default: 0s
 
-  --config string                 Config file
+  --config string                 Configuration file path.
 
-  --debug bool                    Print out more verbose debug logs
+  --debug bool                    Print out more verbose debug logs.
                                   Default: false
 
-  --force-colours                 force coloured output despite detected terminal support
+  --force-colours                 Force coloured output despite detected terminal support.
 
-  --no-colours                    disable coloured output despite detected terminal support
+  --no-colours                    Disable coloured output despite detected terminal support. Colours can also be disabled by setting
+                                  NO_COLOR environment variable.
 
   -o, --output string             Output format (supported: json, yaml and human)
                                   Default: human
