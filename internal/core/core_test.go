@@ -132,3 +132,30 @@ func TestInputValidation(t *testing.T) {
 		})
 	}
 }
+
+func TestExecute(t *testing.T) {
+	realArgs := os.Args
+	defer func() { os.Args = realArgs }()
+
+	for _, test := range []struct {
+		name     string
+		args     []string
+		expected int
+	}{
+		{
+			name:     "Successful command (upctl version)",
+			args:     []string{"upctl", "version"},
+			expected: 0,
+		},
+		{
+			name:     "Failing command (upctl server create)",
+			args:     []string{"upctl", "server", "create"},
+			expected: 100,
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			os.Args = test.args
+			assert.Equal(t, test.expected, Execute())
+		})
+	}
+}

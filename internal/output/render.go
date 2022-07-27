@@ -7,6 +7,7 @@ import (
 	"io"
 	"strings"
 
+	"github.com/UpCloudLtd/upcloud-cli/internal/clierrors"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 )
 
@@ -73,6 +74,20 @@ func Render(writer io.Writer, cfg *config.Config, commandOutputs ...Output) (err
 	}
 	if _, err := writer.Write(output); err != nil {
 		return err
+	}
+
+	// Count failed outputs
+	var failedCount = 0
+	for _, commandOutput := range commandOutputs {
+		if _, ok := commandOutput.(Error); ok {
+			failedCount++
+		}
+	}
+
+	if failedCount > 0 {
+		return &clierrors.CommandFailedError{
+			FailedCount: failedCount,
+		}
 	}
 	return nil
 }

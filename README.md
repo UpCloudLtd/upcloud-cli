@@ -147,6 +147,16 @@ $ upctl server list
  003c9d77-0237-4ee7-b3a1-306efba456dc   server2              1xCPU-2GB   sg-sin1   started
 ```
 
+## Exit codes
+
+Exit code communicates success or the type and number of failures. Possible exit codes of `upctl` are:
+
+Exit code | Description
+--------- | -----------
+0         | Command(s) executed successfully.
+1 - 99    | Number of failed executions. For example, if stopping four servers and API returs error for one of the request, exit code will be 1.
+100 -     | Other, non-execution related, errors. For example, required flag missing.
+
 ## Examples
 
 Every command has a help and examples included and you can find all its options
