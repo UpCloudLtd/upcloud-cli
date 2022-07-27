@@ -1,9 +1,11 @@
 package core
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
+	"github.com/UpCloudLtd/upcloud-cli/internal/clierrors"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/all"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
@@ -124,8 +126,29 @@ func BuildCLI() cobra.Command {
 	return rootCmd
 }
 
-// BootstrapCLI is the CLI entrypoint
-func BootstrapCLI(args []string) error {
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+// Execute is the application entrypoint. It returns the exit code that should be forwarded to the shell.
+//
+// Exit codes:
+//   0-99: Number of failed executions
+//   100-: Other, non-execution related, errors, e.g., flag validation failed
+func Execute() int {
 	rootCmd := BuildCLI()
-	return rootCmd.Execute()
+	err := rootCmd.Execute()
+
+	if err != nil {
+		var commandFailed *clierrors.CommandFailedError
+		if errors.As(err, &commandFailed) {
+			return min(commandFailed.FailedCount, 99)
+		}
+		return 100
+	}
+
+	return 0
 }
