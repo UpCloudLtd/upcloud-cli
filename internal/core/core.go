@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/UpCloudLtd/upcloud-cli/internal/clierrors"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/all"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
@@ -124,8 +125,18 @@ func BuildCLI() cobra.Command {
 	return rootCmd
 }
 
-// BootstrapCLI is the CLI entrypoint
-func BootstrapCLI(args []string) error {
+// Execute is the application entrypoint. It returns the exit code that should be forwarded to the shell.
+func Execute() int {
 	rootCmd := BuildCLI()
-	return rootCmd.Execute()
+	err := rootCmd.Execute()
+
+	if err != nil {
+		if clierr, ok := err.(clierrors.ClientError); ok {
+			return clierr.ErrorCode()
+		}
+
+		return clierrors.UnspecifiedErrorCode
+	}
+
+	return 0
 }

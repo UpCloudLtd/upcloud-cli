@@ -18,6 +18,9 @@ var (
 )
 
 func commandRunE(command Command, service internal.AllServices, config *config.Config, args []string) error {
+	// Cobra validations were successful
+	command.Cobra().SilenceUsage = true
+
 	cmdLogger := logger.With("command", command.Cobra().CommandPath())
 	executor := NewExecutor(config, service, cmdLogger)
 	defer executor.Close()

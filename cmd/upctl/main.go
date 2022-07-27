@@ -7,7 +7,6 @@ import (
 )
 
 func main() {
-	if err := core.BootstrapCLI(os.Args); err != nil {
-		os.Exit(1)
-	}
+	exitCode := core.Execute()
+	os.Exit(exitCode)
 }
