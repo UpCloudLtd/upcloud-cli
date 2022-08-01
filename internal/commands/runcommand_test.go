@@ -28,6 +28,10 @@ func (m *mockNone) InitCommand() {
 	panic("implement me")
 }
 
+func (m *mockNone) BuildSubCommands(*config.Config) {
+	panic("implement me")
+}
+
 func (m *mockNone) Cobra() *cobra.Command {
 	return m.Command
 }
@@ -43,6 +47,10 @@ type mockSingle struct {
 }
 
 func (m *mockSingle) InitCommand() {
+	panic("implement me")
+}
+
+func (m *mockSingle) BuildSubCommands(*config.Config) {
 	panic("implement me")
 }
 
@@ -65,6 +73,10 @@ func (m *mockMulti) MaximumExecutions() int {
 }
 
 func (m *mockMulti) InitCommand() {
+	panic("implement me")
+}
+
+func (m *mockMulti) BuildSubCommands(*config.Config) {
 	panic("implement me")
 }
 
@@ -103,6 +115,10 @@ func (m *mockMultiResolver) MaximumExecutions() int {
 }
 
 func (m *mockMultiResolver) InitCommand() {
+	panic("implement me")
+}
+
+func (m *mockMultiResolver) BuildSubCommands(*config.Config) {
 	panic("implement me")
 }
 
