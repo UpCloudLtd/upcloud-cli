@@ -7,7 +7,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	"github.com/UpCloudLtd/upcloud-cli/internal/mockexecute"
-	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
@@ -86,8 +85,6 @@ func TestCloneCommand(t *testing.T) {
 			CachedStorages = nil
 			conf := config.New()
 			mService := new(smock.Service)
-
-			conf.Service = internal.Wrapper{Service: mService}
 
 			mService.On(targetMethod, &test.expected).Return(&details, nil)
 			mService.On("GetStorages", mock.Anything).Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2}}, nil)

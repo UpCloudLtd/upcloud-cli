@@ -6,7 +6,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
-	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
@@ -59,7 +58,6 @@ func TestStartCommand(t *testing.T) {
 			testCmd := StartCommand()
 			mService := new(smock.Service)
 
-			conf.Service = internal.Wrapper{Service: mService}
 			mService.On("GetServers", mock.Anything).Return(servers, nil)
 			mService.On("GetServerDetails", &request.GetServerDetailsRequest{UUID: Server1.UUID}).Return(&details2, nil)
 			mService.On(targetMethod, &test.startReq).Return(&details, nil)

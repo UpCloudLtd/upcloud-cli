@@ -6,7 +6,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
-	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
@@ -90,7 +89,6 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 			testCmd := ModifyCommand()
 			mService := new(smock.Service)
 
-			conf.Service = internal.Wrapper{Service: mService}
 			mService.On("GetStorages").Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1}}, nil)
 			mService.On(targetMethod, &test1.expected).Return(&StorageDetails1, nil)
 			mService.On("GetStorageDetails", &request.GetStorageDetailsRequest{UUID: Storage1.UUID}).Return(&StorageDetails1, nil)
@@ -140,7 +138,6 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 			testCmd := ModifyCommand()
 			mService := new(smock.Service)
 
-			conf.Service = internal.Wrapper{Service: mService}
 			mService.On("GetStorages").Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1}}, nil)
 			mService.On(targetMethod, &test2.expected).Return(&StorageDetails1, nil)
 			mService.On("GetStorageDetails", &request.GetStorageDetailsRequest{UUID: Storage1.UUID}).Return(&StorageDetails1, nil)
@@ -207,7 +204,6 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 			testCmd := ModifyCommand()
 			mService := new(smock.Service)
 
-			conf.Service = internal.Wrapper{Service: mService}
 			mService.On("GetStorages").Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage2}}, nil)
 			mService.On(targetMethod, &test3.expected).Return(&StorageDetails2, nil)
 			mService.On("GetStorageDetails", &request.GetStorageDetailsRequest{UUID: Storage2.UUID}).Return(&StorageDetails2, nil)
@@ -250,7 +246,6 @@ func TestModifyCommandAutoresize(t *testing.T) {
 			UUID: "resize_backup",
 		}
 
-		conf.Service = internal.Wrapper{Service: mService}
 		mService.On("ModifyStorage", &request.ModifyStorageRequest{UUID: UUID, Size: 50}).Return(&mModifyResponse, nil)
 		mService.On("ResizeStorageFilesystem", &request.ResizeStorageFilesystemRequest{UUID: UUID}).Return(&mResizeResponse, nil)
 		mService.On("GetStorageDetails", &request.GetStorageDetailsRequest{UUID: UUID}).Return(&mGetDetailsResponse, nil)
