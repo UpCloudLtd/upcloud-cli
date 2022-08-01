@@ -27,6 +27,7 @@ func New(name, usage string, examples ...string) *BaseCommand {
 // Command is the base command type for all commands.
 type Command interface {
 	InitCommand()
+	BuildSubCommands(*config.Config)
 	CobraCommand
 }
 
@@ -115,6 +116,8 @@ func BuildCommand(child Command, parent *cobra.Command, config *config.Config) C
 		return commandRunE(child, service, config, args)
 	}
 
+	child.BuildSubCommands(config)
+
 	return child
 }
 
@@ -139,10 +142,13 @@ func (s *BaseCommand) AddFlags(flags *pflag.FlagSet) {
 	})
 }
 
-// InitCommand can be overridden to handle flag registration.
-// A hook to handle flag registration.
+// InitCommand is a hook for handling flag registration and other initialization action.
 // The config values are not available during this hook. Register a cobra hook to use them. You can set defaults though.
 func (s *BaseCommand) InitCommand() {
+}
+
+// BuildSubCommands is a hook for handling possible sub-commands.
+func (s *BaseCommand) BuildSubCommands(*config.Config) {
 }
 
 // Cobra returns the underlying *cobra.Command

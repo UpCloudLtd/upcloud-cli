@@ -11,9 +11,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/root"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/router"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/server"
-	serverfirewall "github.com/UpCloudLtd/upcloud-cli/internal/commands/server/firewall"
-	"github.com/UpCloudLtd/upcloud-cli/internal/commands/server/networkinterface"
-	serverstorage "github.com/UpCloudLtd/upcloud-cli/internal/commands/server/storage"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/storage"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/zone"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
@@ -21,38 +18,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// BuildCommands is the main function that sets up the commands provided by upctl.
+// BuildCommands is the main function that sets up the top-level commands provided by upctl.
 func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
-	// Servers
-	serverCommand := commands.BuildCommand(server.BaseServerCommand(), rootCmd, conf)
-	commands.BuildCommand(server.ListCommand(), serverCommand.Cobra(), conf)
-	commands.BuildCommand(server.PlanListCommand(), serverCommand.Cobra(), conf)
-	commands.BuildCommand(server.ShowCommand(), serverCommand.Cobra(), conf)
-	commands.BuildCommand(server.StartCommand(), serverCommand.Cobra(), conf)
-	commands.BuildCommand(server.RestartCommand(), serverCommand.Cobra(), conf)
-	commands.BuildCommand(server.StopCommand(), serverCommand.Cobra(), conf)
-	commands.BuildCommand(server.CreateCommand(), serverCommand.Cobra(), conf)
-	commands.BuildCommand(server.ModifyCommand(), serverCommand.Cobra(), conf)
-	commands.BuildCommand(server.LoadCommand(), serverCommand.Cobra(), conf)
-	commands.BuildCommand(server.EjectCommand(), serverCommand.Cobra(), conf)
-	commands.BuildCommand(server.DeleteCommand(), serverCommand.Cobra(), conf)
-
-	// Server Network Interfaces
-	networkInterfaceCommand := commands.BuildCommand(networkinterface.BaseNetworkInterfaceCommand(), serverCommand.Cobra(), conf)
-	commands.BuildCommand(networkinterface.CreateCommand(), networkInterfaceCommand.Cobra(), conf)
-	commands.BuildCommand(networkinterface.ModifyCommand(), networkInterfaceCommand.Cobra(), conf)
-	commands.BuildCommand(networkinterface.DeleteCommand(), networkInterfaceCommand.Cobra(), conf)
-
-	// Server storage operations
-	serverStorageCommand := commands.BuildCommand(serverstorage.BaseServerStorageCommand(), serverCommand.Cobra(), conf)
-	commands.BuildCommand(serverstorage.AttachCommand(), serverStorageCommand.Cobra(), conf)
-	commands.BuildCommand(serverstorage.DetachCommand(), serverStorageCommand.Cobra(), conf)
-
-	// Server firewall operations
-	serverFirewallCommand := commands.BuildCommand(serverfirewall.BaseServerFirewallCommand(), serverCommand.Cobra(), conf)
-	commands.BuildCommand(serverfirewall.CreateCommand(), serverFirewallCommand.Cobra(), conf)
-	commands.BuildCommand(serverfirewall.DeleteCommand(), serverFirewallCommand.Cobra(), conf)
-	commands.BuildCommand(serverfirewall.ShowCommand(), serverFirewallCommand.Cobra(), conf)
+	commands.BuildCommand(server.BaseServerCommand(), rootCmd, conf)
 
 	// Storages
 	storageCommand := commands.BuildCommand(storage.BaseStorageCommand(), rootCmd, conf)

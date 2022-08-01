@@ -3,6 +3,7 @@ package networkinterface
 import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands/ipaddress"
+	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
 )
 
@@ -15,6 +16,12 @@ func BaseNetworkInterfaceCommand() commands.Command {
 
 type networkInterfaceCommand struct {
 	*commands.BaseCommand
+}
+
+func (n *networkInterfaceCommand) BuildSubCommands(cfg *config.Config) {
+	commands.BuildCommand(CreateCommand(), n.Cobra(), cfg)
+	commands.BuildCommand(ModifyCommand(), n.Cobra(), cfg)
+	commands.BuildCommand(DeleteCommand(), n.Cobra(), cfg)
 }
 
 func mapIPAddressesToRequest(ipStrings []string) ([]request.CreateNetworkInterfaceIPAddress, error) {

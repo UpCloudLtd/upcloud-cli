@@ -2,6 +2,7 @@ package serverstorage
 
 import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 )
 
 const (
@@ -15,4 +16,9 @@ func BaseServerStorageCommand() commands.Command {
 
 type serverStorageCommand struct {
 	*commands.BaseCommand
+}
+
+func (s *serverStorageCommand) BuildSubCommands(cfg *config.Config) {
+	commands.BuildCommand(AttachCommand(), s.Cobra(), cfg)
+	commands.BuildCommand(DetachCommand(), s.Cobra(), cfg)
 }
