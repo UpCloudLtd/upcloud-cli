@@ -7,7 +7,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	"github.com/UpCloudLtd/upcloud-cli/internal/mockexecute"
-	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
@@ -81,8 +80,6 @@ func TestLoadCDROMCommand(t *testing.T) {
 			conf := config.New()
 			testCmd := LoadCommand()
 			mService := new(smock.Service)
-
-			conf.Service = internal.Wrapper{Service: mService}
 
 			mService.On("GetServers", mock.Anything).Return(servers, nil)
 			mService.On("GetStorages", mock.Anything).Return(storages, nil)

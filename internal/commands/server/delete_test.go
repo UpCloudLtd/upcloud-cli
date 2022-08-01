@@ -6,7 +6,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
-	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 	"github.com/gemalto/flume"
@@ -61,7 +60,6 @@ func TestDeleteServerCommand(t *testing.T) {
 			testCmd := DeleteCommand()
 			mService := new(smock.Service)
 
-			conf.Service = internal.Wrapper{Service: mService}
 			mService.On(deleteServerMethod, mock.Anything).Return(nil, nil)
 			mService.On(deleteServerAndStoragesMethod, mock.Anything).Return(nil, nil)
 			mService.On("GetServers", mock.Anything).Return(servers, nil)

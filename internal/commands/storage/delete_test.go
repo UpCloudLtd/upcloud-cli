@@ -6,7 +6,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
-	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
@@ -46,7 +45,6 @@ func TestDeleteStorageCommand(t *testing.T) {
 			testCmd := DeleteCommand()
 			mService := new(smock.Service)
 
-			conf.Service = internal.Wrapper{Service: mService}
 			mService.On(targetMethod, &test.expected).Return(nil, nil)
 			mService.On("GetStorages", mock.Anything).Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage2}}, nil)
 

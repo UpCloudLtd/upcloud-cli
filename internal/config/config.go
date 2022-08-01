@@ -58,10 +58,8 @@ type GlobalFlags struct {
 
 // Config holds the configuration for running upctl
 type Config struct {
-	viper   *viper.Viper
-	flagSet *pflag.FlagSet
-	// TODO: remove this after refactored
-	Service     internal.Wrapper
+	viper       *viper.Viper
+	flagSet     *pflag.FlagSet
 	GlobalFlags GlobalFlags
 }
 
@@ -196,7 +194,5 @@ func (s *Config) CreateService() (internal.AllServices, error) {
 	client.UserAgent = fmt.Sprintf("upctl/%s", Version)
 
 	svc := service.New(client)
-	// TODO; remove this when refactor is complete
-	s.Service = internal.Wrapper{Service: svc}
 	return svc, nil
 }

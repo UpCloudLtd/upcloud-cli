@@ -6,7 +6,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
-	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
@@ -85,7 +84,6 @@ func TestModifyCommand(t *testing.T) {
 			testCmd := ModifyCommand()
 			mService := new(smock.Service)
 
-			conf.Service = internal.Wrapper{Service: mService}
 			mService.On(targetMethod, &test.modifyCall).Return(&details, nil)
 			mService.On("GetServerDetails", mock.Anything).Return(&details, nil)
 			c := commands.BuildCommand(testCmd, nil, conf)
