@@ -31,3 +31,6 @@ dist/
 # Visual Studio Code
 .vscode
 
+# Go workspace files
+/go.work
+/go.work.sum
