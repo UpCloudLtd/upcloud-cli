@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - **Breaking**: Set non-zero exit code if command execution fails.
+- **Breaking**: Render servers IP addresses as array of objects in JSON and YAML outputs of `server show`.
 
 ## [1.5.1] - 2022-07-15
 ### Fixed

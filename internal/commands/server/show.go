@@ -10,6 +10,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
+	"github.com/jedib0t/go-pretty/v6/text"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
@@ -91,6 +92,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 			strings.Join(flags, " "),
 		})
 	}
+
 	// Network details
 	nicRows := []output.TableRow{}
 	for _, nic := range server.Networking.Interfaces {
@@ -102,27 +104,10 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 			flags = append(flags, "B")
 		}
 
-		var addrs []string
-		for _, addr := range nic.IPAddresses {
-			var floating string
-			if addr.Floating.Bool() {
-				floating = " (f)"
-			}
-
-			addrs = append(
-				addrs,
-				fmt.Sprintf(
-					"%v: %s%s",
-					addr.Family,
-					ui.DefaultAddressColours.Sprint(addr.Address),
-					floating),
-			)
-		}
-
 		nicRows = append(nicRows, output.TableRow{
 			nic.Index,
 			nic.Type,
-			strings.Join(addrs, "\n"),
+			nic.IPAddresses,
 			nic.MAC,
 			nic.Network,
 			strings.Join(flags, " "),
@@ -175,7 +160,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 				Columns: []output.TableColumn{
 					{Key: "id", Header: "#"},
 					{Key: "type", Header: "Type"},
-					{Key: "ip_address", Header: "IP Address"},
+					{Key: "ip_addresses", Header: "IP Address", Format: formatShowIPAddresses},
 					{Key: "mac_address", Header: "MAC Address"},
 					{Key: "network", Header: "Network", Colour: ui.DefaultUUUIDColours},
 					{Key: "flags", Header: "Flags"},
@@ -251,4 +236,30 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 	}
 
 	return combined, nil
+}
+
+func formatShowIPAddresses(val interface{}) (text.Colors, string, error) {
+	addresses, ok := val.(upcloud.IPAddressSlice)
+	if !ok {
+		return nil, "", fmt.Errorf("cannot parse IP addresses from %T, expected upcloud.IPAddressSlice", val)
+	}
+
+	var strs []string
+	for _, ipa := range addresses {
+		var floating string
+		if ipa.Floating.Bool() {
+			floating = " (f)"
+		}
+
+		strs = append(
+			strs,
+			fmt.Sprintf(
+				"%v: %s%s",
+				ipa.Family,
+				ui.DefaultAddressColours.Sprint(ipa.Address),
+				floating),
+		)
+	}
+
+	return nil, strings.Join(strs, "\n"), nil
 }
