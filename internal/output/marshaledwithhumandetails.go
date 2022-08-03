@@ -15,12 +15,6 @@ func (d MarshaledWithHumanDetails) MarshalJSON() ([]byte, error) {
 	return OnlyMarshaled{Value: d.Value}.MarshalJSON()
 }
 
-// MarshalYAML implements output.Output, it marshals the value and returns the YAML as []byte
-// nb. does *not* implement yaml.Marshaler
-func (d MarshaledWithHumanDetails) MarshalYAML() ([]byte, error) {
-	return OnlyMarshaled{Value: d.Value}.MarshalYAML()
-}
-
 // MarshalHuman implements output.Output
 // For MarshaledWithHumanDetails outputs, we return *only* the details part in humanized output
 func (d MarshaledWithHumanDetails) MarshalHuman() ([]byte, error) {

@@ -6,7 +6,6 @@ import (
 
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
-	"gopkg.in/yaml.v2"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 )
@@ -66,12 +65,6 @@ func mapSectionRows(rows []DetailRow) map[string]interface{} {
 		out[row.Key] = row.Value
 	}
 	return out
-}
-
-// MarshalYAML marshals details and returns the YAML as []byte
-// nb. does *not* implement yaml.Marshaler
-func (d Details) MarshalYAML() ([]byte, error) {
-	return yaml.Marshal(mapSections(d.Sections))
 }
 
 // MarshalHuman marshals details and returns a human readable []byte

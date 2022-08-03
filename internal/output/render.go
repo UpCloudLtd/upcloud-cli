@@ -5,11 +5,36 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"strings"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/clierrors"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 )
+
+func renderJSON(cfg *config.Config, commandOutputs ...Output) ([]byte, error) {
+	var output []byte
+	var jsonOutput []json.RawMessage
+	for _, commandOutput := range commandOutputs {
+		if _, ok := commandOutput.(None); !ok {
+			// don't marshal none outputs
+			outBytes, err := commandOutput.MarshalJSON()
+			if err != nil {
+				return nil, err
+			}
+			jsonOutput = append(jsonOutput, outBytes)
+		}
+	}
+
+	var err error
+	if len(jsonOutput) == 1 {
+		output, err = json.MarshalIndent(jsonOutput[0], "", "  ")
+	} else if len(jsonOutput) > 0 {
+		output, err = json.MarshalIndent(jsonOutput, "", "  ")
+	}
+	if err != nil {
+		return nil, err
+	}
+	return output, nil
+}
 
 // Render renders commandOutput to writer using cfg to configure the output.
 func Render(writer io.Writer, cfg *config.Config, commandOutputs ...Output) (err error) {
@@ -28,46 +53,20 @@ func Render(writer io.Writer, cfg *config.Config, commandOutputs ...Output) (err
 		buffer.Write([]byte{'\n'})
 		output = buffer.Bytes()
 	case cfg.IsSet(config.KeyOutput) && cfg.Output() == config.ValueOutputJSON:
-		var jsonOutput []json.RawMessage
-		for _, commandOutput := range commandOutputs {
-			if _, ok := commandOutput.(None); !ok {
-				// don't marshal none outputs
-				outBytes, err := commandOutput.MarshalJSON()
-				if err != nil {
-					return err
-				}
-				jsonOutput = append(jsonOutput, outBytes)
-			}
-		}
-		if len(jsonOutput) == 1 {
-			output, err = json.MarshalIndent(jsonOutput[0], "", "  ")
-		} else if len(jsonOutput) > 0 {
-			output, err = json.MarshalIndent(jsonOutput, "", "  ")
-		}
+		output, err = renderJSON(cfg, commandOutputs...)
 		if err != nil {
 			return err
 		}
 		output = append(output, '\n')
 	case cfg.IsSet(config.KeyOutput) && cfg.Output() == config.ValueOutputYAML:
-		var yamlOutput []string
-		for _, commandOutput := range commandOutputs {
-			if _, ok := commandOutput.(None); !ok {
-				// don't marshal none outputs
-				rawmap, err := commandOutput.MarshalYAML()
-				if err != nil {
-					return err
-				}
-				yamlOutput = append(yamlOutput, string(rawmap))
-			}
+		jsonOutput, err := renderJSON(cfg, commandOutputs...)
+		if err != nil {
+			return err
 		}
-		switch {
-		case len(yamlOutput) > 1:
-			output = append([]byte("---\n"), []byte(strings.Join(yamlOutput, "---\n"))...)
-			output = append(output, []byte("...\n")...)
-		case len(yamlOutput) == 1:
-			output = []byte(yamlOutput[0])
-		default:
-			output = []byte{'\n'}
+
+		output, err = JSONToYAML(jsonOutput)
+		if err != nil {
+			return err
 		}
 	default:
 		return fmt.Errorf("not sure what to output")

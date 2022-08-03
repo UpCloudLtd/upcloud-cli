@@ -13,7 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - **Breaking**: Set non-zero exit code if command execution fails.
-- **Breaking**: Render servers IP addresses as array of objects in JSON and YAML outputs of `server show`.
+- **Breaking**: Render servers IP addresses as array of objects, instead of previous pretty-printed string, in JSON and YAML outputs of `server show`.
+- **Breaking**: Use key names from `json` field tag also in YAML output to have equal key names in JSON and YAML outputs. For example, `bootorder` key in server details will now be `boot_order` also in YAML output. As a side-effect data-types are limited to those supported by JSON. For example, timestamps will be presented as (double-quoted) strings. In addition, if command targets multiple resources, YAML output will now be a list, similarly than in JSON output, instead of previous multiple YAML documents.
 
 ## [1.5.1] - 2022-07-15
 ### Fixed

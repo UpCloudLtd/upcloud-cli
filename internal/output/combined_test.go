@@ -25,7 +25,7 @@ func TestCombined(t *testing.T) {
 			},
 			expectedHumanResult: "  \n  BAR\n    boz thisistest \n",
 			expectedJSONResult:  "{\n  \"test\": {\n    \"baz\": \"thisistest\"\n  }\n}",
-			expectedYAMLResult:  "test:\n  baz: thisistest\n",
+			expectedYAMLResult:  "test:\n    baz: thisistest\n",
 		},
 		{
 			name: "two sections",
@@ -43,7 +43,7 @@ func TestCombined(t *testing.T) {
 			},
 			expectedHumanResult: "  \n  BAR\n    boz thisistest1 \n\n  \n  BAR\n    boz thisistest2 \n",
 			expectedJSONResult:  "{\n  \"test1\": {\n    \"baz\": \"thisistest1\"\n  },\n  \"test2\": {\n    \"baz\": \"thisistest2\"\n  }\n}",
-			expectedYAMLResult:  "test1:\n  baz: thisistest1\ntest2:\n  baz: thisistest2\n",
+			expectedYAMLResult:  "test1:\n    baz: thisistest1\ntest2:\n    baz: thisistest2\n",
 		},
 		{
 			name: "two tables",
@@ -106,15 +106,15 @@ func TestCombined(t *testing.T) {
   ]
 }`,
 			expectedYAMLResult: `test1:
-- a: 1
-  c: 2a
-- a: "3"
-  c: 4
+    - a: 1
+      c: 2a
+    - a: "3"
+      c: 4
 test2:
-- aa: 1a
-  cc: 2
-- aa: 3
-  cc: "4"
+    - aa: 1a
+      cc: 2
+    - aa: 3
+      cc: "4"
 `,
 		},
 	}

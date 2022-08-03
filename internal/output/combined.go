@@ -6,8 +6,6 @@ import (
 	"fmt"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
-
-	"gopkg.in/yaml.v2"
 )
 
 // CombinedSection represents a single section of a combined output
@@ -23,11 +21,6 @@ type Combined []CombinedSection
 // MarshalJSON implements json.Marshaler
 func (m Combined) MarshalJSON() ([]byte, error) {
 	return json.MarshalIndent(flattenSections(m), "", "  ")
-}
-
-// MarshalYAML returns table output marshaled to YAML.
-func (m Combined) MarshalYAML() ([]byte, error) {
-	return yaml.Marshal(flattenSections(m))
 }
 
 func flattenSections(m Combined) map[string]interface{} {

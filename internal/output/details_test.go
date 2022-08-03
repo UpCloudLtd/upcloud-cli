@@ -22,7 +22,7 @@ func TestDetails(t *testing.T) {
 			}}}},
 			expectedHumanResult: "  \n  BAR\n    boz thisistest \n",
 			expectedJSONResult:  "{\n  \"foo\": {\n    \"baz\": \"thisistest\"\n  }\n}",
-			expectedYAMLResult:  "foo:\n  baz: thisistest\n",
+			expectedYAMLResult:  "foo:\n    baz: thisistest\n",
 		},
 	}
 

@@ -28,7 +28,7 @@ func (c outputTestCase) Generate() func(t *testing.T) {
 			bytes, err = c.input.MarshalJSON()
 			assert.NoError(t, err)
 			assert.Equal(t, c.expectedJSONResult, string(bytes))
-			bytes, err = c.input.MarshalYAML()
+			bytes, err = output.JSONToYAML(bytes)
 			assert.NoError(t, err)
 			assert.Equal(t, c.expectedYAMLResult, string(bytes))
 		} else {
@@ -38,7 +38,7 @@ func (c outputTestCase) Generate() func(t *testing.T) {
 			bytes, err = c.input.MarshalJSON()
 			assert.EqualError(t, err, c.expectedErrorMessage)
 			assert.Len(t, bytes, 0)
-			bytes, err = c.input.MarshalYAML()
+			bytes, err = output.JSONToYAML(bytes)
 			assert.EqualError(t, err, c.expectedErrorMessage)
 			assert.Len(t, bytes, 0)
 		}

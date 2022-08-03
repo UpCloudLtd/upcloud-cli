@@ -66,7 +66,7 @@ func TestTable(t *testing.T) {
   }
 ]`,
 			expectedYAMLResult: `- aa: 4.123456778901234
-  cc: 2001-01-01T12:00:00Z
+  cc: "2001-01-01T12:00:00Z"
 `,
 		},
 		{

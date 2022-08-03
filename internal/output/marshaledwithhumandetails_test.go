@@ -62,7 +62,7 @@ func TestMarshaledWithHumanDetails(t *testing.T) {
 			},
 			expectedHumanResult: "  \n  Fake {mock} \n",
 			expectedJSONResult:  "{\n  \"String\": \"mock\"\n}",
-			expectedYAMLResult:  "string: mock\n",
+			expectedYAMLResult:  "String: mock\n",
 		},
 	}
 	for _, test := range marshaledWithHumanDetailsTests {

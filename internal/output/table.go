@@ -8,7 +8,6 @@ import (
 
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
-	"gopkg.in/yaml.v2"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-cli/internal/validation"
@@ -49,11 +48,6 @@ func (s Table) asListOfMaps() []map[string]interface{} {
 // MarshalJSON implements json.Marshaler
 func (s Table) MarshalJSON() ([]byte, error) {
 	return json.MarshalIndent(s.asListOfMaps(), "", "  ")
-}
-
-// MarshalYAML returns table output marshaled to YAML.
-func (s Table) MarshalYAML() ([]byte, error) {
-	return yaml.Marshal(s.asListOfMaps())
 }
 
 // MarshalHuman returns table output in a human-readable form
