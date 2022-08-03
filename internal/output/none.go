@@ -8,11 +8,6 @@ func (s None) MarshalJSON() ([]byte, error) {
 	return []byte{}, nil
 }
 
-// MarshalYAML implements output.Output
-func (s None) MarshalYAML() ([]byte, error) {
-	return []byte{}, nil
-}
-
 // MarshalHuman implements output.Output
 func (s None) MarshalHuman() ([]byte, error) {
 	return []byte{}, nil

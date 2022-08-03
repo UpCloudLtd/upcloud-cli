@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-
-	"gopkg.in/yaml.v2"
 )
 
 // OnlyMarshaled implements output.Command for a return value that is only displayed as raw marshaled in JSON and YAML
@@ -22,17 +20,6 @@ func (d OnlyMarshaled) MarshalJSON() ([]byte, error) {
 		}, "", "  ")
 	}
 	return json.MarshalIndent(d.Value, "", "  ")
-}
-
-// MarshalYAML implements output.Output, it marshals the value and returns the YAML as []byte
-// nb. does *not* implement yaml.Marshaler
-func (d OnlyMarshaled) MarshalYAML() ([]byte, error) {
-	if errValue, ok := d.Value.(error); ok {
-		return yaml.Marshal(map[string]interface{}{
-			"error": errValue.Error(),
-		})
-	}
-	return yaml.Marshal(d.Value)
 }
 
 // MarshalHuman implements output.Output

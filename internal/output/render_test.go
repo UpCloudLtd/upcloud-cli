@@ -32,7 +32,7 @@ func TestRender(t *testing.T) {
 			input:               output.None{},
 			expectedHumanResult: "\n",
 			expectedJSONResult:  "\n",
-			expectedYAMLResult:  "\n",
+			expectedYAMLResult:  "",
 		},
 		{
 			name:                "marshaled",

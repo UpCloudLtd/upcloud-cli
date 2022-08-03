@@ -3,8 +3,6 @@ package output
 import (
 	"encoding/json"
 	"fmt"
-
-	"gopkg.in/yaml.v2"
 )
 
 // Error implements output.Command for a return value that is an error
@@ -22,19 +20,6 @@ func (e Error) MarshalJSON() ([]byte, error) {
 	}
 
 	return json.MarshalIndent(marshaled, "", "  ")
-}
-
-// MarshalYAML implements output.Output, it marshals the value and returns the YAML as []byte
-// nb. does *not* implement yaml.Marshaler
-func (e Error) MarshalYAML() ([]byte, error) {
-	marshaled, err := e.MarshalRawMap()
-	if err != nil {
-		return yaml.Marshal(map[string]interface{}{
-			"error": err.Error(),
-		})
-	}
-
-	return yaml.Marshal(marshaled)
 }
 
 // MarshalHuman implements output.Output

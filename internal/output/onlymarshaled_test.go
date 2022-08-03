@@ -30,7 +30,7 @@ func TestOnlyMarshaled(t *testing.T) {
 			name:               "struct",
 			input:              output.OnlyMarshaled{Value: struct{ String string }{"mock"}},
 			expectedJSONResult: "{\n  \"String\": \"mock\"\n}",
-			expectedYAMLResult: "string: mock\n",
+			expectedYAMLResult: "String: mock\n",
 		},
 	}
 
