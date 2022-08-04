@@ -10,6 +10,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/jedib0t/go-pretty/v6/text"
 )
 
 // ShowCommand creates the "network show" command
@@ -70,7 +71,7 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 				nip.Family,
 				nip.DHCP.Bool(),
 				nip.DHCPDefaultRoute.Bool(),
-				strings.Join(nip.DHCPDns, " "),
+				nip.DHCPDns,
 			})
 		}
 
@@ -83,7 +84,7 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 					{Key: "family", Header: "Family"},
 					{Key: "dhcp", Header: "DHCP", Format: output.BoolFormat},
 					{Key: "dhcp_default_route", Header: "DHCP Def Router", Format: output.BoolFormat},
-					{Key: "dhcp_dns", Header: "DHCP DNS"},
+					{Key: "dhcp_dns", Header: "DHCP DNS", Format: formatShowDHCPDNS},
 				},
 				Rows: networkRows,
 			},
@@ -121,4 +122,13 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 	}
 
 	return combined, nil
+}
+
+func formatShowDHCPDNS(val interface{}) (text.Colors, string, error) {
+	addresses, ok := val.([]string)
+	if !ok {
+		return nil, "", fmt.Errorf("cannot parse IP addresses from %T, expected []string", val)
+	}
+
+	return nil, ui.DefaultAddressColours.Sprint(strings.Join(addresses, " ")), nil
 }
