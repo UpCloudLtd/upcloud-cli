@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
@@ -8,7 +9,9 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
+	"github.com/jedib0t/go-pretty/v6/text"
 
+	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
 )
 
@@ -45,11 +48,6 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 		return nil, err
 	}
 
-	// Storage details
-	attachedToServer := "N/A"
-	if len(storage.ServerUUIDs) > 0 {
-		attachedToServer = strings.Join(storage.ServerUUIDs, ", \n")
-	}
 	storageSection := output.CombinedSection{
 		Contents: output.Details{
 			Sections: []output.DetailSection{
@@ -58,12 +56,13 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 					Rows: []output.DetailRow{
 						{Title: "UUID:", Key: "uuid", Value: storage.UUID, Colour: ui.DefaultUUUIDColours},
 						{Title: "Title:", Key: "title", Value: storage.Title},
-						{Title: "type:", Key: "type", Value: storage.Type},
+						{Title: "Access:", Key: "access", Value: storage.Access},
+						{Title: "Type:", Key: "type", Value: storage.Type},
 						{Title: "State:", Key: "state", Value: storage.State, Colour: commands.StorageStateColour(storage.State)},
 						{Title: "Size:", Key: "size", Value: storage.Size},
 						{Title: "Tier:", Key: "tier", Value: storage.Tier},
 						{Title: "Zone:", Key: "zone", Value: storage.Zone},
-						{Title: "Server:", Key: "server", Value: attachedToServer},
+						{Title: "Server:", Key: "servers", Value: storage.ServerUUIDs, Format: formatShowServers},
 						{Title: "Origin:", Key: "origin", Value: storage.Origin, Colour: ui.DefaultUUUIDColours},
 						{Title: "Created:", Key: "created", Value: storage.Created},
 						{Title: "Licence:", Key: "licence", Value: storage.License},
@@ -113,4 +112,23 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 	}
 
 	return combined, nil
+}
+
+func formatShowServers(val interface{}) (text.Colors, string, error) {
+	servers, ok := val.(upcloud.ServerUUIDSlice)
+	if !ok {
+		return nil, "", fmt.Errorf("cannot parse server UUIDs from %T, expected upcloud.ServerUUIDSlice", val)
+	}
+
+	var strs []string
+	for _, server := range servers {
+		strs = append(strs, ui.DefaultUUUIDColours.Sprint(server))
+	}
+
+	str := "None"
+	if len(servers) > 0 {
+		str = strings.Join(strs, ", \n")
+	}
+
+	return nil, str, nil
 }
