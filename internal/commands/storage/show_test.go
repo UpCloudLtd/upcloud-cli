@@ -66,7 +66,8 @@ func TestStorageHumanOutput(t *testing.T) {
   Storage
     UUID:    01101f27-196f-47e9-a055-4e2e8bb3b419 
     Title:   test-1                               
-    type:    normal                               
+    Access:  private                              
+    Type:    normal                               
     State:   online                               
     Size:    10                                   
     Tier:    maxiops                              
