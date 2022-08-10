@@ -9,8 +9,7 @@ import (
 )
 
 // IPAddress implements argument completion for ip addresses, by ptr record or the adddress itself
-type IPAddress struct {
-}
+type IPAddress struct{}
 
 // make sure IPAddress implements the interface
 var _ Provider = IPAddress{}

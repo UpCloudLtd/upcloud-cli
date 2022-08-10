@@ -7,7 +7,7 @@ import (
 )
 
 func TestCombined(t *testing.T) {
-	var combinedTests = []outputTestCase{
+	combinedTests := []outputTestCase{
 		{
 			name:               "no content",
 			input:              output.Combined{},

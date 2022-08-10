@@ -7,8 +7,7 @@ import (
 )
 
 // LoadBalancer implements argument completion for load balancers, by uuid or name.
-type LoadBalancer struct {
-}
+type LoadBalancer struct{}
 
 // make sure LoadBalancer implements the interface
 var _ Provider = LoadBalancer{}

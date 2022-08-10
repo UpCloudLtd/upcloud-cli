@@ -161,7 +161,6 @@ func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Out
 
 	logline.SetMessage(fmt.Sprintf("%s: resizing partition and filesystem", msg))
 	backup, err := svc.ResizeStorageFilesystem(&request.ResizeStorageFilesystemRequest{UUID: uuid})
-
 	// If there was an error during resize attempt, we consider the overall modify operation successful and just log warning about failed resize
 	if err != nil {
 		logline.SetMessage(fmt.Sprintf("%s: partially done", msg))

@@ -14,7 +14,7 @@ import (
 )
 
 func TestListStorages(t *testing.T) {
-	var Storage1 = upcloud.Storage{
+	Storage1 := upcloud.Storage{
 		UUID:   UUID1,
 		Title:  Title1,
 		Access: "private",
@@ -24,7 +24,7 @@ func TestListStorages(t *testing.T) {
 		Size:   40,
 		Tier:   "maxiops",
 	}
-	var Storage2 = upcloud.Storage{
+	Storage2 := upcloud.Storage{
 		UUID:   UUID2,
 		Title:  Title2,
 		Access: "private",
@@ -34,7 +34,7 @@ func TestListStorages(t *testing.T) {
 		Size:   40,
 		Tier:   "maxiops",
 	}
-	var Storage3 = upcloud.Storage{
+	Storage3 := upcloud.Storage{
 		UUID:   UUID3,
 		Title:  Title3,
 		Access: "public",
@@ -44,13 +44,13 @@ func TestListStorages(t *testing.T) {
 		Size:   10,
 		Tier:   "maxiops",
 	}
-	var Storage4 = Storage1
+	Storage4 := Storage1
 	Storage4.Title = "mock-storage-title4"
 	Storage4.Type = upcloud.StorageTypeCDROM
-	var Storage5 = Storage1
+	Storage5 := Storage1
 	Storage5.Title = "mock-storage-title5"
 	Storage5.Type = upcloud.StorageTypeTemplate
-	var Storage6 = Storage3
+	Storage6 := Storage3
 	Storage6.Title = "mock-storage-title6"
 	Storage6.Type = upcloud.StorageTypeBackup
 

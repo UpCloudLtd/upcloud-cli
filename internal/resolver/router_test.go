@@ -22,11 +22,13 @@ var Router2 = upcloud.Router{
 	Type: "normal",
 	UUID: "f14dd3e7-3dbb-4e3c-92b9-d1cf5178a13e",
 }
+
 var Router3 = upcloud.Router{
 	Name: "name-3",
 	Type: "normal",
 	UUID: "ffd3ab80-fe95-49c0-ab70-fbc987246c99",
 }
+
 var Router4 = upcloud.Router{
 	Name: "name-1",
 	Type: "normal",
@@ -41,6 +43,7 @@ var allRouters = &upcloud.Routers{
 		Router4,
 	},
 }
+
 var unambiguousRouters = []upcloud.Router{
 	Router2,
 	Router3,

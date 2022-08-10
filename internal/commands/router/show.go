@@ -52,7 +52,8 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 			network.UUID,
 			network.Name,
 			network.Type,
-			network.Zone}
+			network.Zone,
+		}
 	}
 	return output.Combined{
 		output.CombinedSection{
@@ -88,7 +89,7 @@ func getNetworks(exec commands.Executor, attached upcloud.RouterNetworkSlice) ([
 	if len(attached) == 0 {
 		return []upcloud.Network{}, nil
 	}
-	var idleWorkers = make(chan int, maxRouterActions)
+	idleWorkers := make(chan int, maxRouterActions)
 	for n := 0; n < maxRouterActions; n++ {
 		idleWorkers <- n
 	}

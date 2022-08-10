@@ -67,7 +67,6 @@ func (s *detachCommand) ExecuteSingleArgument(exec commands.Executor, uuid strin
 	logline.StartedNow()
 
 	res, err := storageSvc.DetachStorage(&req)
-
 	if err != nil {
 		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
 	}

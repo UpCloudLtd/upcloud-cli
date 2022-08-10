@@ -35,7 +35,7 @@ func TestImportCommand(t *testing.T) {
 
 	defer os.Remove(tmpFile.Name())
 
-	var Storage1 = upcloud.Storage{
+	Storage1 := upcloud.Storage{
 		UUID:   UUID1,
 		Title:  Title1,
 		Access: "private",
@@ -45,7 +45,7 @@ func TestImportCommand(t *testing.T) {
 		Size:   40,
 		Tier:   "maxiops",
 	}
-	var StorageDetails1 = upcloud.StorageDetails{
+	StorageDetails1 := upcloud.StorageDetails{
 		Storage: Storage1,
 		BackupRule: &upcloud.BackupRule{
 			Interval:  "sun",
@@ -53,7 +53,7 @@ func TestImportCommand(t *testing.T) {
 			Retention: 5,
 		},
 	}
-	var Storage2 = upcloud.Storage{
+	Storage2 := upcloud.Storage{
 		UUID:   UUID2,
 		Title:  Title2,
 		Access: "private",
@@ -64,7 +64,7 @@ func TestImportCommand(t *testing.T) {
 		Tier:   "maxiops",
 	}
 
-	var StorageImportCompleted = upcloud.StorageImportDetails{
+	StorageImportCompleted := upcloud.StorageImportDetails{
 		State: upcloud.StorageImportStateCompleted,
 	}
 

@@ -18,7 +18,7 @@ import (
 func TestLoadCDROMCommand(t *testing.T) {
 	targetMethod := "LoadCDROM"
 
-	var Server1 = upcloud.Server{
+	Server1 := upcloud.Server{
 		CoreNumber:   1,
 		Hostname:     "server-1-hostname",
 		License:      0,
@@ -31,7 +31,7 @@ func TestLoadCDROMCommand(t *testing.T) {
 		UUID:         "1fdfda29-ead1-4855-b71f-1e33eb2ca9de",
 		Zone:         "fi-hel1",
 	}
-	var servers = &upcloud.Servers{
+	servers := &upcloud.Servers{
 		Servers: []upcloud.Server{
 			Server1,
 		},
@@ -41,7 +41,7 @@ func TestLoadCDROMCommand(t *testing.T) {
 		Server: Server1,
 	}
 
-	var Storage1 = upcloud.Storage{
+	Storage1 := upcloud.Storage{
 		UUID:   UUID1,
 		Title:  Title1,
 		Access: "private",
@@ -51,7 +51,7 @@ func TestLoadCDROMCommand(t *testing.T) {
 		Size:   40,
 		Tier:   "maxiops",
 	}
-	var storages = &upcloud.Storages{
+	storages := &upcloud.Storages{
 		Storages: []upcloud.Storage{
 			Storage1,
 		},

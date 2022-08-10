@@ -12,9 +12,7 @@ import (
 	"github.com/spf13/pflag"
 )
 
-var (
-	wrappingLineLength = 100
-)
+var wrappingLineLength = 100
 
 var templateFuncs = template.FuncMap{
 	"trimTrailingWhitespaces": trimRightSpace,

@@ -7,7 +7,7 @@ import (
 )
 
 func TestOnlyMarshaled(t *testing.T) {
-	var marshaledOnlyTests = []outputTestCase{
+	marshaledOnlyTests := []outputTestCase{
 		{
 			name:               "nil",
 			input:              output.OnlyMarshaled{Value: nil},

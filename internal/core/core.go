@@ -129,7 +129,6 @@ func BuildCLI() cobra.Command {
 func Execute() int {
 	rootCmd := BuildCLI()
 	err := rootCmd.Execute()
-
 	if err != nil {
 		if clierr, ok := err.(clierrors.ClientError); ok {
 			return clierr.ErrorCode()

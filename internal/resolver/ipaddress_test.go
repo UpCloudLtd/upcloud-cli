@@ -79,10 +79,10 @@ func TestIPAddressResolution(t *testing.T) {
 		Zone:       "fi-hel1",
 	}
 
-	var addresses = &upcloud.IPAddresses{IPAddresses: []upcloud.IPAddress{
+	addresses := &upcloud.IPAddresses{IPAddresses: []upcloud.IPAddress{
 		ipAddress1, ipAddress2, ipAddress3, ipAddress4, ipAddress5, ipAddress6,
 	}}
-	var unambiguousAddresses = []upcloud.IPAddress{ipAddress1, ipAddress2, ipAddress3}
+	unambiguousAddresses := []upcloud.IPAddress{ipAddress1, ipAddress2, ipAddress3}
 
 	t.Run("resolve address", func(t *testing.T) {
 		mService := &smock.Service{}

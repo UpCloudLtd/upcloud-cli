@@ -89,7 +89,6 @@ func (s *attachCommand) ExecuteSingleArgument(exec commands.Executor, uuid strin
 	logline.StartedNow()
 
 	res, err := storageSvc.AttachStorage(&req)
-
 	if err != nil {
 		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
 	}

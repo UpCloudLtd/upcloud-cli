@@ -31,7 +31,7 @@ var (
 )
 
 func TestCreateServer(t *testing.T) {
-	var Plans = upcloud.Plans{
+	Plans := upcloud.Plans{
 		Plans: []upcloud.Plan{
 			{
 				Name:        "1xCPU-2GB",
@@ -39,7 +39,7 @@ func TestCreateServer(t *testing.T) {
 			},
 		},
 	}
-	var Storage1 = upcloud.Storage{
+	Storage1 := upcloud.Storage{
 		UUID:   UUID1,
 		Title:  Title1,
 		Access: "private",
@@ -50,7 +50,7 @@ func TestCreateServer(t *testing.T) {
 		Tier:   "maxiops",
 	}
 
-	var StorageDef = upcloud.Storage{
+	StorageDef := upcloud.Storage{
 		UUID:   UUID2,
 		Title:  "Ubuntu Server 20.04 LTS (Focal Fossa)",
 		Access: "private",
@@ -61,7 +61,7 @@ func TestCreateServer(t *testing.T) {
 		Tier:   "maxiops",
 	}
 
-	var Storage3 = upcloud.Storage{
+	Storage3 := upcloud.Storage{
 		UUID:   UUID3,
 		Title:  Title2,
 		Access: "public",
@@ -71,14 +71,14 @@ func TestCreateServer(t *testing.T) {
 		Size:   10,
 		Tier:   "maxiops",
 	}
-	var storages = &upcloud.Storages{
+	storages := &upcloud.Storages{
 		Storages: []upcloud.Storage{
 			Storage1,
 			StorageDef,
 			Storage3,
 		},
 	}
-	var serverDetailsMaint = upcloud.ServerDetails{
+	serverDetailsMaint := upcloud.ServerDetails{
 		Server: upcloud.Server{
 			UUID:  UUID1,
 			State: upcloud.ServerStateMaintenance,

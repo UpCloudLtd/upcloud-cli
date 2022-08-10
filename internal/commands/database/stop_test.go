@@ -17,7 +17,7 @@ import (
 func TestStopCommand(t *testing.T) {
 	targetMethod := "ShutdownManagedDatabase"
 
-	var db = upcloud.ManagedDatabase{
+	db := upcloud.ManagedDatabase{
 		State: upcloud.ManagedDatabaseStateRunning,
 		Title: "database-title",
 		UUID:  "1fdfda29-ead1-4855-b71f-1e33eb2ca9de",

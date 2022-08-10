@@ -227,8 +227,7 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	return nil, fmt.Errorf("upload aborted unexpectedly")
 }
 
-// TODO: figure out how to handle 'local http uploads', eg. piping from a local / non public internet url
-//       if required(?)
+// TODO: figure out 'local http uploads', eg. piping from a local / non public internet url if required(?)
 func parseSource(location string) (parsedLocation *url.URL, sourceType string, fileSize int64, err error) {
 	fileSize, err = getLocalFileSize(location)
 	if err == nil {
@@ -268,7 +267,7 @@ func createStorage(exec commands.Executor, params *createParams) (upcloud.Storag
 	logline.StartedNow()
 	details, err := exec.Storage().CreateStorage(&params.CreateStorageRequest)
 	if err != nil {
-		commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err) // nolint:errcheck
+		commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err) //nolint:errcheck
 		return upcloud.Storage{}, err
 	}
 	logline.SetMessage(fmt.Sprintf("%s: done", msg))

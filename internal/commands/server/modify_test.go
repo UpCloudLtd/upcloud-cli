@@ -18,7 +18,7 @@ import (
 func TestModifyCommand(t *testing.T) {
 	targetMethod := "ModifyServer"
 
-	var Server1 = upcloud.Server{
+	Server1 := upcloud.Server{
 		CoreNumber:   1,
 		Hostname:     "server-1-hostname",
 		License:      0,

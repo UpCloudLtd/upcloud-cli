@@ -39,8 +39,10 @@ var Network4 = upcloud.Network{
 	Zone: "uk-lon1",
 }
 
-var networks = &upcloud.Networks{Networks: []upcloud.Network{Network1, Network2, Network3, Network4}}
-var unambiguousNetworks = []upcloud.Network{Network2, Network3}
+var (
+	networks            = &upcloud.Networks{Networks: []upcloud.Network{Network1, Network2, Network3, Network4}}
+	unambiguousNetworks = []upcloud.Network{Network2, Network3}
+)
 
 func TestNetworkResolution(t *testing.T) {
 	t.Run("resolve uuid", func(t *testing.T) {
