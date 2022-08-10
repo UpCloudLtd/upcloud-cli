@@ -40,7 +40,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 
 	var networkName string
 	if network, err := svc.GetNetworkDetails(&request.GetNetworkDetailsRequest{UUID: lb.NetworkUUID}); err != nil {
-		networkName = text.FgHiBlack.Sprint("Unknown")
+		networkName = ""
 	} else {
 		networkName = network.Name
 	}
@@ -99,7 +99,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 								{Title: "Plan:", Value: lb.Plan},
 								{Title: "Zone:", Value: lb.Zone},
 								{Title: "DNS name", Value: lb.DNSName},
-								{Title: "Network name", Value: networkName},
+								{Title: "Network name", Value: networkName, Format: ui.FormatPossiblyUnknownString},
 								{Title: "Network UUID", Value: lb.NetworkUUID},
 								{Title: "Operational state:", Value: lb.OperationalState, Colour: commands.LoadBalancerOperationalStateColour(lb.OperationalState)},
 							},
