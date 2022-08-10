@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Breaking**: Use key names from `json` field tag also in YAML output to have equal key names in JSON and YAML outputs. For example, `bootorder` key in server details will now be `boot_order` also in YAML output. As a side-effect data-types are limited to those supported by JSON. For example, timestamps will be presented as (double-quoted) strings. In addition, if command targets multiple resources, YAML output will now be a list, similarly than in JSON output, instead of previous multiple YAML documents.
 - **Breaking**: In JSON and YAML output, `storage show` lists attached servers in `servers` list instead of `server` string.
 - **Breaking**: In JSON and YAML output, `network show` lists DHCP DNS values in list instead of string.
+- On `network show`, output server details as unknown instead of outputting an error, if fetching server details fails. This allows displaying network details for networks that contain a load balancer.
 
 ## [1.5.1] - 2022-07-15
 ### Fixed

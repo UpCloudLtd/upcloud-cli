@@ -96,14 +96,18 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 		for _, server := range network.Servers {
 			fetched, err := exec.Server().GetServerDetails(&request.GetServerDetailsRequest{UUID: server.ServerUUID})
 			if err != nil {
-				return nil, fmt.Errorf("error getting server %v details: %w", server.ServerUUID, err)
+				// If network server is a load balancer, getting server details fails due to missing permissions as load balancers underlying server instance is hidden from the user.
+				serverRows = append(serverRows, output.TableRow{
+					server.ServerUUID, server.ServerTitle, "", "",
+				})
+			} else {
+				serverRows = append(serverRows, output.TableRow{
+					fetched.UUID,
+					fetched.Title,
+					fetched.Hostname,
+					fetched.State,
+				})
 			}
-			serverRows = append(serverRows, output.TableRow{
-				fetched.UUID,
-				fetched.Title,
-				fetched.Hostname,
-				fetched.State,
-			})
 		}
 
 		combined = append(combined, output.CombinedSection{
@@ -113,8 +117,8 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 				Columns: []output.TableColumn{
 					{Header: "UUID", Key: "uuid", Colour: ui.DefaultUUUIDColours},
 					{Header: "Title", Key: "title"},
-					{Header: "Hostname", Key: "hostname"},
-					{Header: "State", Key: "state"},
+					{Header: "Hostname", Key: "hostname", Format: ui.FormatPossiblyUnknownString},
+					{Header: "State", Key: "state", Format: commands.FormatServerState},
 				},
 				Rows: serverRows,
 			},
