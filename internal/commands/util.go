@@ -110,6 +110,20 @@ func ServerStateColour(state string) text.Colors {
 	}
 }
 
+// FormatServerState implements Format function for server states
+func FormatServerState(val interface{}) (text.Colors, string, error) {
+	state, ok := val.(string)
+	if !ok {
+		return nil, "", fmt.Errorf("cannot parse server state from %T, expected string", val)
+	}
+
+	if state == "" {
+		return ui.FormatPossiblyUnknownString(state)
+	}
+
+	return nil, ServerStateColour(state).Sprint(state), nil
+}
+
 // StorageStateColour is a helper mapping storage states to colours
 func StorageStateColour(state string) text.Colors {
 	switch state {
