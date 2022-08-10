@@ -126,7 +126,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 							{Title: "Title:", Key: "title", Value: server.Title},
 							{Title: "Plan:", Key: "plan", Value: planOutput},
 							{Title: "Zone:", Key: "zone", Value: server.Zone},
-							{Title: "State:", Key: "state", Value: server.State, Colour: commands.ServerStateColour(server.State)},
+							{Title: "State:", Key: "state", Value: server.State, Format: commands.FormatServerState},
 							{Title: "Simple Backup:", Key: "simple_backup", Value: server.SimpleBackup},
 							{Title: "Licence:", Key: "licence", Value: server.License},
 							{Title: "Metadata:", Key: "metadata", Value: server.Metadata.String()},

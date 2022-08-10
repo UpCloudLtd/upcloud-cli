@@ -70,14 +70,12 @@ func (ls *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.O
 			plan = fmt.Sprintf("%dxCPU-%dGB (custom)", s.CoreNumber, memory)
 		}
 
-		coloredState := commands.ServerStateColour(s.State).Sprint(s.State)
-
 		rows = append(rows, output.TableRow{
 			s.UUID,
 			s.Hostname,
 			plan,
 			s.Zone,
-			coloredState,
+			s.State,
 		})
 	}
 
@@ -86,7 +84,7 @@ func (ls *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.O
 		{Key: "hostname", Header: "Hostname"},
 		{Key: "plan", Header: "Plan"},
 		{Key: "zone", Header: "Zone"},
-		{Key: "state", Header: "State"},
+		{Key: "state", Header: "State", Format: commands.FormatServerState},
 	}
 
 	if ls.showIPAddresses != "none" {
