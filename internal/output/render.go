@@ -16,7 +16,7 @@ func Render(writer io.Writer, cfg *config.Config, commandOutputs ...Output) (err
 	var output []byte
 	switch {
 	case cfg.OutputHuman():
-		var buffer = new(bytes.Buffer)
+		buffer := new(bytes.Buffer)
 		for _, commandOutput := range commandOutputs {
 			outBytes, err := commandOutput.MarshalHuman()
 			if err != nil {
@@ -77,7 +77,7 @@ func Render(writer io.Writer, cfg *config.Config, commandOutputs ...Output) (err
 	}
 
 	// Count failed outputs
-	var failedCount = 0
+	failedCount := 0
 	for _, commandOutput := range commandOutputs {
 		if _, ok := commandOutput.(Error); ok {
 			failedCount++

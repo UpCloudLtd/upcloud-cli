@@ -6,8 +6,7 @@ import (
 )
 
 // Server implements argument completion for routers, by uuid, name or hostname.
-type Server struct {
-}
+type Server struct{}
 
 // make sure Server implements the interface
 var _ Provider = Server{}

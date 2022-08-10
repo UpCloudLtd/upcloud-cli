@@ -54,7 +54,6 @@ func (s *deleteCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 		ServerUUID: arg,
 		Index:      s.interfaceIndex,
 	})
-
 	if err != nil {
 		return commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
 	}

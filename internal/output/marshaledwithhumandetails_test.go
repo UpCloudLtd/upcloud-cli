@@ -8,7 +8,7 @@ import (
 )
 
 func TestMarshaledWithHumanDetails(t *testing.T) {
-	var marshaledWithHumanDetailsTests = []outputTestCase{
+	marshaledWithHumanDetailsTests := []outputTestCase{
 		{
 			name:                "nil",
 			input:               output.MarshaledWithHumanDetails{Value: nil, Details: nil},

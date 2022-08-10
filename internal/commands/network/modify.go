@@ -110,7 +110,7 @@ func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 			RouterUUID:  routerUUID,
 		})
 		if err != nil {
-			commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err) // nolint:errcheck
+			commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err) //nolint:errcheck
 			return nil, fmt.Errorf("cannot attach router '%s': %w", s.attachRouter, err)
 		}
 		// update the stored result (if we have one) manually to avoid refetching later
@@ -123,7 +123,7 @@ func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 			NetworkUUID: arg,
 		})
 		if err != nil {
-			commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err) // nolint:errcheck
+			commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err) //nolint:errcheck
 			return nil, fmt.Errorf("cannot detach router '%s': %w", s.attachRouter, err)
 		}
 		// update the stored result (if we have one) manually to avoid refetching later

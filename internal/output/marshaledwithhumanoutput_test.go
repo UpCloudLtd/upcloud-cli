@@ -7,7 +7,7 @@ import (
 )
 
 func TestMarshaledWithHumanOutput(t *testing.T) {
-	var marshaledWithHumanOutputTests = []outputTestCase{
+	marshaledWithHumanOutputTests := []outputTestCase{
 		{
 			name: "struct",
 			input: output.MarshaledWithHumanOutput{

@@ -13,9 +13,7 @@ import (
 	"github.com/gemalto/flume"
 )
 
-var (
-	logger = flume.New("runcommand")
-)
+var logger = flume.New("runcommand")
 
 func commandRunE(command Command, service internal.AllServices, config *config.Config, args []string) error {
 	// Cobra validations were successful

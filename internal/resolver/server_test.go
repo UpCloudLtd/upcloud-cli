@@ -12,7 +12,7 @@ import (
 )
 
 func TestServerResolution(t *testing.T) {
-	var Server1 = upcloud.Server{
+	Server1 := upcloud.Server{
 		CoreNumber:   1,
 		Hostname:     "server-1-hostname",
 		License:      0,
@@ -26,7 +26,7 @@ func TestServerResolution(t *testing.T) {
 		Zone:         "fi-hel1",
 	}
 
-	var Server2 = upcloud.Server{
+	Server2 := upcloud.Server{
 		CoreNumber:   1,
 		Hostname:     "server-2-hostname",
 		License:      0,
@@ -40,7 +40,7 @@ func TestServerResolution(t *testing.T) {
 		Zone:         "fi-hel1",
 	}
 
-	var Server3 = upcloud.Server{
+	Server3 := upcloud.Server{
 		CoreNumber:   2,
 		Hostname:     "server-3-hostname",
 		License:      0,
@@ -54,7 +54,7 @@ func TestServerResolution(t *testing.T) {
 		Zone:         "hu-bud1",
 	}
 
-	var Server4 = upcloud.Server{
+	Server4 := upcloud.Server{
 		CoreNumber:   4,
 		Hostname:     "server-4-hostname",
 		License:      0,
@@ -68,7 +68,7 @@ func TestServerResolution(t *testing.T) {
 		Zone:         "uk-lon1",
 	}
 
-	var Server5 = upcloud.Server{
+	Server5 := upcloud.Server{
 		CoreNumber:   4,
 		Hostname:     Server4.Hostname,
 		License:      0,
@@ -82,7 +82,7 @@ func TestServerResolution(t *testing.T) {
 		Zone:         "uk-lon1",
 	}
 
-	var allServers = &upcloud.Servers{
+	allServers := &upcloud.Servers{
 		Servers: []upcloud.Server{
 			Server1,
 			Server2,
@@ -91,7 +91,7 @@ func TestServerResolution(t *testing.T) {
 			Server5,
 		},
 	}
-	var unambiguousServers = []upcloud.Server{
+	unambiguousServers := []upcloud.Server{
 		Server2,
 		Server3,
 	}

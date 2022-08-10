@@ -16,7 +16,6 @@ func main() {
 	rootCmd := core.BuildCLI()
 
 	err := doc.GenMarkdownTree(&rootCmd, docPath)
-
 	if err != nil {
 		log.Fatal(err)
 	}

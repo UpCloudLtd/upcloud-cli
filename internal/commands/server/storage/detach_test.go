@@ -18,7 +18,7 @@ import (
 func TestDetachCommand(t *testing.T) {
 	targetMethod := "DetachStorage"
 
-	var Server1 = upcloud.Server{
+	Server1 := upcloud.Server{
 		CoreNumber:   1,
 		Hostname:     "server-1-hostname",
 		License:      0,
@@ -31,7 +31,7 @@ func TestDetachCommand(t *testing.T) {
 		UUID:         "1fdfda29-ead1-4855-b71f-1e33eb2ca9de",
 		Zone:         "fi-hel1",
 	}
-	var servers = &upcloud.Servers{
+	servers := &upcloud.Servers{
 		Servers: []upcloud.Server{
 			Server1,
 		},

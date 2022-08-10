@@ -6,8 +6,7 @@ import (
 )
 
 // Router implements argument completion for routers, by name or uuid.
-type Router struct {
-}
+type Router struct{}
 
 // make sure Router implements the interface
 var _ Provider = Router{}

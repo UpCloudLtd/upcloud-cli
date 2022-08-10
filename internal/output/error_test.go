@@ -8,7 +8,7 @@ import (
 )
 
 func TestError(t *testing.T) {
-	var errorTests = []outputTestCase{
+	errorTests := []outputTestCase{
 		{
 			name:                "nil",
 			input:               output.Error{Value: nil},

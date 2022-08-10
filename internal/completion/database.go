@@ -7,8 +7,7 @@ import (
 )
 
 // Database implements argument completion for databases, by uuid or title.
-type Database struct {
-}
+type Database struct{}
 
 // make sure Database implements the interface
 var _ Provider = Database{}

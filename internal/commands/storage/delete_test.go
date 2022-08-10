@@ -17,7 +17,7 @@ import (
 
 func TestDeleteStorageCommand(t *testing.T) {
 	targetMethod := "DeleteStorage"
-	var Storage2 = upcloud.Storage{
+	Storage2 := upcloud.Storage{
 		UUID:   UUID2,
 		Title:  Title2,
 		Access: "private",

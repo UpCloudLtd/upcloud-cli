@@ -7,7 +7,7 @@ import (
 )
 
 func TestDetails(t *testing.T) {
-	var detailTests = []outputTestCase{
+	detailTests := []outputTestCase{
 		{
 			name:                "no content",
 			input:               output.Details{Sections: []output.DetailSection{}},
