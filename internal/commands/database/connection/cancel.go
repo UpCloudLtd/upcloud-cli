@@ -40,7 +40,7 @@ func (s *cancelCommand) InitCommand() {
 	config.AddToggleFlag(flagSet, &s.terminate, "terminate", false, "Request immediate termination instead of soft cancel.")
 
 	s.AddFlags(flagSet)
-	s.Cobra().MarkFlagRequired("pid") //nolint:errcheck
+	_ = s.Cobra().MarkFlagRequired("pid")
 }
 
 // Execute implements commands.MultipleArgumentCommand

@@ -76,8 +76,8 @@ Use --position parameter or create default rule after other rules.`
 	flagSet.StringVar(&s.comment, "comment", "", "Freeform comment that can include 0-250 characters.")
 
 	s.AddFlags(flagSet)
-	s.Cobra().MarkFlagRequired("direction") //nolint:errcheck
-	s.Cobra().MarkFlagRequired("action")    //nolint:errcheck
+	_ = s.Cobra().MarkFlagRequired("direction")
+	_ = s.Cobra().MarkFlagRequired("action")
 	s.Cobra().MarkFlagsRequiredTogether("destination-port-start", "destination-port-end")
 	s.Cobra().MarkFlagsRequiredTogether("source-port-start", "source-port-end")
 }

@@ -71,7 +71,7 @@ func (s *importCommand) InitCommand() {
 	applyCreateFlags(flagSet, &s.createParams, defaultCreateParams)
 
 	s.AddFlags(flagSet)
-	s.Cobra().MarkFlagRequired("source-location") //nolint:errcheck
+	_ = s.Cobra().MarkFlagRequired("source-location")
 }
 
 type storageImportStatus struct {
@@ -267,7 +267,7 @@ func createStorage(exec commands.Executor, params *createParams) (upcloud.Storag
 	logline.StartedNow()
 	details, err := exec.Storage().CreateStorage(&params.CreateStorageRequest)
 	if err != nil {
-		commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err) //nolint:errcheck
+		_, _ = commands.HandleError(logline, fmt.Sprintf("%s: failed", msg), err)
 		return upcloud.Storage{}, err
 	}
 	logline.SetMessage(fmt.Sprintf("%s: done", msg))

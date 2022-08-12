@@ -285,8 +285,8 @@ func (s *createCommand) InitCommand() {
 	// fs.BoolVar(&s.params.remoteAccess, "remote-access-enabled", def.remoteAccess, "Enables or disables the remote access.")
 	s.AddFlags(fs)
 
-	s.Cobra().MarkFlagRequired("hostname") //nolint:errcheck
-	s.Cobra().MarkFlagRequired("zone")     //nolint:errcheck
+	_ = s.Cobra().MarkFlagRequired("hostname")
+	_ = s.Cobra().MarkFlagRequired("zone")
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
