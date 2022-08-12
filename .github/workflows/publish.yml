@@ -41,9 +41,8 @@ jobs:
         run: rm -f ${HOME}/.docker/config.json
       - name: Generate AUR PKGBUILD
         run: ./scripts/generate_aur_pkgbuild.sh ${{ steps.git.outputs.tag_version }}
-
       - name: Publish AUR package
-        uses: KSXGitHub/github-actions-deploy-aur@v2.2.5
+        uses: KSXGitHub/github-actions-deploy-aur@v2.4.1
         with:
           pkgname: upcloud-cli
           pkgbuild: PKGBUILD
