@@ -3,7 +3,6 @@ package storage
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/url"
 	"os"
 	"runtime"
@@ -28,7 +27,7 @@ func TestReaderCounterInterface(t *testing.T) {
 }
 
 func TestImportCommand(t *testing.T) {
-	tmpFile, err := ioutil.TempFile(os.TempDir(), "pre-")
+	tmpFile, err := os.CreateTemp(os.TempDir(), "pre-")
 	if err != nil {
 		fmt.Println("Cannot create temporary file", err)
 	}
@@ -220,7 +219,7 @@ func TestParseSource(t *testing.T) {
 			)
 			testFileName := test.input
 			if strings.Contains(testFileName, "tempfile") {
-				tempf, tempErr := ioutil.TempFile(t.TempDir(), "")
+				tempf, tempErr := os.CreateTemp(t.TempDir(), "")
 				assert.NoError(t, tempErr)
 				_, tempErr = tempf.WriteString("hello")
 				assert.NoError(t, tempErr)

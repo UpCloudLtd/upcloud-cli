@@ -2,7 +2,6 @@ package core
 
 import (
 	"bytes"
-	"io/ioutil"
 	"os"
 	"runtime"
 	"testing"
@@ -11,7 +10,7 @@ import (
 )
 
 func TestInputValidation(t *testing.T) {
-	tmpFile, err := ioutil.TempFile(os.TempDir(), "prefix-")
+	tmpFile, err := os.CreateTemp(os.TempDir(), "prefix-")
 	if err != nil {
 		t.Fatal("Cannot create temporary file", err)
 	}

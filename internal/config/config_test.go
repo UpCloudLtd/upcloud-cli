@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -11,7 +10,7 @@ import (
 
 func TestConfig_LoadInvalidYAML(t *testing.T) {
 	cfg := New()
-	tmpFile, err := ioutil.TempFile(os.TempDir(), "")
+	tmpFile, err := os.CreateTemp(os.TempDir(), "")
 	assert.NoError(t, err)
 	_, err = tmpFile.WriteString("usernamd:sdkfo\npassword: foo")
 	assert.NoError(t, err)
@@ -23,7 +22,7 @@ func TestConfig_LoadInvalidYAML(t *testing.T) {
 
 func TestConfig_Load(t *testing.T) {
 	cfg := New()
-	tmpFile, err := ioutil.TempFile(os.TempDir(), "")
+	tmpFile, err := os.CreateTemp(os.TempDir(), "")
 	assert.NoError(t, err)
 	_, err = tmpFile.WriteString("username: sdkfo\npassword: foo")
 	assert.NoError(t, err)
