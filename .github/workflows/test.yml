@@ -1,21 +1,20 @@
-name: tests
-
+name: Test
 on:
   pull_request:
     paths:
       - '**.go'
       - 'go.mod'
       - 'go.sum'
-
 jobs:
-  platform-tests:
+  platform_tests:
+    name: Run platform tests
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Install Go
-        uses: actions/setup-go@v2
+      - name: Setup Go
+        uses: actions/setup-go@v3
         with:
           go-version: 1.18
       - name: Checkout
