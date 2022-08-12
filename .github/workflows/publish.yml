@@ -29,19 +29,16 @@ jobs:
       - name: Get tag version
         id: git
         run: echo "::set-output name=tag_version::$(make version)"
-
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v2
+      - name: Run goreleaser-action
+        uses: goreleaser/goreleaser-action@v3
         with:
           version: latest
           args: release --rm-dist
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
-
       - name: Clear Docker login session
         run: rm -f ${HOME}/.docker/config.json
-
       - name: Generate AUR PKGBUILD
         run: ./scripts/generate_aur_pkgbuild.sh ${{ steps.git.outputs.tag_version }}
 
