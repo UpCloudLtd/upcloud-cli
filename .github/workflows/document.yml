@@ -1,0 +1,21 @@
+name: Document
+on:
+  push:
+    branches:
+      - main
+      - test-doc-generator # for testing
+jobs:
+  update_documentation:
+    name: Update documentation
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout head
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.head_ref }}
+    - name: Regenerate documentation
+      run: make doc
+    - name: Commit the changes
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: "chore(doc): update documentation"
