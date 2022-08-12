@@ -85,8 +85,8 @@ func (s *createCommand) InitCommand() {
 	applyCreateFlags(s.flagSet, &s.params, defaultCreateParams)
 
 	s.AddFlags(s.flagSet)
-	s.Cobra().MarkFlagRequired("title") //nolint:errcheck
-	s.Cobra().MarkFlagRequired("zone")  //nolint:errcheck
+	_ = s.Cobra().MarkFlagRequired("title")
+	_ = s.Cobra().MarkFlagRequired("zone")
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand

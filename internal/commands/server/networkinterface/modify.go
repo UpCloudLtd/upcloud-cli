@@ -45,8 +45,8 @@ func (s *modifyCommand) InitCommand() {
 	fs.StringVar(&s.sourceIPfiltering, "source-ip-filtering", s.sourceIPfiltering, "Whether source IP filtering is enabled on the interface. Disabling it is allowed only for SDN private interfaces.")
 	fs.StringSliceVar(&s.ipAddresses, "ip-addresses", s.ipAddresses, "A comma-separated list of IP addresses, multiple can be declared\nUsage: --ip-address address=94.237.112.143,family=IPv4")
 
-	s.AddFlags(fs)                      // TODO(ana): replace usage with examples once the refactor is done.
-	s.Cobra().MarkFlagRequired("index") //nolint:errcheck
+	s.AddFlags(fs) // TODO(ana): replace usage with examples once the refactor is done.
+	_ = s.Cobra().MarkFlagRequired("index")
 }
 
 // MaximumExecutions implements Command.MaximumExecutions

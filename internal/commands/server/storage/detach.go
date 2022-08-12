@@ -47,7 +47,7 @@ func (s *detachCommand) InitCommand() {
 	flagSet.StringVar(&s.params.Address, "address", defaultDetachParams.Address, "Detach the storage attached to this address.")
 
 	s.AddFlags(flagSet)
-	s.Cobra().MarkFlagRequired("address") //nolint:errcheck
+	_ = s.Cobra().MarkFlagRequired("address")
 }
 
 // MaximumExecutions implements command.Command

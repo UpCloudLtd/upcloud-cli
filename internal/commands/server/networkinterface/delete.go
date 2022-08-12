@@ -36,7 +36,7 @@ func (s *deleteCommand) InitCommand() {
 	fs.IntVar(&s.interfaceIndex, "index", 0, "Interface index.")
 
 	s.AddFlags(fs)
-	s.Cobra().MarkFlagRequired("index") //nolint:errcheck
+	_ = s.Cobra().MarkFlagRequired("index")
 }
 
 // MaximumExecutions implements Command.MaximumExecutions

@@ -52,9 +52,9 @@ func (s *createCommand) InitCommand() {
 		"  dhcp-dns: array of strings")
 
 	s.AddFlags(fs)
-	s.Cobra().MarkFlagRequired("name")       //nolint:errcheck
-	s.Cobra().MarkFlagRequired("zone")       //nolint:errcheck
-	s.Cobra().MarkFlagRequired("ip-network") //nolint:errcheck
+	_ = s.Cobra().MarkFlagRequired("name")
+	_ = s.Cobra().MarkFlagRequired("zone")
+	_ = s.Cobra().MarkFlagRequired("ip-network")
 }
 
 // MaximumExecutions implements Command.MaximumExecutions

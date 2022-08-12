@@ -48,7 +48,7 @@ func (s *loadCommand) InitCommand() {
 
 	s.AddFlags(flagSet)
 
-	s.Cobra().MarkFlagRequired("storage") //nolint:errcheck
+	_ = s.Cobra().MarkFlagRequired("storage")
 }
 
 // Execute implements commands.MultipleArgumentCommand

@@ -53,8 +53,8 @@ func (s *cloneCommand) InitCommand() {
 	flagSet.StringVar(&s.params.Zone, "zone", defaultCloneParams.Zone, "The zone in which the storage will be created, e.g. fi-hel1.")
 
 	s.AddFlags(flagSet)
-	s.Cobra().MarkFlagRequired("title") //nolint:errcheck
-	s.Cobra().MarkFlagRequired("zone")  //nolint:errcheck
+	_ = s.Cobra().MarkFlagRequired("title")
+	_ = s.Cobra().MarkFlagRequired("zone")
 }
 
 // Execute implements commands.MultipleArgumentCommand

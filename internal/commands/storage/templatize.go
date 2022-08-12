@@ -49,7 +49,7 @@ func (s *templatizeCommand) InitCommand() {
 	flagSet.StringVar(&s.params.Title, "title", defaultTemplatizeParams.Title, "A short, informational description.")
 
 	s.AddFlags(flagSet)
-	s.Cobra().MarkFlagRequired("title") //nolint:errcheck
+	_ = s.Cobra().MarkFlagRequired("title")
 }
 
 // Execute implements commands.MultipleArgumentCommand
