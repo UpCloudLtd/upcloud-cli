@@ -627,7 +627,8 @@ func (m *Service) GetManagedDatabaseServiceTypes(r *request.GetManagedDatabaseSe
 }
 
 func (m *Service) DeleteManagedDatabase(r *request.DeleteManagedDatabaseRequest) error {
-	return nil
+	args := m.Called(r)
+	return args.Error(0)
 }
 
 func (m *Service) ModifyManagedDatabase(r *request.ModifyManagedDatabaseRequest) (*upcloud.ManagedDatabase, error) {
