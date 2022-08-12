@@ -1,20 +1,17 @@
 name: Publish
-
 on:
   push:
     tags:
       - 'v*.*.*'
-
 jobs:
   publish_release:
     name: Release
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - name: Checkout head
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
-
       # TODO use later if we want multi-platform Docker builds
       # - name: Set up QEMU
       #   uses: docker/setup-qemu-action@v1
