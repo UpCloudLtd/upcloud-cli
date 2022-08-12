@@ -5,16 +5,20 @@ linters:
   # Run golangci-lint linters to see the list of all linters
   # Please keep them sorted alphabetically
   enable:
+    - asasalint
+    - asciicheck
+    - bidichk
     - bodyclose
+    - containedctx
     - deadcode
     - depguard
     - dogsled
     - errcheck
     - goconst
     - gocritic
-    # TODO "upgrade" to gofumpt
-    - gofmt
+    - gofumpt
     - goimports
+    - gomoddirectives
     - goprintffuncname
     - gosec
     - gosimple
@@ -37,12 +41,21 @@ linters:
     - unconvert
     - unused
     - varcheck
+    - wastedassign
     - whitespace
 
+output:
+  uniq-by-line: false
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - funlen
+        - bodyclose
+
 linters-settings:
-  gocritic:
-    disabled-checks:
-      # TODO: re-enable after figuring out why runcommand fails on go-critic..
-      - unlambda
   goconst:
     min-len: 5
