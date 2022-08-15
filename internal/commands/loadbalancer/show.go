@@ -5,6 +5,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/internal/format"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
@@ -99,7 +100,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 								{Title: "Plan:", Value: lb.Plan},
 								{Title: "Zone:", Value: lb.Zone},
 								{Title: "DNS name", Value: lb.DNSName},
-								{Title: "Network name", Value: networkName, Format: ui.FormatPossiblyUnknownString},
+								{Title: "Network name", Value: networkName, Format: format.PossiblyUnknownString},
 								{Title: "Network UUID", Value: lb.NetworkUUID},
 								{Title: "Operational state:", Value: lb.OperationalState, Colour: commands.LoadBalancerOperationalStateColour(lb.OperationalState)},
 							},

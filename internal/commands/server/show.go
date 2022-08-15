@@ -7,6 +7,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/internal/format"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
@@ -126,7 +127,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 							{Title: "Title:", Key: "title", Value: server.Title},
 							{Title: "Plan:", Key: "plan", Value: planOutput},
 							{Title: "Zone:", Key: "zone", Value: server.Zone},
-							{Title: "State:", Key: "state", Value: server.State, Format: commands.FormatServerState},
+							{Title: "State:", Key: "state", Value: server.State, Format: format.ServerState},
 							{Title: "Simple Backup:", Key: "simple_backup", Value: server.SimpleBackup},
 							{Title: "Licence:", Key: "licence", Value: server.License},
 							{Title: "Metadata:", Key: "metadata", Value: server.Metadata.String()},

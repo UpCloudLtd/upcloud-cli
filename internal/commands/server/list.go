@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/format"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/service"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
@@ -84,7 +85,7 @@ func (ls *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.O
 		{Key: "hostname", Header: "Hostname"},
 		{Key: "plan", Header: "Plan"},
 		{Key: "zone", Header: "Zone"},
-		{Key: "state", Header: "State", Format: commands.FormatServerState},
+		{Key: "state", Header: "State", Format: format.ServerState},
 	}
 
 	if ls.showIPAddresses != "none" {

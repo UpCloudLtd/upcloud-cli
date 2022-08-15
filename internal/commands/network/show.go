@@ -6,6 +6,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/internal/format"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
@@ -117,8 +118,8 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 				Columns: []output.TableColumn{
 					{Header: "UUID", Key: "uuid", Colour: ui.DefaultUUUIDColours},
 					{Header: "Title", Key: "title"},
-					{Header: "Hostname", Key: "hostname", Format: ui.FormatPossiblyUnknownString},
-					{Header: "State", Key: "state", Format: commands.FormatServerState},
+					{Header: "Hostname", Key: "hostname", Format: format.PossiblyUnknownString},
+					{Header: "State", Key: "state", Format: format.ServerState},
 				},
 				Rows: serverRows,
 			},
