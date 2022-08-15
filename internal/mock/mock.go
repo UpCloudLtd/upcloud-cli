@@ -684,7 +684,8 @@ func (m *Service) ModifyLoadBalancer(r *request.ModifyLoadBalancerRequest) (*upc
 }
 
 func (m *Service) DeleteLoadBalancer(r *request.DeleteLoadBalancerRequest) error {
-	return nil
+	args := m.Called(r)
+	return args.Error(0)
 }
 
 func (m *Service) GetLoadBalancerBackends(r *request.GetLoadBalancerBackendsRequest) ([]upcloud.LoadBalancerBackend, error) {
