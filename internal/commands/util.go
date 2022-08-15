@@ -96,34 +96,6 @@ func LoadBalancerOperationalStateColour(state upcloud.LoadBalancerOperationalSta
 	}
 }
 
-// ServerStateColour is a helper mapping server states to colours
-func ServerStateColour(state string) text.Colors {
-	switch state {
-	case upcloud.ServerStateStarted:
-		return text.Colors{text.FgGreen}
-	case upcloud.ServerStateError:
-		return text.Colors{text.FgHiRed, text.Bold}
-	case upcloud.ServerStateMaintenance:
-		return text.Colors{text.FgYellow}
-	default:
-		return text.Colors{text.FgHiBlack}
-	}
-}
-
-// FormatServerState implements Format function for server states
-func FormatServerState(val interface{}) (text.Colors, string, error) {
-	state, ok := val.(string)
-	if !ok {
-		return nil, "", fmt.Errorf("cannot parse server state from %T, expected string", val)
-	}
-
-	if state == "" {
-		return ui.FormatPossiblyUnknownString(state)
-	}
-
-	return nil, ServerStateColour(state).Sprint(state), nil
-}
-
 // StorageStateColour is a helper mapping storage states to colours
 func StorageStateColour(state string) text.Colors {
 	switch state {
