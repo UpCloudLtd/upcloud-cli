@@ -110,6 +110,7 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	commands.BuildCommand(database.PlansCommand(), databaseCommand.Cobra(), conf)
 	commands.BuildCommand(database.StartCommand(), databaseCommand.Cobra(), conf)
 	commands.BuildCommand(database.StopCommand(), databaseCommand.Cobra(), conf)
+	commands.BuildCommand(database.DeleteCommand(), databaseCommand.Cobra(), conf)
 
 	// Database connections
 	connectionsCommand := commands.BuildCommand(databaseconnection.BaseConnectionCommand(), databaseCommand.Cobra(), conf)
