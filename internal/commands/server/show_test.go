@@ -7,6 +7,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
 	"github.com/UpCloudLtd/upcloud-cli/internal/mockexecute"
+	"github.com/bradleyjkemp/cupaloy/v2"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
@@ -148,52 +149,6 @@ func TestServerHumanOutput(t *testing.T) {
 		},
 	}
 
-	expected := `  
-  Common
-    UUID:          0077fa3d-32db-4b09-9f5f-30d9e9afb565 
-    Hostname:      server1.example.com                  
-    Title:         server1.example.com                  
-    Plan:          1xCPU-2GB                            
-    Zone:          fi-hel1                              
-    State:         started                              
-    Simple Backup: 0100,dailies                         
-    Licence:       0                                    
-    Metadata:      True                                 
-    Timezone:      UTC                                  
-    Host ID:       7653311107                           
-    Tags:          DEV,Ubuntu                           
-
-  Storage: (Flags: B = bootdisk, P = part of plan)
-
-     UUID                                   Title                             Type   Address    Size (GiB)   Flags 
-    ────────────────────────────────────── ───────────────────────────────── ────── ────────── ──────────── ───────
-     012580a1-32a1-466e-a323-689ca16f2d43   Storage for server1.example.com   disk   virtio:0           20   P     
-    
-  NICs: (Flags: S = source IP filtering, B = bootable)
-
-     #   Type      IP Address                                           MAC Address         Network                                Flags 
-    ─── ───────── ──────────────────────────────────────────────────── ─────────────────── ────────────────────────────────────── ───────
-     1   public    IPv4: 94.237.0.207                                   de:ff:ff:ff:66:89   037fcf2a-6745-45dd-867e-f9479ea8c044         
-     2   utility   IPv4: 10.6.3.95 (f)                                  de:ff:ff:ff:ed:85   03000000-0000-4000-8045-000000000000         
-     3   public    IPv6: xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx   de:ff:ff:ff:cc:20   03c93fd8-cc60-4849-91b8-6e404b228e2a         
-    
-  Firewall Rules:
-
-     #   Direction   Action   Src IPAddress   Dest IPAddress   Src Port   Dest Port   Protocol      
-    ─── ─────────── ──────── ─────────────── ──────────────── ────────── ─────────── ───────────────
-     1   in          accept   Any             Any              Any        Any         IPv4/tcp      
-     2   out         drop     10.10.10.0 →    10.20.20.0       0 →        Any         IPv4/udp/icmp 
-                              10.10.10.99                      1024                                 
-    
-  
-  Remote Access
-    Type:     vnc                     
-    Host:     fi-hel1.vnc.upcloud.com 
-    Port:     3000                    
-    Password: aabbccdd                
-
-`
-
 	mService := smock.Service{}
 	mService.On("GetServers").Return(&upcloud.Servers{Servers: []upcloud.Server{srv.Server}}, nil)
 	mService.On("GetServerDetails", &request.GetServerDetailsRequest{UUID: uuid}).Return(srv, nil)
@@ -213,5 +168,5 @@ func TestServerHumanOutput(t *testing.T) {
 	output, err := mockexecute.MockExecute(command, &mService, conf)
 
 	assert.NoError(t, err)
-	assert.Equal(t, expected, output)
+	cupaloy.SnapshotT(t, output)
 }
