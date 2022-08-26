@@ -18,3 +18,20 @@ func PossiblyUnknownString(val interface{}) (text.Colors, string, error) {
 	}
 	return nil, str, nil
 }
+
+func usingColorFunction[T ~string](colorFunction func(T) text.Colors) func(interface{}) (text.Colors, string, error) {
+	formatFunction := func(val interface{}) (text.Colors, string, error) {
+		typedVal, ok := val.(T)
+		if !ok {
+			return nil, "", fmt.Errorf("cannot parse value from %T, expected %T", val, T(""))
+		}
+
+		if typedVal == "" {
+			return PossiblyUnknownString(typedVal)
+		}
+
+		return nil, colorFunction(typedVal).Sprint(typedVal), nil
+	}
+
+	return formatFunction
+}
