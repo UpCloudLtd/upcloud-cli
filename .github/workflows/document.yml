@@ -9,6 +9,10 @@ jobs:
     name: Update documentation
     runs-on: ubuntu-latest
     steps:
+    - name: Setup go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.18
     - name: Checkout head
       uses: actions/checkout@v3
       with:
