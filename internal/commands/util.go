@@ -94,22 +94,6 @@ func LoadBalancerOperationalStateColour(state upcloud.LoadBalancerOperationalSta
 	}
 }
 
-// StorageStateColour is a helper mapping storage states to colours
-func StorageStateColour(state string) text.Colors {
-	switch state {
-	case upcloud.StorageStateOnline, upcloud.StorageStateSyncing:
-		return text.Colors{text.FgGreen}
-	case upcloud.StorageStateError:
-		return text.Colors{text.FgHiRed, text.Bold}
-	case upcloud.StorageStateMaintenance:
-		return text.Colors{text.FgYellow}
-	case upcloud.StorageStateCloning, upcloud.StorageStateBackuping:
-		return text.Colors{text.FgHiMagenta, text.Bold}
-	default:
-		return text.Colors{text.FgHiBlack}
-	}
-}
-
 // BoolFromString parses a string and returns *upcloud.Boolean
 func BoolFromString(b string) (*upcloud.Boolean, error) {
 	// TODO: why does this return a pointer? this should (eventually) not be needed as tristate flags
