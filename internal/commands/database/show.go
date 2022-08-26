@@ -3,6 +3,7 @@ package database
 import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/internal/format"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
@@ -74,7 +75,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 								{Title: "Version:", Value: db.Properties.Get("version")},
 								{Title: "Plan:", Value: db.Plan},
 								{Title: "Zone:", Value: db.Zone},
-								{Title: "State:", Value: db.State, Colour: commands.DatabaseStateColour(db.State)},
+								{Title: "State:", Value: db.State, Format: format.DatabaseState},
 							},
 						},
 						{

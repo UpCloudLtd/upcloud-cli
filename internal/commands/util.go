@@ -70,18 +70,6 @@ func SearchResources(
 	return result, nil
 }
 
-// DatabaseStateColour maps database states to colours
-func DatabaseStateColour(state upcloud.ManagedDatabaseState) text.Colors {
-	switch state {
-	case upcloud.ManagedDatabaseStateRunning:
-		return text.Colors{text.FgGreen}
-	case "rebuilding", "rebalancing":
-		return text.Colors{text.FgYellow}
-	default:
-		return text.Colors{text.FgHiBlack}
-	}
-}
-
 // LoadBalancerOperationalStateColour maps load balancer states to colours
 func LoadBalancerOperationalStateColour(state upcloud.LoadBalancerOperationalState) text.Colors {
 	switch state {

@@ -2,6 +2,7 @@ package database
 
 import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/format"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
@@ -28,15 +29,13 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 
 	rows := []output.TableRow{}
 	for _, db := range databases {
-		coloredState := commands.DatabaseStateColour(db.State).Sprint(db.State)
-
 		rows = append(rows, output.TableRow{
 			db.UUID,
 			db.Title,
 			db.Type,
 			db.Plan,
 			db.Zone,
-			coloredState,
+			db.State,
 		})
 	}
 
@@ -47,7 +46,7 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 			{Key: "type", Header: "Type"},
 			{Key: "plan", Header: "Plan"},
 			{Key: "zone", Header: "Zone"},
-			{Key: "state", Header: "State"},
+			{Key: "state", Header: "State", Format: format.DatabaseState},
 		},
 		Rows: rows,
 	}, nil
