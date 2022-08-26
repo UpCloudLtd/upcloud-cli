@@ -102,7 +102,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 								{Title: "DNS name", Value: lb.DNSName},
 								{Title: "Network name", Value: networkName, Format: format.PossiblyUnknownString},
 								{Title: "Network UUID", Value: lb.NetworkUUID},
-								{Title: "Operational state:", Value: lb.OperationalState, Colour: commands.LoadBalancerOperationalStateColour(lb.OperationalState)},
+								{Title: "Operational state:", Value: lb.OperationalState, Format: format.LoadBalancerState},
 							},
 						},
 					},

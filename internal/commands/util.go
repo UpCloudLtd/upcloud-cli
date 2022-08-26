@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
-	"github.com/jedib0t/go-pretty/v6/text"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/validation"
 )
@@ -68,18 +67,6 @@ func SearchResources(
 		}
 	}
 	return result, nil
-}
-
-// LoadBalancerOperationalStateColour maps load balancer states to colours
-func LoadBalancerOperationalStateColour(state upcloud.LoadBalancerOperationalState) text.Colors {
-	switch state {
-	case upcloud.LoadBalancerOperationalStateRunning:
-		return text.Colors{text.FgGreen}
-	case upcloud.LoadBalancerOperationalStateCheckup, upcloud.LoadBalancerOperationalStatePending, upcloud.LoadBalancerOperationalStateSetupAgent, upcloud.LoadBalancerOperationalStateSetupDNS, upcloud.LoadBalancerOperationalStateSetupLB, upcloud.LoadBalancerOperationalStateSetupNetwork, upcloud.LoadBalancerOperationalStateSetupServer:
-		return text.Colors{text.FgYellow}
-	default:
-		return text.Colors{text.FgHiBlack}
-	}
 }
 
 // BoolFromString parses a string and returns *upcloud.Boolean
