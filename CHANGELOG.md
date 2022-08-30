@@ -11,8 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `database delete` command.
 - Add `loadbalancer delete` command.
 - Add `Access` field to `storage show` output.
+- Add fields `argument` and `resource` to JSON and YAML error outputs.
 
 ### Changed
+- **Breaking**: Human output, including errors, is written to stderr instead of stdout.
 - Refactor progress logging. This changes the appearance of progress logs. See [UpCloudLtd / progress](https://github.com/UpCloudLtd/progress) for the new implementation.
 
 ### Fixed
