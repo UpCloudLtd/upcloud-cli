@@ -35,9 +35,10 @@ type Executor interface {
 }
 
 type executeResult struct {
-	Job    int
-	Result output.Output
-	Error  error
+	Job              int
+	Result           output.Output
+	Error            error
+	ResolvedArgument resolvedArgument
 }
 
 type executorImpl struct {

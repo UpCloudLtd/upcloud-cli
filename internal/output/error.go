@@ -7,7 +7,9 @@ import (
 
 // Error implements output.Command for a return value that is an error
 type Error struct {
-	Value error
+	Value    error
+	Resolved string
+	Original string
 }
 
 // MarshalJSON implements json.Marshaler and output.Output
@@ -27,19 +29,29 @@ func (e Error) MarshalHuman() ([]byte, error) {
 	if e.Value == nil {
 		return []byte("\nERROR: Unspecified error"), nil
 	}
+	s := fmt.Sprintf("\nERROR: %v", e.Value.Error())
+	if e.Original != "" {
+		s += fmt.Sprintf(" (%s)", e.Original)
+	}
 
-	return []byte(fmt.Sprintf("\nERROR: %v", e.Value.Error())), nil
+	return []byte(s), nil
 }
 
 // MarshalRawMap implements output.Output
 func (e Error) MarshalRawMap() (map[string]interface{}, error) {
-	if e.Value == nil {
-		return map[string]interface{}{
-			"error": "Unspecified error",
-		}, nil
+	m := make(map[string]interface{})
+	if e.Resolved != "" {
+		m["resource"] = e.Resolved
+	}
+	if e.Original != "" {
+		m["argument"] = e.Original
 	}
 
-	return map[string]interface{}{
-		"error": e.Value.Error(),
-	}, nil
+	if e.Value == nil {
+		m["error"] = "Unspecified error"
+	} else {
+		m["error"] = e.Value.Error()
+	}
+
+	return m, nil
 }

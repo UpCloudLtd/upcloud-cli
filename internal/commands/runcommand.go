@@ -20,6 +20,13 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 
 	cmdLogger := logger.With("command", command.Cobra().CommandPath())
 	executor := NewExecutor(config, service, cmdLogger)
+
+	w := command.Cobra().OutOrStdout()
+
+	if config.OutputHuman() {
+		w = command.Cobra().OutOrStderr()
+	}
+
 	switch typedCommand := command.(type) {
 	case NoArgumentCommand:
 		cmdLogger.Debug("executing without arguments", "arguments", args)
@@ -32,7 +39,7 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 		if err != nil {
 			return err
 		}
-		return render(command.Cobra().OutOrStdout(), config, results)
+		return render(w, config, results)
 	case SingleArgumentCommand:
 		cmdLogger.Debug("executing single argument", "arguments", args)
 		// make sure we have an argument
@@ -43,7 +50,7 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 		if err != nil {
 			return err
 		}
-		return render(command.Cobra().OutOrStdout(), config, results)
+		return render(w, config, results)
 	case MultipleArgumentCommand:
 		cmdLogger.Debug("executing multi argument", "arguments", args)
 		// make sure we have arguments
@@ -54,7 +61,7 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 		if err != nil {
 			return err
 		}
-		return render(command.Cobra().OutOrStdout(), config, results)
+		return render(w, config, results)
 	default:
 		// no execution found on this command, eg. most likely an 'organizational' command
 		// so just show usage
@@ -67,7 +74,11 @@ func render(writer io.Writer, config *config.Config, results []executeResult) er
 	resultList := make([]output.Output, len(results))
 	for i := 0; i < len(results); i++ {
 		if results[i].Error != nil {
-			resultList[i] = output.Error{Value: results[i].Error}
+			resultList[i] = output.Error{
+				Value:    results[i].Error,
+				Resolved: results[i].ResolvedArgument.Resolved,
+				Original: results[i].ResolvedArgument.Original,
+			}
 		} else {
 			resultList[i] = results[i].Result
 		}
@@ -78,6 +89,7 @@ func render(writer io.Writer, config *config.Config, results []executeResult) er
 type resolvedArgument struct {
 	Resolved string
 	Error    error
+	Original string
 }
 
 func resolveArguments(nc Command, svc internal.AllServices, args []string) (out []resolvedArgument, err error) {
@@ -88,11 +100,11 @@ func resolveArguments(nc Command, svc internal.AllServices, args []string) (out 
 		}
 		for _, arg := range args {
 			resolved, err := argumentResolver(arg)
-			out = append(out, resolvedArgument{Resolved: resolved, Error: err})
+			out = append(out, resolvedArgument{Resolved: resolved, Error: err, Original: arg})
 		}
 	} else {
 		for _, arg := range args {
-			out = append(out, resolvedArgument{Resolved: arg})
+			out = append(out, resolvedArgument{Resolved: arg, Original: arg})
 		}
 	}
 	return
@@ -143,7 +155,7 @@ func execute(command Command, executor Executor, args []string, parallelRuns int
 					// otherwise, execute and return results
 					executor.Debug("worker starting", "worker", index, "argument", argument.Resolved)
 					res, err := executeCommand(executor.WithLogger("worker", index, "argument", argument.Resolved), argument.Resolved)
-					returnChan <- executeResult{Job: index, Result: res, Error: err}
+					returnChan <- executeResult{Job: index, Result: res, Error: err, ResolvedArgument: argument}
 				}
 			}(workerID, arg)
 		case res := <-returnChan:
