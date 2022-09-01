@@ -19,5 +19,5 @@ func loadBalancerOperationalStateColour(state upcloud.LoadBalancerOperationalSta
 
 // LoadBalancerState implements Format function for load-balancer states
 func LoadBalancerState(val interface{}) (text.Colors, string, error) {
-	return usingColorFunction(loadBalancerOperationalStateColour)(val)
+	return usingColorFunction(loadBalancerOperationalStateColour, val)
 }

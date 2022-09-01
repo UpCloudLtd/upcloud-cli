@@ -19,5 +19,5 @@ func databaseStateColour(state upcloud.ManagedDatabaseState) text.Colors {
 
 // DatabaseState implements Format function for database states
 func DatabaseState(val interface{}) (text.Colors, string, error) {
-	return usingColorFunction(databaseStateColour)(val)
+	return usingColorFunction(databaseStateColour, val)
 }

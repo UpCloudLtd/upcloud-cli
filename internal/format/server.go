@@ -21,5 +21,5 @@ func serverStateColour(state string) text.Colors {
 
 // ServerState implements Format function for server states
 func ServerState(val interface{}) (text.Colors, string, error) {
-	return usingColorFunction(serverStateColour)(val)
+	return usingColorFunction(serverStateColour, val)
 }
