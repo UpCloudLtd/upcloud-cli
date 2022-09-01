@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fix commands in `server delete` usage examples.
 
+### Changed
+- Refactor output rendering. This removes `config` dependency from `output` package.
+
 ## [2.1.0] - 2022-09-07
 ### Added
 - Add `--wait` flag to `storage import` and `storage templatise` commands to wait until storage is in `online` state.

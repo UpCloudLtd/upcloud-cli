@@ -56,7 +56,7 @@ func TestShowCommand(t *testing.T) {
 	assert.NoError(t, err)
 
 	buf := bytes.NewBuffer(nil)
-	err = output.Render(buf, conf, out)
+	err = output.Render(buf, conf.Output(), out)
 	assert.NoError(t, err)
 	assert.Equal(t, expected, buf.String())
 

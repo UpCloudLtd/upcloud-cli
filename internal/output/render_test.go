@@ -21,7 +21,7 @@ func TestRenderFailingWriter(t *testing.T) {
 	fw := failWriter{}
 	cfg := config.New()
 	cfg.Viper().Set(config.KeyOutput, "human")
-	err := output.Render(fw, cfg, output.None{})
+	err := output.Render(fw, cfg.Output(), output.None{})
 	assert.EqualError(t, err, "MOCKERROR")
 }
 
@@ -49,17 +49,17 @@ func TestRender(t *testing.T) {
 			cfg := config.New()
 
 			cfg.Viper().Set(config.KeyOutput, "human")
-			err := output.Render(out, cfg, test.input)
+			err := output.Render(out, cfg.Output(), test.input)
 			validateOutput(t, test.expectedHumanResult, test.expectedErrorMessage, out.Bytes(), err)
 			out.Truncate(0)
 
 			cfg.Viper().Set(config.KeyOutput, "json")
-			err = output.Render(out, cfg, test.input)
+			err = output.Render(out, cfg.Output(), test.input)
 			validateOutput(t, test.expectedJSONResult, test.expectedErrorMessage, out.Bytes(), err)
 			out.Truncate(0)
 
 			cfg.Viper().Set(config.KeyOutput, "yaml")
-			err = output.Render(out, cfg, test.input)
+			err = output.Render(out, cfg.Output(), test.input)
 			validateOutput(t, test.expectedYAMLResult, test.expectedErrorMessage, out.Bytes(), err)
 		})
 	}
