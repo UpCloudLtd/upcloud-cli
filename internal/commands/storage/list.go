@@ -3,6 +3,7 @@ package storage
 import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/internal/format"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 
@@ -114,9 +115,9 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 			{Key: "title", Header: "Title"},
 			{Key: "type", Header: "Type"},
 			{Key: "size", Header: "Size"},
-			{Key: "state", Header: "State"},
+			{Key: "state", Header: "State", Format: format.StorageState},
 			{Key: "tier", Header: "Tier"},
-			{Key: "zone", Header: "zone"},
+			{Key: "zone", Header: "Zone"},
 			{Key: "access", Header: "Access"},
 			{Key: "created", Header: "Created"},
 		},

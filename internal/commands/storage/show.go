@@ -6,6 +6,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/internal/format"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
@@ -58,7 +59,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 						{Title: "Title:", Key: "title", Value: storage.Title},
 						{Title: "Access:", Key: "access", Value: storage.Access},
 						{Title: "Type:", Key: "type", Value: storage.Type},
-						{Title: "State:", Key: "state", Value: storage.State, Colour: commands.StorageStateColour(storage.State)},
+						{Title: "State:", Key: "state", Value: storage.State, Format: format.StorageState},
 						{Title: "Size:", Key: "size", Value: storage.Size},
 						{Title: "Tier:", Key: "tier", Value: storage.Tier},
 						{Title: "Zone:", Key: "zone", Value: storage.Zone},

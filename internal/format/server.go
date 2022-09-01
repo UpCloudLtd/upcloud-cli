@@ -1,8 +1,6 @@
 package format
 
 import (
-	"fmt"
-
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 	"github.com/jedib0t/go-pretty/v6/text"
 )
@@ -23,14 +21,5 @@ func serverStateColour(state string) text.Colors {
 
 // ServerState implements Format function for server states
 func ServerState(val interface{}) (text.Colors, string, error) {
-	state, ok := val.(string)
-	if !ok {
-		return nil, "", fmt.Errorf("cannot parse server state from %T, expected string", val)
-	}
-
-	if state == "" {
-		return PossiblyUnknownString(state)
-	}
-
-	return nil, serverStateColour(state).Sprint(state), nil
+	return usingColorFunction(serverStateColour, val)
 }

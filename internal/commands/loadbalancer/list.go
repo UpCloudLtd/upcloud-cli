@@ -2,6 +2,7 @@ package loadbalancer
 
 import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/format"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
@@ -28,14 +29,12 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 
 	rows := []output.TableRow{}
 	for _, lb := range loadbalancers {
-		coloredState := commands.LoadBalancerOperationalStateColour(lb.OperationalState).Sprint(lb.OperationalState)
-
 		rows = append(rows, output.TableRow{
 			lb.UUID,
 			lb.Name,
 			lb.Plan,
 			lb.Zone,
-			coloredState,
+			lb.OperationalState,
 		})
 	}
 
@@ -45,7 +44,7 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 			{Key: "name", Header: "Name"},
 			{Key: "plan", Header: "Plan"},
 			{Key: "zone", Header: "Zone"},
-			{Key: "state", Header: "State"},
+			{Key: "state", Header: "State", Format: format.LoadBalancerState},
 		},
 		Rows: rows,
 	}, nil
