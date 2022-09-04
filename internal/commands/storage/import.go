@@ -84,14 +84,30 @@ type storageImportStatus struct {
 	complete bool
 }
 
-func getImportSuccessOutput(res *upcloud.StorageImportDetails) (output.Output, error) {
-	return output.MarshaledWithHumanDetails{
-		Value: res,
-		Details: []output.DetailRow{{
-			Title:  "UUID",
-			Value:  res.UUID,
-			Colour: ui.DefaultUUUIDColours,
-		}},
+type storageImportOutput struct {
+	*upcloud.StorageImportDetails
+	Storage upcloud.Storage `json:"storage"`
+}
+
+func getImportSuccessOutput(res *upcloud.StorageImportDetails, storage upcloud.Storage, isNewStorage bool) (output.Output, error) {
+	value := storageImportOutput{
+		StorageImportDetails: res,
+		Storage:              storage,
+	}
+
+	if isNewStorage {
+		return output.MarshaledWithHumanDetails{
+			Value: value,
+			Details: []output.DetailRow{{
+				Title:  "UUID",
+				Value:  storage.UUID,
+				Colour: ui.DefaultUUUIDColours,
+			}},
+		}, nil
+	}
+
+	return output.OnlyMarshaled{
+		Value: value,
 	}, nil
 }
 
@@ -185,7 +201,7 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 			// otherwise, we can just return the result and be done with it
 			exec.PushProgressSuccess(msg)
 
-			return getImportSuccessOutput(result)
+			return getImportSuccessOutput(result, storageToImportTo, s.existingStorageUUIDOrName == "")
 		}
 	case upcloud.StorageImportSourceDirectUpload:
 		// import from local file
@@ -206,7 +222,8 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		case statusUpdate.complete:
 			// we're complete, clean up log and return the result
 			exec.PushProgressSuccess(msg)
-			return getImportSuccessOutput(statusUpdate.result)
+
+			return getImportSuccessOutput(statusUpdate.result, storageToImportTo, s.existingStorageUUIDOrName == "")
 		case statusUpdate.bytesTransferred > 0:
 			// got a status update
 			bps := float64(statusUpdate.bytesTransferred) / time.Since(startTime).Seconds()

@@ -6,8 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- In JSON and YAML output of `storage import`: information on target storage is now available under `storage` key.
+
 ### Fixed
-- In `storage list` output: capitalize zone column header and color storage state similarly than in `storage show`.
+- In human output of `storage list`: capitalize zone column header and color storage state similarly than in `storage show`.
+- In human output of `storage import`: output UUID of created storage, instead of storage import operation. No UUID is outputted if existing storage was used.
 
 ## [2.0.0] - 2022-08-30
 ### Added
