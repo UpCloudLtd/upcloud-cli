@@ -2,7 +2,9 @@ package storage
 
 import (
 	"fmt"
+	"time"
 
+	"github.com/UpCloudLtd/progress/messages"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/service"
@@ -70,4 +72,26 @@ func SearchSingleStorage(uuidOrTitle string, service service.Storage) (*upcloud.
 		return nil, err
 	}
 	return matchedResults[0], nil
+}
+
+// waitForStorageState waits for storate to reach given state and updates progress message with key matching given msg. Finally, progress message is updated back to given msg and either done state or timeout warning.
+func waitForStorageState(uuid, state string, exec commands.Executor, msg string) {
+	exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Waiting for storage %s to be in %s state", uuid, state))
+
+	if _, err := exec.All().WaitForStorageState(&request.WaitForStorageStateRequest{
+		UUID:         uuid,
+		DesiredState: state,
+		Timeout:      15 * time.Minute,
+	}); err != nil {
+		exec.PushProgressUpdate(messages.Update{
+			Key:     msg,
+			Message: msg,
+			Status:  messages.MessageStatusWarning,
+			Details: "Error: " + err.Error(),
+		})
+		return
+	}
+
+	exec.PushProgressUpdateMessage(msg, msg)
+	exec.PushProgressSuccess(msg)
 }

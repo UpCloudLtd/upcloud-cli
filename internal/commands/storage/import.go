@@ -57,6 +57,7 @@ type importCommand struct {
 	sourceLocation            string
 	existingStorageUUIDOrName string
 	noWait                    config.OptionalBoolean
+	wait                      config.OptionalBoolean
 
 	createParams createParams
 
@@ -69,6 +70,7 @@ func (s *importCommand) InitCommand() {
 	flagSet.StringVar(&s.sourceLocation, "source-location", "", "Location of the source of the import. Can be a file or a URL.")
 	flagSet.StringVar(&s.existingStorageUUIDOrName, "storage", "", "Import to an existing storage. Storage must be large enough and must be undetached or the server where the storage is attached must be in shutdown state.")
 	config.AddToggleFlag(flagSet, &s.noWait, "no-wait", false, "Do not wait until the import finishes. Only applicable when importing from a remote URL.")
+	config.AddToggleFlag(flagSet, &s.wait, "wait", false, "Wait for storage to be in online state before returning.")
 	applyCreateFlags(flagSet, &s.createParams, defaultCreateParams)
 
 	s.AddFlags(flagSet)
@@ -221,7 +223,11 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 			return commands.HandleError(exec, msg, statusUpdate.err)
 		case statusUpdate.complete:
 			// we're complete, clean up log and return the result
-			exec.PushProgressSuccess(msg)
+			if s.wait.Value() {
+				waitForStorageState(storageToImportTo.UUID, upcloud.StorageStateOnline, exec, msg)
+			} else {
+				exec.PushProgressSuccess(msg)
+			}
 
 			return getImportSuccessOutput(statusUpdate.result, storageToImportTo, s.existingStorageUUIDOrName == "")
 		case statusUpdate.bytesTransferred > 0:

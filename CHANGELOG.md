@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Add `--wait` flag to `storage import` and `storage templatise` commands to wait until storage is in `online` state.
 - In JSON and YAML output of `storage import`: information on target storage is now available under `storage` key.
 
 ### Fixed
