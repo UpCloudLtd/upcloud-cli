@@ -5,16 +5,19 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 
+	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
 	"github.com/spf13/pflag"
 )
 
 type templatizeCommand struct {
 	*commands.BaseCommand
+	wait config.OptionalBoolean
 	resolver.CachingStorage
 	completion.Storage
 	params templatizeParams
@@ -32,6 +35,7 @@ func TemplatizeCommand() commands.Command {
 			"templatise",
 			"Templatise a storage",
 			`upctl storage templatise 01271548-2e92-44bb-9774-d282508cc762 --title "My Template"`,
+			`upctl storage templatise 01271548-2e92-44bb-9774-d282508cc762 --title "My Template" --wait`,
 			`upctl storage templatise "My Storage" --title super_template`,
 		),
 	}
@@ -47,6 +51,7 @@ func (s *templatizeCommand) InitCommand() {
 
 	flagSet := &pflag.FlagSet{}
 	flagSet.StringVar(&s.params.Title, "title", defaultTemplatizeParams.Title, "A short, informational description.")
+	config.AddToggleFlag(flagSet, &s.wait, "wait", false, "Wait for storage to be in online state before returning.")
 
 	s.AddFlags(flagSet)
 	_ = s.Cobra().MarkFlagRequired("title")
@@ -66,7 +71,11 @@ func (s *templatizeCommand) Execute(exec commands.Executor, uuid string) (output
 		return commands.HandleError(exec, msg, err)
 	}
 
-	exec.PushProgressSuccess(msg)
+	if s.wait.Value() {
+		waitForStorageState(res.UUID, upcloud.StorageStateOnline, exec, msg)
+	} else {
+		exec.PushProgressSuccess(msg)
+	}
 
 	return output.MarshaledWithHumanDetails{Value: res, Details: []output.DetailRow{
 		{Title: "UUID", Value: res.UUID, Colour: ui.DefaultUUUIDColours},
