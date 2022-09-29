@@ -2,7 +2,6 @@ package commands
 
 import (
 	"fmt"
-	"io"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
@@ -21,13 +20,7 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 	cmdLogger := logger.With("command", command.Cobra().CommandPath())
 	executor := NewExecutor(config, service, cmdLogger)
 
-	var w io.Writer
-
-	if config.OutputHuman() {
-		w = command.Cobra().OutOrStderr()
-	} else {
-		w = command.Cobra().OutOrStdout()
-	}
+	w := command.Cobra().OutOrStdout()
 
 	switch typedCommand := command.(type) {
 	case NoArgumentCommand:
@@ -136,11 +129,14 @@ func execute(command Command, executor Executor, args []string, parallelRuns int
 				if argument.Error != nil {
 					// argument wasn't parsed correctly, pass the error on
 					executor.Debug("worker got invalid argument", "worker", index, "error", argument.Error)
-					returnChan <- executeResult{Job: index, Error: fmt.Errorf("cannot resolve argument: %w", argument.Error)}
+					err := fmt.Errorf("cannot resolve argument: %w", argument.Error)
+					outputError(argument.Original, err, executor)
+					returnChan <- executeResult{Job: index, Error: err}
 				} else {
 					// otherwise, execute and return results
-					executor.Debug("worker stconfigarting", "worker", index, "argument", argument.Resolved)
+					executor.Debug("worker starting", "worker", index, "argument", argument.Resolved)
 					res, err := executeCommand(executor.WithLogger("worker", index, "argument", argument.Resolved), argument.Resolved)
+					outputError(argument.Original, err, executor)
 					returnChan <- executeResult{Job: index, Result: res, Error: err, ResolvedArgument: argument}
 				}
 			}(workerID, arg)

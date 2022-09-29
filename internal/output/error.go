@@ -2,7 +2,6 @@ package output
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // Error implements output.Command for a return value that is an error
@@ -26,15 +25,8 @@ func (e Error) MarshalJSON() ([]byte, error) {
 
 // MarshalHuman implements output.Output
 func (e Error) MarshalHuman() ([]byte, error) {
-	if e.Value == nil {
-		return []byte("\nERROR: Unspecified error"), nil
-	}
-	s := fmt.Sprintf("\nERROR: %v", e.Value.Error())
-	if e.Original != "" {
-		s += fmt.Sprintf(" (%s)", e.Original)
-	}
-
-	return []byte(s), nil
+	// Human readable errors go to stderr. This output package is responsible for stdout output only.
+	return []byte(""), nil
 }
 
 // MarshalRawMap implements output.Output
