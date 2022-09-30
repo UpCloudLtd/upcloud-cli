@@ -1,6 +1,8 @@
 package databaseproperties
 
 import (
+	"sort"
+
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/internal/format"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
@@ -41,6 +43,12 @@ func (s *propertiesCommand) Execute(exec commands.Executor, serviceType string) 
 			enumOrExample,
 		})
 	}
+
+	sort.Slice(rows, func(i, j int) bool {
+		iKey := rows[i][0].(string)
+		jKey := rows[j][0].(string)
+		return iKey < jKey
+	})
 
 	return output.MarshaledWithHumanOutput{
 		Value: properties,
