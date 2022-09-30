@@ -83,8 +83,8 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 				Columns: []output.TableColumn{
 					{Key: "address", Header: "Address", Colour: ui.DefaultAddressColours},
 					{Key: "family", Header: "Family"},
-					{Key: "dhcp", Header: "DHCP", Format: output.BoolFormat},
-					{Key: "dhcp_default_route", Header: "DHCP Def Router", Format: output.BoolFormat},
+					{Key: "dhcp", Header: "DHCP", Format: format.Boolean},
+					{Key: "dhcp_default_route", Header: "DHCP Def Router", Format: format.Boolean},
 					{Key: "dhcp_dns", Header: "DHCP DNS", Format: formatShowDHCPDNS},
 				},
 				Rows: networkRows,

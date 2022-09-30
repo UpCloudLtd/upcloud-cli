@@ -2,6 +2,7 @@ package ipaddress
 
 import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/format"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
 )
@@ -53,7 +54,7 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 			{
 				Header: "Part of Plan",
 				Key:    "partofplan",
-				Format: output.BoolFormat,
+				Format: format.Boolean,
 			},
 			{
 				Header: "PTR Record",
@@ -67,7 +68,7 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 			{
 				Header: "Floating",
 				Key:    "floating",
-				Format: output.BoolFormat,
+				Format: format.Boolean,
 			},
 			{
 				Header: "Zone",

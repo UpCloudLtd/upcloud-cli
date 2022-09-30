@@ -2,6 +2,7 @@ package zone
 
 import (
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/format"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 )
 
@@ -37,7 +38,7 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 		Columns: []output.TableColumn{
 			{Key: "id", Header: "ID"},
 			{Key: "description", Header: "Description"},
-			{Key: "public", Header: "Public", Format: output.BoolFormat},
+			{Key: "public", Header: "Public", Format: format.Boolean},
 		},
 		Rows: rows,
 	}, nil
