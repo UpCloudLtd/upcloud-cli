@@ -227,20 +227,21 @@ func TestExecute_Resolution(t *testing.T) {
 	cfg := config.New()
 	cfg.Viper().Set(config.KeyOutput, config.ValueOutputJSON)
 	executor := NewExecutor(cfg, mService, flume.New("test"))
-	results, err := execute(cmd, executor, []string{"a", "b", "failtoresolve", "c"}, 10, func(exec Executor, arg string) (output.Output, error) {
+	outputs, err := execute(cmd, executor, []string{"a", "b", "failtoresolve", "c"}, 10, func(exec Executor, arg string) (output.Output, error) {
 		return output.OnlyMarshaled{Value: arg}, nil
 	})
-	assert.Len(t, results, 4)
+	assert.Len(t, outputs, 4)
 	assert.NoError(t, err)
 
 	// as results are run in parallel, they dont always come out in the same order.
 	values := map[string]struct{}{}
-	for _, r := range results {
-		if r.Error == nil {
-			values[r.Result.(output.OnlyMarshaled).Value.(string)] = struct{}{}
-		} else {
-			assert.Nil(t, r.Result)
-			assert.EqualError(t, r.Error, "cannot resolve argument: MOCKTOOLONG")
+	for _, o := range outputs {
+		switch typedO := o.(type) {
+		case output.OnlyMarshaled:
+			values[typedO.Value.(string)] = struct{}{}
+		case output.Error:
+			assert.Empty(t, typedO.Resolved)
+			assert.EqualError(t, typedO.Value, "cannot resolve argument: MOCKTOOLONG")
 		}
 	}
 	assert.Equal(t, values, map[string]struct{}{
@@ -262,16 +263,17 @@ func TestExecute_Error(t *testing.T) {
 	cfg := config.New()
 	cfg.Viper().Set(config.KeyOutput, config.ValueOutputJSON)
 	executor := NewExecutor(cfg, mService, flume.New("test"))
-	results, err := execute(cmd, executor, []string{"a", "b", "failtorexecute", "c"}, 10, cmd.Execute)
-	assert.Len(t, results, 4)
+	outputs, err := execute(cmd, executor, []string{"a", "b", "failToExecute", "c"}, 10, cmd.Execute)
+	assert.Len(t, outputs, 4)
 	assert.NoError(t, err)
 
-	for _, r := range results {
-		if r.Error == nil {
-			assert.Equal(t, output.OnlyMarshaled{Value: "mock"}, r.Result)
-		} else {
-			assert.Nil(t, r.Result)
-			assert.EqualError(t, r.Error, "MOCKKFFAIL")
+	for _, o := range outputs {
+		switch typedO := o.(type) {
+		case output.OnlyMarshaled:
+			assert.Equal(t, output.OnlyMarshaled{Value: "mock"}, typedO)
+		case output.Error:
+			assert.Equal(t, "failToExecute", typedO.Original, typedO.Resolved)
+			assert.EqualError(t, typedO.Value, "MOCKKFFAIL")
 		}
 	}
 }

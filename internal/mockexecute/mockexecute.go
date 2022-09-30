@@ -48,5 +48,5 @@ func mockRunE(command commands.Command, service service.AllServices, config *con
 	if err != nil {
 		return err
 	}
-	return output.Render(command.Cobra().OutOrStdout(), config, out)
+	return output.Render(command.Cobra().OutOrStdout(), config.Output(), out)
 }
