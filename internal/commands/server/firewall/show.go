@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/internal/format"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
@@ -117,7 +118,7 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 		output.CombinedSection{
 			Contents: output.Details{Sections: []output.DetailSection{
 				{Rows: []output.DetailRow{
-					{Key: "enabled", Title: "Enabled", Value: server.Firewall == "on", Format: output.BoolFormat},
+					{Key: "enabled", Title: "Enabled", Value: server.Firewall == "on", Format: format.Boolean},
 				}},
 			}},
 		},
