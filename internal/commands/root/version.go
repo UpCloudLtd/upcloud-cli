@@ -22,6 +22,8 @@ func (s *VersionCommand) ExecuteWithoutArguments(_ commands.Executor) (output.Ou
 					{Title: "Version:", Key: "version", Value: config.Version},
 					{Title: "Build date:", Key: "build_date", Value: config.BuildDate},
 					{Title: "Built with:", Key: "built_with", Value: runtime.Version()},
+					{Title: "System:", Key: "operating_system", Value: runtime.GOOS},
+					{Title: "Architecture:", Key: "architecture", Value: runtime.GOARCH},
 				},
 			},
 		},
