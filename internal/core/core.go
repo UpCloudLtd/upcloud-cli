@@ -18,12 +18,18 @@ import (
 	"github.com/spf13/pflag"
 )
 
+const rootCmdLongDescription = `UpCloud command-line interface
+
+` + "`" + `upctl` + "`" + ` provides a command-line interface to UpCloud services. It allows you to control your resources from the command line or any compatible interface.
+
+To be able to manage your UpCLoud resources, you need to configure credentials for ` + "`" + `upctl` + "`" + ` and enable API access for these credentials. Define the credentials by setting ` + "`" + `UPCLOUD_USERNAME` + "`" + ` and ` + "`" + `UPCLOUD_PASSWORD` + "`" + ` environment variables. API access can be configured on the Account page of the UpCloud Hub. We recommend you to set up a sub-account specifically for the API usage with its own username and password, as it allows you to assign specific permissions for increased security.`
+
 // BuildRootCmd builds the root command
 func BuildRootCmd(conf *config.Config) cobra.Command {
 	rootCmd := cobra.Command{
 		Use:   "upctl",
-		Short: "UpCloud CLI",
-		Long:  "upctl a CLI tool for managing your UpCloud services.",
+		Short: "UpCloud command-line interface",
+		Long:  text.WrapSoft(rootCmdLongDescription, 80),
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			_, err := valid.ValidateStruct(conf.GlobalFlags)
 			if err != nil {

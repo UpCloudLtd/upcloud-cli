@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Include runtime operating system and architecture in `version` command output.
+- Include instructions for defining credentials and API access in `upctl --help` output.
 
 ### Fixed
 - Fix commands in `server delete` usage examples.
