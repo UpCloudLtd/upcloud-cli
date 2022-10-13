@@ -2,7 +2,6 @@ package commands
 
 import (
 	"fmt"
-	"io"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
@@ -23,10 +22,6 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 
 	w := command.Cobra().OutOrStdout()
 
-	if config.OutputHuman() {
-		w = command.Cobra().OutOrStderr()
-	}
-
 	switch typedCommand := command.(type) {
 	case NoArgumentCommand:
 		cmdLogger.Debug("executing without arguments", "arguments", args)
@@ -39,7 +34,7 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 		if err != nil {
 			return err
 		}
-		return render(w, config, results)
+		return output.Render(w, config.Output(), results...)
 	case SingleArgumentCommand:
 		cmdLogger.Debug("executing single argument", "arguments", args)
 		// make sure we have an argument
@@ -50,7 +45,7 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 		if err != nil {
 			return err
 		}
-		return render(w, config, results)
+		return output.Render(w, config.Output(), results...)
 	case MultipleArgumentCommand:
 		cmdLogger.Debug("executing multi argument", "arguments", args)
 		// make sure we have arguments
@@ -61,29 +56,13 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 		if err != nil {
 			return err
 		}
-		return render(w, config, results)
+		return output.Render(w, config.Output(), results...)
 	default:
 		// no execution found on this command, eg. most likely an 'organizational' command
 		// so just show usage
 		cmdLogger.Debug("no execution found", "arguments", args)
 		return command.Cobra().Usage()
 	}
-}
-
-func render(writer io.Writer, config *config.Config, results []executeResult) error {
-	resultList := make([]output.Output, len(results))
-	for i := 0; i < len(results); i++ {
-		if results[i].Error != nil {
-			resultList[i] = output.Error{
-				Value:    results[i].Error,
-				Resolved: results[i].ResolvedArgument.Resolved,
-				Original: results[i].ResolvedArgument.Original,
-			}
-		} else {
-			resultList[i] = results[i].Result
-		}
-	}
-	return output.Render(writer, config, resultList...)
 }
 
 type resolvedArgument struct {
@@ -110,7 +89,7 @@ func resolveArguments(nc Command, svc internal.AllServices, args []string) (out 
 	return
 }
 
-func execute(command Command, executor Executor, args []string, parallelRuns int, executeCommand func(exec Executor, arg string) (output.Output, error)) ([]executeResult, error) {
+func execute(command Command, executor Executor, args []string, parallelRuns int, executeCommand func(exec Executor, arg string) (output.Output, error)) ([]output.Output, error) {
 	resolvedArgs, err := resolveArguments(command, executor.All(), args)
 	if err != nil {
 		return nil, fmt.Errorf("cannot resolve command line arguments: %w", err)
@@ -128,7 +107,7 @@ func execute(command Command, executor Executor, args []string, parallelRuns int
 	// make a copy of the original args to pass into the workers
 	argQueue := resolvedArgs
 
-	results := make([]executeResult, 0, len(args))
+	outputs := make([]output.Output, 0, len(args))
 	executor.Debug("starting work", "workers", workerCount)
 	for {
 		select {
@@ -150,22 +129,34 @@ func execute(command Command, executor Executor, args []string, parallelRuns int
 				if argument.Error != nil {
 					// argument wasn't parsed correctly, pass the error on
 					executor.Debug("worker got invalid argument", "worker", index, "error", argument.Error)
-					returnChan <- executeResult{Job: index, Error: fmt.Errorf("cannot resolve argument: %w", argument.Error)}
+					err := fmt.Errorf("cannot resolve argument: %w", argument.Error)
+					outputError(argument.Original, err, executor)
+					returnChan <- executeResult{Job: index, Error: err}
 				} else {
 					// otherwise, execute and return results
 					executor.Debug("worker starting", "worker", index, "argument", argument.Resolved)
 					res, err := executeCommand(executor.WithLogger("worker", index, "argument", argument.Resolved), argument.Resolved)
+					outputError(argument.Original, err, executor)
 					returnChan <- executeResult{Job: index, Result: res, Error: err, ResolvedArgument: argument}
 				}
 			}(workerID, arg)
 		case res := <-returnChan:
 			// got a result from a worker
-			results = append(results, res)
-			if len(results) >= len(args) {
+			if res.Error != nil {
+				outputs = append(outputs, output.Error{
+					Value:    res.Error,
+					Resolved: res.ResolvedArgument.Resolved,
+					Original: res.ResolvedArgument.Original,
+				})
+			} else {
+				outputs = append(outputs, res.Result)
+			}
+
+			if len(outputs) >= len(args) {
 				executor.Debug("execute done")
 				// We're done, update ui for the last time and render the results
 				executor.StopProgressLog()
-				return results, nil
+				return outputs, nil
 			}
 		}
 	}

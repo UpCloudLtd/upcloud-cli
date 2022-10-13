@@ -13,5 +13,35 @@ func HandleError(exec Executor, key string, err error) (output.Output, error) {
 		Details: "Error: " + err.Error(),
 	})
 
-	return nil, err
+	return nil, handledError{err}
+}
+
+type handledError struct {
+	err error
+}
+
+func (h handledError) Error() string {
+	return h.err.Error()
+}
+
+// outputError outputs given error to progress log, if the error has not been already handled by HandleError
+func outputError(arg string, err error, exec Executor) {
+	if err == nil {
+		return
+	}
+
+	if _, ok := err.(handledError); ok {
+		return
+	}
+
+	msg := "Command execution failed"
+	if arg != "" {
+		msg += " for " + arg
+	}
+
+	exec.PushProgressUpdate(messages.Update{
+		Message: msg,
+		Status:  messages.MessageStatusError,
+		Details: "Error: " + err.Error(),
+	})
 }

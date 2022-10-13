@@ -7,10 +7,74 @@ import (
 	"io"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/clierrors"
-	"github.com/UpCloudLtd/upcloud-cli/internal/config"
 )
 
-func renderJSON(cfg *config.Config, commandOutputs ...Output) ([]byte, error) {
+const (
+	formatHuman string = "human"
+	formatJSON  string = "json"
+	formatYAML  string = "yaml"
+)
+
+func formats() []string {
+	return []string{
+		formatHuman,
+		formatJSON,
+		formatYAML,
+	}
+}
+
+// Render renders commandOutput to writer using cfg to configure the output.
+func Render(writer io.Writer, outputFormat string, commandOutputs ...Output) (err error) {
+	var b []byte
+	switch outputFormat {
+	case formatHuman:
+		b, err = withNewline(toHuman(commandOutputs...))
+	case formatJSON:
+		b, err = withNewline(toJSON(commandOutputs...))
+	case formatYAML:
+		b, err = toYAML(commandOutputs...)
+	default:
+		err = fmt.Errorf("output format not valid: %s, valid formats: %v", outputFormat, formats())
+	}
+	if err != nil {
+		return err
+	}
+
+	_, err = writer.Write(b)
+	if err != nil {
+		return err
+	}
+
+	// Count failed outputs
+	failedCount := 0
+	for _, commandOutput := range commandOutputs {
+		if _, ok := commandOutput.(Error); ok {
+			failedCount++
+		}
+	}
+
+	if failedCount > 0 {
+		return &clierrors.CommandFailedError{
+			FailedCount: failedCount,
+		}
+	}
+	return nil
+}
+
+func toHuman(commandOutputs ...Output) ([]byte, error) {
+	buffer := new(bytes.Buffer)
+	for _, commandOutput := range commandOutputs {
+		outBytes, err := commandOutput.MarshalHuman()
+		if err != nil {
+			return nil, err
+		}
+		buffer.Write(outBytes)
+	}
+
+	return buffer.Bytes(), nil
+}
+
+func toJSON(commandOutputs ...Output) ([]byte, error) {
 	var output []byte
 	var jsonOutput []json.RawMessage
 	for _, commandOutput := range commandOutputs {
@@ -33,60 +97,19 @@ func renderJSON(cfg *config.Config, commandOutputs ...Output) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return output, nil
 }
 
-// Render renders commandOutput to writer using cfg to configure the output.
-func Render(writer io.Writer, cfg *config.Config, commandOutputs ...Output) (err error) {
-	var output []byte
-	switch {
-	case cfg.OutputHuman():
-		buffer := new(bytes.Buffer)
-		for _, commandOutput := range commandOutputs {
-			outBytes, err := commandOutput.MarshalHuman()
-			if err != nil {
-				return err
-			}
-			buffer.Write(outBytes)
-		}
-		// add a final newline to the end. all sections should print just the top newline for themselves.
-		buffer.Write([]byte{'\n'})
-		output = buffer.Bytes()
-	case cfg.IsSet(config.KeyOutput) && cfg.Output() == config.ValueOutputJSON:
-		output, err = renderJSON(cfg, commandOutputs...)
-		if err != nil {
-			return err
-		}
-		output = append(output, '\n')
-	case cfg.IsSet(config.KeyOutput) && cfg.Output() == config.ValueOutputYAML:
-		jsonOutput, err := renderJSON(cfg, commandOutputs...)
-		if err != nil {
-			return err
-		}
-
-		output, err = JSONToYAML(jsonOutput)
-		if err != nil {
-			return err
-		}
-	default:
-		return fmt.Errorf("not sure what to output")
-	}
-	if _, err := writer.Write(output); err != nil {
-		return err
+func toYAML(commandOutputs ...Output) ([]byte, error) {
+	b, err := toJSON(commandOutputs...)
+	if err != nil {
+		return nil, err
 	}
 
-	// Count failed outputs
-	failedCount := 0
-	for _, commandOutput := range commandOutputs {
-		if _, ok := commandOutput.(Error); ok {
-			failedCount++
-		}
-	}
+	return JSONToYAML(b)
+}
 
-	if failedCount > 0 {
-		return &clierrors.CommandFailedError{
-			FailedCount: failedCount,
-		}
-	}
-	return nil
+func withNewline(b []byte, err error) ([]byte, error) {
+	return append(b, "\n"...), err
 }

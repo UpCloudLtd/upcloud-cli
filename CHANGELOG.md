@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fix commands in `server delete` usage examples.
+- Tune human output so that normal output is directed to `stdout`. Progess and error messages are still outputted to `stderr`.
 
 ## [2.1.0] - 2022-09-07
 ### Added
