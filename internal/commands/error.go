@@ -16,15 +16,9 @@ func HandleError(exec Executor, key string, err error) (output.Output, error) {
 	return nil, handledError{err}
 }
 
-type iHandledError interface {
-	HasBeenLogged()
-}
-
 type handledError struct {
 	err error
 }
-
-func (h handledError) HasBeenLogged() {}
 
 func (h handledError) Error() string {
 	return h.err.Error()
@@ -36,7 +30,7 @@ func outputError(arg string, err error, exec Executor) {
 		return
 	}
 
-	if _, ok := err.(iHandledError); ok {
+	if _, ok := err.(handledError); ok {
 		return
 	}
 
