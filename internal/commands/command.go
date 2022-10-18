@@ -90,6 +90,10 @@ func BuildCommand(child Command, parent *cobra.Command, config *config.Config) C
 			}
 			return cp.CompleteArgument(svc, toComplete)
 		}
+	} else {
+		// Otherwise offer no completions.
+		// This, rather than file completions, is the common case for our commands.
+		child.Cobra().ValidArgsFunction = cobra.NoFileCompletions
 	}
 	if rp, ok := child.(resolver.ResolutionProvider); ok {
 		child.Cobra().Use = fmt.Sprintf("%s %s", child.Cobra().Name(), rp.PositionalArgumentHelp())
