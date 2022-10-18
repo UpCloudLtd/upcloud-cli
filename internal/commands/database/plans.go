@@ -4,6 +4,7 @@ import (
 	"sort"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/internal/output"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
 )
@@ -17,6 +18,7 @@ func PlansCommand() commands.Command {
 
 type plansCommand struct {
 	*commands.BaseCommand
+	completion.DatabaseType
 }
 
 // Execute implements commands.MultipleArgumentCommand
