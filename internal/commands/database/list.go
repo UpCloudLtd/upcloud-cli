@@ -29,9 +29,14 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 
 	rows := []output.TableRow{}
 	for _, db := range databases {
+		title := db.Title
+		if title == "" {
+			title = db.Name
+		}
+
 		rows = append(rows, output.TableRow{
 			db.UUID,
-			db.Title,
+			title,
 			db.Type,
 			db.Plan,
 			db.Zone,
