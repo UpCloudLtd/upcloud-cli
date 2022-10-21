@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Complete available types for `database plans`.
 - Suppress positional argument filename completion for commands without specific completions.
+- In `database list` output: if database has no title, database name is displayed in the title cell instead of leaving the cell empty, similarly than in the hub.
 
 ### Fixed
 - Remove debug leftover print from IP address completions.
