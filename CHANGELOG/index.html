@@ -1,0 +1,2361 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="upctl provides a command-line interface to UpCloud services. It allows you to control your resources from the command line or any compatible interface.">
+      
+      
+      
+        <link rel="canonical" href="https://upcloudltd.github.io/upcloud-cli/CHANGELOG/">
+      
+      <link rel="icon" href="../favicon.png">
+      <meta name="generator" content="mkdocs-1.4.1, mkdocs-material-8.5.7">
+    
+    
+      
+        <title>Changelog - UpCloud command-line client</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.20d9efc8.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.cbb835fc.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#ffffff">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,700,700i%7CSource+Code+Pro:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Source Sans Pro";--md-code-font:"Source Code Pro"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="white" data-md-color-accent="">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#changelog" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="UpCloud command-line client" class="md-header__button md-logo" aria-label="UpCloud command-line client" data-md-component="logo">
+      <svg
+  height="26"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  width="54"
+  viewBox="0 0 54 26"
+>
+  <path
+    d="M47.131 13.26a3.953 3.953 0 013.952 3.958 3.964 3.964 0 01-3.952 3.958H18.844V10.888H20.7v8.446h26.447a2.112 2.112 0 002.112-2.116c0-1.17-.944-2.115-2.112-2.115H22.54V13.26h24.591z"
+    fill="currentColor"
+  ></path>
+  <path
+    d="M28.892 1.112H18.844v4.231H20.7V2.955h8.192c1.168 0 2.112.946 2.112 2.116 0 1.17-.944 2.115-2.112 2.115H4.541a3.953 3.953 0 00-3.952 3.958 3.964 3.964 0 003.952 3.959h12.431V13.26H4.542a2.112 2.112 0 01-2.112-2.116c0-1.17.944-2.115 2.112-2.115h24.335a3.953 3.953 0 003.952-3.958c0-2.18-1.776-3.959-3.936-3.959z"
+    fill="currentColor"
+  ></path>
+</svg>
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            UpCloud command-line client
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Changelog
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/UpCloudLtd/upcloud-cli" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    UpCloudLtd/upcloud-cli
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="UpCloud command-line client" class="md-nav__button md-logo" aria-label="UpCloud command-line client" data-md-component="logo">
+      <svg
+  height="26"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  width="54"
+  viewBox="0 0 54 26"
+>
+  <path
+    d="M47.131 13.26a3.953 3.953 0 013.952 3.958 3.964 3.964 0 01-3.952 3.958H18.844V10.888H20.7v8.446h26.447a2.112 2.112 0 002.112-2.116c0-1.17-.944-2.115-2.112-2.115H22.54V13.26h24.591z"
+    fill="currentColor"
+  ></path>
+  <path
+    d="M28.892 1.112H18.844v4.231H20.7V2.955h8.192c1.168 0 2.112.946 2.112 2.116 0 1.17-.944 2.115-2.112 2.115H4.541a3.953 3.953 0 00-3.952 3.958 3.964 3.964 0 003.952 3.959h12.431V13.26H4.542a2.112 2.112 0 01-2.112-2.116c0-1.17.944-2.115 2.112-2.115h24.335a3.953 3.953 0 003.952-3.958c0-2.18-1.776-3.959-3.936-3.959z"
+    fill="currentColor"
+  ></path>
+</svg>
+    </a>
+    UpCloud command-line client
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/UpCloudLtd/upcloud-cli" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    UpCloudLtd/upcloud-cli
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Getting started
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          Commands reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Commands reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Commands reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl/" class="md-nav__link">
+        upctl
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_2" type="checkbox" id="__nav_2_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_2">
+          upctl account
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="upctl account" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_2">
+          <span class="md-nav__icon md-icon"></span>
+          upctl account
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_account/" class="md-nav__link">
+        account 
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_account/show/" class="md-nav__link">
+        account show
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_completion/" class="md-nav__link">
+        upctl completion
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_4" type="checkbox" id="__nav_2_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_4">
+          upctl database
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="upctl database" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_4">
+          <span class="md-nav__icon md-icon"></span>
+          upctl database
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_database/" class="md-nav__link">
+        database 
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_4_2" type="checkbox" id="__nav_2_4_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_4_2">
+          database connection
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="database connection" data-md-level="3">
+        <label class="md-nav__title" for="__nav_2_4_2">
+          <span class="md-nav__icon md-icon"></span>
+          database connection
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_database/connection/" class="md-nav__link">
+        connection 
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_database/connection/cancel/" class="md-nav__link">
+        connection cancel
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_database/connection/list/" class="md-nav__link">
+        connection list
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_database/delete/" class="md-nav__link">
+        database delete
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_database/list/" class="md-nav__link">
+        database list
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_database/plans/" class="md-nav__link">
+        database plans
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_database/show/" class="md-nav__link">
+        database show
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_database/start/" class="md-nav__link">
+        database start
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_database/stop/" class="md-nav__link">
+        database stop
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_database/types/" class="md-nav__link">
+        database types
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_5" type="checkbox" id="__nav_2_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_5">
+          upctl ip-address
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="upctl ip-address" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_5">
+          <span class="md-nav__icon md-icon"></span>
+          upctl ip-address
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_ip-address/" class="md-nav__link">
+        ip-address 
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_ip-address/assign/" class="md-nav__link">
+        ip-address assign
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_ip-address/list/" class="md-nav__link">
+        ip-address list
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_ip-address/modify/" class="md-nav__link">
+        ip-address modify
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_ip-address/remove/" class="md-nav__link">
+        ip-address remove
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_ip-address/show/" class="md-nav__link">
+        ip-address show
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_6" type="checkbox" id="__nav_2_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_6">
+          upctl loadbalancer
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="upctl loadbalancer" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_6">
+          <span class="md-nav__icon md-icon"></span>
+          upctl loadbalancer
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_loadbalancer/" class="md-nav__link">
+        loadbalancer 
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_loadbalancer/delete/" class="md-nav__link">
+        loadbalancer delete
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_loadbalancer/list/" class="md-nav__link">
+        loadbalancer list
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_loadbalancer/show/" class="md-nav__link">
+        loadbalancer show
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_7" type="checkbox" id="__nav_2_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_7">
+          upctl network
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="upctl network" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_7">
+          <span class="md-nav__icon md-icon"></span>
+          upctl network
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_network/" class="md-nav__link">
+        network 
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_network/create/" class="md-nav__link">
+        network create
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_network/delete/" class="md-nav__link">
+        network delete
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_network/list/" class="md-nav__link">
+        network list
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_network/modify/" class="md-nav__link">
+        network modify
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_network/show/" class="md-nav__link">
+        network show
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_8" type="checkbox" id="__nav_2_8" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_8">
+          upctl router
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="upctl router" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_8">
+          <span class="md-nav__icon md-icon"></span>
+          upctl router
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_router/" class="md-nav__link">
+        router 
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_router/create/" class="md-nav__link">
+        router create
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_router/delete/" class="md-nav__link">
+        router delete
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_router/list/" class="md-nav__link">
+        router list
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_router/modify/" class="md-nav__link">
+        router modify
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_router/show/" class="md-nav__link">
+        router show
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_9" type="checkbox" id="__nav_2_9" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_9">
+          upctl server
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="upctl server" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_9">
+          <span class="md-nav__icon md-icon"></span>
+          upctl server
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_server/" class="md-nav__link">
+        server 
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_server/create/" class="md-nav__link">
+        server create
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_server/delete/" class="md-nav__link">
+        server delete
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_server/eject/" class="md-nav__link">
+        server eject
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_9_5" type="checkbox" id="__nav_2_9_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_9_5">
+          server firewall
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="server firewall" data-md-level="3">
+        <label class="md-nav__title" for="__nav_2_9_5">
+          <span class="md-nav__icon md-icon"></span>
+          server firewall
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_server/firewall/" class="md-nav__link">
+        firewall 
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_server/firewall/create/" class="md-nav__link">
+        firewall create
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_server/firewall/delete/" class="md-nav__link">
+        firewall delete
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_server/firewall/show/" class="md-nav__link">
+        firewall show
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_server/list/" class="md-nav__link">
+        server list
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_server/load/" class="md-nav__link">
+        server load
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_server/modify/" class="md-nav__link">
+        server modify
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_9_9" type="checkbox" id="__nav_2_9_9" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_9_9">
+          server network-interface
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="server network-interface" data-md-level="3">
+        <label class="md-nav__title" for="__nav_2_9_9">
+          <span class="md-nav__icon md-icon"></span>
+          server network-interface
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_server/network-interface/" class="md-nav__link">
+        network-interface 
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_server/network-interface/create/" class="md-nav__link">
+        network-interface create
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_server/network-interface/delete/" class="md-nav__link">
+        network-interface delete
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_server/network-interface/modify/" class="md-nav__link">
+        network-interface modify
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_server/plans/" class="md-nav__link">
+        server plans
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_server/restart/" class="md-nav__link">
+        server restart
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_server/show/" class="md-nav__link">
+        server show
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_server/start/" class="md-nav__link">
+        server start
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_server/stop/" class="md-nav__link">
+        server stop
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_9_15" type="checkbox" id="__nav_2_9_15" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_9_15">
+          server storage
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="server storage" data-md-level="3">
+        <label class="md-nav__title" for="__nav_2_9_15">
+          <span class="md-nav__icon md-icon"></span>
+          server storage
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_server/storage/" class="md-nav__link">
+        storage 
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_server/storage/attach/" class="md-nav__link">
+        storage attach
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_server/storage/detach/" class="md-nav__link">
+        storage detach
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_10" type="checkbox" id="__nav_2_10" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_10">
+          upctl storage
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="upctl storage" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_10">
+          <span class="md-nav__icon md-icon"></span>
+          upctl storage
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_storage/" class="md-nav__link">
+        storage 
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_10_2" type="checkbox" id="__nav_2_10_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_10_2">
+          storage backup
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="storage backup" data-md-level="3">
+        <label class="md-nav__title" for="__nav_2_10_2">
+          <span class="md-nav__icon md-icon"></span>
+          storage backup
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_storage/backup/" class="md-nav__link">
+        backup 
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_storage/backup/create/" class="md-nav__link">
+        backup create
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_storage/backup/restore/" class="md-nav__link">
+        backup restore
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_storage/clone/" class="md-nav__link">
+        storage clone
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_storage/create/" class="md-nav__link">
+        storage create
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_storage/delete/" class="md-nav__link">
+        storage delete
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_storage/import/" class="md-nav__link">
+        storage import
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_storage/list/" class="md-nav__link">
+        storage list
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_storage/modify/" class="md-nav__link">
+        storage modify
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_storage/show/" class="md-nav__link">
+        storage show
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_storage/templatise/" class="md-nav__link">
+        storage templatise
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_version/" class="md-nav__link">
+        upctl version
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_12" type="checkbox" id="__nav_2_12" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_12">
+          upctl zone
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="upctl zone" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_12">
+          <span class="md-nav__icon md-icon"></span>
+          upctl zone
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_zone/" class="md-nav__link">
+        zone 
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_zone/list/" class="md-nav__link">
+        zone list
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Changelog
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Changelog
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#unreleased" class="md-nav__link"> Unreleased </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#220-2022-10-17" class="md-nav__link"> 2.2.0 - 2022-10-17 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#210-2022-09-07" class="md-nav__link"> 2.1.0 - 2022-09-07 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#200-2022-08-30" class="md-nav__link"> 2.0.0 - 2022-08-30 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#151-2022-07-15" class="md-nav__link"> 1.5.1 - 2022-07-15 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#150-2022-07-05" class="md-nav__link"> 1.5.0 - 2022-07-05 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#140-2022-06-15" class="md-nav__link"> 1.4.0 - 2022-06-15 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#130-2022-05-17" class="md-nav__link"> 1.3.0 - 2022-05-17 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#120-2022-04-29" class="md-nav__link"> 1.2.0 - 2022-04-29 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#113-2022-02-24" class="md-nav__link"> 1.1.3 - 2022-02-24 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#112-2022-01-21" class="md-nav__link"> 1.1.2 - 2022-01-21 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#111-2021-09-30" class="md-nav__link"> 1.1.1 - 2021-09-30 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#110-2021-06-03" class="md-nav__link"> 1.1.0 - 2021-06-03 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#100-2021-04-16" class="md-nav__link"> 1.0.0 - 2021-04-16 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#060-2021-04-16" class="md-nav__link"> 0.6.0 - 2021-04-16 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#050-2021-04-14" class="md-nav__link"> 0.5.0 - 2021-04-14 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#011-2021-03-12" class="md-nav__link"> 0.1.1 - 2021-03-12 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#010-2021-03-10" class="md-nav__link"> 0.1.0 - 2021-03-10 </a>
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#unreleased" class="md-nav__link"> Unreleased </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#220-2022-10-17" class="md-nav__link"> 2.2.0 - 2022-10-17 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#210-2022-09-07" class="md-nav__link"> 2.1.0 - 2022-09-07 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#200-2022-08-30" class="md-nav__link"> 2.0.0 - 2022-08-30 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#151-2022-07-15" class="md-nav__link"> 1.5.1 - 2022-07-15 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#150-2022-07-05" class="md-nav__link"> 1.5.0 - 2022-07-05 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#140-2022-06-15" class="md-nav__link"> 1.4.0 - 2022-06-15 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#130-2022-05-17" class="md-nav__link"> 1.3.0 - 2022-05-17 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#120-2022-04-29" class="md-nav__link"> 1.2.0 - 2022-04-29 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#113-2022-02-24" class="md-nav__link"> 1.1.3 - 2022-02-24 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#112-2022-01-21" class="md-nav__link"> 1.1.2 - 2022-01-21 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#111-2021-09-30" class="md-nav__link"> 1.1.1 - 2021-09-30 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#110-2021-06-03" class="md-nav__link"> 1.1.0 - 2021-06-03 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#100-2021-04-16" class="md-nav__link"> 1.0.0 - 2021-04-16 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#060-2021-04-16" class="md-nav__link"> 0.6.0 - 2021-04-16 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#050-2021-04-14" class="md-nav__link"> 0.5.0 - 2021-04-14 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#011-2021-03-12" class="md-nav__link"> 0.1.1 - 2021-03-12 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#010-2021-03-10" class="md-nav__link"> 0.1.0 - 2021-03-10 </a>
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+<!-- Hide edit button as command reference and changelog do not exist on main branch -->
+
+<h1 id="changelog">Changelog</h1>
+<p>All notable changes to this project will be documented in this file.</p>
+<p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>,
+and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
+<h2 id="unreleased"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.2.0...HEAD">Unreleased</a></h2>
+<h3 id="added">Added</h3>
+<ul>
+<li>Complete available types for <code>database plans</code>.</li>
+<li>Suppress positional argument filename completion for commands without specific completions.</li>
+<li>In <code>database list</code> output: if database has no title, database name is displayed in the title cell instead of leaving the cell empty, similarly than in the hub.</li>
+</ul>
+<h3 id="fixed">Fixed</h3>
+<ul>
+<li>Remove debug leftover print from IP address completions.</li>
+</ul>
+<h2 id="220-2022-10-17"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.1.0...v2.2.0">2.2.0</a> - 2022-10-17</h2>
+<h3 id="added_1">Added</h3>
+<ul>
+<li>Include runtime operating system and architecture in <code>version</code> command output.</li>
+<li>Include instructions for defining credentials and API access in <code>upctl --help</code> output.</li>
+</ul>
+<h3 id="fixed_1">Fixed</h3>
+<ul>
+<li>Fix commands in <code>server delete</code> usage examples.</li>
+<li>Tune human output so that normal output is directed to <code>stdout</code>. Progess and error messages are still outputted to <code>stderr</code>.</li>
+</ul>
+<h2 id="210-2022-09-07"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.0.0...v2.1.0">2.1.0</a> - 2022-09-07</h2>
+<h3 id="added_2">Added</h3>
+<ul>
+<li>Add <code>--wait</code> flag to <code>storage import</code> and <code>storage templatise</code> commands to wait until storage is in <code>online</code> state.</li>
+<li>In JSON and YAML output of <code>storage import</code>: information on target storage is now available under <code>storage</code> key.</li>
+</ul>
+<h3 id="fixed_2">Fixed</h3>
+<ul>
+<li>In human output of <code>storage list</code>: capitalize zone column header and color storage state similarly than in <code>storage show</code>.</li>
+<li>In human output of <code>storage import</code>: output UUID of created storage, instead of storage import operation. No UUID is outputted if existing storage was used.</li>
+</ul>
+<h2 id="200-2022-08-30"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v1.5.1...v2.0.0">2.0.0</a> - 2022-08-30</h2>
+<h3 id="added_3">Added</h3>
+<ul>
+<li>Add <code>database delete</code> command.</li>
+<li>Add <code>loadbalancer delete</code> command.</li>
+<li>Add <code>Access</code> field to <code>storage show</code> output.</li>
+<li>Add fields <code>argument</code> and <code>resource</code> to JSON and YAML error outputs.</li>
+</ul>
+<h3 id="changed">Changed</h3>
+<ul>
+<li><strong>Breaking</strong>: Human output, including errors, is written to stderr instead of stdout.</li>
+<li>Refactor progress logging. This changes the appearance of progress logs. See <a href="https://github.com/UpCloudLtd/progress">UpCloudLtd / progress</a> for the new implementation.</li>
+</ul>
+<h3 id="fixed_3">Fixed</h3>
+<ul>
+<li><strong>Breaking</strong>: Set non-zero exit code if command execution fails.</li>
+<li><strong>Breaking</strong>: Render servers IP addresses as array of objects, instead of previous pretty-printed string, in JSON and YAML outputs of <code>server show</code>.</li>
+<li><strong>Breaking</strong>: Use key names from <code>json</code> field tag also in YAML output to have equal key names in JSON and YAML outputs. For example, <code>bootorder</code> key in server details will now be <code>boot_order</code> also in YAML output. As a side-effect data-types are limited to those supported by JSON. For example, timestamps will be presented as (double-quoted) strings. In addition, if command targets multiple resources, YAML output will now be a list, similarly than in JSON output, instead of previous multiple YAML documents.</li>
+<li><strong>Breaking</strong>: In JSON and YAML output, <code>storage show</code> lists attached servers in <code>servers</code> list instead of <code>server</code> string.</li>
+<li><strong>Breaking</strong>: In JSON and YAML output, <code>network show</code> lists DHCP DNS values in list instead of string.</li>
+<li>On <code>network show</code>, output server details as unknown instead of outputting an error, if fetching server details fails. This allows displaying network details for networks that contain a load balancer.</li>
+<li>Progress logging to non TTY output uses now 100 as text width instead of 0.</li>
+</ul>
+<h2 id="151-2022-07-15"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v1.5.0...v1.5.1">1.5.1</a> - 2022-07-15</h2>
+<h3 id="fixed_4">Fixed</h3>
+<ul>
+<li>On <code>server create</code>, mount OS disk by default on <code>virtio</code> bus. Previously default OS storage address was not explicit and varyed depending on template type.</li>
+<li>Disable colors if user has set <a href="https://no-color.org/">NO_COLOR</a> environment variable to non-empty value.</li>
+</ul>
+<h2 id="150-2022-07-05"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v1.4.0...v1.5.0">1.5.0</a> - 2022-07-05</h2>
+<h3 id="added_4">Added</h3>
+<ul>
+<li>Add <code>--show-ip-addresses</code> flag to <code>server list</code> command to optionally include IP addresses in command output.</li>
+<li>Add <code>database connection list</code>, <code>database connection cancel</code>, <code>database start</code>, and <code>database stop</code> commands.</li>
+</ul>
+<h3 id="changed_1">Changed</h3>
+<ul>
+<li>Make <code>--family</code> parameter of <code>server firewall create</code> command optional to allow editing the default rules.</li>
+<li>Update <code>cobra</code> to <code>v1.5.0</code> and refactor required flag validation code. This affects validation error messages.</li>
+</ul>
+<h3 id="fixed_5">Fixed</h3>
+<ul>
+<li>Complete shell input with uppercase letters (e.g., <code>Cap</code> to <code>CapitalizedName</code> will now work)</li>
+<li>Display UUID of created template in <code>storage templatise</code> output.</li>
+</ul>
+<h2 id="140-2022-06-15"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v1.3.0...v1.4.0">1.4.0</a> - 2022-06-15</h2>
+<h3 id="added_5">Added</h3>
+<ul>
+<li>Add <code>database list</code>, <code>database show</code>,<code>database plans</code>, and <code>database types</code> commands.</li>
+<li>Add <code>loadbalancer list</code> and <code>loadbalancer show</code> commands.</li>
+<li>Add <code>db</code> and <code>lb</code> aliases to <code>database</code> and <code>loadbalancer</code>, respectively.</li>
+</ul>
+<h3 id="changed_2">Changed</h3>
+<ul>
+<li>Color server state in <code>server list</code> output similarly than in <code>server show</code> output.</li>
+<li>Update Go version to 1.18</li>
+<li>Update <code>upcloud-go-api</code> to <code>v4.8.0</code></li>
+</ul>
+<h2 id="130-2022-05-17"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v1.2.0...v1.3.0">1.3.0</a> - 2022-05-17</h2>
+<h3 id="added_6">Added</h3>
+<ul>
+<li>Add <code>zone list</code> command that lists available zones.</li>
+<li>Add <code>--wait</code> flag to <code>server create</code> and <code>server stop</code> commands to wait until server is in <code>started</code> and <code>stopped</code> state, respectively.</li>
+</ul>
+<h3 id="changed_3">Changed</h3>
+<ul>
+<li>Update <code>upcloud-go-api</code>to <code>v4.5.2</code></li>
+</ul>
+<h3 id="fixed_6">Fixed</h3>
+<ul>
+<li>Do not display usage if execution fails because of missing credentials</li>
+<li>Mark error and warning livelogs finished when they will not be updated anymore: this stops the timer in the end of the row and stops livelog from refreshing these lines.</li>
+</ul>
+<h2 id="120-2022-04-29"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v1.1.3...v1.2.0">1.2.0</a> - 2022-04-29</h2>
+<h3 id="added_7">Added</h3>
+<ul>
+<li>Include UUID (or address) of created resource in create command output</li>
+<li><code>storage modify</code> command now accepts <code>enable-filesystem-autoresize</code> flag. When that flag is set upctl will attempt to resize partition and filesystem after storage size has been modified.</li>
+</ul>
+<h3 id="changed_4">Changed</h3>
+<ul>
+<li>New go-api version v4.5.0</li>
+</ul>
+<h3 id="fixed_7">Fixed</h3>
+<ul>
+<li>Improved errors relating to argument resolver failures</li>
+<li>Print version info, instead of missing credentials error, when runnning <code>upctl version</code> without credentials</li>
+<li>Disable colors when outputting in JSON or YAML format</li>
+<li>Display both public and private addresses in <code>server create</code> output</li>
+<li>Render livelog messages of commands which execution takes less than render tick interval</li>
+</ul>
+<h2 id="113-2022-02-24"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v1.1.2...v1.1.3">1.1.3</a> - 2022-02-24</h2>
+<h3 id="changed_5">Changed</h3>
+<ul>
+<li>Update documentation</li>
+</ul>
+<h3 id="fixed_8">Fixed</h3>
+<ul>
+<li>Fix storage command attached-to-server key overrides zone</li>
+</ul>
+<h2 id="112-2022-01-21"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v1.1.1...v1.1.2">1.1.2</a> - 2022-01-21</h2>
+<h3 id="fixed_9">Fixed</h3>
+<ul>
+<li>New release with no changes to fix <a href="https://github.com/goreleaser/goreleaser/pull/2591">the Homebrew deprecation notice</a></li>
+</ul>
+<h2 id="111-2021-09-30"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v1.1.0...v1.1.1">1.1.1</a> - 2021-09-30</h2>
+<h3 id="changed_6">Changed</h3>
+<ul>
+<li>Change password creation to be disabled by default in server creation</li>
+<li>Always create a password when password delivery method is chosen</li>
+</ul>
+<h2 id="110-2021-06-03"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v1.0.0...v1.1.0">1.1.0</a> - 2021-06-03</h2>
+<h3 id="added_8">Added</h3>
+<ul>
+<li>Debug mode for finding root causes to problems</li>
+<li>Docker image and upload to Docker Hub</li>
+<li>Autogenerated documentation under /docs</li>
+<li>Terminal width handling</li>
+</ul>
+<h3 id="changed_7">Changed</h3>
+<ul>
+<li>Global flags for colors refactored to <code>--force-colour</code> and <code>--no-colour</code></li>
+<li>New go-api version</li>
+<li>Improved error messages</li>
+</ul>
+<h3 id="fixes">Fixes</h3>
+<ul>
+<li>No coloring of texts if stdout is not a terminal</li>
+<li>Detaching routers works now with the new <code>--detach-router</code> parameter in <code>network modify</code></li>
+</ul>
+<h2 id="100-2021-04-16"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v0.6.0...v1.0.0">1.0.0</a> - 2021-04-16</h2>
+<p>First non-beta release! Includes all previous changes and fixes.</p>
+<h2 id="060-2021-04-16"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v0.5.0...v0.6.0">0.6.0</a> - 2021-04-16</h2>
+<h3 id="changed_8">Changed</h3>
+<ul>
+<li>Use goreleaser for releasing packages</li>
+<li>Move creation of service outside runcommand to facilitate testing</li>
+</ul>
+<h3 id="fixes_1">Fixes</h3>
+<ul>
+<li>fix(pre-commit): add missing golangci config file</li>
+<li>fix(root): use default cobra behavious when called</li>
+</ul>
+<h2 id="050-2021-04-14"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v0.1.1...v0.5.0">0.5.0</a> - 2021-04-14</h2>
+<p>Initial public beta release :tada:</p>
+<h3 id="added_9">Added</h3>
+<ul>
+<li>Added commands for managing server firewall rules</li>
+</ul>
+<h3 id="fixed_10">Fixed</h3>
+<ul>
+<li>Shell auto-completion fixed</li>
+</ul>
+<h3 id="changed_9">Changed</h3>
+<ul>
+<li>Input &amp; output handling rewritten</li>
+<li>Several help text fixes &amp; changes</li>
+<li>Default OS changed to Ubuntu 20.04</li>
+<li>Defaults for networks / routers in line with storages, so we'll show users' own resources by default</li>
+</ul>
+<h2 id="011-2021-03-12"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v0.1.0...v0.1.1">0.1.1</a> - 2021-03-12</h2>
+<h3 id="fixed_11">Fixed</h3>
+<ul>
+<li>Load config files from the correct place on Windows</li>
+<li>Fix storage import failing on readerCounter not implementing io.Reader</li>
+</ul>
+<h2 id="010-2021-03-10"><a href="https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v0.1.0">0.1.0</a> - 2021-03-10</h2>
+<h3 id="added_10">Added</h3>
+<ul>
+<li>Current feature set added! First internal release</li>
+</ul>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <!-- Removes previous and next links -->
+
+<footer class="md-footer">
+  <!-- Further information -->
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2022 UpCloud Ltd
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+
+      <!-- Social links -->
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.8492ddcf.min.js"></script>
+      
+    
+  </body>
+</html>
