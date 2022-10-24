@@ -29,7 +29,7 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 	rootCmd := cobra.Command{
 		Use:   "upctl",
 		Short: "UpCloud command-line interface",
-		Long:  text.WrapSoft(rootCmdLongDescription, 80),
+		Long:  commands.WrapLongDescription(rootCmdLongDescription),
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			_, err := valid.ValidateStruct(conf.GlobalFlags)
 			if err != nil {

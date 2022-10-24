@@ -26,5 +26,6 @@ theme:
   favicon: favicon.png
   language: en
   features: []
+
 plugins:
 - search

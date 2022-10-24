@@ -4,9 +4,11 @@ import (
 	"encoding/csv"
 	"fmt"
 	"reflect"
+	"regexp"
 	"strings"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
+	"github.com/jedib0t/go-pretty/v6/text"
 
 	"github.com/UpCloudLtd/upcloud-cli/internal/validation"
 )
@@ -83,4 +85,11 @@ func BoolFromString(b string) (*upcloud.Boolean, error) {
 		return nil, fmt.Errorf("invalid boolean value %s", b)
 	}
 	return &result, nil
+}
+
+// WrapLongDescription wraps Long description messages at 80 characters and removes trailing whitespace from the message.
+func WrapLongDescription(message string) string {
+	re := regexp.MustCompile(` +\n`)
+	wrapped := text.WrapSoft(message, 80)
+	return re.ReplaceAllString(wrapped, "\n")
 }

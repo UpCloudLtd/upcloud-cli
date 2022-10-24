@@ -52,12 +52,9 @@ func (s *createCommand) MaximumExecutions() int {
 
 // InitCommand implements Command.InitCommand
 func (s *createCommand) InitCommand() {
-	s.Cobra().Long = `Create a new firewall rule
+	s.Cobra().Long = commands.WrapLongDescription(`Create a new firewall rule
 
-To edit the default rule of the firewall, set only --direction and --action
-parameters. This creates catch-all rule that will take effect when no other rule
-matches. Note that the default rule must be positioned after all other rules.
-Use --position parameter or create default rule after other rules.`
+To edit the default rule of the firewall, set only ` + "`" + `--direction` + "`" + ` and ` + "`" + `--action` + "`" + ` parameters. This creates catch-all rule that will take effect when no other rule matches. Note that the default rule must be positioned after all other rules. Use ` + "`" + `--position` + "`" + ` parameter or create default rule after other rules.`)
 
 	flagSet := &pflag.FlagSet{}
 
