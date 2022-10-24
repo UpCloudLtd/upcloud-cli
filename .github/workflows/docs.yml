@@ -1,0 +1,30 @@
+name: Docs
+on:
+  push:
+    branches:
+      - main
+      - test-docs-generator # for testing
+jobs:
+  generate-and-deploy:
+    name: Generate and deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.18
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
+      - name: Checkout head
+        uses: actions/checkout@v3
+      - name: Generate documentation
+        run: make docs
+      - name: Deploy to pages
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: site
+          CLEAN: true

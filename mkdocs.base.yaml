@@ -1,0 +1,30 @@
+# Base configuration for documentation.
+# Run `python3 .ci/docs/generate_command_reference_nav.py` after generating markdown reference with `go run ./.ci/docs` to generate command reference navigation tree.
+site_name: UpCloud command-line client
+site_description: upctl provides a command-line interface to UpCloud services. It allows you to control your resources from the command line or any compatible interface.
+site_url: https://upcloudltd.github.io/upcloud-cli/
+repo_name: UpCloudLtd/upcloud-cli
+repo_url: https://github.com/UpCloudLtd/upcloud-cli
+copyright: Copyright &copy; 2022 UpCloud Ltd
+
+extra_css:
+  - extra.css
+
+nav:
+- index.md
+- Commands reference: []
+- changelog.md
+
+theme:
+  name: material
+  custom_dir: .ci/docs/overrides
+  palette:
+    primary: white
+  font:
+    text: Source Sans Pro
+    code: Source Code Pro
+  favicon: favicon.png
+  language: en
+  features: []
+plugins:
+- search
