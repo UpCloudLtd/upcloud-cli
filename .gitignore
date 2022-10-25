@@ -34,3 +34,9 @@ dist/
 # Go workspace files
 /go.work
 /go.work.sum
+
+# Generated docs content
+/docs/commands_reference/
+/docs/CHANGELOG.md
+/mkdocs.yaml
+/site/

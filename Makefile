@@ -1,8 +1,9 @@
 # UpCloud CLI Makefile
 
 GO       = go
+PYTHON   = python3
+PIP      = pip3
 CLI      = upctl
-DOC_GEN  = doc-gen
 MODULE   = $(shell env GO111MODULE=on $(GO) list -m)
 DATE    ?= $(shell date +%FT%T%z)
 VERSION ?= $(shell git describe --tags --always --dirty --match=v* 2> /dev/null || \
@@ -14,7 +15,6 @@ TESTPKGS = $(shell env GO111MODULE=on $(GO) list -f \
 
 BIN_DIR              = $(CURDIR)/bin
 CLI_BIN              = $(CLI)
-DOC_GEN_BIN          = $(DOC_GEN)
 BIN_LINUX            = $(CLI_BIN)-$(VERSION)-linux-amd64
 BIN_DOCKERISED_LINUX = $(CLI_BIN)-$(VERSION)-dockerised-linux-amd64
 BIN_DARWIN           = $(CLI_BIN)-$(VERSION)-darwin-amd64
@@ -34,8 +34,29 @@ build: fmt | $(BIN_DIR) ; $(info building executable for the current target…) 
 		-ldflags '-X $(MODULE)/internal/config.Version=$(VERSION) -X $(MODULE)/internal/config.BuildDate=$(DATE)' \
 		-o $(BIN_DIR)/$(CLI_BIN) cmd/$(CLI)/main.go
 
-doc: $(BIN_DIR) ; $(info generating documentation…) @ ## Generate documentation (markdown)
-	$Q $(GO) run cmd/$(DOC_GEN)/main.go
+.PHONY: clean-md-docs
+clean-md-docs:
+	rm -f docs/changelog.md
+	rm -rf docs/commands_reference/
+
+.PHONY: md-docs
+md-docs: clean-md-docs ## Generate documentation (markdown)
+	$(GO) run ./.ci/docs/
+	cp CHANGELOG.md docs/changelog.md
+
+.PHONY: clean-docs
+clean-docs:
+	rm -f mkdocs.yaml
+	rm -rf site/
+
+.PHONY: install-docs-tools
+install-docs-tools:
+	$(PIP) install -r requirements.txt
+
+.PHONY: docs
+docs: clean-docs md-docs install-docs-tools ## Generate documentation (mkdocs site)
+	$(PYTHON) .ci/docs/generate_command_reference_nav.py
+	mkdocs build
 
 .PHONY: build-all
 build-all: build-linux build-darwin build-windows build-freebsd ## Build all targets
