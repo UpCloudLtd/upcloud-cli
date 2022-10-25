@@ -197,8 +197,20 @@ upctl server storage attach <SERVER-UUID> --storage <STORAGE-UUID>
 
 ## Documentation
 
-The detailed documentation can be found [here](docs/upctl.md)
+The detailed documentation is available in [GitHub pages](https://upcloudltd.github.io/upcloud-cli/).
 
+To generate markdown version of command reference, run `make md-docs`. Command reference will then be generated into `docs/commands_reference`.
+
+```sh
+make md-docs
+```
+
+To run the MkDocs documentation locally, run make docs and start static http server (e.g., `python3 -m http.server 8000`) in `site/` directory or run mkdocs serve in repository root.
+
+```sh
+make docs
+mkdocs serve
+```
 
 ## Contributing
 
