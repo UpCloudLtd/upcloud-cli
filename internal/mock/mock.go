@@ -835,3 +835,44 @@ func (m *Service) ModifyLoadBalancerCertificateBundle(r *request.ModifyLoadBalan
 func (m *Service) DeleteLoadBalancerCertificateBundle(r *request.DeleteLoadBalancerCertificateBundleRequest) error {
 	return nil
 }
+
+func (m *Service) CreateKubernetesCluster(r *request.CreateKubernetesClusterRequest) (*upcloud.KubernetesCluster, error) {
+	return nil, nil
+}
+
+func (m *Service) DeleteKubernetesCluster(r *request.DeleteKubernetesClusterRequest) error {
+	args := m.Called(r)
+	return args.Error(0)
+}
+
+func (m *Service) GetKubernetesCluster(r *request.GetKubernetesClusterRequest) (*upcloud.KubernetesCluster, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.KubernetesCluster), args.Error(1)
+}
+
+func (m *Service) GetKubernetesClusters(r *request.GetKubernetesClustersRequest) ([]upcloud.KubernetesCluster, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].([]upcloud.KubernetesCluster), args.Error(1)
+}
+
+func (m *Service) GetKubernetesKubeconfig(r *request.GetKubernetesKubeconfigRequest) (string, error) {
+	return "", nil
+}
+
+func (m *Service) GetKubernetesPlans(r *request.GetKubernetesPlansRequest) ([]upcloud.KubernetesPlan, error) {
+	return nil, nil
+}
+
+func (m *Service) GetKubernetesVersions(r *request.GetKubernetesVersionsRequest) ([]string, error) {
+	return nil, nil
+}
+
+func (m *Service) WaitForKubernetesClusterState(r *request.WaitForKubernetesClusterStateRequest) (*upcloud.KubernetesCluster, error) {
+	return nil, nil
+}
