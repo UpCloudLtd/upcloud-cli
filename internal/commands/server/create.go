@@ -1,17 +1,8 @@
 package server
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"strings"
-
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/service"
-	"github.com/jedib0t/go-pretty/v6/text"
-	"github.com/spf13/pflag"
-	"golang.org/x/crypto/ssh"
 
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/ipaddress"
@@ -19,6 +10,12 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
+
+	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/service"
+	"github.com/jedib0t/go-pretty/v6/text"
+	"github.com/spf13/pflag"
 )
 
 const defaultIPAddressFamily = upcloud.IPAddressFamilyIPv4
@@ -211,29 +208,11 @@ func (s *createParams) handleNetwork(in string) (*request.CreateServerInterface,
 }
 
 func (s *createParams) handleSSHKey() error {
-	var allSSHKeys []string
-	for _, keyOrFile := range s.sshKeys {
-		if strings.HasPrefix(keyOrFile, "ssh-") {
-			if _, _, _, _, err := ssh.ParseAuthorizedKey([]byte(keyOrFile)); err != nil {
-				return fmt.Errorf("invalid ssh key %q: %v", keyOrFile, err)
-			}
-			allSSHKeys = append(allSSHKeys, keyOrFile)
-			continue
-		}
-		f, err := os.Open(keyOrFile)
-		if err != nil {
-			return err
-		}
-		rdr := bufio.NewScanner(f)
-		for rdr.Scan() {
-			if _, _, _, _, err := ssh.ParseAuthorizedKey(rdr.Bytes()); err != nil {
-				_ = f.Close()
-				return fmt.Errorf("invalid ssh key %q in file %s: %v", rdr.Text(), keyOrFile, err)
-			}
-			allSSHKeys = append(allSSHKeys, rdr.Text())
-		}
-		_ = f.Close()
+	allSSHKeys, err := commands.ParseSSHKeys(s.sshKeys)
+	if err != nil {
+		return err
 	}
+
 	s.LoginUser.SSHKeys = allSSHKeys
 	return nil
 }
