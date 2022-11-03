@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/UpCloudLtd/upcloud-cli/internal/core"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/core"
 	"github.com/spf13/cobra"
 )
 

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/UpCloudLtd/upcloud-cli/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 )
 
 func TestError(t *testing.T) {

@@ -1,7 +1,7 @@
 package completion
 
 import (
-	"github.com/UpCloudLtd/upcloud-cli/internal/service"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
 
 	"github.com/spf13/cobra"
 )

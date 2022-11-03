@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/UpCloudLtd/upcloud-cli/internal/clierrors"
-	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
-	"github.com/UpCloudLtd/upcloud-cli/internal/commands/all"
-	"github.com/UpCloudLtd/upcloud-cli/internal/config"
-	"github.com/UpCloudLtd/upcloud-cli/internal/terminal"
-	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/clierrors"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/all"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/terminal"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
 
 	valid "github.com/asaskevich/govalidator"
 	"github.com/gemalto/flume"

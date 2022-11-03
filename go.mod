@@ -1,4 +1,4 @@
-module github.com/UpCloudLtd/upcloud-cli
+module github.com/UpCloudLtd/upcloud-cli/v2
 
 go 1.18
 
@@ -23,7 +23,6 @@ require (
 require (
 	github.com/ansel1/merry v1.5.0 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
-	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.1 // indirect
@@ -40,7 +39,6 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
-	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/spf13/afero v1.1.2 // indirect
 	github.com/spf13/cast v1.3.0 // indirect
 	github.com/spf13/jwalterweatherman v1.0.0 // indirect

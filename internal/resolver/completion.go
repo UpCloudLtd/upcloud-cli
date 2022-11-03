@@ -1,7 +1,7 @@
 package resolver
 
 import (
-	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
+	internal "github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
 )
 
 // CompletionResolver implements resolver for servers, caching the results

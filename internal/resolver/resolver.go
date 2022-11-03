@@ -1,6 +1,6 @@
 package resolver
 
-import "github.com/UpCloudLtd/upcloud-cli/internal/service"
+import "github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
 
 // Resolver represents the most basic argument resolver, a function that accepts and argument and returns an uuid (or error)
 type Resolver func(arg string) (uuid string, err error)

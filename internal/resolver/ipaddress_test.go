@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	smock "github.com/UpCloudLtd/upcloud-cli/internal/mock"
-	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
+	smock "github.com/UpCloudLtd/upcloud-cli/v2/internal/mock"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 	"github.com/stretchr/testify/assert"

@@ -13,12 +13,12 @@ import (
 	"github.com/spf13/pflag"
 	"golang.org/x/crypto/ssh"
 
-	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
-	"github.com/UpCloudLtd/upcloud-cli/internal/commands/ipaddress"
-	"github.com/UpCloudLtd/upcloud-cli/internal/commands/storage"
-	"github.com/UpCloudLtd/upcloud-cli/internal/config"
-	"github.com/UpCloudLtd/upcloud-cli/internal/output"
-	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/ipaddress"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/storage"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
 )
 
 const defaultIPAddressFamily = upcloud.IPAddressFamilyIPv4

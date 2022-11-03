@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/UpCloudLtd/progress/messages"
-	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
 )
 
