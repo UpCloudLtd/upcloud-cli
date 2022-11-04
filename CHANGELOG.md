@@ -10,9 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Complete available types for `database plans`.
 - Suppress positional argument filename completion for commands without specific completions.
 - In `database list` output: if database has no title, database name is displayed in the title cell instead of leaving the cell empty, similarly than in the hub.
+- Version information is parsed from `BuildInfo` when `upctl` binary was built without specifying `-ldflags` to define value for `.../config.Version`.
 
 ### Fixed
 - Remove debug leftover print from IP address completions.
+- Added `/v2` postfix to module name in `go.mod`, this enables installing v2 versions of CLI with `go install`.
 
 ## [2.2.0] - 2022-10-17
 ### Added
