@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	internal "github.com/UpCloudLtd/upcloud-cli/internal/service"
+	internal "github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/client"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/service"

@@ -1,7 +1,7 @@
 package databaseconnection
 
 import (
-	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
 )
 
 // BaseConnectionCommand creates the base "connection" command

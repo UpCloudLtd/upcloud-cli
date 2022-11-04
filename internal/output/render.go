@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/UpCloudLtd/upcloud-cli/internal/clierrors"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/clierrors"
 )
 
 const (

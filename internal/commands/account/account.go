@@ -1,7 +1,7 @@
 package account
 
 import (
-	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
 )
 
 // BaseAccountCommand creates the base 'account' command

@@ -6,7 +6,7 @@ import (
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/UpCloudLtd/upcloud-cli/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 )
 
 type outputTestCase struct {

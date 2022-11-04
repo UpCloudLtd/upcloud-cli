@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/UpCloudLtd/upcloud-cli/internal/core"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/core"
 )
 
 func main() {

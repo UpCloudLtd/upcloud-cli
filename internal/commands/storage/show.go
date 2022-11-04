@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
-	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
-	"github.com/UpCloudLtd/upcloud-cli/internal/format"
-	"github.com/UpCloudLtd/upcloud-cli/internal/output"
-	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
-	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/format"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
 	"github.com/jedib0t/go-pretty/v6/text"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"

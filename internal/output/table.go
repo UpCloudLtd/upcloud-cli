@@ -9,8 +9,8 @@ import (
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
 
-	"github.com/UpCloudLtd/upcloud-cli/internal/ui"
-	"github.com/UpCloudLtd/upcloud-cli/internal/validation"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/validation"
 )
 
 // TableRow represents a single row of data in a table

@@ -3,10 +3,10 @@ package ipaddress
 import (
 	"fmt"
 
-	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
-	"github.com/UpCloudLtd/upcloud-cli/internal/completion"
-	"github.com/UpCloudLtd/upcloud-cli/internal/output"
-	"github.com/UpCloudLtd/upcloud-cli/internal/resolver"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
 	"github.com/spf13/pflag"
 )
