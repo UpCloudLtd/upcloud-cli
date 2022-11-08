@@ -28,6 +28,7 @@ completion   Generates shell completion
 database     Manage databases
 help         Help about any command
 ip-address   Manage ip address
+kubernetes   Manage Kubernetes clusters
 loadbalancer Manage load balancers
 network      Manage network
 router       Manage router
