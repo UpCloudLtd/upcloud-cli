@@ -837,7 +837,11 @@ func (m *Service) DeleteLoadBalancerCertificateBundle(r *request.DeleteLoadBalan
 }
 
 func (m *Service) CreateKubernetesCluster(r *request.CreateKubernetesClusterRequest) (*upcloud.KubernetesCluster, error) {
-	return nil, nil
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.KubernetesCluster), args.Error(1)
 }
 
 func (m *Service) DeleteKubernetesCluster(r *request.DeleteKubernetesClusterRequest) error {
