@@ -27,7 +27,7 @@ func Boolean(val interface{}) (text.Colors, string, error) {
 	return nil, "", fmt.Errorf("cannot parse '%v' (%T) as boolean", val, val)
 }
 
-// PossiblyUnkonwnString outputs "Unknown" in light black if input value is an empty string, otherwise passesthrough the input value.
+// PossiblyUnknownString outputs "Unknown" in light black if input value is an empty string, otherwise passesthrough the input value.
 func PossiblyUnknownString(val interface{}) (text.Colors, string, error) {
 	str, ok := val.(string)
 	if !ok {
