@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Kubernetes implements argument completion for load balancers, by uuid or name.
+// Kubernetes implements argument completion for Kubernetes clusters, by uuid or name.
 type Kubernetes struct{}
 
 // make sure Kubernetes implements the interface
