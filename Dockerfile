@@ -9,10 +9,7 @@ RUN make build-dockerised
 
 FROM alpine:3.16
 
-LABEL org.label-schema.vcs-url="https://github.com/UpCloudLtd/upcloud-cli"
-
 RUN apk add --update --no-cache ca-certificates
-
 COPY --from=build /go/upctl/bin/*dockerised-linux-amd64 /bin/upctl
 
 ENTRYPOINT ["/bin/upctl"]
