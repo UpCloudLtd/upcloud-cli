@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"path/filepath"
+	"runtime/debug"
 	"strings"
 	"time"
 
@@ -191,8 +192,42 @@ func (s *Config) CreateService() (internal.AllServices, error) {
 	// assumes 0 timeout means 'not set' rather than 'no timeout'.
 	// see https://github.com/UpCloudLtd/upcloud-go-api/blob/2964ed7e597209b50a21f34259a20249e9aa220c/upcloud/client/client.go#L48
 	client.SetTimeout(s.ClientTimeout())
-	client.UserAgent = fmt.Sprintf("upctl/%s", Version)
+	client.UserAgent = fmt.Sprintf("upctl/%s", GetVersion())
 
 	svc := service.New(client)
 	return svc, nil
+}
+
+func GetVersion() string {
+	// Version was overridden during the build
+	if Version != "dev" {
+		return Version
+	}
+
+	// Try to read version from build info
+	if buildInfo, ok := debug.ReadBuildInfo(); ok {
+		version := buildInfo.Main.Version
+		if version != "(devel)" && version != "" {
+			return version
+		}
+
+		settingsMap := make(map[string]string)
+		for _, setting := range buildInfo.Settings {
+			settingsMap[setting.Key] = setting.Value
+		}
+
+		version = "dev"
+		if rev, ok := settingsMap["vcs.revision"]; ok {
+			version = fmt.Sprintf("%s-%s", version, rev[:8])
+		}
+
+		if dirty, ok := settingsMap["vcs.modified"]; ok && dirty == "true" {
+			return version + "-dirty"
+		}
+
+		return version
+	}
+
+	// Fallback to the default value
+	return Version
 }

@@ -19,7 +19,7 @@ func (s *VersionCommand) ExecuteWithoutArguments(_ commands.Executor) (output.Ou
 		Sections: []output.DetailSection{
 			{
 				Rows: []output.DetailRow{
-					{Title: "Version:", Key: "version", Value: config.Version},
+					{Title: "Version:", Key: "version", Value: config.GetVersion()},
 					{Title: "Build date:", Key: "build_date", Value: config.BuildDate},
 					{Title: "Built with:", Key: "built_with", Value: runtime.Version()},
 					{Title: "System:", Key: "operating_system", Value: runtime.GOOS},
