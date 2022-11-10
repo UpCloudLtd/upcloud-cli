@@ -2109,6 +2109,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>Suppress positional argument filename completion for commands without specific completions.</li>
 <li>In <code>database list</code> output: if database has no title, database name is displayed in the title cell instead of leaving the cell empty, similarly than in the hub.</li>
 <li>Version information is parsed from <code>BuildInfo</code> when <code>upctl</code> binary was built without specifying <code>-ldflags</code> to define value for <code>.../config.Version</code>.</li>
+<li>Use alpine as base image for <code>upcloud/upctl</code> container image. This adds sh and other OS tools to the image and thus makes it more suitable for usage in CI systems.</li>
 </ul>
 <h3 id="fixed">Fixed</h3>
 <ul>
