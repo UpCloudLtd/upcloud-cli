@@ -1,11 +1,6 @@
-FROM golang:1.18-buster as builder
-RUN apt-get -y install ca-certificates
-WORKDIR /go/upctl/
-COPY . .
+FROM alpine:3.16
 
-FROM scratch
-LABEL org.label-schema.vcs-url="https://github.com/UpCloudLtd/upcloud-cli"
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=builder /go/upctl/upctl /upctl
+RUN apk add --update --no-cache ca-certificates
+COPY upctl /bin/upctl
 
-ENTRYPOINT ["/upctl"]
+ENTRYPOINT ["/bin/upctl"]

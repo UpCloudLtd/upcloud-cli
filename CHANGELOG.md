@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Suppress positional argument filename completion for commands without specific completions.
 - In `database list` output: if database has no title, database name is displayed in the title cell instead of leaving the cell empty, similarly than in the hub.
 - Version information is parsed from `BuildInfo` when `upctl` binary was built without specifying `-ldflags` to define value for `.../config.Version`.
+- Use alpine as base image for `upcloud/upctl` container image. This adds sh and other OS tools to the image and thus makes it more suitable for usage in CI systems.
 
 ### Fixed
 - Remove debug leftover print from IP address completions.

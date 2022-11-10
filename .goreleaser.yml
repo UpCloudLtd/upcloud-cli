@@ -7,7 +7,7 @@ before:
 builds:
   - env:
       - CGO_ENABLED=0
-      - GO_MODULE_NAME=github.com/UpCloudLtd/upcloud-cli
+      - GO_MODULE_NAME=github.com/UpCloudLtd/upcloud-cli/v2
     goos:
       - linux
       - windows
@@ -214,3 +214,4 @@ dockers:
     - "--label=org.opencontainers.image.title=upctl"
     - "--label=org.opencontainers.image.revision={{.FullCommit}}"
     - "--label=org.opencontainers.image.version={{.Version}}"
+    - "--label=org.opencontainers.image.source=https://github.com/UpCloudLtd/upcloud-cli.git"
