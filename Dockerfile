@@ -1,6 +1,6 @@
 FROM golang:1.18-alpine3.16 as build
 
-RUN apk add --update --no-cache ca-certificates make
+RUN apk add --update --no-cache ca-certificates git make
 
 WORKDIR /go/upctl/
 COPY . .
