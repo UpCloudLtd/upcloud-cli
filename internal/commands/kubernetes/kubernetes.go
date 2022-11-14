@@ -17,5 +17,5 @@ type kubernetesCommand struct {
 
 // InitCommand implements Command.InitCommand
 func (k *kubernetesCommand) InitCommand() {
-	k.Cobra().Aliases = []string{"uks"}
+	k.Cobra().Aliases = []string{"k8s", "uks"}
 }
