@@ -14,56 +14,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func exampleKubernetesCluster() *upcloud.KubernetesCluster {
-	return &upcloud.KubernetesCluster{
-		Name:        "my-cluster",
-		Network:     "03e5ca07-f36c-4957-a676-e001e40441eb",
-		NetworkCIDR: "172.16.1.0/24",
-		NodeGroups: []upcloud.KubernetesNodeGroup{
-			{
-				Count: 8,
-				Labels: []upcloud.Label{
-					{
-						Key:   "owner",
-						Value: "devteam",
-					},
-					{
-						Key:   "env",
-						Value: "dev",
-					},
-				},
-				Name: "my-node-group",
-				Plan: "K8S-2xCPU-4GB",
-				SSHKeys: []string{
-					"ssh-ed25519 AAAAo admin@user.com",
-				},
-				Storage: "01000000-0000-4000-8000-000160010100",
-				KubeletArgs: []upcloud.KubernetesKubeletArg{
-					{
-						Key:   "log-flush-frequency",
-						Value: "5s",
-					},
-				},
-				Taints: []upcloud.KubernetesTaint{
-					{
-						Effect: "NoSchedule",
-						Key:    "env",
-						Value:  "dev",
-					},
-					{
-						Effect: "NoSchedule",
-						Key:    "env",
-						Value:  "dev2",
-					},
-				},
-			},
-		},
-		Zone:  "de-fra1",
-		State: upcloud.KubernetesClusterStatePending,
-		UUID:  "11111111-1111-1111-1111-111111111111",
-	}
-}
-
 func TestCreateKubernetes(t *testing.T) {
 	for _, test := range []struct {
 		name    string
@@ -85,7 +35,7 @@ func TestCreateKubernetes(t *testing.T) {
 				NetworkCIDR: "172.16.1.0/24",
 				NodeGroups: []upcloud.KubernetesNodeGroup{
 					{
-						Count: 8,
+						Count: 2,
 						Labels: []upcloud.Label{
 							{
 								Key:   "owner",
@@ -132,7 +82,7 @@ func TestCreateKubernetes(t *testing.T) {
 			testCmd := CreateCommand()
 			mService := new(smock.Service)
 
-			mService.On("CreateKubernetesCluster", mock.Anything).Return(exampleKubernetesCluster(), nil)
+			mService.On("CreateKubernetesCluster", &test.r).Return(&upcloud.KubernetesCluster{}, nil)
 			mService.On("GetNetworkDetails", mock.Anything).Return(&upcloud.Network{IPNetworks: []upcloud.IPNetwork{{Address: "172.16.1.0/24"}}}, nil)
 
 			c := commands.BuildCommand(testCmd, nil, conf)
