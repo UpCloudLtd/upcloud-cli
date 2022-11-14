@@ -76,7 +76,6 @@ func TestCreateKubernetes(t *testing.T) {
 			args: []string{
 				"--name", "my-cluster",
 				"--network", "03e5ca07-f36c-4957-a676-e001e40441eb",
-				"--network-cidr", "172.16.1.0/24",
 				"--node-group", "count=2,kubelet-arg=log-flush-frequency=5s,label=owner=devteam,label=env=dev,name=my-node-group,plan=K8S-2xCPU-4GB,ssh-key=ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMWq/xsiYPgA/HLsaWHcjAGnwU+pJy9BUmvIlMBpkdn2 admin@user.com,storage=01000000-0000-4000-8000-000160010100,taint=env=dev:NoSchedule,taint=env=dev2:NoSchedule",
 				"--zone", "de-fra1",
 			},
@@ -134,6 +133,7 @@ func TestCreateKubernetes(t *testing.T) {
 			mService := new(smock.Service)
 
 			mService.On("CreateKubernetesCluster", mock.Anything).Return(exampleKubernetesCluster(), nil)
+			mService.On("GetNetworkDetails", mock.Anything).Return(&upcloud.Network{IPNetworks: []upcloud.IPNetwork{{Address: "172.16.1.0/24"}}}, nil)
 
 			c := commands.BuildCommand(testCmd, nil, conf)
 

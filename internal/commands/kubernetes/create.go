@@ -8,6 +8,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
@@ -24,13 +25,11 @@ func CreateCommand() commands.Command {
 			`upctl kubernetes create \
 				--name my-cluster \
 				--network 03e5ca07-f36c-4957-a676-e001e40441eb \
-				--network-cidr "172.16.1.0/24" \
 				--node-group count=2,name=my-minimal-node-group,plan=K8S-2xCPU-4GB, \
 				--zone de-fra1`,
 			`upctl kubernetes create \
 				--name my-cluster \
 				--network 03e5ca07-f36c-4957-a676-e001e40441eb \
-				--network-cidr "172.16.1.0/24" \
 				--node-group count=4,kubelet-arg="log-flush-frequency=5s",label="owner=devteam",label="env=dev",name=my-node-group,plan=K8S-4xCPU-8GB,ssh-key="ssh-ed25519 AAAAo admin@user.com",ssh-key="/path/to/your/public/ssh/key.pub",storage=01000000-0000-4000-8000-000160010100,taint="env=dev:NoSchedule",taint="env=dev2:NoSchedule" \
 				--zone de-fra1`,
 		),
@@ -53,7 +52,7 @@ type createNodeGroupParams struct {
 	taints      []string
 }
 
-func (p *createParams) processParams() error {
+func (p *createParams) processParams(svc service.AllServices) error {
 	ngs := make([]upcloud.KubernetesNodeGroup, 0)
 
 	for _, v := range p.nodeGroups {
@@ -64,6 +63,14 @@ func (p *createParams) processParams() error {
 		ngs = append(ngs, ng)
 	}
 	p.NodeGroups = ngs
+
+	networkDetails, err := svc.GetNetworkDetails(&request.GetNetworkDetailsRequest{UUID: p.Network})
+
+	if err != nil || networkDetails == nil || len(networkDetails.IPNetworks) == 0 {
+		return fmt.Errorf("invalid network: %w", err)
+	}
+
+	p.NetworkCIDR = networkDetails.IPNetworks[0].Address
 
 	return nil
 }
@@ -193,7 +200,6 @@ func (c *createCommand) InitCommand() {
 
 	fs.StringVar(&c.params.Name, "name", "", "Kubernetes cluster name.")
 	fs.StringVar(&c.params.Network, "network", "", "Network to use. The value should be UUID of a private network.")
-	fs.StringVar(&c.params.NetworkCIDR, "network-cidr", "", "CIDR of the network being used.")
 	fs.StringArrayVar(
 		&c.params.nodeGroups,
 		"node-group",
@@ -217,7 +223,6 @@ func (c *createCommand) InitCommand() {
 
 	_ = c.Cobra().MarkFlagRequired("name")
 	_ = c.Cobra().MarkFlagRequired("network")
-	_ = c.Cobra().MarkFlagRequired("network-cidr")
 	_ = c.Cobra().MarkFlagRequired("node-group")
 	_ = c.Cobra().MarkFlagRequired("zone")
 }
@@ -227,11 +232,9 @@ func (c *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	svc := exec.All()
 	msg := fmt.Sprintf("Creating cluster %s", c.params.Name)
 	exec.PushProgressStarted(msg)
-	if err := c.params.processParams(); err != nil {
+	if err := c.params.processParams(svc); err != nil {
 		return nil, err
 	}
-
-	exec.Debug("sending r", "params", c.params)
 
 	r := c.params.CreateKubernetesClusterRequest
 
