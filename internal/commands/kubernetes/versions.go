@@ -10,7 +10,7 @@ import (
 // VersionsCommand creates the "kubernetes versions" command
 func VersionsCommand() commands.Command {
 	return &versionsCommand{
-		BaseCommand: commands.New("versions", "List available versions for Kubernetes node groups", "upctl kubernetes versions"),
+		BaseCommand: commands.New("versions", "List available versions for Kubernetes clusters", "upctl kubernetes versions"),
 	}
 }
 
