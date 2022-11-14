@@ -19,7 +19,7 @@ func TestShowCommand(t *testing.T) {
 	cluster1 := upcloud.KubernetesCluster{
 		Name:        "upcloud-go-sdk-unit-test",
 		Network:     "03a98be3-7daa-443f-bb25-4bc6854b396c",
-		NetworkCIDR: "172.16.0.0/24",
+		NetworkCIDR: "172.16.1.0/24",
 		NodeGroups: []upcloud.KubernetesNodeGroup{
 			{
 				Count: 4,
@@ -101,38 +101,44 @@ func TestShowCommand(t *testing.T) {
     UUID:              0ddab8f4-97c0-4222-91ba-85a4fff7499b 
     Name:              upcloud-go-sdk-unit-test             
     Network UUID:      03a98be3-7daa-443f-bb25-4bc6854b396c 
-    Network name       Test network                         
-    Network CIDR:      172.16.0.0/24                        
+    Network name:      Test network                         
+    Network CIDR:      172.16.1.0/24                        
     Zone               de-fra1                              
     Operational state: running                              
 
-  Node groups:
+  
+  Node group 1 (upcloud-go-sdk-unit-test):
+    Name:         upcloud-go-sdk-unit-test              
+    Count:        4                                     
+    Plan:         K8S-2xCPU-4GB                         
+    Storage UUID: storage-uuid                          
+    Storage name: Test storage                          
+    Kubelet args: somekubeletkey=somekubeletvalue       
+    Labels:       managedBy=upcloud-go-sdk-unit-test    
+                  another=label-thing                   
+    Taints:       sometaintkey=sometaintvalue:NoExecute 
+                  sometaintkey=sometaintvalue:NoExecute 
+                  sometaintkey=sometaintvalue:NoExecute 
 
-     Name                         Count   Plan            Storage          Kubelet args               Labels                              Taints                 
-    ──────────────────────────── ─────── ─────────────── ──────────────── ────────────────────────── ─────────────────────────────────── ────────────────────────
-     upcloud-go-sdk-unit-test         4   K8S-2xCPU-4GB   storage-uuid     Key: somekubeletkey        Key: managedBy                      Key: sometaintkey      
-                                                                           Value: somekubeletvalue    Value: upcloud-go-sdk-unit-test     Value: sometaintvalue  
-                                                                                                                                          Effect: NoExecute      
-                                                                                                      Key: another                                               
-                                                                                                      Value: label-thing                  Key: sometaintkey      
-                                                                                                                                          Value: sometaintvalue  
-                                                                                                                                          Effect: NoExecute      
-                                                                                                                                                                 
-                                                                                                                                          Key: sometaintkey      
-                                                                                                                                          Value: sometaintvalue  
-                                                                                                                                          Effect: NoExecute      
-     upcloud-go-sdk-unit-test-2       8   K8S-4xCPU-8GB   storage-uuid-2   Key: somekubeletkey2       Key: managedBy                      Key: sometaintkey2     
-                                                                           Value: somekubeletvalue2   Value: upcloud-go-sdk-unit-test-2   Value: sometaintvalue2 
-                                                                                                                                          Effect: NoSchedule     
-                                                                                                      Key: another2                                              
-                                                                                                      Value: label-thing-2                                       
-    
+  
+  Node group 2 (upcloud-go-sdk-unit-test-2):
+    Name:         upcloud-go-sdk-unit-test-2               
+    Count:        8                                        
+    Plan:         K8S-4xCPU-8GB                            
+    Storage UUID: storage-uuid-2                           
+    Storage name: Test storage                             
+    Kubelet args: somekubeletkey2=somekubeletvalue2        
+    Labels:       managedBy=upcloud-go-sdk-unit-test-2     
+                  another2=label-thing-2                   
+    Taints:       sometaintkey2=sometaintvalue2:NoSchedule 
+
 `
 
 	mService := smock.Service{}
 	mService.On("GetKubernetesClusters", mock.Anything).Return([]upcloud.KubernetesCluster{cluster1}, nil)
 	mService.On("GetKubernetesCluster", mock.Anything).Return(&cluster1, nil)
 	mService.On("GetNetworkDetails", mock.Anything).Return(&upcloud.Network{Name: "Test network"}, nil)
+	mService.On("GetStorageDetails", mock.Anything).Return(&upcloud.StorageDetails{Storage: upcloud.Storage{Title: "Test storage"}}, nil)
 
 	conf := config.New()
 	command := commands.BuildCommand(ShowCommand(), nil, conf)

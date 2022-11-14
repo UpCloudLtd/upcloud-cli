@@ -47,28 +47,60 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 		networkName = network.Name
 	}
 
-	nodeGroupRows := []output.TableRow{}
-	for _, nodeGroup := range cluster.NodeGroups {
-		kubeletArgs := make([]string, 0)
+	nodeGroups := output.Combined{}
+
+	for i, nodeGroup := range cluster.NodeGroups {
+		kubeletArgs := strings.Builder{}
 		for _, v := range nodeGroup.KubeletArgs {
-			kubeletArgs = append(kubeletArgs, fmt.Sprintf("Key: %s\nValue: %s", v.Key, v.Value))
+			if kubeletArgs.Len() > 0 {
+				kubeletArgs.WriteString("\n")
+			}
+			_, _ = kubeletArgs.WriteString(fmt.Sprintf("%s=%s", v.Key, v.Value))
 		}
-		labels := make([]string, 0)
+		labels := strings.Builder{}
 		for _, v := range nodeGroup.Labels {
-			labels = append(labels, fmt.Sprintf("Key: %s\nValue: %s", v.Key, v.Value))
+			if labels.Len() > 0 {
+				labels.WriteString("\n")
+			}
+			_, _ = labels.WriteString(fmt.Sprintf("%s=%s", v.Key, v.Value))
 		}
-		taints := make([]string, 0)
+		taints := strings.Builder{}
 		for _, v := range nodeGroup.Taints {
-			taints = append(taints, fmt.Sprintf("Key: %s\nValue: %s\nEffect: %s", v.Key, v.Value, v.Effect))
+			if taints.Len() > 0 {
+				taints.WriteString("\n")
+			}
+			_, _ = taints.WriteString(fmt.Sprintf("%s=%s:%s", v.Key, v.Value, v.Effect))
 		}
-		nodeGroupRows = append(nodeGroupRows, output.TableRow{
-			nodeGroup.Name,
-			nodeGroup.Count,
-			nodeGroup.Plan,
-			nodeGroup.Storage,
-			strings.Join(kubeletArgs, "\n\n"),
-			strings.Join(labels, "\n\n"),
-			strings.Join(taints, "\n\n"),
+
+		var storageName string
+		if storage, err := svc.GetStorageDetails(&request.GetStorageDetailsRequest{UUID: nodeGroup.Storage}); err != nil {
+			storageName = ""
+		} else {
+			storageName = storage.Title
+		}
+
+		nodeGroups = append(nodeGroups, output.CombinedSection{
+			Contents: output.Combined{
+				output.CombinedSection{
+					Contents: output.Details{
+						Sections: []output.DetailSection{
+							{
+								Title: fmt.Sprintf("Node group %d (%s):", i+1, nodeGroup.Name),
+								Rows: []output.DetailRow{
+									{Title: "Name:", Value: nodeGroup.Name},
+									{Title: "Count:", Value: nodeGroup.Count},
+									{Title: "Plan:", Value: nodeGroup.Plan},
+									{Title: "Storage UUID:", Value: nodeGroup.Storage, Colour: ui.DefaultUUUIDColours},
+									{Title: "Storage name:", Value: storageName, Format: format.PossiblyUnknownString},
+									{Title: "Kubelet args:", Value: kubeletArgs.String()},
+									{Title: "Labels:", Value: labels.String()},
+									{Title: "Taints:", Value: taints.String()},
+								},
+							},
+						},
+					},
+				},
+			},
 		})
 	}
 
@@ -85,7 +117,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 								{Title: "UUID:", Value: cluster.UUID, Colour: ui.DefaultUUUIDColours},
 								{Title: "Name:", Value: cluster.Name},
 								{Title: "Network UUID:", Value: cluster.Network, Colour: ui.DefaultUUUIDColours},
-								{Title: "Network name", Value: networkName, Format: format.PossiblyUnknownString},
+								{Title: "Network name:", Value: networkName, Format: format.PossiblyUnknownString},
 								{Title: "Network CIDR:", Value: cluster.NetworkCIDR, Colour: ui.DefaultAddressColours},
 								{Title: "Zone", Value: cluster.Zone},
 								{Title: "Operational state:", Value: cluster.State, Format: format.KubernetesState},
@@ -95,19 +127,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 				},
 			},
 			output.CombinedSection{
-				Title: "Node groups:",
-				Contents: output.Table{
-					Columns: []output.TableColumn{
-						{Key: "name", Header: "Name"},
-						{Key: "count", Header: "Count"},
-						{Key: "plan", Header: "Plan"},
-						{Key: "storage", Header: "Storage"},
-						{Key: "kubelet_args", Header: "Kubelet args"},
-						{Key: "labels", Header: "Labels"},
-						{Key: "taints", Header: "Taints"},
-					},
-					Rows: nodeGroupRows,
-				},
+				Contents: nodeGroups,
 			},
 		},
 	}, nil
