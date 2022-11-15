@@ -19,9 +19,9 @@ func ShowCommand() commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New(
 			"show",
-			"Show load balancer details",
+			"Show Kubernetes cluster details",
 			"upctl kubernetes show 55199a44-4751-4e27-9394-7c7661910be3",
-			"upctl kubernetes show my-load-balancer",
+			"upctl kubernetes show my-cluster",
 		),
 	}
 }
