@@ -1,21 +1,24 @@
 package commands
 
 import (
+	"bufio"
 	"encoding/csv"
 	"fmt"
+	"os"
 	"reflect"
 	"regexp"
 	"strings"
 
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/validation"
+
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
 	"github.com/jedib0t/go-pretty/v6/text"
-
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/validation"
+	"golang.org/x/crypto/ssh"
 )
 
-// Parse parses a complex, querystring-type argument from in and returns all the parts found
-// eg. `--foo bar=baz,flop=flip` returns `[]string{"bar","baz","flop","flip"}`
-func Parse(in string) ([]string, error) {
+// ParseN parses a complex, querystring-type argument from `in` and splits values to `n` amount of substrings
+// e.g. with `n` 2: `--foo bar=baz,flop=flip=1` returns `[]string{"bar","baz","flop","flip=1"}`
+func ParseN(in string, n int) ([]string, error) {
 	var result []string
 	reader := csv.NewReader(strings.NewReader(in))
 	args, err := reader.Read()
@@ -23,9 +26,16 @@ func Parse(in string) ([]string, error) {
 		return nil, err
 	}
 	for _, arg := range args {
-		result = append(result, strings.Split("--"+arg, "=")...)
+		result = append(result, strings.SplitN("--"+arg, "=", n)...)
 	}
 	return result, nil
+}
+
+// Parse calls `ParseN()` with `n` -1:
+// eg. `--foo bar=baz,flop=flip` returns `[]string{"bar","baz","flop","flip"}` and
+// `--foo bar=baz,flop=flip=1` returns `[]string{"bar","baz","flop","flip","1"}`
+func Parse(in string) ([]string, error) {
+	return ParseN(in, -1)
 }
 
 // ToArray turns an interface{} to a slice of interface{}s.
@@ -92,4 +102,36 @@ func WrapLongDescription(message string) string {
 	re := regexp.MustCompile(` +\n`)
 	wrapped := text.WrapSoft(message, 80)
 	return re.ReplaceAllString(wrapped, "\n")
+}
+
+// ParseSSHKeys parses strings that can be either actual public keys
+// or file names referring public key files.
+func ParseSSHKeys(sshKeys []string) ([]string, error) {
+	var allSSHKeys []string
+	for _, keyOrFile := range sshKeys {
+		if strings.HasPrefix(keyOrFile, "ssh-") {
+			if _, _, _, _, err := ssh.ParseAuthorizedKey([]byte(keyOrFile)); err != nil {
+				return nil, fmt.Errorf("invalid ssh key %q: %v", keyOrFile, err)
+			}
+			allSSHKeys = append(allSSHKeys, keyOrFile)
+			continue
+		}
+
+		f, err := os.Open(keyOrFile)
+		if err != nil {
+			return nil, err
+		}
+
+		rdr := bufio.NewScanner(f)
+		for rdr.Scan() {
+			if _, _, _, _, err := ssh.ParseAuthorizedKey(rdr.Bytes()); err != nil {
+				_ = f.Close()
+				return nil, fmt.Errorf("invalid ssh key %q in file %s: %v", rdr.Text(), keyOrFile, err)
+			}
+			allSSHKeys = append(allSSHKeys, rdr.Text())
+		}
+		_ = f.Close()
+	}
+
+	return allSSHKeys, nil
 }

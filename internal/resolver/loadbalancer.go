@@ -36,5 +36,5 @@ func (s CachingLoadBalancer) Get(svc internal.AllServices) (Resolver, error) {
 
 // PositionalArgumentHelp implements resolver.ResolutionProvider
 func (s CachingLoadBalancer) PositionalArgumentHelp() string {
-	return "<UUID/Name...>" //nolint:goconst
+	return "<UUID/Name...>"
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/database"
 	databaseconnection "github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/database/connection"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/ipaddress"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/kubernetes"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/loadbalancer"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/network"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/root"
@@ -122,6 +123,14 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	commands.BuildCommand(loadbalancer.ListCommand(), loadbalancerCommand.Cobra(), conf)
 	commands.BuildCommand(loadbalancer.ShowCommand(), loadbalancerCommand.Cobra(), conf)
 	commands.BuildCommand(loadbalancer.DeleteCommand(), loadbalancerCommand.Cobra(), conf)
+
+	// Kubernetes
+	kubernetesCommand := commands.BuildCommand(kubernetes.BaseKubernetesCommand(), rootCmd, conf)
+	commands.BuildCommand(kubernetes.CreateCommand(), kubernetesCommand.Cobra(), conf)
+	commands.BuildCommand(kubernetes.DeleteCommand(), kubernetesCommand.Cobra(), conf)
+	commands.BuildCommand(kubernetes.ListCommand(), kubernetesCommand.Cobra(), conf)
+	commands.BuildCommand(kubernetes.ShowCommand(), kubernetesCommand.Cobra(), conf)
+	commands.BuildCommand(kubernetes.VersionsCommand(), kubernetesCommand.Cobra(), conf)
 
 	// Misc
 	commands.BuildCommand(
