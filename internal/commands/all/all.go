@@ -127,6 +127,7 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	// Kubernetes
 	kubernetesCommand := commands.BuildCommand(kubernetes.BaseKubernetesCommand(), rootCmd, conf)
 	commands.BuildCommand(kubernetes.CreateCommand(), kubernetesCommand.Cobra(), conf)
+	commands.BuildCommand(kubernetes.ConfigCommand(), kubernetesCommand.Cobra(), conf)
 	commands.BuildCommand(kubernetes.DeleteCommand(), kubernetesCommand.Cobra(), conf)
 	commands.BuildCommand(kubernetes.ListCommand(), kubernetesCommand.Cobra(), conf)
 	commands.BuildCommand(kubernetes.ShowCommand(), kubernetesCommand.Cobra(), conf)
