@@ -17,6 +17,7 @@ type configCommand struct {
 	*commands.BaseCommand
 	resolver.CachingKubernetes
 	completion.Kubernetes
+	write string
 }
 
 // ConfigCommand creates the "connection config" command
@@ -26,7 +27,8 @@ func ConfigCommand() commands.Command {
 			"config",
 			"Output Kubernetes cluster kubeconfig",
 			`upctl kubernetes config 0fa980c4-0e4f-460b-9869-11b7bd62b831 --output human`,
-			`upctl kubernetes config 0fa980c4-0e4f-460b-9869-11b7bd62b831 --output yaml`,
+			`upctl kubernetes config 0fa980c4-0e4f-460b-9869-11b7bd62b831 --output yaml --write $KUBECONFIG`,
+			`upctl kubernetes config 0fa980c4-0e4f-460b-9869-11b7bd62b831 --output yaml --write ./my_kubeconfig.yaml`,
 		),
 	}
 }
@@ -34,6 +36,7 @@ func ConfigCommand() commands.Command {
 // InitCommand implements Command.InitCommand
 func (s *configCommand) InitCommand() {
 	flagSet := &pflag.FlagSet{}
+	flagSet.StringVar(&s.write, "write", "", "Target file path where to write config output. Default value \"\" (empty string) implies no writing will be done.")
 	s.AddFlags(flagSet)
 }
 
@@ -73,6 +76,12 @@ func (s *configCommand) Execute(exec commands.Executor, uuid string) (output.Out
 	}
 
 	exec.PushProgressSuccess(msg)
+
+	if s.Cobra().Flag("write").Changed {
+		msg := fmt.Sprintf("Writing kubeconfig for Kubernetes cluster %s to destination %s", uuid, s.write)
+		exec.PushProgressStarted(msg)
+		exec.PushProgressSuccess(msg)
+	}
 
 	return output.MarshaledWithHumanOutput{
 		Value: kubeconfig,
