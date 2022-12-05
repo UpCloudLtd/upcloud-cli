@@ -1,12 +1,12 @@
 repos:
-  - repo: git://github.com/dnephin/pre-commit-golang
+  - repo: https://github.com/dnephin/pre-commit-golang
     rev: master
     hooks:
       - id: go-fmt
       # - id: go-vet
       - id: go-lint
       - id: golangci-lint # implies go-vet, https://golangci-lint.run/usage/linters
-      # - id: go-critic # moved to be ran by golangci-lint, in order to configure
+      # - id: go-critic # run by golangci-lint, in order to configure
       - id: go-unit-tests
       - id: go-build
       - id: go-mod-tidy
