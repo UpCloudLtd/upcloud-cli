@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Add `kubernetes create`, `kubernetes delete`, `kubernetes list`, `kubernetes show`, `kubernetes versions` commands
+- Add `kubernetes create`, `kubernetes config`, `kubernetes delete`, `kubernetes list`, `kubernetes show`, `kubernetes versions` commands (EXPERIMENTAL)
 
 ## [2.3.0] - 2022-11-11
 ### Added
