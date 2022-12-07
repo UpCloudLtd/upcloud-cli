@@ -1,6 +1,7 @@
 package kubernetes
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
 	"github.com/spf13/pflag"
+	"gopkg.in/yaml.v3"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/tools/clientcmd/api"
 )
@@ -42,7 +44,7 @@ func (c *configCommand) InitCommand() {
 		&c.pathOptions.LoadingRules.ExplicitPath,
 		"write",
 		"",
-		"Absolute path for writing output. If the file exists, results will be merged. Default value \"\" implies no writing will be done.")
+		"Absolute path for writing output. If the file exists, the config will be merged.")
 	c.AddFlags(flagSet)
 }
 
@@ -60,7 +62,7 @@ func (c *configCommand) Execute(exec commands.Executor, uuid string) (output.Out
 		return commands.HandleError(exec, msg, err)
 	}
 
-	uksConfig, err := clientcmd.Load([]byte(resp))
+	config, err := clientcmd.Load([]byte(resp))
 	if err != nil {
 		return commands.HandleError(exec, msg, err)
 	}
@@ -68,26 +70,15 @@ func (c *configCommand) Execute(exec commands.Executor, uuid string) (output.Out
 	exec.PushProgressSuccess(msg)
 
 	if c.Cobra().Flag("write").Changed {
-		msg := fmt.Sprintf("Writing kubeconfig for Kubernetes cluster %s to destination %s", uuid, c.pathOptions.GetDefaultFilename())
-		exec.PushProgressStarted(msg)
-
-		startingConfig, err := c.pathOptions.GetStartingConfig()
-		if err != nil {
-			return commands.HandleError(exec, msg, err)
-		}
-
-		err = clientcmd.ModifyConfig(c.pathOptions, mergeConfig(startingConfig, uksConfig), false)
-		if err != nil {
-			return commands.HandleError(exec, msg, err)
-		}
-
-		exec.PushProgressSuccess(msg)
-
-		return output.None{}, nil
+		return c.write(exec, uuid, config)
 	}
 
+	return c.output(exec, config, resp, msg)
+}
+
+func (c *configCommand) output(exec commands.Executor, config *api.Config, resp string, msg string) (output.Output, error) {
 	clusters := make([]output.TableRow, 0)
-	for _, v := range uksConfig.Clusters {
+	for _, v := range config.Clusters {
 		clusters = append(clusters, output.TableRow{
 			v.Server,
 			v.InsecureSkipTLSVerify,
@@ -95,15 +86,21 @@ func (c *configCommand) Execute(exec commands.Executor, uuid string) (output.Out
 	}
 
 	contexts := make([]output.TableRow, 0)
-	for _, v := range uksConfig.Contexts {
+	for _, v := range config.Contexts {
 		contexts = append(contexts, output.TableRow{
 			v.Cluster,
 			v.AuthInfo,
 		})
 	}
 
+	var value interface{}
+	err := yaml.Unmarshal([]byte(resp), &value)
+	if err != nil {
+		return commands.HandleError(exec, msg, err)
+	}
+
 	return output.MarshaledWithHumanOutput{
-		Value: resp,
+		Value: value,
 		Output: output.Combined{
 			output.CombinedSection{
 				Contents: output.Details{
@@ -111,7 +108,7 @@ func (c *configCommand) Execute(exec commands.Executor, uuid string) (output.Out
 						{
 							Title: "Overview:",
 							Rows: []output.DetailRow{
-								{Title: "Current context:", Value: uksConfig.CurrentContext},
+								{Title: "Current context:", Value: config.CurrentContext},
 							},
 						},
 					},
@@ -141,6 +138,29 @@ func (c *configCommand) Execute(exec commands.Executor, uuid string) (output.Out
 			},
 		},
 	}, nil
+}
+
+func (c *configCommand) write(exec commands.Executor, uuid string, config *api.Config) (output.Output, error) {
+	msg := fmt.Sprintf("Writing kubeconfig for Kubernetes cluster %s to destination %s", uuid, c.pathOptions.GetDefaultFilename())
+	exec.PushProgressStarted(msg)
+
+	if c.Cobra().Flag("write").Value.String() == c.Cobra().Flag("write").DefValue {
+		return commands.HandleError(exec, msg, errors.New("invalid write path"))
+	}
+
+	startingConfig, err := c.pathOptions.GetStartingConfig()
+	if err != nil {
+		return commands.HandleError(exec, msg, err)
+	}
+
+	err = clientcmd.ModifyConfig(c.pathOptions, mergeConfig(startingConfig, config), false)
+	if err != nil {
+		return commands.HandleError(exec, msg, err)
+	}
+
+	exec.PushProgressSuccess(msg)
+
+	return output.None{}, nil
 }
 
 func mergeConfig(startingConfig, newConfig *api.Config) api.Config {

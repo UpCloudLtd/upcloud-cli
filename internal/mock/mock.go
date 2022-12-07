@@ -866,7 +866,11 @@ func (m *Service) GetKubernetesClusters(r *request.GetKubernetesClustersRequest)
 }
 
 func (m *Service) GetKubernetesKubeconfig(r *request.GetKubernetesKubeconfigRequest) (string, error) {
-	return "", nil
+	args := m.Called(r)
+	if args[0] == nil {
+		return "", args.Error(1)
+	}
+	return args[0].(string), args.Error(1)
 }
 
 func (m *Service) GetKubernetesPlans(r *request.GetKubernetesPlansRequest) ([]upcloud.KubernetesPlan, error) {
