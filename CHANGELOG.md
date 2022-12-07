@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Add `kubernetes create`, `kubernetes config`, `kubernetes delete`, `kubernetes list`, `kubernetes show`, `kubernetes versions` commands (EXPERIMENTAL)
+- Add `loadbalancer plans` command for listing available LB plans
 
 ## [2.3.0] - 2022-11-11
 ### Added

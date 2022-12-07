@@ -123,6 +123,7 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	commands.BuildCommand(loadbalancer.ListCommand(), loadbalancerCommand.Cobra(), conf)
 	commands.BuildCommand(loadbalancer.ShowCommand(), loadbalancerCommand.Cobra(), conf)
 	commands.BuildCommand(loadbalancer.DeleteCommand(), loadbalancerCommand.Cobra(), conf)
+	commands.BuildCommand(loadbalancer.PlansCommand(), loadbalancerCommand.Cobra(), conf)
 
 	// Kubernetes
 	kubernetesCommand := commands.BuildCommand(kubernetes.BaseKubernetesCommand(), rootCmd, conf)
