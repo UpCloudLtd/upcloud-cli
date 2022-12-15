@@ -10,14 +10,14 @@
       
       
       
-        <link rel="canonical" href="https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_kubernetes/versions/">
+        <link rel="canonical" href="https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_kubernetes/config/">
       
       <link rel="icon" href="../../../favicon.png">
       <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
     
     
       
-        <title>upctl kubernetes versions - UpCloud command-line client</title>
+        <title>upctl kubernetes config - UpCloud command-line client</title>
       
     
     
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#upctl-kubernetes-versions" class="md-skip">
+        <a href="#upctl-kubernetes-config" class="md-skip">
           Skip to content
         </a>
       
@@ -117,7 +117,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              upctl kubernetes versions
+              upctl kubernetes config
             
           </span>
         </div>
@@ -748,11 +748,69 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../config/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          kubernetes config
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         kubernetes config
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#examples" class="md-nav__link"> Examples </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#options" class="md-nav__link"> Options </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#global-options" class="md-nav__link"> Global options </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#related-commands" class="md-nav__link"> Related commands </a>
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -818,69 +876,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          kubernetes versions
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../versions/" class="md-nav__link">
         kubernetes versions
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <!-- Limit TOC depth to 1 -->
-
-<li class="md-nav__item">
-  <a href="#examples" class="md-nav__link"> Examples </a>
-</li>
-      
-        <!-- Limit TOC depth to 1 -->
-
-<li class="md-nav__item">
-  <a href="#options" class="md-nav__link"> Options </a>
-</li>
-      
-        <!-- Limit TOC depth to 1 -->
-
-<li class="md-nav__item">
-  <a href="#global-options" class="md-nav__link"> Global options </a>
-</li>
-      
-        <!-- Limit TOC depth to 1 -->
-
-<li class="md-nav__item">
-  <a href="#related-commands" class="md-nav__link"> Related commands </a>
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2079,12 +2079,14 @@
                   
 <!-- Hide edit button as command reference and changelog do not exist on main branch -->
 
-<h1 id="upctl-kubernetes-versions">upctl kubernetes versions</h1>
-<p>List available versions for Kubernetes clusters</p>
-<pre><code>upctl kubernetes versions [flags]
+<h1 id="upctl-kubernetes-config">upctl kubernetes config</h1>
+<p>Output Kubernetes cluster kubeconfig</p>
+<pre><code>upctl kubernetes config &lt;UUID/Name...&gt; [flags]
 </code></pre>
 <h2 id="examples">Examples</h2>
-<pre><code>upctl kubernetes versions
+<pre><code>upctl kubernetes config 0fa980c4-0e4f-460b-9869-11b7bd62b831 --output human
+upctl kubernetes config 0fa980c4-0e4f-460b-9869-11b7bd62b831 --output yaml --write $KUBECONFIG
+upctl kubernetes config 0fa980c4-0e4f-460b-9869-11b7bd62b831 --output yaml --write ./my_kubeconfig.yaml
 </code></pre>
 <h2 id="options">Options</h2>
 <table>
@@ -2096,8 +2098,12 @@
 </thead>
 <tbody>
 <tr>
+<td><code>--write</code></td>
+<td>Absolute path for writing output. If the file exists, the config will be merged.</td>
+</tr>
+<tr>
 <td><code>--help</code>, <code>-h</code></td>
-<td>help for versions<br/>Default: <code>false</code></td>
+<td>help for config<br/>Default: <code>false</code></td>
 </tr>
 </tbody>
 </table>
