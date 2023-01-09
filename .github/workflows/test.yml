@@ -25,3 +25,32 @@ jobs:
         run: make build
       - name: Test Runtime
         run: go run cmd/upctl/main.go -h
+
+  mendscan:
+    env:
+      WS_APIKEY: ${{secrets.MEND_POC_APIKEY}}
+      WS_USERKEY: ${{secrets.MEND_POC_USERKEY}}
+      WS_WSS_URL: https://saas-eu.mend.io/agent
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: "11"
+          distribution: "adopt"
+      - name: Mend Unified Agent Scan
+        env:
+          WS_PRODUCTNAME: ${{github.event.repository.name}}
+          WS_PROJECTNAME: ${{github.event.repository.name}}_${{github.ref_name}}
+          WS_GENERATEPROJECTDETAILSJSON: false
+        run: |
+          echo Downloading Mend Unified Agent
+          curl -LJO https://unified-agent.s3.amazonaws.com/wss-unified-agent.jar
+          if [[ "$(curl -sL https://unified-agent.s3.amazonaws.com/wss-unified-agent.jar.sha256)" != "$(sha256sum wss-unified-agent.jar)" ]] ; then
+            echo "Integrity Check Failed"
+          else
+            echo "Integrity Check Passed"
+            echo Starting Unified Agent Scan
+            java -jar wss-unified-agent.jar
+          fi
