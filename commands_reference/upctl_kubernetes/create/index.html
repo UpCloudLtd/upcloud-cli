@@ -2114,11 +2114,11 @@ upctl kubernetes create \
 </tr>
 <tr>
 <td><code>--node-group</code></td>
-<td>Node group(s) for running workloads, multiple can be declared.<br/>Usage: --node-group count=8,kubelet-arg="log-flush-frequency=5s",label="owner=devteam",label="env=dev",name=my-node-group,plan=K8S-2xCPU-4GB,ssh-key="ssh-ed25519 AAAAo admin@user.com",ssh-key="/path/to/your/public/ssh/key.pub",storage=01000000-0000-4000-8000-000160010100,taint="env=dev:NoSchedule",taint="env=dev2:NoSchedule"<br/>Default: <code>[]</code></td>
+<td>Node group(s) for running workloads, multiple can be declared.<br/>Usage: <code>--node-group count=8,kubelet-arg="log-flush-frequency=5s",label="owner=devteam",label="env=dev",name=my-node-group,plan=K8S-2xCPU-4GB,ssh-key="ssh-ed25519 AAAAo admin@user.com",ssh-key="/path/to/your/public/ssh/key.pub",storage=01000000-0000-4000-8000-000160010100,taint="env=dev:NoSchedule",taint="env=dev2:NoSchedule"</code><br/>Default: <code>[]</code></td>
 </tr>
 <tr>
 <td><code>--zone</code></td>
-<td>Zone where to create the server.</td>
+<td>Zone where to create the cluster.</td>
 </tr>
 <tr>
 <td><code>--help</code>, <code>-h</code></td>
