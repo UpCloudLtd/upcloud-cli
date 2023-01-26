@@ -64,7 +64,7 @@ type Config struct {
 	viper       *viper.Viper
 	flagSet     *pflag.FlagSet
 	cancel      context.CancelFunc
-	context     context.Context
+	context     context.Context //nolint: containedctx // This is where the top-level context is stored
 	GlobalFlags GlobalFlags
 }
 

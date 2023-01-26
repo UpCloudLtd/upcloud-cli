@@ -161,7 +161,8 @@ func NewExecutor(cfg *config.Config, svc internal.AllServices, logger flume.Logg
 		executor.PushProgressUpdate(messages.Update{
 			Message: "Execution cancelled with interrupt signal",
 			Details: "If you tried to create, modify, or delete resource(s), note that the operation might be already in progress. Please check the status of related resource(s).",
-			Status:  messages.MessageStatusWarning})
+			Status:  messages.MessageStatusWarning,
+		})
 		executor.StopProgressLog()
 		os.Exit(clierrors.InterruptSignalCode)
 	}()
