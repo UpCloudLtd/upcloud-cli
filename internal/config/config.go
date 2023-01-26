@@ -45,7 +45,8 @@ var (
 
 // New returns a new instance of Config bound to the given viper instance
 func New() *Config {
-	return &Config{viper: viper.New(), context: context.TODO()}
+	ctx, cancel := context.WithCancel(context.Background())
+	return &Config{viper: viper.New(), context: ctx, cancel: cancel}
 }
 
 // GlobalFlags holds information on the flags shared among all commands
@@ -62,6 +63,7 @@ type GlobalFlags struct {
 type Config struct {
 	viper       *viper.Viper
 	flagSet     *pflag.FlagSet
+	cancel      context.CancelFunc
 	context     context.Context
 	GlobalFlags GlobalFlags
 }
@@ -170,6 +172,10 @@ func (s *Config) OutputHuman() bool {
 // ClientTimeout is a convenience method that returns the user specified client timeout
 func (s *Config) ClientTimeout() time.Duration {
 	return s.viper.GetDuration(KeyClientTimeout)
+}
+
+func (s *Config) Cancel() {
+	s.cancel()
 }
 
 func (s *Config) Context() context.Context {

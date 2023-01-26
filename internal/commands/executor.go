@@ -3,10 +3,13 @@ package commands
 import (
 	"context"
 	"fmt"
+	"os"
+	"os/signal"
 	"time"
 
 	"github.com/UpCloudLtd/progress"
 	"github.com/UpCloudLtd/progress/messages"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/clierrors"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	internal "github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
@@ -145,5 +148,23 @@ func NewExecutor(cfg *config.Config, svc internal.AllServices, logger flume.Logg
 		service:  svc,
 	}
 	executor.progress.Start()
+
+	// Handle possible interrupts during execution
+	sigintChan := make(chan os.Signal, 1)
+	signal.Notify(sigintChan, os.Interrupt)
+	go func() {
+		<-sigintChan
+
+		// Cancel the app context
+		cfg.Cancel()
+
+		executor.PushProgressUpdate(messages.Update{
+			Message: "Execution cancelled with interrupt signal",
+			Details: "If you tried to create, modify, or delete resource(s), note that the operation might be already in progress. Please check the status of related resource(s).",
+			Status:  messages.MessageStatusWarning})
+		executor.StopProgressLog()
+		os.Exit(clierrors.InterruptSignalCode)
+	}()
+
 	return executor
 }
