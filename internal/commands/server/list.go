@@ -9,10 +9,9 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/format"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/pflag"
 )
@@ -58,7 +57,7 @@ func (ls *listCommand) InitCommand() {
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (ls *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	svc := exec.All()
-	servers, err := svc.GetServers()
+	servers, err := svc.GetServers(exec.Context())
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +88,7 @@ func (ls *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.O
 	}
 
 	if ls.showIPAddresses != "none" {
-		ipaddressMap, err := getIPAddressesByServerUUID(servers, ls.showIPAddresses, svc)
+		ipaddressMap, err := getIPAddressesByServerUUID(servers, ls.showIPAddresses, exec)
 		if err != nil {
 			return nil, err
 		}
@@ -120,7 +119,7 @@ func (ls *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.O
 }
 
 // getIPAddressesByServerUUID returns IP addresses grouped by server UUID. This function will be removed when server end-point response includes IP addresses.
-func getIPAddressesByServerUUID(servers *upcloud.Servers, accessType string, svc service.AllServices) (map[string]listServerIpaddresses, error) {
+func getIPAddressesByServerUUID(servers *upcloud.Servers, accessType string, exec commands.Executor) (map[string]listServerIpaddresses, error) {
 	returnChan := make(chan listServerIpaddresses)
 	var wg sync.WaitGroup
 
@@ -128,7 +127,7 @@ func getIPAddressesByServerUUID(servers *upcloud.Servers, accessType string, svc
 		wg.Add(1)
 		go func(server upcloud.Server) {
 			defer wg.Done()
-			ipaddresses, err := getServerIPAddresses(server.UUID, accessType, svc)
+			ipaddresses, err := getServerIPAddresses(server.UUID, accessType, exec)
 			returnChan <- listServerIpaddresses{
 				ServerUUID:  server.UUID,
 				IPAddresses: ipaddresses,
@@ -150,8 +149,8 @@ func getIPAddressesByServerUUID(servers *upcloud.Servers, accessType string, svc
 	return ipaddressMap, nil
 }
 
-func getServerIPAddresses(uuid, accessType string, svc service.AllServices) ([]listIPAddress, error) {
-	server, err := svc.GetServerNetworks(&request.GetServerNetworksRequest{ServerUUID: uuid})
+func getServerIPAddresses(uuid, accessType string, exec commands.Executor) ([]listIPAddress, error) {
+	server, err := exec.All().GetServerNetworks(exec.Context(), &request.GetServerNetworksRequest{ServerUUID: uuid})
 	if err != nil {
 		return nil, err
 	}

@@ -1,8 +1,10 @@
 package completion
 
 import (
+	"context"
+
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/spf13/cobra"
 )
 
@@ -13,8 +15,8 @@ type Database struct{}
 var _ Provider = Database{}
 
 // CompleteArgument implements completion.Provider
-func (s Database) CompleteArgument(svc service.AllServices, toComplete string) ([]string, cobra.ShellCompDirective) {
-	databases, err := svc.GetManagedDatabases(&request.GetManagedDatabasesRequest{})
+func (s Database) CompleteArgument(ctx context.Context, svc service.AllServices, toComplete string) ([]string, cobra.ShellCompDirective) {
+	databases, err := svc.GetManagedDatabases(ctx, &request.GetManagedDatabasesRequest{})
 	if err != nil {
 		return None(toComplete)
 	}
@@ -32,8 +34,8 @@ type DatabaseType struct{}
 var _ Provider = DatabaseType{}
 
 // CompleteArgument implements completion.Provider
-func (s DatabaseType) CompleteArgument(svc service.AllServices, toComplete string) ([]string, cobra.ShellCompDirective) {
-	dbTypes, err := svc.GetManagedDatabaseServiceTypes(&request.GetManagedDatabaseServiceTypesRequest{})
+func (s DatabaseType) CompleteArgument(ctx context.Context, svc service.AllServices, toComplete string) ([]string, cobra.ShellCompDirective) {
+	dbTypes, err := svc.GetManagedDatabaseServiceTypes(ctx, &request.GetManagedDatabaseServiceTypesRequest{})
 	if err != nil {
 		return None(toComplete)
 	}

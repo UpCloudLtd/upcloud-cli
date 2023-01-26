@@ -10,7 +10,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/jedib0t/go-pretty/v6/text"
 )
 
@@ -95,7 +95,7 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 	if len(network.Servers) > 0 {
 		serverRows := make([]output.TableRow, 0)
 		for _, server := range network.Servers {
-			fetched, err := exec.Server().GetServerDetails(&request.GetServerDetailsRequest{UUID: server.ServerUUID})
+			fetched, err := exec.Server().GetServerDetails(exec.Context(), &request.GetServerDetailsRequest{UUID: server.ServerUUID})
 			if err != nil {
 				// If network server is a load balancer, getting server details fails due to missing permissions as load balancers underlying server instance is hidden from the user.
 				serverRows = append(serverRows, output.TableRow{

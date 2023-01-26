@@ -9,8 +9,8 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/spf13/pflag"
 )
 
@@ -51,7 +51,7 @@ func (s *stopCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 	msg := fmt.Sprintf("Stopping server %v", uuid)
 	exec.PushProgressStarted(msg)
 
-	res, err := svc.StopServer(&request.StopServerRequest{
+	res, err := svc.StopServer(exec.Context(), &request.StopServerRequest{
 		UUID:     uuid,
 		StopType: s.StopType,
 	})

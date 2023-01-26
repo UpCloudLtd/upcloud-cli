@@ -1,8 +1,10 @@
 package resolver
 
 import (
+	"context"
+
 	internal "github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 )
 
 // CachingLoadBalancer implements resolver for servers, caching the results
@@ -12,8 +14,8 @@ type CachingLoadBalancer struct{}
 var _ ResolutionProvider = CachingLoadBalancer{}
 
 // Get implements ResolutionProvider.Get
-func (s CachingLoadBalancer) Get(svc internal.AllServices) (Resolver, error) {
-	loadbalancers, err := svc.GetLoadBalancers(&request.GetLoadBalancersRequest{})
+func (s CachingLoadBalancer) Get(ctx context.Context, svc internal.AllServices) (Resolver, error) {
+	loadbalancers, err := svc.GetLoadBalancers(ctx, &request.GetLoadBalancersRequest{})
 	if err != nil {
 		return nil, err
 	}

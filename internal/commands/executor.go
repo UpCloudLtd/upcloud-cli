@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -10,12 +11,13 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	internal "github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/service"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/service"
 	"github.com/gemalto/flume"
 )
 
 // Executor represents the execution context for commands
 type Executor interface {
+	Context() context.Context
 	PushProgressUpdate(messages.Update)
 	PushProgressStarted(msg string)
 	PushProgressUpdateMessage(key, msg string)
@@ -26,9 +28,8 @@ type Executor interface {
 	Storage() service.Storage
 	Network() service.Network
 	Firewall() service.Firewall
-	IPAddress() service.IpAddress
+	IPAddress() service.IPAddress
 	Account() service.Account
-	Plan() service.Plans
 	All() internal.AllServices
 	Debug(msg string, args ...interface{})
 	WithLogger(args ...interface{}) Executor
@@ -51,6 +52,10 @@ type executorImpl struct {
 func (e executorImpl) WithLogger(args ...interface{}) Executor {
 	e.logger = e.logger.With(args...)
 	return &e
+}
+
+func (e *executorImpl) Context() context.Context {
+	return e.Config.Context()
 }
 
 func (e *executorImpl) Debug(msg string, args ...interface{}) {
@@ -119,15 +124,11 @@ func (e executorImpl) Firewall() service.Firewall {
 	return e.service
 }
 
-func (e executorImpl) IPAddress() service.IpAddress {
+func (e executorImpl) IPAddress() service.IPAddress {
 	return e.service
 }
 
 func (e executorImpl) Account() service.Account {
-	return e.service
-}
-
-func (e executorImpl) Plan() service.Plans {
 	return e.service
 }
 

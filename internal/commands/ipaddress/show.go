@@ -7,7 +7,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 )
 
 // ShowCommand creates the 'ip-address show' command
@@ -33,7 +33,7 @@ func (s *showCommand) InitCommand() {
 }
 
 func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
-	ipAddress, err := exec.IPAddress().GetIPAddressDetails(&request.GetIPAddressDetailsRequest{
+	ipAddress, err := exec.IPAddress().GetIPAddressDetails(exec.Context(), &request.GetIPAddressDetailsRequest{
 		Address: arg,
 	})
 	if err != nil {

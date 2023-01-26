@@ -1,13 +1,14 @@
 package resolver_test
 
 import (
+	"context"
 	"errors"
 	"testing"
 
 	smock "github.com/UpCloudLtd/upcloud-cli/v2/internal/mock"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -23,7 +24,7 @@ func TestKubernetesResolution(t *testing.T) {
 		mService := &smock.Service{}
 		mService.On("GetKubernetesClusters", mock.Anything).Return(mockClusters, nil)
 		res := resolver.CachingKubernetes{}
-		argResolver, err := res.Get(mService)
+		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 		for _, db := range mockClusters {
 			resolved, err := argResolver(db.UUID)
@@ -39,7 +40,7 @@ func TestKubernetesResolution(t *testing.T) {
 		mService := &smock.Service{}
 		mService.On("GetKubernetesClusters", mock.Anything).Return(mockClusters, nil)
 		res := resolver.CachingKubernetes{}
-		argResolver, err := res.Get(mService)
+		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 
 		db := mockClusters[2]
@@ -55,7 +56,7 @@ func TestKubernetesResolution(t *testing.T) {
 		mService.On("GetKubernetesClusters", mock.Anything).Return(mockClusters, nil)
 
 		res := resolver.CachingKubernetes{}
-		argResolver, err := res.Get(mService)
+		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 		var resolved string
 
@@ -84,7 +85,7 @@ func TestFailingKubernetesResolution(t *testing.T) {
 	mService := &smock.Service{}
 	mService.On("GetKubernetesClusters", mock.Anything).Return(nil, errors.New("MOCKERROR"))
 	res := resolver.CachingKubernetes{}
-	argResolver, err := res.Get(mService)
+	argResolver, err := res.Get(context.TODO(), mService)
 	assert.EqualError(t, err, "MOCKERROR")
 	assert.Nil(t, argResolver)
 }

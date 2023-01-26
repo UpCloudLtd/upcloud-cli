@@ -8,7 +8,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 )
 
 // StartCommand creates the "server start" command
@@ -40,7 +40,7 @@ func (s *startCommand) Execute(exec commands.Executor, uuid string) (output.Outp
 	msg := fmt.Sprintf("Starting server %v", uuid)
 	exec.PushProgressStarted(msg)
 
-	res, err := svc.StartServer(&request.StartServerRequest{
+	res, err := svc.StartServer(exec.Context(), &request.StartServerRequest{
 		UUID: uuid,
 	})
 	if err != nil {

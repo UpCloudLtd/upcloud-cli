@@ -1,6 +1,7 @@
 package config
 
 import (
+	"context"
 	"fmt"
 	"path/filepath"
 	"runtime/debug"
@@ -9,8 +10,8 @@ import (
 
 	internal "github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/client"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/service"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/client"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/service"
 	"github.com/adrg/xdg"
 	"github.com/gemalto/flume"
 	"github.com/spf13/pflag"
@@ -44,7 +45,7 @@ var (
 
 // New returns a new instance of Config bound to the given viper instance
 func New() *Config {
-	return &Config{viper: viper.New()}
+	return &Config{viper: viper.New(), context: context.TODO()}
 }
 
 // GlobalFlags holds information on the flags shared among all commands
@@ -61,6 +62,7 @@ type GlobalFlags struct {
 type Config struct {
 	viper       *viper.Viper
 	flagSet     *pflag.FlagSet
+	context     context.Context
 	GlobalFlags GlobalFlags
 }
 
@@ -170,6 +172,10 @@ func (s *Config) ClientTimeout() time.Duration {
 	return s.viper.GetDuration(KeyClientTimeout)
 }
 
+func (s *Config) Context() context.Context {
+	return s.context
+}
+
 // CreateService creates a new service instance and puts in the conf struct
 func (s *Config) CreateService() (internal.AllServices, error) {
 	username := s.GetString("username")
@@ -186,12 +192,7 @@ func (s *Config) CreateService() (internal.AllServices, error) {
 		return nil, fmt.Errorf("user credentials not found, these must be set in config file (%s) or via environment variables", configDetails)
 	}
 
-	client := client.New(username, password)
-	// TODO: remove this after go-api actually respects 0 timeout
-	// this is in order to enforce our custom (no) timeout because currently go-api
-	// assumes 0 timeout means 'not set' rather than 'no timeout'.
-	// see https://github.com/UpCloudLtd/upcloud-go-api/blob/2964ed7e597209b50a21f34259a20249e9aa220c/upcloud/client/client.go#L48
-	client.SetTimeout(s.ClientTimeout())
+	client := client.New(username, password, client.WithTimeout(s.ClientTimeout()))
 	client.UserAgent = fmt.Sprintf("upctl/%s", GetVersion())
 
 	svc := service.New(client)

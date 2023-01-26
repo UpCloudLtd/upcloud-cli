@@ -1,8 +1,10 @@
 package resolver
 
 import (
+	"context"
+
 	internal "github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 )
 
 // CachingDatabase implements resolver for servers, caching the results
@@ -12,8 +14,8 @@ type CachingDatabase struct{}
 var _ ResolutionProvider = CachingDatabase{}
 
 // Get implements ResolutionProvider.Get
-func (s CachingDatabase) Get(svc internal.AllServices) (Resolver, error) {
-	databases, err := svc.GetManagedDatabases(&request.GetManagedDatabasesRequest{})
+func (s CachingDatabase) Get(ctx context.Context, svc internal.AllServices) (Resolver, error) {
+	databases, err := svc.GetManagedDatabases(ctx, &request.GetManagedDatabasesRequest{})
 	if err != nil {
 		return nil, err
 	}

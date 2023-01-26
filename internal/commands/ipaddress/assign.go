@@ -8,8 +8,8 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/spf13/pflag"
 )
 
@@ -64,7 +64,7 @@ func (s *assignCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	}
 
 	if s.serverUUID != "" {
-		_, err := exec.Server().GetServerDetails(&request.GetServerDetailsRequest{UUID: s.serverUUID})
+		_, err := exec.Server().GetServerDetails(exec.Context(), &request.GetServerDetailsRequest{UUID: s.serverUUID})
 		if err != nil {
 			return nil, fmt.Errorf("invalid server uuid: %w", err)
 		}
@@ -76,7 +76,7 @@ func (s *assignCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	msg := fmt.Sprintf("Assigning IP Address to %v", target)
 	exec.PushProgressStarted(msg)
 
-	res, err := exec.IPAddress().AssignIPAddress(&request.AssignIPAddressRequest{
+	res, err := exec.IPAddress().AssignIPAddress(exec.Context(), &request.AssignIPAddressRequest{
 		Access:     s.access,
 		Family:     s.family,
 		ServerUUID: s.serverUUID,

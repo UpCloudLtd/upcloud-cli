@@ -7,8 +7,8 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 )
 
 // ShowCommand creates the "database show" command
@@ -33,7 +33,7 @@ type showCommand struct {
 // Execute implements commands.MultipleArgumentCommand
 func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.All()
-	db, err := svc.GetManagedDatabase(&request.GetManagedDatabaseRequest{UUID: uuid})
+	db, err := svc.GetManagedDatabase(exec.Context(), &request.GetManagedDatabaseRequest{UUID: uuid})
 	if err != nil {
 		return nil, err
 	}

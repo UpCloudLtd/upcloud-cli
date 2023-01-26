@@ -7,8 +7,8 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/ipaddress"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/spf13/pflag"
 )
 
@@ -103,7 +103,7 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		return commands.HandleError(exec, msg, err)
 	}
 
-	res, err := svc.CreateNetwork(req)
+	res, err := svc.CreateNetwork(exec.Context(), req)
 	if err != nil {
 		return commands.HandleError(exec, msg, err)
 	}

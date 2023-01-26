@@ -1,13 +1,14 @@
 package resolver_test
 
 import (
+	"context"
 	"errors"
 	"testing"
 
 	smock "github.com/UpCloudLtd/upcloud-cli/v2/internal/mock"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -100,7 +101,7 @@ func TestServerResolution(t *testing.T) {
 		mService := &smock.Service{}
 		mService.On("GetServers").Return(allServers, nil)
 		res := resolver.CachingServer{}
-		argResolver, err := res.Get(mService)
+		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 		for _, srv := range allServers.Servers {
 			resolved, err := argResolver(srv.UUID)
@@ -115,7 +116,7 @@ func TestServerResolution(t *testing.T) {
 		mService := &smock.Service{}
 		mService.On("GetServers").Return(allServers, nil)
 		res := resolver.CachingServer{}
-		argResolver, err := res.Get(mService)
+		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 		for _, srv := range unambiguousServers {
 			resolved, err := argResolver(srv.Hostname)
@@ -130,7 +131,7 @@ func TestServerResolution(t *testing.T) {
 		mService := &smock.Service{}
 		mService.On("GetServers").Return(allServers, nil)
 		res := resolver.CachingServer{}
-		argResolver, err := res.Get(mService)
+		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 		for _, srv := range unambiguousServers {
 			resolved, err := argResolver(srv.Title)
@@ -146,7 +147,7 @@ func TestServerResolution(t *testing.T) {
 		mService.On("GetServers").Return(allServers, nil)
 
 		res := resolver.CachingServer{}
-		argResolver, err := res.Get(mService)
+		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 
 		// ambigous hostname
@@ -183,7 +184,7 @@ func TestFailingServerResolution(t *testing.T) {
 	var nilResponse *upcloud.Servers
 	mService.On("GetServers").Return(nilResponse, errors.New("MOCKERROR"))
 	res := resolver.CachingServer{}
-	argResolver, err := res.Get(mService)
+	argResolver, err := res.Get(context.TODO(), mService)
 	assert.EqualError(t, err, "MOCKERROR")
 	assert.Nil(t, argResolver)
 }

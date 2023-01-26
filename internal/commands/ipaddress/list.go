@@ -28,7 +28,7 @@ func (s *listCommand) InitCommand() {
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
-	ips, err := exec.IPAddress().GetIPAddresses()
+	ips, err := exec.IPAddress().GetIPAddresses(exec.Context())
 	if err != nil {
 		return nil, err
 	}

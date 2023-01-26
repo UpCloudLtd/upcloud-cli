@@ -3,8 +3,8 @@ package network
 import (
 	"fmt"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/spf13/pflag"
 
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
@@ -78,7 +78,7 @@ func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 	var network *upcloud.Network
 	if s.name != "" || len(networks) > 0 {
 		// we want to update name and/or networks
-		res, err := exec.Network().ModifyNetwork(&request.ModifyNetworkRequest{
+		res, err := exec.Network().ModifyNetwork(exec.Context(), &request.ModifyNetworkRequest{
 			UUID:       arg,
 			Name:       s.name,
 			Zone:       "", // TODO: should this be implemented?
@@ -92,7 +92,7 @@ func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 	}
 
 	if s.attachRouter != "" {
-		routerResolver, err := s.routerResolver.Get(exec.All())
+		routerResolver, err := s.routerResolver.Get(exec.Context(), exec.All())
 		if err != nil {
 			return commands.HandleError(exec, msg, fmt.Errorf("cannot get router resolver: %w", err))
 		}
@@ -101,7 +101,7 @@ func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 			return commands.HandleError(exec, msg, fmt.Errorf("cannot resolve router '%s': %w", s.attachRouter, err))
 		}
 		exec.PushProgressUpdateMessage(msg, fmt.Sprintf("%s: attaching router %s", msg, routerUUID))
-		err = exec.Network().AttachNetworkRouter(&request.AttachNetworkRouterRequest{
+		err = exec.Network().AttachNetworkRouter(exec.Context(), &request.AttachNetworkRouterRequest{
 			NetworkUUID: arg,
 			RouterUUID:  routerUUID,
 		})
@@ -114,7 +114,7 @@ func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 		}
 	} else if s.detachRouter == config.True {
 		exec.PushProgressUpdateMessage(msg, fmt.Sprintf("%s: detaching router", msg))
-		err := exec.Network().DetachNetworkRouter(&request.DetachNetworkRouterRequest{
+		err := exec.Network().DetachNetworkRouter(exec.Context(), &request.DetachNetworkRouterRequest{
 			NetworkUUID: arg,
 		})
 		if err != nil {
@@ -129,7 +129,7 @@ func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 	exec.PushProgressSuccess(msg)
 	if network == nil {
 		// if we're just detaching/attaching, we won't have network returned from the calls so re-fetch
-		details, err := exec.Network().GetNetworkDetails(&request.GetNetworkDetailsRequest{UUID: arg})
+		details, err := exec.Network().GetNetworkDetails(exec.Context(), &request.GetNetworkDetailsRequest{UUID: arg})
 		if err != nil {
 			return nil, fmt.Errorf("cannot get network state: %w", err)
 		}

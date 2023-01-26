@@ -8,7 +8,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/spf13/pflag"
 )
 
@@ -65,7 +65,7 @@ func (s *detachCommand) ExecuteSingleArgument(exec commands.Executor, uuid strin
 	msg := fmt.Sprintf("Detaching storage address %q from server %q", req.Address, req.ServerUUID)
 	exec.PushProgressStarted(msg)
 
-	res, err := storageSvc.DetachStorage(&req)
+	res, err := storageSvc.DetachStorage(exec.Context(), &req)
 	if err != nil {
 		return commands.HandleError(exec, msg, err)
 	}

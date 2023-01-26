@@ -8,7 +8,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 )
 
 // DeleteCommand creates the "storage delete" command
@@ -45,7 +45,7 @@ func (s *deleteCommand) Execute(exec commands.Executor, uuid string) (output.Out
 	msg := fmt.Sprintf("Deleting storage %v", uuid)
 	exec.PushProgressStarted(msg)
 
-	err := svc.DeleteStorage(&request.DeleteStorageRequest{
+	err := svc.DeleteStorage(exec.Context(), &request.DeleteStorageRequest{
 		UUID: uuid,
 	})
 	if err != nil {

@@ -1,11 +1,12 @@
 package resolver
 
 import (
+	"context"
 	"errors"
 
 	internal "github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
 )
 
 // CachingRouter implements resolver for routers by uuid or name, caching the results
@@ -17,8 +18,8 @@ type CachingRouter struct {
 var _ ResolutionProvider = &CachingRouter{}
 
 // Get implements ResolutionProvider.Get
-func (s *CachingRouter) Get(svc internal.AllServices) (Resolver, error) {
-	routers, err := svc.GetRouters()
+func (s *CachingRouter) Get(ctx context.Context, svc internal.AllServices) (Resolver, error) {
+	routers, err := svc.GetRouters(ctx)
 	if err != nil {
 		return nil, err
 	}

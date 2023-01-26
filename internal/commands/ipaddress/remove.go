@@ -7,7 +7,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 )
 
 type removeCommand struct {
@@ -43,7 +43,7 @@ func (s *removeCommand) Execute(exec commands.Executor, arg string) (output.Outp
 	msg := fmt.Sprintf("Removing ip-address %v", arg)
 	exec.PushProgressStarted(msg)
 
-	err := exec.IPAddress().ReleaseIPAddress(&request.ReleaseIPAddressRequest{
+	err := exec.IPAddress().ReleaseIPAddress(exec.Context(), &request.ReleaseIPAddressRequest{
 		IPAddress: arg,
 	})
 	if err != nil {

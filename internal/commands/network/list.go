@@ -6,8 +6,8 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/spf13/pflag"
 )
 
@@ -56,9 +56,9 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 	var networks *upcloud.Networks
 	var err error
 	if s.zone != "" {
-		networks, err = svc.GetNetworksInZone(&request.GetNetworksInZoneRequest{Zone: s.zone})
+		networks, err = svc.GetNetworksInZone(exec.Context(), &request.GetNetworksInZoneRequest{Zone: s.zone})
 	} else {
-		networks, err = svc.GetNetworks()
+		networks, err = svc.GetNetworks(exec.Context())
 	}
 	if err != nil {
 		return nil, err

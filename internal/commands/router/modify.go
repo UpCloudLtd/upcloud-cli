@@ -7,7 +7,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/spf13/pflag"
 )
 
@@ -44,7 +44,7 @@ func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 	msg := fmt.Sprintf("Modifying router %s", s.name)
 	exec.PushProgressStarted(msg)
 
-	res, err := exec.Network().ModifyRouter(&request.ModifyRouterRequest{UUID: arg, Name: s.name})
+	res, err := exec.Network().ModifyRouter(exec.Context(), &request.ModifyRouterRequest{UUID: arg, Name: s.name})
 	if err != nil {
 		return commands.HandleError(exec, msg, err)
 	}

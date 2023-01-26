@@ -8,7 +8,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 )
 
 type restoreBackupCommand struct {
@@ -47,7 +47,7 @@ func (s *restoreBackupCommand) Execute(exec commands.Executor, uuid string) (out
 	req := s.params.RestoreBackupRequest
 	req.UUID = uuid
 
-	err := svc.RestoreBackup(&req)
+	err := svc.RestoreBackup(exec.Context(), &req)
 	if err != nil {
 		return commands.HandleError(exec, msg, err)
 	}

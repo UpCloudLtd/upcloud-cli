@@ -1,9 +1,11 @@
 package completion
 
 import (
+	"context"
+
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/spf13/cobra"
 )
 
@@ -14,8 +16,8 @@ type Storage struct{}
 var _ Provider = Storage{}
 
 // CompleteArgument implements completion.Provider
-func (s Storage) CompleteArgument(svc service.AllServices, toComplete string) ([]string, cobra.ShellCompDirective) {
-	storages, err := svc.GetStorages(&request.GetStoragesRequest{})
+func (s Storage) CompleteArgument(ctx context.Context, svc service.AllServices, toComplete string) ([]string, cobra.ShellCompDirective) {
+	storages, err := svc.GetStorages(ctx, &request.GetStoragesRequest{})
 	if err != nil {
 		return None(toComplete)
 	}

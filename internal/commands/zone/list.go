@@ -20,7 +20,7 @@ type listCommand struct {
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	svc := exec.All()
-	zones, err := svc.GetZones()
+	zones, err := svc.GetZones(exec.Context())
 	if err != nil {
 		return nil, err
 	}

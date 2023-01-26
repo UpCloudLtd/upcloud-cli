@@ -10,7 +10,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/spf13/pflag"
 )
 
@@ -70,7 +70,7 @@ func (s *attachCommand) MaximumExecutions() int {
 func (s *attachCommand) ExecuteSingleArgument(exec commands.Executor, uuid string) (output.Output, error) {
 	storageSvc := exec.Storage()
 
-	strg, err := storage.SearchSingleStorage(s.params.StorageUUID, storageSvc)
+	strg, err := storage.SearchSingleStorage(s.params.StorageUUID, exec)
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +87,7 @@ func (s *attachCommand) ExecuteSingleArgument(exec commands.Executor, uuid strin
 	msg := fmt.Sprintf("Attaching storage %q to server %q", req.StorageUUID, req.ServerUUID)
 	exec.PushProgressStarted(msg)
 
-	res, err := storageSvc.AttachStorage(&req)
+	res, err := storageSvc.AttachStorage(exec.Context(), &req)
 	if err != nil {
 		return commands.HandleError(exec, msg, err)
 	}

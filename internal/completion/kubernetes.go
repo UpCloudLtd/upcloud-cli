@@ -1,9 +1,11 @@
 package completion
 
 import (
+	"context"
+
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/spf13/cobra"
 )
 
@@ -14,8 +16,8 @@ type Kubernetes struct{}
 var _ Provider = Kubernetes{}
 
 // CompleteArgument implements completion.Provider
-func (s Kubernetes) CompleteArgument(svc service.AllServices, toComplete string) ([]string, cobra.ShellCompDirective) {
-	clusters, err := svc.GetKubernetesClusters(&request.GetKubernetesClustersRequest{})
+func (s Kubernetes) CompleteArgument(ctx context.Context, svc service.AllServices, toComplete string) ([]string, cobra.ShellCompDirective) {
+	clusters, err := svc.GetKubernetesClusters(ctx, &request.GetKubernetesClustersRequest{})
 	if err != nil {
 		return None(toComplete)
 	}

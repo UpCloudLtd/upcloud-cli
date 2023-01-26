@@ -1,12 +1,13 @@
 package completion_test
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
 	smock "github.com/UpCloudLtd/upcloud-cli/v2/internal/mock"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -38,7 +39,7 @@ func TestServer_CompleteArgument(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			mService := new(smock.Service)
 			mService.On("GetServers", mock.Anything).Return(mockServers, nil)
-			ips, directive := completion.Server{}.CompleteArgument(mService, test.complete)
+			ips, directive := completion.Server{}.CompleteArgument(context.TODO(), mService, test.complete)
 			assert.Equal(t, test.expectedMatches, ips)
 			assert.Equal(t, test.expectedDirective, directive)
 		})
@@ -48,7 +49,7 @@ func TestServer_CompleteArgument(t *testing.T) {
 func TestServer_CompleteArgumentServiceFail(t *testing.T) {
 	mService := new(smock.Service)
 	mService.On("GetServers", mock.Anything).Return(nil, fmt.Errorf("MOCKFAIL"))
-	ips, directive := completion.Server{}.CompleteArgument(mService, "127")
+	ips, directive := completion.Server{}.CompleteArgument(context.TODO(), mService, "127")
 	assert.Nil(t, ips)
 	assert.Equal(t, cobra.ShellCompDirectiveDefault, directive)
 }

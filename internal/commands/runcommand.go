@@ -71,9 +71,9 @@ type resolvedArgument struct {
 	Original string
 }
 
-func resolveArguments(nc Command, svc internal.AllServices, args []string) (out []resolvedArgument, err error) {
+func resolveArguments(nc Command, exec Executor, args []string) (out []resolvedArgument, err error) {
 	if resolve, ok := nc.(resolver.ResolutionProvider); ok {
-		argumentResolver, err := resolve.Get(svc)
+		argumentResolver, err := resolve.Get(exec.Context(), exec.All())
 		if err != nil {
 			return nil, fmt.Errorf("cannot get resolver: %w", err)
 		}
@@ -90,7 +90,7 @@ func resolveArguments(nc Command, svc internal.AllServices, args []string) (out 
 }
 
 func execute(command Command, executor Executor, args []string, parallelRuns int, executeCommand func(exec Executor, arg string) (output.Output, error)) ([]output.Output, error) {
-	resolvedArgs, err := resolveArguments(command, executor.All(), args)
+	resolvedArgs, err := resolveArguments(command, executor, args)
 	if err != nil {
 		return nil, fmt.Errorf("cannot resolve command line arguments: %w", err)
 	}

@@ -1,9 +1,11 @@
 package resolver
 
 import (
+	"context"
+
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 )
 
 // CachingKubernetes implements resolver for Kubernetes clusters, caching the results
@@ -13,8 +15,8 @@ type CachingKubernetes struct{}
 var _ ResolutionProvider = CachingKubernetes{}
 
 // Get implements ResolutionProvider.Get
-func (s CachingKubernetes) Get(svc service.AllServices) (Resolver, error) {
-	clusters, err := svc.GetKubernetesClusters(&request.GetKubernetesClustersRequest{})
+func (s CachingKubernetes) Get(ctx context.Context, svc service.AllServices) (Resolver, error) {
+	clusters, err := svc.GetKubernetesClusters(ctx, &request.GetKubernetesClustersRequest{})
 	if err != nil {
 		return nil, err
 	}

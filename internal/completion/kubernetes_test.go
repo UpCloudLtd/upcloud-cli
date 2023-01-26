@@ -1,13 +1,14 @@
 package completion_test
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
 	smock "github.com/UpCloudLtd/upcloud-cli/v2/internal/mock"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -35,7 +36,7 @@ func TestKubernetes_CompleteArgument(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			mService := new(smock.Service)
 			mService.On("GetKubernetesClusters", mock.Anything).Return(mockClusters, nil)
-			completions, directive := completion.Kubernetes{}.CompleteArgument(mService, test.complete)
+			completions, directive := completion.Kubernetes{}.CompleteArgument(context.TODO(), mService, test.complete)
 			assert.Equal(t, test.expectedMatches, completions)
 			assert.Equal(t, test.expectedDirective, directive)
 		})
@@ -45,7 +46,7 @@ func TestKubernetes_CompleteArgument(t *testing.T) {
 func TestKubernetes_CompleteArgumentServiceFail(t *testing.T) {
 	mService := new(smock.Service)
 	mService.On("GetKubernetesClusters", mock.Anything).Return(nil, fmt.Errorf("MOCKFAIL"))
-	completions, directive := completion.Kubernetes{}.CompleteArgument(mService, "asd")
+	completions, directive := completion.Kubernetes{}.CompleteArgument(context.TODO(), mService, "asd")
 	assert.Nil(t, completions)
 	assert.Equal(t, cobra.ShellCompDirectiveDefault, directive)
 }

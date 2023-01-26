@@ -16,9 +16,8 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/service"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 
 	"github.com/spf13/pflag"
 )
@@ -141,7 +140,7 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		// initialize resolver
 		// TODO: maybe this resolver business should be rethought? this use case isnt really supported,
 		//       possibly split resolving and caching to separate bits?
-		_, err := s.Resolver.Get(exec.All())
+		_, err := s.Resolver.Get(exec.Context(), exec.All())
 		if err != nil {
 			return nil, fmt.Errorf("cannot setup storage resolver: %w", err)
 		}
@@ -186,19 +185,18 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	case upcloud.StorageImportSourceHTTPImport:
 		// Import from the internet
 		transferType = "download"
-		result, err := exec.Storage().CreateStorageImport(
-			&request.CreateStorageImportRequest{
-				StorageUUID:    storageToImportTo.UUID,
-				Source:         sourceType,
-				SourceLocation: s.sourceLocation,
-			})
+		result, err := exec.Storage().CreateStorageImport(exec.Context(), &request.CreateStorageImportRequest{
+			StorageUUID:    storageToImportTo.UUID,
+			Source:         sourceType,
+			SourceLocation: s.sourceLocation,
+		})
 		if err != nil {
 			return commands.HandleError(exec, msg, err)
 		}
 
 		if !s.noWait.Value() {
 			// start polling for import status if --no-wait was not entered on the command line
-			go pollStorageImportStatus(exec.Storage(), storageToImportTo.UUID, statusChan)
+			go pollStorageImportStatus(exec, storageToImportTo.UUID, statusChan)
 		} else {
 			// otherwise, we can just return the result and be done with it
 			exec.PushProgressSuccess(msg)
@@ -212,7 +210,7 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		if err != nil {
 			return commands.HandleError(exec, msg, fmt.Errorf("cannot open local file: %w", err))
 		}
-		go importLocalFile(exec.Storage(), storageToImportTo.UUID, sourceFile, statusChan)
+		go importLocalFile(exec, storageToImportTo.UUID, sourceFile, statusChan)
 	}
 
 	// import has been triggered, read updates from the process
@@ -305,7 +303,7 @@ func createStorage(exec commands.Executor, params *createParams) (upcloud.Storag
 	msg := fmt.Sprintf("Creating storage %q", params.Title)
 	exec.PushProgressStarted(msg)
 
-	details, err := exec.Storage().CreateStorage(&params.CreateStorageRequest)
+	details, err := exec.Storage().CreateStorage(exec.Context(), &params.CreateStorageRequest)
 	if err != nil {
 		_, _ = commands.HandleError(exec, msg, err)
 		return upcloud.Storage{}, err
@@ -323,13 +321,13 @@ func getLocalFileSize(path string) (size int64, err error) {
 	return stat.Size(), nil
 }
 
-func pollStorageImportStatus(svc service.Storage, uuid string, statusChan chan<- storageImportStatus) {
+func pollStorageImportStatus(exec commands.Executor, uuid string, statusChan chan<- storageImportStatus) {
 	// make sure we close the channel when exiting poller
 	defer close(statusChan)
 
 	sleepSecs := 2
 	for {
-		details, err := svc.GetStorageImportDetails(&request.GetStorageImportDetailsRequest{
+		details, err := exec.All().GetStorageImportDetails(exec.Context(), &request.GetStorageImportDetailsRequest{
 			UUID: uuid,
 		})
 		switch {
@@ -353,7 +351,7 @@ func pollStorageImportStatus(svc service.Storage, uuid string, statusChan chan<-
 	}
 }
 
-func importLocalFile(svc service.Storage, uuid string, file *os.File, statusChan chan<- storageImportStatus) {
+func importLocalFile(exec commands.Executor, uuid string, file *os.File, statusChan chan<- storageImportStatus) {
 	// make sure we close the channel when exiting import
 	defer close(statusChan)
 	chDone := make(chan storageImportStatus)
@@ -369,13 +367,12 @@ func importLocalFile(svc service.Storage, uuid string, file *os.File, statusChan
 	}
 
 	go func() {
-		imported, err := svc.CreateStorageImport(
-			&request.CreateStorageImportRequest{
-				StorageUUID:    uuid,
-				ContentType:    contentType,
-				Source:         upcloud.StorageImportSourceDirectUpload,
-				SourceLocation: reader,
-			})
+		imported, err := exec.All().CreateStorageImport(exec.Context(), &request.CreateStorageImportRequest{
+			StorageUUID:    uuid,
+			ContentType:    contentType,
+			Source:         upcloud.StorageImportSourceDirectUpload,
+			SourceLocation: reader,
+		})
 		chDone <- storageImportStatus{result: imported, err: err, complete: true}
 	}()
 	updateTicker := time.NewTicker(300 * time.Millisecond)

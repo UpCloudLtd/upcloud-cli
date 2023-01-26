@@ -9,7 +9,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/spf13/pflag"
 )
 
@@ -55,7 +55,7 @@ func (s *loadCommand) InitCommand() {
 func (s *loadCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Storage()
 
-	strg, err := storage.SearchSingleStorage(s.params.StorageUUID, svc)
+	strg, err := storage.SearchSingleStorage(s.params.StorageUUID, exec)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +67,7 @@ func (s *loadCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 	msg := fmt.Sprintf("Loading %q as a CD-ROM of server %q", req.StorageUUID, req.ServerUUID)
 	exec.PushProgressStarted(msg)
 
-	res, err := svc.LoadCDROM(&req)
+	res, err := svc.LoadCDROM(exec.Context(), &req)
 	if err != nil {
 		return commands.HandleError(exec, msg, err)
 	}

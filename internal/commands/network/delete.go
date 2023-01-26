@@ -7,7 +7,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 )
 
 type deleteCommand struct {
@@ -40,7 +40,7 @@ func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Outp
 	msg := fmt.Sprintf("Deleting network %v", arg)
 	exec.PushProgressStarted(msg)
 
-	err := svc.DeleteNetwork(&request.DeleteNetworkRequest{
+	err := svc.DeleteNetwork(exec.Context(), &request.DeleteNetworkRequest{
 		UUID: arg,
 	})
 	if err != nil {

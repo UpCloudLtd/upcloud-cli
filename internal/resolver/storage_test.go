@@ -1,13 +1,14 @@
 package resolver_test
 
 import (
+	"context"
 	"errors"
 	"testing"
 
 	smock "github.com/UpCloudLtd/upcloud-cli/v2/internal/mock"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -31,7 +32,7 @@ func TestStorageResolution(t *testing.T) {
 		mService := &smock.Service{}
 		mService.On("GetStorages", mock.Anything).Return(mockStorages, nil)
 		res := resolver.CachingStorage{}
-		argResolver, err := res.Get(mService)
+		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 		for _, storage := range unambiguousStorages {
 			resolved, err := argResolver(storage.UUID)
@@ -46,7 +47,7 @@ func TestStorageResolution(t *testing.T) {
 		mService := &smock.Service{}
 		mService.On("GetStorages", mock.Anything).Return(mockStorages, nil)
 		res := resolver.CachingStorage{}
-		argResolver, err := res.Get(mService)
+		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 		for _, storage := range unambiguousStorages {
 			resolved, err := argResolver(storage.Title)
@@ -62,7 +63,7 @@ func TestStorageResolution(t *testing.T) {
 		mService.On("GetStorages", mock.Anything).Return(mockStorages, nil)
 
 		res := resolver.CachingStorage{}
-		argResolver, err := res.Get(mService)
+		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 
 		// ambigous uuid
@@ -98,7 +99,7 @@ func TestFailingStorageResolution(t *testing.T) {
 	mService := &smock.Service{}
 	mService.On("GetStorages", mock.Anything).Return(nil, errors.New("MOCKERROR"))
 	res := resolver.CachingStorage{}
-	argResolver, err := res.Get(mService)
+	argResolver, err := res.Get(context.TODO(), mService)
 	assert.EqualError(t, err, "MOCKERROR")
 	assert.Nil(t, argResolver)
 }

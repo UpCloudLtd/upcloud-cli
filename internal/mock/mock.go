@@ -2,9 +2,11 @@
 package mock
 
 import (
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/service"
+	"context"
+
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/service"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -14,7 +16,7 @@ type Service struct {
 }
 
 // GetAccount implements service.Account.GetAccount
-func (m *Service) GetAccount() (*upcloud.Account, error) {
+func (m *Service) GetAccount(context.Context) (*upcloud.Account, error) {
 	args := m.Called()
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -23,7 +25,7 @@ func (m *Service) GetAccount() (*upcloud.Account, error) {
 }
 
 // GetZones implements service.Zones.GetZones
-func (m *Service) GetZones() (*upcloud.Zones, error) {
+func (m *Service) GetZones(context.Context) (*upcloud.Zones, error) {
 	args := m.Called()
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -31,8 +33,18 @@ func (m *Service) GetZones() (*upcloud.Zones, error) {
 	return args[0].(*upcloud.Zones), args.Error(1)
 }
 
+// GetPriceZones implements service.Zones.GetPriceZones
+func (m *Service) GetPriceZones(context.Context) (*upcloud.PriceZones, error) {
+	return nil, nil
+}
+
+// GetPriceZones implements service.Zones.GetPriceZones
+func (m *Service) GetTimeZones(context.Context) (*upcloud.TimeZones, error) {
+	return nil, nil
+}
+
 // GetPlans implements service.Plan.GetPlans
-func (m *Service) GetPlans() (*upcloud.Plans, error) {
+func (m *Service) GetPlans(context.Context) (*upcloud.Plans, error) {
 	args := m.Called()
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -41,18 +53,20 @@ func (m *Service) GetPlans() (*upcloud.Plans, error) {
 }
 
 // make sure Service implements service interfaces
-var _ service.Server = &Service{}
-
 var (
-	_ service.Storage  = &Service{}
-	_ service.Firewall = &Service{}
-	_ service.Network  = &Service{}
-	_ service.Plans    = &Service{}
-	_ service.Account  = &Service{}
+	_ service.Server       = &Service{}
+	_ service.Storage      = &Service{}
+	_ service.Firewall     = &Service{}
+	_ service.Network      = &Service{}
+	_ service.IPAddress    = &Service{}
+	_ service.Cloud        = &Service{}
+	_ service.Account      = &Service{}
+	_ service.LoadBalancer = &Service{}
+	_ service.Kubernetes   = &Service{}
 )
 
 // GetServerConfigurations implements service.Server.GetServerConfigurations
-func (m *Service) GetServerConfigurations() (*upcloud.ServerConfigurations, error) {
+func (m *Service) GetServerConfigurations(context.Context) (*upcloud.ServerConfigurations, error) {
 	args := m.Called()
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -61,7 +75,7 @@ func (m *Service) GetServerConfigurations() (*upcloud.ServerConfigurations, erro
 }
 
 // GetServers implements service.Server.GetServers
-func (m *Service) GetServers() (*upcloud.Servers, error) {
+func (m *Service) GetServers(context.Context) (*upcloud.Servers, error) {
 	args := m.Called()
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -70,7 +84,7 @@ func (m *Service) GetServers() (*upcloud.Servers, error) {
 }
 
 // GetServerDetails implements service.Server.GetServerDetails
-func (m *Service) GetServerDetails(r *request.GetServerDetailsRequest) (*upcloud.ServerDetails, error) {
+func (m *Service) GetServerDetails(_ context.Context, r *request.GetServerDetailsRequest) (*upcloud.ServerDetails, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -79,7 +93,7 @@ func (m *Service) GetServerDetails(r *request.GetServerDetailsRequest) (*upcloud
 }
 
 // CreateServer implements service.Server.CreateServer
-func (m *Service) CreateServer(r *request.CreateServerRequest) (*upcloud.ServerDetails, error) {
+func (m *Service) CreateServer(_ context.Context, r *request.CreateServerRequest) (*upcloud.ServerDetails, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -88,7 +102,7 @@ func (m *Service) CreateServer(r *request.CreateServerRequest) (*upcloud.ServerD
 }
 
 // WaitForServerState implements service.Server.WaitForServerState
-func (m *Service) WaitForServerState(r *request.WaitForServerStateRequest) (*upcloud.ServerDetails, error) {
+func (m *Service) WaitForServerState(_ context.Context, r *request.WaitForServerStateRequest) (*upcloud.ServerDetails, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -97,7 +111,7 @@ func (m *Service) WaitForServerState(r *request.WaitForServerStateRequest) (*upc
 }
 
 // StartServer implements service.Server.StartServer
-func (m *Service) StartServer(r *request.StartServerRequest) (*upcloud.ServerDetails, error) {
+func (m *Service) StartServer(_ context.Context, r *request.StartServerRequest) (*upcloud.ServerDetails, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -106,7 +120,7 @@ func (m *Service) StartServer(r *request.StartServerRequest) (*upcloud.ServerDet
 }
 
 // StopServer implements service.Server.StopServer
-func (m *Service) StopServer(r *request.StopServerRequest) (*upcloud.ServerDetails, error) {
+func (m *Service) StopServer(_ context.Context, r *request.StopServerRequest) (*upcloud.ServerDetails, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -115,7 +129,7 @@ func (m *Service) StopServer(r *request.StopServerRequest) (*upcloud.ServerDetai
 }
 
 // RestartServer implements service.Server.RestartServer
-func (m *Service) RestartServer(r *request.RestartServerRequest) (*upcloud.ServerDetails, error) {
+func (m *Service) RestartServer(_ context.Context, r *request.RestartServerRequest) (*upcloud.ServerDetails, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -124,7 +138,7 @@ func (m *Service) RestartServer(r *request.RestartServerRequest) (*upcloud.Serve
 }
 
 // ModifyServer implements service.Server.ModifyServer
-func (m *Service) ModifyServer(r *request.ModifyServerRequest) (*upcloud.ServerDetails, error) {
+func (m *Service) ModifyServer(_ context.Context, r *request.ModifyServerRequest) (*upcloud.ServerDetails, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -133,19 +147,19 @@ func (m *Service) ModifyServer(r *request.ModifyServerRequest) (*upcloud.ServerD
 }
 
 // DeleteServer implements service.Server.DeleteServer
-func (m *Service) DeleteServer(r *request.DeleteServerRequest) error {
+func (m *Service) DeleteServer(_ context.Context, r *request.DeleteServerRequest) error {
 	args := m.Called(r)
 	return args.Error(0)
 }
 
 // DeleteServerAndStorages implements service.Server.DeleteServerAndStorages
-func (m *Service) DeleteServerAndStorages(r *request.DeleteServerAndStoragesRequest) error {
+func (m *Service) DeleteServerAndStorages(_ context.Context, r *request.DeleteServerAndStoragesRequest) error {
 	args := m.Called(r)
 	return args.Error(0)
 }
 
 // GetStorages implements service.Storage.GetStorages
-func (m *Service) GetStorages(r *request.GetStoragesRequest) (*upcloud.Storages, error) {
+func (m *Service) GetStorages(_ context.Context, r *request.GetStoragesRequest) (*upcloud.Storages, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -154,7 +168,7 @@ func (m *Service) GetStorages(r *request.GetStoragesRequest) (*upcloud.Storages,
 }
 
 // GetStorageDetails implements service.Storage.GetStorageDetails
-func (m *Service) GetStorageDetails(r *request.GetStorageDetailsRequest) (*upcloud.StorageDetails, error) {
+func (m *Service) GetStorageDetails(_ context.Context, r *request.GetStorageDetailsRequest) (*upcloud.StorageDetails, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -163,7 +177,7 @@ func (m *Service) GetStorageDetails(r *request.GetStorageDetailsRequest) (*upclo
 }
 
 // CreateStorage implements service.Storage.CreateStorage
-func (m *Service) CreateStorage(r *request.CreateStorageRequest) (*upcloud.StorageDetails, error) {
+func (m *Service) CreateStorage(_ context.Context, r *request.CreateStorageRequest) (*upcloud.StorageDetails, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -172,7 +186,7 @@ func (m *Service) CreateStorage(r *request.CreateStorageRequest) (*upcloud.Stora
 }
 
 // ModifyStorage implements service.Storage.ModifyStorage
-func (m *Service) ModifyStorage(r *request.ModifyStorageRequest) (*upcloud.StorageDetails, error) {
+func (m *Service) ModifyStorage(_ context.Context, r *request.ModifyStorageRequest) (*upcloud.StorageDetails, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -181,7 +195,7 @@ func (m *Service) ModifyStorage(r *request.ModifyStorageRequest) (*upcloud.Stora
 }
 
 // AttachStorage implements service.Storage.AttachStorage
-func (m *Service) AttachStorage(r *request.AttachStorageRequest) (*upcloud.ServerDetails, error) {
+func (m *Service) AttachStorage(_ context.Context, r *request.AttachStorageRequest) (*upcloud.ServerDetails, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -190,7 +204,7 @@ func (m *Service) AttachStorage(r *request.AttachStorageRequest) (*upcloud.Serve
 }
 
 // DetachStorage implements service.Storage.DetachStorage
-func (m *Service) DetachStorage(r *request.DetachStorageRequest) (*upcloud.ServerDetails, error) {
+func (m *Service) DetachStorage(_ context.Context, r *request.DetachStorageRequest) (*upcloud.ServerDetails, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -199,7 +213,7 @@ func (m *Service) DetachStorage(r *request.DetachStorageRequest) (*upcloud.Serve
 }
 
 // CloneStorage implements service.Storage.CloneStorage
-func (m *Service) CloneStorage(r *request.CloneStorageRequest) (*upcloud.StorageDetails, error) {
+func (m *Service) CloneStorage(_ context.Context, r *request.CloneStorageRequest) (*upcloud.StorageDetails, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -208,7 +222,7 @@ func (m *Service) CloneStorage(r *request.CloneStorageRequest) (*upcloud.Storage
 }
 
 // TemplatizeStorage implements service.Storage.TemplatizeStorage
-func (m *Service) TemplatizeStorage(r *request.TemplatizeStorageRequest) (*upcloud.StorageDetails, error) {
+func (m *Service) TemplatizeStorage(_ context.Context, r *request.TemplatizeStorageRequest) (*upcloud.StorageDetails, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -217,7 +231,7 @@ func (m *Service) TemplatizeStorage(r *request.TemplatizeStorageRequest) (*upclo
 }
 
 // WaitForStorageState implements service.Storage.WaitForStorageState
-func (m *Service) WaitForStorageState(r *request.WaitForStorageStateRequest) (*upcloud.StorageDetails, error) {
+func (m *Service) WaitForStorageState(_ context.Context, r *request.WaitForStorageStateRequest) (*upcloud.StorageDetails, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -226,7 +240,7 @@ func (m *Service) WaitForStorageState(r *request.WaitForStorageStateRequest) (*u
 }
 
 // LoadCDROM implements service.Storage.LoadCDDROM
-func (m *Service) LoadCDROM(r *request.LoadCDROMRequest) (*upcloud.ServerDetails, error) {
+func (m *Service) LoadCDROM(_ context.Context, r *request.LoadCDROMRequest) (*upcloud.ServerDetails, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -235,7 +249,7 @@ func (m *Service) LoadCDROM(r *request.LoadCDROMRequest) (*upcloud.ServerDetails
 }
 
 // EjectCDROM implements service.Storage.EjectCDROM
-func (m *Service) EjectCDROM(r *request.EjectCDROMRequest) (*upcloud.ServerDetails, error) {
+func (m *Service) EjectCDROM(_ context.Context, r *request.EjectCDROMRequest) (*upcloud.ServerDetails, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -244,7 +258,7 @@ func (m *Service) EjectCDROM(r *request.EjectCDROMRequest) (*upcloud.ServerDetai
 }
 
 // CreateBackup implements service.Storage.CreateBackup
-func (m *Service) CreateBackup(r *request.CreateBackupRequest) (*upcloud.StorageDetails, error) {
+func (m *Service) CreateBackup(_ context.Context, r *request.CreateBackupRequest) (*upcloud.StorageDetails, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -253,12 +267,12 @@ func (m *Service) CreateBackup(r *request.CreateBackupRequest) (*upcloud.Storage
 }
 
 // RestoreBackup implements service.Storage.RestoreBackup
-func (m *Service) RestoreBackup(r *request.RestoreBackupRequest) error {
+func (m *Service) RestoreBackup(_ context.Context, r *request.RestoreBackupRequest) error {
 	return m.Called(r).Error(0)
 }
 
 // CreateStorageImport implements service.Storage.CreateStorageImport
-func (m *Service) CreateStorageImport(r *request.CreateStorageImportRequest) (*upcloud.StorageImportDetails, error) {
+func (m *Service) CreateStorageImport(_ context.Context, r *request.CreateStorageImportRequest) (*upcloud.StorageImportDetails, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -267,7 +281,7 @@ func (m *Service) CreateStorageImport(r *request.CreateStorageImportRequest) (*u
 }
 
 // GetStorageImportDetails implements service.Storage.GetStorageImportDetails
-func (m *Service) GetStorageImportDetails(r *request.GetStorageImportDetailsRequest) (*upcloud.StorageImportDetails, error) {
+func (m *Service) GetStorageImportDetails(_ context.Context, r *request.GetStorageImportDetailsRequest) (*upcloud.StorageImportDetails, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -276,7 +290,7 @@ func (m *Service) GetStorageImportDetails(r *request.GetStorageImportDetailsRequ
 }
 
 // WaitForStorageImportCompletion implements service.Storage.WaitForStorageImportCompletion
-func (m *Service) WaitForStorageImportCompletion(r *request.WaitForStorageImportCompletionRequest) (*upcloud.StorageImportDetails, error) {
+func (m *Service) WaitForStorageImportCompletion(_ context.Context, r *request.WaitForStorageImportCompletionRequest) (*upcloud.StorageImportDetails, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -285,12 +299,12 @@ func (m *Service) WaitForStorageImportCompletion(r *request.WaitForStorageImport
 }
 
 // DeleteStorage implements service.Storage.DeleteStorage
-func (m *Service) DeleteStorage(r *request.DeleteStorageRequest) error {
+func (m *Service) DeleteStorage(_ context.Context, r *request.DeleteStorageRequest) error {
 	return m.Called(r).Error(0)
 }
 
 // GetFirewallRules implements service.Firewall.GetFirewallRules
-func (m *Service) GetFirewallRules(r *request.GetFirewallRulesRequest) (*upcloud.FirewallRules, error) {
+func (m *Service) GetFirewallRules(_ context.Context, r *request.GetFirewallRulesRequest) (*upcloud.FirewallRules, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -299,7 +313,7 @@ func (m *Service) GetFirewallRules(r *request.GetFirewallRulesRequest) (*upcloud
 }
 
 // GetFirewallRuleDetails implements service.Firewall.GetFirewallRuleDetails
-func (m *Service) GetFirewallRuleDetails(r *request.GetFirewallRuleDetailsRequest) (*upcloud.FirewallRule, error) {
+func (m *Service) GetFirewallRuleDetails(_ context.Context, r *request.GetFirewallRuleDetailsRequest) (*upcloud.FirewallRule, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -308,7 +322,7 @@ func (m *Service) GetFirewallRuleDetails(r *request.GetFirewallRuleDetailsReques
 }
 
 // CreateFirewallRule implements service.Firewall.CreateFirewallRule
-func (m *Service) CreateFirewallRule(r *request.CreateFirewallRuleRequest) (*upcloud.FirewallRule, error) {
+func (m *Service) CreateFirewallRule(_ context.Context, r *request.CreateFirewallRuleRequest) (*upcloud.FirewallRule, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -317,19 +331,19 @@ func (m *Service) CreateFirewallRule(r *request.CreateFirewallRuleRequest) (*upc
 }
 
 // CreateFirewallRules implements service.Firewall.CreateFirewallRules
-func (m *Service) CreateFirewallRules(r *request.CreateFirewallRulesRequest) error {
+func (m *Service) CreateFirewallRules(_ context.Context, r *request.CreateFirewallRulesRequest) error {
 	args := m.Called(r)
 	return args.Error(0)
 }
 
 // DeleteFirewallRule implements service.Firewall.DeleteFirewallRule
-func (m *Service) DeleteFirewallRule(r *request.DeleteFirewallRuleRequest) error {
+func (m *Service) DeleteFirewallRule(_ context.Context, r *request.DeleteFirewallRuleRequest) error {
 	args := m.Called(r)
 	return args.Error(0)
 }
 
 // GetNetworks implements service.Network.GetNetworks
-func (m *Service) GetNetworks() (*upcloud.Networks, error) {
+func (m *Service) GetNetworks(context.Context, ...request.QueryFilter) (*upcloud.Networks, error) {
 	args := m.Called()
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -338,7 +352,7 @@ func (m *Service) GetNetworks() (*upcloud.Networks, error) {
 }
 
 // GetNetworksInZone implements service.Network.GetNetworksInZone
-func (m *Service) GetNetworksInZone(r *request.GetNetworksInZoneRequest) (*upcloud.Networks, error) {
+func (m *Service) GetNetworksInZone(_ context.Context, r *request.GetNetworksInZoneRequest) (*upcloud.Networks, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -347,7 +361,7 @@ func (m *Service) GetNetworksInZone(r *request.GetNetworksInZoneRequest) (*upclo
 }
 
 // CreateNetwork implements service.Network.CreateNetwork
-func (m *Service) CreateNetwork(r *request.CreateNetworkRequest) (*upcloud.Network, error) {
+func (m *Service) CreateNetwork(_ context.Context, r *request.CreateNetworkRequest) (*upcloud.Network, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -356,7 +370,7 @@ func (m *Service) CreateNetwork(r *request.CreateNetworkRequest) (*upcloud.Netwo
 }
 
 // GetNetworkDetails implements service.Network.GetNetworkDetails
-func (m *Service) GetNetworkDetails(r *request.GetNetworkDetailsRequest) (*upcloud.Network, error) {
+func (m *Service) GetNetworkDetails(_ context.Context, r *request.GetNetworkDetailsRequest) (*upcloud.Network, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -365,7 +379,7 @@ func (m *Service) GetNetworkDetails(r *request.GetNetworkDetailsRequest) (*upclo
 }
 
 // ModifyNetwork implements service.Network.ModifyNetwork
-func (m *Service) ModifyNetwork(r *request.ModifyNetworkRequest) (*upcloud.Network, error) {
+func (m *Service) ModifyNetwork(_ context.Context, r *request.ModifyNetworkRequest) (*upcloud.Network, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -374,19 +388,19 @@ func (m *Service) ModifyNetwork(r *request.ModifyNetworkRequest) (*upcloud.Netwo
 }
 
 // AttachNetworkRouter implements service.Network.AttachNetworkRouter
-func (m *Service) AttachNetworkRouter(r *request.AttachNetworkRouterRequest) error {
+func (m *Service) AttachNetworkRouter(_ context.Context, r *request.AttachNetworkRouterRequest) error {
 	args := m.Called(r)
 	return args.Error(0)
 }
 
 // DetachNetworkRouter implements service.Network.DetachNetworkRouter
-func (m *Service) DetachNetworkRouter(r *request.DetachNetworkRouterRequest) error {
+func (m *Service) DetachNetworkRouter(_ context.Context, r *request.DetachNetworkRouterRequest) error {
 	args := m.Called(r)
 	return args.Error(0)
 }
 
 // GetServerNetworks implements service.Network.GetServerNetworks
-func (m *Service) GetServerNetworks(r *request.GetServerNetworksRequest) (*upcloud.Networking, error) {
+func (m *Service) GetServerNetworks(_ context.Context, r *request.GetServerNetworksRequest) (*upcloud.Networking, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -395,7 +409,7 @@ func (m *Service) GetServerNetworks(r *request.GetServerNetworksRequest) (*upclo
 }
 
 // CreateNetworkInterface implements service.Network.CreateNetworkInterface
-func (m *Service) CreateNetworkInterface(r *request.CreateNetworkInterfaceRequest) (*upcloud.Interface, error) {
+func (m *Service) CreateNetworkInterface(_ context.Context, r *request.CreateNetworkInterfaceRequest) (*upcloud.Interface, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -404,7 +418,7 @@ func (m *Service) CreateNetworkInterface(r *request.CreateNetworkInterfaceReques
 }
 
 // ModifyNetworkInterface implements service.Network.ModifyNetworkInterface
-func (m *Service) ModifyNetworkInterface(r *request.ModifyNetworkInterfaceRequest) (*upcloud.Interface, error) {
+func (m *Service) ModifyNetworkInterface(_ context.Context, r *request.ModifyNetworkInterfaceRequest) (*upcloud.Interface, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -413,19 +427,19 @@ func (m *Service) ModifyNetworkInterface(r *request.ModifyNetworkInterfaceReques
 }
 
 // DeleteNetwork implements service.Network.DeleteNetwork
-func (m *Service) DeleteNetwork(r *request.DeleteNetworkRequest) error {
+func (m *Service) DeleteNetwork(_ context.Context, r *request.DeleteNetworkRequest) error {
 	args := m.Called(r)
 	return args.Error(0)
 }
 
 // DeleteNetworkInterface implements service.Network.DeleteNetworkInterface
-func (m *Service) DeleteNetworkInterface(r *request.DeleteNetworkInterfaceRequest) error {
+func (m *Service) DeleteNetworkInterface(_ context.Context, r *request.DeleteNetworkInterfaceRequest) error {
 	args := m.Called(r)
 	return args.Error(0)
 }
 
 // GetRouters implements service.Network.GetRouters
-func (m *Service) GetRouters() (*upcloud.Routers, error) {
+func (m *Service) GetRouters(context.Context, ...request.QueryFilter) (*upcloud.Routers, error) {
 	args := m.Called()
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -434,7 +448,7 @@ func (m *Service) GetRouters() (*upcloud.Routers, error) {
 }
 
 // GetRouterDetails implements service.Network.GetRouterDetails
-func (m *Service) GetRouterDetails(r *request.GetRouterDetailsRequest) (*upcloud.Router, error) {
+func (m *Service) GetRouterDetails(_ context.Context, r *request.GetRouterDetailsRequest) (*upcloud.Router, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -443,7 +457,7 @@ func (m *Service) GetRouterDetails(r *request.GetRouterDetailsRequest) (*upcloud
 }
 
 // CreateRouter implements service.Network.CreateRouter
-func (m *Service) CreateRouter(r *request.CreateRouterRequest) (*upcloud.Router, error) {
+func (m *Service) CreateRouter(_ context.Context, r *request.CreateRouterRequest) (*upcloud.Router, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -452,7 +466,7 @@ func (m *Service) CreateRouter(r *request.CreateRouterRequest) (*upcloud.Router,
 }
 
 // ModifyRouter implements service.Network.ModifyRouter
-func (m *Service) ModifyRouter(r *request.ModifyRouterRequest) (*upcloud.Router, error) {
+func (m *Service) ModifyRouter(_ context.Context, r *request.ModifyRouterRequest) (*upcloud.Router, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -461,13 +475,13 @@ func (m *Service) ModifyRouter(r *request.ModifyRouterRequest) (*upcloud.Router,
 }
 
 // DeleteRouter implements service.Network.DeleteRouter
-func (m *Service) DeleteRouter(r *request.DeleteRouterRequest) error {
+func (m *Service) DeleteRouter(_ context.Context, r *request.DeleteRouterRequest) error {
 	args := m.Called(r)
 	return args.Error(0)
 }
 
 // GetIPAddresses implements service.Network.GetIPAddresses
-func (m *Service) GetIPAddresses() (*upcloud.IPAddresses, error) {
+func (m *Service) GetIPAddresses(context.Context) (*upcloud.IPAddresses, error) {
 	args := m.Called()
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -476,7 +490,7 @@ func (m *Service) GetIPAddresses() (*upcloud.IPAddresses, error) {
 }
 
 // GetIPAddressDetails implements service.Network.GetIPAddressDetails
-func (m *Service) GetIPAddressDetails(r *request.GetIPAddressDetailsRequest) (*upcloud.IPAddress, error) {
+func (m *Service) GetIPAddressDetails(_ context.Context, r *request.GetIPAddressDetailsRequest) (*upcloud.IPAddress, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -485,7 +499,7 @@ func (m *Service) GetIPAddressDetails(r *request.GetIPAddressDetailsRequest) (*u
 }
 
 // AssignIPAddress implements service.Network.AssignIPAddress
-func (m *Service) AssignIPAddress(r *request.AssignIPAddressRequest) (*upcloud.IPAddress, error) {
+func (m *Service) AssignIPAddress(_ context.Context, r *request.AssignIPAddressRequest) (*upcloud.IPAddress, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -494,7 +508,7 @@ func (m *Service) AssignIPAddress(r *request.AssignIPAddressRequest) (*upcloud.I
 }
 
 // ModifyIPAddress implements service.Network.ModifyIPAddress
-func (m *Service) ModifyIPAddress(r *request.ModifyIPAddressRequest) (*upcloud.IPAddress, error) {
+func (m *Service) ModifyIPAddress(_ context.Context, r *request.ModifyIPAddressRequest) (*upcloud.IPAddress, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -503,13 +517,13 @@ func (m *Service) ModifyIPAddress(r *request.ModifyIPAddressRequest) (*upcloud.I
 }
 
 // ReleaseIPAddress implements service.Network.ReleaseIPAddress
-func (m *Service) ReleaseIPAddress(r *request.ReleaseIPAddressRequest) error {
+func (m *Service) ReleaseIPAddress(_ context.Context, r *request.ReleaseIPAddressRequest) error {
 	args := m.Called(r)
 	return args.Error(0)
 }
 
 // ResizeStorageFilesystem implements service.Storage.ResizeStorageFilesystem
-func (m *Service) ResizeStorageFilesystem(r *request.ResizeStorageFilesystemRequest) (*upcloud.ResizeStorageFilesystemBackup, error) {
+func (m *Service) ResizeStorageFilesystem(_ context.Context, r *request.ResizeStorageFilesystemRequest) (*upcloud.ResizeStorageFilesystemBackup, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -518,7 +532,7 @@ func (m *Service) ResizeStorageFilesystem(r *request.ResizeStorageFilesystemRequ
 }
 
 // CreateSubaccount implements service.Account.CreateSubaccount
-func (m *Service) CreateSubaccount(r *request.CreateSubaccountRequest) (*upcloud.AccountDetails, error) {
+func (m *Service) CreateSubaccount(_ context.Context, r *request.CreateSubaccountRequest) (*upcloud.AccountDetails, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -527,7 +541,7 @@ func (m *Service) CreateSubaccount(r *request.CreateSubaccountRequest) (*upcloud
 }
 
 // GetAccountList implements service.Account.GetAccountList
-func (m *Service) GetAccountList() (upcloud.AccountList, error) {
+func (m *Service) GetAccountList(context.Context) (upcloud.AccountList, error) {
 	args := m.Called()
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -536,7 +550,7 @@ func (m *Service) GetAccountList() (upcloud.AccountList, error) {
 }
 
 // GetAccountDetails implements service.Account.GetAccountDetails
-func (m *Service) GetAccountDetails(r *request.GetAccountDetailsRequest) (*upcloud.AccountDetails, error) {
+func (m *Service) GetAccountDetails(_ context.Context, r *request.GetAccountDetailsRequest) (*upcloud.AccountDetails, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -545,7 +559,7 @@ func (m *Service) GetAccountDetails(r *request.GetAccountDetailsRequest) (*upclo
 }
 
 // ModifySubaccount implements service.Account.ModifySubaccount
-func (m *Service) ModifySubaccount(r *request.ModifySubaccountRequest) (*upcloud.AccountDetails, error) {
+func (m *Service) ModifySubaccount(_ context.Context, r *request.ModifySubaccountRequest) (*upcloud.AccountDetails, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -554,7 +568,7 @@ func (m *Service) ModifySubaccount(r *request.ModifySubaccountRequest) (*upcloud
 }
 
 // DeleteSubaccount implements service.Account.DeleteSubaccount
-func (m *Service) DeleteSubaccount(r *request.DeleteSubaccountRequest) error {
+func (m *Service) DeleteSubaccount(_ context.Context, r *request.DeleteSubaccountRequest) error {
 	args := m.Called(r)
 	if args[0] == nil {
 		return args.Error(1)
@@ -562,7 +576,7 @@ func (m *Service) DeleteSubaccount(r *request.DeleteSubaccountRequest) error {
 	return nil
 }
 
-func (m *Service) CancelManagedDatabaseConnection(r *request.CancelManagedDatabaseConnection) error {
+func (m *Service) CancelManagedDatabaseConnection(_ context.Context, r *request.CancelManagedDatabaseConnection) error {
 	args := m.Called(r)
 	if args[0] != nil {
 		return args.Error(0)
@@ -570,19 +584,19 @@ func (m *Service) CancelManagedDatabaseConnection(r *request.CancelManagedDataba
 	return nil
 }
 
-func (m *Service) CloneManagedDatabase(r *request.CloneManagedDatabaseRequest) (*upcloud.ManagedDatabase, error) {
+func (m *Service) CloneManagedDatabase(_ context.Context, r *request.CloneManagedDatabaseRequest) (*upcloud.ManagedDatabase, error) {
 	return nil, nil
 }
 
-func (m *Service) CreateManagedDatabase(r *request.CreateManagedDatabaseRequest) (*upcloud.ManagedDatabase, error) {
+func (m *Service) CreateManagedDatabase(_ context.Context, r *request.CreateManagedDatabaseRequest) (*upcloud.ManagedDatabase, error) {
 	return nil, nil
 }
 
-func (m *Service) GetManagedDatabase(r *request.GetManagedDatabaseRequest) (*upcloud.ManagedDatabase, error) {
+func (m *Service) GetManagedDatabase(_ context.Context, r *request.GetManagedDatabaseRequest) (*upcloud.ManagedDatabase, error) {
 	return nil, nil
 }
 
-func (m *Service) GetManagedDatabases(r *request.GetManagedDatabasesRequest) ([]upcloud.ManagedDatabase, error) {
+func (m *Service) GetManagedDatabases(_ context.Context, r *request.GetManagedDatabasesRequest) ([]upcloud.ManagedDatabase, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -590,27 +604,27 @@ func (m *Service) GetManagedDatabases(r *request.GetManagedDatabasesRequest) ([]
 	return args[0].([]upcloud.ManagedDatabase), args.Error(1)
 }
 
-func (m *Service) GetManagedDatabaseConnections(r *request.GetManagedDatabaseConnectionsRequest) ([]upcloud.ManagedDatabaseConnection, error) {
+func (m *Service) GetManagedDatabaseConnections(_ context.Context, r *request.GetManagedDatabaseConnectionsRequest) ([]upcloud.ManagedDatabaseConnection, error) {
 	return nil, nil
 }
 
-func (m *Service) GetManagedDatabaseMetrics(r *request.GetManagedDatabaseMetricsRequest) (*upcloud.ManagedDatabaseMetrics, error) {
+func (m *Service) GetManagedDatabaseMetrics(_ context.Context, r *request.GetManagedDatabaseMetricsRequest) (*upcloud.ManagedDatabaseMetrics, error) {
 	return nil, nil
 }
 
-func (m *Service) GetManagedDatabaseLogs(r *request.GetManagedDatabaseLogsRequest) (*upcloud.ManagedDatabaseLogs, error) {
+func (m *Service) GetManagedDatabaseLogs(_ context.Context, r *request.GetManagedDatabaseLogsRequest) (*upcloud.ManagedDatabaseLogs, error) {
 	return nil, nil
 }
 
-func (m *Service) GetManagedDatabaseQueryStatisticsMySQL(r *request.GetManagedDatabaseQueryStatisticsRequest) ([]upcloud.ManagedDatabaseQueryStatisticsMySQL, error) {
+func (m *Service) GetManagedDatabaseQueryStatisticsMySQL(_ context.Context, r *request.GetManagedDatabaseQueryStatisticsRequest) ([]upcloud.ManagedDatabaseQueryStatisticsMySQL, error) {
 	return nil, nil
 }
 
-func (m *Service) GetManagedDatabaseQueryStatisticsPostgreSQL(r *request.GetManagedDatabaseQueryStatisticsRequest) ([]upcloud.ManagedDatabaseQueryStatisticsPostgreSQL, error) {
+func (m *Service) GetManagedDatabaseQueryStatisticsPostgreSQL(_ context.Context, r *request.GetManagedDatabaseQueryStatisticsRequest) ([]upcloud.ManagedDatabaseQueryStatisticsPostgreSQL, error) {
 	return nil, nil
 }
 
-func (m *Service) GetManagedDatabaseServiceType(r *request.GetManagedDatabaseServiceTypeRequest) (*upcloud.ManagedDatabaseType, error) {
+func (m *Service) GetManagedDatabaseServiceType(_ context.Context, r *request.GetManagedDatabaseServiceTypeRequest) (*upcloud.ManagedDatabaseType, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -618,7 +632,7 @@ func (m *Service) GetManagedDatabaseServiceType(r *request.GetManagedDatabaseSer
 	return args[0].(*upcloud.ManagedDatabaseType), args.Error(1)
 }
 
-func (m *Service) GetManagedDatabaseServiceTypes(r *request.GetManagedDatabaseServiceTypesRequest) (map[string]upcloud.ManagedDatabaseType, error) {
+func (m *Service) GetManagedDatabaseServiceTypes(_ context.Context, r *request.GetManagedDatabaseServiceTypesRequest) (map[string]upcloud.ManagedDatabaseType, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -626,24 +640,24 @@ func (m *Service) GetManagedDatabaseServiceTypes(r *request.GetManagedDatabaseSe
 	return args[0].(map[string]upcloud.ManagedDatabaseType), args.Error(1)
 }
 
-func (m *Service) DeleteManagedDatabase(r *request.DeleteManagedDatabaseRequest) error {
+func (m *Service) DeleteManagedDatabase(_ context.Context, r *request.DeleteManagedDatabaseRequest) error {
 	args := m.Called(r)
 	return args.Error(0)
 }
 
-func (m *Service) ModifyManagedDatabase(r *request.ModifyManagedDatabaseRequest) (*upcloud.ManagedDatabase, error) {
+func (m *Service) ModifyManagedDatabase(_ context.Context, r *request.ModifyManagedDatabaseRequest) (*upcloud.ManagedDatabase, error) {
 	return nil, nil
 }
 
-func (m *Service) UpgradeManagedDatabaseVersion(r *request.UpgradeManagedDatabaseVersionRequest) (*upcloud.ManagedDatabase, error) {
+func (m *Service) UpgradeManagedDatabaseVersion(_ context.Context, r *request.UpgradeManagedDatabaseVersionRequest) (*upcloud.ManagedDatabase, error) {
 	return nil, nil
 }
 
-func (m *Service) GetManagedDatabaseVersions(r *request.GetManagedDatabaseVersionsRequest) ([]string, error) {
+func (m *Service) GetManagedDatabaseVersions(_ context.Context, r *request.GetManagedDatabaseVersionsRequest) ([]string, error) {
 	return nil, nil
 }
 
-func (m *Service) StartManagedDatabase(r *request.StartManagedDatabaseRequest) (*upcloud.ManagedDatabase, error) {
+func (m *Service) StartManagedDatabase(_ context.Context, r *request.StartManagedDatabaseRequest) (*upcloud.ManagedDatabase, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -651,7 +665,7 @@ func (m *Service) StartManagedDatabase(r *request.StartManagedDatabaseRequest) (
 	return args[0].(*upcloud.ManagedDatabase), args.Error(1)
 }
 
-func (m *Service) ShutdownManagedDatabase(r *request.ShutdownManagedDatabaseRequest) (*upcloud.ManagedDatabase, error) {
+func (m *Service) ShutdownManagedDatabase(_ context.Context, r *request.ShutdownManagedDatabaseRequest) (*upcloud.ManagedDatabase, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -659,11 +673,11 @@ func (m *Service) ShutdownManagedDatabase(r *request.ShutdownManagedDatabaseRequ
 	return args[0].(*upcloud.ManagedDatabase), args.Error(1)
 }
 
-func (m *Service) WaitForManagedDatabaseState(r *request.WaitForManagedDatabaseStateRequest) (*upcloud.ManagedDatabase, error) {
+func (m *Service) WaitForManagedDatabaseState(_ context.Context, r *request.WaitForManagedDatabaseStateRequest) (*upcloud.ManagedDatabase, error) {
 	return nil, nil
 }
 
-func (m *Service) GetLoadBalancers(r *request.GetLoadBalancersRequest) ([]upcloud.LoadBalancer, error) {
+func (m *Service) GetLoadBalancers(_ context.Context, r *request.GetLoadBalancersRequest) ([]upcloud.LoadBalancer, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -671,172 +685,176 @@ func (m *Service) GetLoadBalancers(r *request.GetLoadBalancersRequest) ([]upclou
 	return args[0].([]upcloud.LoadBalancer), args.Error(1)
 }
 
-func (m *Service) GetLoadBalancer(r *request.GetLoadBalancerRequest) (*upcloud.LoadBalancer, error) {
+func (m *Service) GetLoadBalancer(_ context.Context, r *request.GetLoadBalancerRequest) (*upcloud.LoadBalancer, error) {
 	return nil, nil
 }
 
-func (m *Service) CreateLoadBalancer(r *request.CreateLoadBalancerRequest) (*upcloud.LoadBalancer, error) {
+func (m *Service) CreateLoadBalancer(_ context.Context, r *request.CreateLoadBalancerRequest) (*upcloud.LoadBalancer, error) {
 	return nil, nil
 }
 
-func (m *Service) ModifyLoadBalancer(r *request.ModifyLoadBalancerRequest) (*upcloud.LoadBalancer, error) {
+func (m *Service) ModifyLoadBalancer(_ context.Context, r *request.ModifyLoadBalancerRequest) (*upcloud.LoadBalancer, error) {
 	return nil, nil
 }
 
-func (m *Service) DeleteLoadBalancer(r *request.DeleteLoadBalancerRequest) error {
+func (m *Service) DeleteLoadBalancer(_ context.Context, r *request.DeleteLoadBalancerRequest) error {
 	args := m.Called(r)
 	return args.Error(0)
 }
 
-func (m *Service) GetLoadBalancerBackends(r *request.GetLoadBalancerBackendsRequest) ([]upcloud.LoadBalancerBackend, error) {
+func (m *Service) GetLoadBalancerBackends(_ context.Context, r *request.GetLoadBalancerBackendsRequest) ([]upcloud.LoadBalancerBackend, error) {
 	return nil, nil
 }
 
-func (m *Service) GetLoadBalancerBackend(r *request.GetLoadBalancerBackendRequest) (*upcloud.LoadBalancerBackend, error) {
+func (m *Service) GetLoadBalancerBackend(_ context.Context, r *request.GetLoadBalancerBackendRequest) (*upcloud.LoadBalancerBackend, error) {
 	return nil, nil
 }
 
-func (m *Service) CreateLoadBalancerBackend(r *request.CreateLoadBalancerBackendRequest) (*upcloud.LoadBalancerBackend, error) {
+func (m *Service) CreateLoadBalancerBackend(_ context.Context, r *request.CreateLoadBalancerBackendRequest) (*upcloud.LoadBalancerBackend, error) {
 	return nil, nil
 }
 
-func (m *Service) ModifyLoadBalancerBackend(r *request.ModifyLoadBalancerBackendRequest) (*upcloud.LoadBalancerBackend, error) {
+func (m *Service) ModifyLoadBalancerBackend(_ context.Context, r *request.ModifyLoadBalancerBackendRequest) (*upcloud.LoadBalancerBackend, error) {
 	return nil, nil
 }
 
-func (m *Service) DeleteLoadBalancerBackend(r *request.DeleteLoadBalancerBackendRequest) error {
+func (m *Service) DeleteLoadBalancerBackend(_ context.Context, r *request.DeleteLoadBalancerBackendRequest) error {
 	return nil
 }
 
-func (m *Service) GetLoadBalancerBackendMembers(r *request.GetLoadBalancerBackendMembersRequest) ([]upcloud.LoadBalancerBackendMember, error) {
+func (m *Service) GetLoadBalancerBackendMembers(_ context.Context, r *request.GetLoadBalancerBackendMembersRequest) ([]upcloud.LoadBalancerBackendMember, error) {
 	return nil, nil
 }
 
-func (m *Service) GetLoadBalancerBackendMember(r *request.GetLoadBalancerBackendMemberRequest) (*upcloud.LoadBalancerBackendMember, error) {
+func (m *Service) GetLoadBalancerBackendMember(_ context.Context, r *request.GetLoadBalancerBackendMemberRequest) (*upcloud.LoadBalancerBackendMember, error) {
 	return nil, nil
 }
 
-func (m *Service) CreateLoadBalancerBackendMember(r *request.CreateLoadBalancerBackendMemberRequest) (*upcloud.LoadBalancerBackendMember, error) {
+func (m *Service) CreateLoadBalancerBackendMember(_ context.Context, r *request.CreateLoadBalancerBackendMemberRequest) (*upcloud.LoadBalancerBackendMember, error) {
 	return nil, nil
 }
 
-func (m *Service) ModifyLoadBalancerBackendMember(r *request.ModifyLoadBalancerBackendMemberRequest) (*upcloud.LoadBalancerBackendMember, error) {
+func (m *Service) ModifyLoadBalancerBackendMember(_ context.Context, r *request.ModifyLoadBalancerBackendMemberRequest) (*upcloud.LoadBalancerBackendMember, error) {
 	return nil, nil
 }
 
-func (m *Service) DeleteLoadBalancerBackendMember(r *request.DeleteLoadBalancerBackendMemberRequest) error {
+func (m *Service) DeleteLoadBalancerBackendMember(_ context.Context, r *request.DeleteLoadBalancerBackendMemberRequest) error {
 	return nil
 }
 
-func (m *Service) GetLoadBalancerResolvers(r *request.GetLoadBalancerResolversRequest) ([]upcloud.LoadBalancerResolver, error) {
+func (m *Service) GetLoadBalancerResolvers(_ context.Context, r *request.GetLoadBalancerResolversRequest) ([]upcloud.LoadBalancerResolver, error) {
 	return nil, nil
 }
 
-func (m *Service) CreateLoadBalancerResolver(r *request.CreateLoadBalancerResolverRequest) (*upcloud.LoadBalancerResolver, error) {
+func (m *Service) CreateLoadBalancerResolver(_ context.Context, r *request.CreateLoadBalancerResolverRequest) (*upcloud.LoadBalancerResolver, error) {
 	return nil, nil
 }
 
-func (m *Service) GetLoadBalancerResolver(r *request.GetLoadBalancerResolverRequest) (*upcloud.LoadBalancerResolver, error) {
+func (m *Service) GetLoadBalancerResolver(_ context.Context, r *request.GetLoadBalancerResolverRequest) (*upcloud.LoadBalancerResolver, error) {
 	return nil, nil
 }
 
-func (m *Service) ModifyLoadBalancerResolver(r *request.ModifyLoadBalancerResolverRequest) (*upcloud.LoadBalancerResolver, error) {
+func (m *Service) ModifyLoadBalancerResolver(_ context.Context, r *request.ModifyLoadBalancerResolverRequest) (*upcloud.LoadBalancerResolver, error) {
 	return nil, nil
 }
 
-func (m *Service) DeleteLoadBalancerResolver(r *request.DeleteLoadBalancerResolverRequest) error {
+func (m *Service) DeleteLoadBalancerResolver(_ context.Context, r *request.DeleteLoadBalancerResolverRequest) error {
 	return nil
 }
 
-func (m *Service) GetLoadBalancerPlans(r *request.GetLoadBalancerPlansRequest) ([]upcloud.LoadBalancerPlan, error) {
+func (m *Service) GetLoadBalancerPlans(_ context.Context, r *request.GetLoadBalancerPlansRequest) ([]upcloud.LoadBalancerPlan, error) {
 	return nil, nil
 }
 
-func (m *Service) GetLoadBalancerFrontends(r *request.GetLoadBalancerFrontendsRequest) ([]upcloud.LoadBalancerFrontend, error) {
+func (m *Service) GetLoadBalancerFrontends(_ context.Context, r *request.GetLoadBalancerFrontendsRequest) ([]upcloud.LoadBalancerFrontend, error) {
 	return nil, nil
 }
 
-func (m *Service) GetLoadBalancerFrontend(r *request.GetLoadBalancerFrontendRequest) (*upcloud.LoadBalancerFrontend, error) {
+func (m *Service) GetLoadBalancerFrontend(_ context.Context, r *request.GetLoadBalancerFrontendRequest) (*upcloud.LoadBalancerFrontend, error) {
 	return nil, nil
 }
 
-func (m *Service) CreateLoadBalancerFrontend(r *request.CreateLoadBalancerFrontendRequest) (*upcloud.LoadBalancerFrontend, error) {
+func (m *Service) CreateLoadBalancerFrontend(_ context.Context, r *request.CreateLoadBalancerFrontendRequest) (*upcloud.LoadBalancerFrontend, error) {
 	return nil, nil
 }
 
-func (m *Service) ModifyLoadBalancerFrontend(r *request.ModifyLoadBalancerFrontendRequest) (*upcloud.LoadBalancerFrontend, error) {
+func (m *Service) ModifyLoadBalancerFrontend(_ context.Context, r *request.ModifyLoadBalancerFrontendRequest) (*upcloud.LoadBalancerFrontend, error) {
 	return nil, nil
 }
 
-func (m *Service) DeleteLoadBalancerFrontend(r *request.DeleteLoadBalancerFrontendRequest) error {
+func (m *Service) DeleteLoadBalancerFrontend(_ context.Context, r *request.DeleteLoadBalancerFrontendRequest) error {
 	return nil
 }
 
-func (m *Service) GetLoadBalancerFrontendRules(r *request.GetLoadBalancerFrontendRulesRequest) ([]upcloud.LoadBalancerFrontendRule, error) {
+func (m *Service) GetLoadBalancerFrontendRules(_ context.Context, r *request.GetLoadBalancerFrontendRulesRequest) ([]upcloud.LoadBalancerFrontendRule, error) {
 	return nil, nil
 }
 
-func (m *Service) GetLoadBalancerFrontendRule(r *request.GetLoadBalancerFrontendRuleRequest) (*upcloud.LoadBalancerFrontendRule, error) {
+func (m *Service) GetLoadBalancerFrontendRule(_ context.Context, r *request.GetLoadBalancerFrontendRuleRequest) (*upcloud.LoadBalancerFrontendRule, error) {
 	return nil, nil
 }
 
-func (m *Service) CreateLoadBalancerFrontendRule(r *request.CreateLoadBalancerFrontendRuleRequest) (*upcloud.LoadBalancerFrontendRule, error) {
+func (m *Service) CreateLoadBalancerFrontendRule(_ context.Context, r *request.CreateLoadBalancerFrontendRuleRequest) (*upcloud.LoadBalancerFrontendRule, error) {
 	return nil, nil
 }
 
-func (m *Service) ModifyLoadBalancerFrontendRule(r *request.ModifyLoadBalancerFrontendRuleRequest) (*upcloud.LoadBalancerFrontendRule, error) {
+func (m *Service) ModifyLoadBalancerFrontendRule(_ context.Context, r *request.ModifyLoadBalancerFrontendRuleRequest) (*upcloud.LoadBalancerFrontendRule, error) {
 	return nil, nil
 }
 
-func (m *Service) ReplaceLoadBalancerFrontendRule(r *request.ReplaceLoadBalancerFrontendRuleRequest) (*upcloud.LoadBalancerFrontendRule, error) {
+func (m *Service) ReplaceLoadBalancerFrontendRule(_ context.Context, r *request.ReplaceLoadBalancerFrontendRuleRequest) (*upcloud.LoadBalancerFrontendRule, error) {
 	return nil, nil
 }
 
-func (m *Service) DeleteLoadBalancerFrontendRule(r *request.DeleteLoadBalancerFrontendRuleRequest) error {
+func (m *Service) DeleteLoadBalancerFrontendRule(_ context.Context, r *request.DeleteLoadBalancerFrontendRuleRequest) error {
 	return nil
 }
 
-func (m *Service) GetLoadBalancerFrontendTLSConfigs(r *request.GetLoadBalancerFrontendTLSConfigsRequest) ([]upcloud.LoadBalancerFrontendTLSConfig, error) {
+func (m *Service) GetLoadBalancerFrontendTLSConfigs(_ context.Context, r *request.GetLoadBalancerFrontendTLSConfigsRequest) ([]upcloud.LoadBalancerFrontendTLSConfig, error) {
 	return nil, nil
 }
 
-func (m *Service) GetLoadBalancerFrontendTLSConfig(r *request.GetLoadBalancerFrontendTLSConfigRequest) (*upcloud.LoadBalancerFrontendTLSConfig, error) {
+func (m *Service) GetLoadBalancerFrontendTLSConfig(_ context.Context, r *request.GetLoadBalancerFrontendTLSConfigRequest) (*upcloud.LoadBalancerFrontendTLSConfig, error) {
 	return nil, nil
 }
 
-func (m *Service) CreateLoadBalancerFrontendTLSConfig(r *request.CreateLoadBalancerFrontendTLSConfigRequest) (*upcloud.LoadBalancerFrontendTLSConfig, error) {
+func (m *Service) CreateLoadBalancerFrontendTLSConfig(_ context.Context, r *request.CreateLoadBalancerFrontendTLSConfigRequest) (*upcloud.LoadBalancerFrontendTLSConfig, error) {
 	return nil, nil
 }
 
-func (m *Service) ModifyLoadBalancerFrontendTLSConfig(r *request.ModifyLoadBalancerFrontendTLSConfigRequest) (*upcloud.LoadBalancerFrontendTLSConfig, error) {
+func (m *Service) ModifyLoadBalancerFrontendTLSConfig(_ context.Context, r *request.ModifyLoadBalancerFrontendTLSConfigRequest) (*upcloud.LoadBalancerFrontendTLSConfig, error) {
 	return nil, nil
 }
 
-func (m *Service) DeleteLoadBalancerFrontendTLSConfig(r *request.DeleteLoadBalancerFrontendTLSConfigRequest) error {
+func (m *Service) DeleteLoadBalancerFrontendTLSConfig(_ context.Context, r *request.DeleteLoadBalancerFrontendTLSConfigRequest) error {
 	return nil
 }
 
-func (m *Service) GetLoadBalancerCertificateBundles(r *request.GetLoadBalancerCertificateBundlesRequest) ([]upcloud.LoadBalancerCertificateBundle, error) {
+func (m *Service) GetLoadBalancerCertificateBundles(_ context.Context, r *request.GetLoadBalancerCertificateBundlesRequest) ([]upcloud.LoadBalancerCertificateBundle, error) {
 	return nil, nil
 }
 
-func (m *Service) GetLoadBalancerCertificateBundle(r *request.GetLoadBalancerCertificateBundleRequest) (*upcloud.LoadBalancerCertificateBundle, error) {
+func (m *Service) GetLoadBalancerCertificateBundle(_ context.Context, r *request.GetLoadBalancerCertificateBundleRequest) (*upcloud.LoadBalancerCertificateBundle, error) {
 	return nil, nil
 }
 
-func (m *Service) CreateLoadBalancerCertificateBundle(r *request.CreateLoadBalancerCertificateBundleRequest) (*upcloud.LoadBalancerCertificateBundle, error) {
+func (m *Service) CreateLoadBalancerCertificateBundle(_ context.Context, r *request.CreateLoadBalancerCertificateBundleRequest) (*upcloud.LoadBalancerCertificateBundle, error) {
 	return nil, nil
 }
 
-func (m *Service) ModifyLoadBalancerCertificateBundle(r *request.ModifyLoadBalancerCertificateBundleRequest) (*upcloud.LoadBalancerCertificateBundle, error) {
+func (m *Service) ModifyLoadBalancerCertificateBundle(_ context.Context, r *request.ModifyLoadBalancerCertificateBundleRequest) (*upcloud.LoadBalancerCertificateBundle, error) {
 	return nil, nil
 }
 
-func (m *Service) DeleteLoadBalancerCertificateBundle(r *request.DeleteLoadBalancerCertificateBundleRequest) error {
+func (m *Service) DeleteLoadBalancerCertificateBundle(_ context.Context, r *request.DeleteLoadBalancerCertificateBundleRequest) error {
 	return nil
 }
 
-func (m *Service) CreateKubernetesCluster(r *request.CreateKubernetesClusterRequest) (*upcloud.KubernetesCluster, error) {
+func (m *Service) ModifyLoadBalancerNetwork(ctx context.Context, r *request.ModifyLoadBalancerNetworkRequest) (*upcloud.LoadBalancerNetwork, error) {
+	return nil, nil
+}
+
+func (m *Service) CreateKubernetesCluster(_ context.Context, r *request.CreateKubernetesClusterRequest) (*upcloud.KubernetesCluster, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -844,12 +862,12 @@ func (m *Service) CreateKubernetesCluster(r *request.CreateKubernetesClusterRequ
 	return args[0].(*upcloud.KubernetesCluster), args.Error(1)
 }
 
-func (m *Service) DeleteKubernetesCluster(r *request.DeleteKubernetesClusterRequest) error {
+func (m *Service) DeleteKubernetesCluster(_ context.Context, r *request.DeleteKubernetesClusterRequest) error {
 	args := m.Called(r)
 	return args.Error(0)
 }
 
-func (m *Service) GetKubernetesCluster(r *request.GetKubernetesClusterRequest) (*upcloud.KubernetesCluster, error) {
+func (m *Service) GetKubernetesCluster(_ context.Context, r *request.GetKubernetesClusterRequest) (*upcloud.KubernetesCluster, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -857,7 +875,7 @@ func (m *Service) GetKubernetesCluster(r *request.GetKubernetesClusterRequest) (
 	return args[0].(*upcloud.KubernetesCluster), args.Error(1)
 }
 
-func (m *Service) GetKubernetesClusters(r *request.GetKubernetesClustersRequest) ([]upcloud.KubernetesCluster, error) {
+func (m *Service) GetKubernetesClusters(_ context.Context, r *request.GetKubernetesClustersRequest) ([]upcloud.KubernetesCluster, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return nil, args.Error(1)
@@ -865,7 +883,7 @@ func (m *Service) GetKubernetesClusters(r *request.GetKubernetesClustersRequest)
 	return args[0].([]upcloud.KubernetesCluster), args.Error(1)
 }
 
-func (m *Service) GetKubernetesKubeconfig(r *request.GetKubernetesKubeconfigRequest) (string, error) {
+func (m *Service) GetKubernetesKubeconfig(_ context.Context, r *request.GetKubernetesKubeconfigRequest) (string, error) {
 	args := m.Called(r)
 	if args[0] == nil {
 		return "", args.Error(1)
@@ -873,14 +891,26 @@ func (m *Service) GetKubernetesKubeconfig(r *request.GetKubernetesKubeconfigRequ
 	return args[0].(string), args.Error(1)
 }
 
-func (m *Service) GetKubernetesPlans(r *request.GetKubernetesPlansRequest) ([]upcloud.KubernetesPlan, error) {
+func (m *Service) GetKubernetesVersions(_ context.Context, r *request.GetKubernetesVersionsRequest) ([]string, error) {
 	return nil, nil
 }
 
-func (m *Service) GetKubernetesVersions(r *request.GetKubernetesVersionsRequest) ([]string, error) {
+func (m *Service) WaitForKubernetesClusterState(context.Context, *request.WaitForKubernetesClusterStateRequest) (*upcloud.KubernetesCluster, error) {
 	return nil, nil
 }
 
-func (m *Service) WaitForKubernetesClusterState(r *request.WaitForKubernetesClusterStateRequest) (*upcloud.KubernetesCluster, error) {
+func (m *Service) GetKubernetesNodeGroups(ctx context.Context, r *request.GetKubernetesNodeGroupsRequest) ([]upcloud.KubernetesNodeGroup, error) {
 	return nil, nil
+}
+func (m *Service) GetKubernetesNodeGroup(ctx context.Context, r *request.GetKubernetesNodeGroupRequest) (*upcloud.KubernetesNodeGroup, error) {
+	return nil, nil
+}
+func (m *Service) CreateKubernetesNodeGroup(ctx context.Context, r *request.CreateKubernetesNodeGroupRequest) (*upcloud.KubernetesNodeGroup, error) {
+	return nil, nil
+}
+func (m *Service) ModifyKubernetesNodeGroup(ctx context.Context, r *request.ModifyKubernetesNodeGroupRequest) (*upcloud.KubernetesNodeGroup, error) {
+	return nil, nil
+}
+func (m *Service) DeleteKubernetesNodeGroup(ctx context.Context, r *request.DeleteKubernetesNodeGroupRequest) error {
+	return nil
 }

@@ -8,8 +8,8 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/spf13/pflag"
 )
 
@@ -66,7 +66,7 @@ func (s *cloneCommand) Execute(exec commands.Executor, uuid string) (output.Outp
 	msg := fmt.Sprintf("Cloning storage %v", uuid)
 	exec.PushProgressStarted(msg)
 
-	res, err := svc.CloneStorage(&req)
+	res, err := svc.CloneStorage(exec.Context(), &req)
 	if err != nil {
 		return commands.HandleError(exec, msg, err)
 	}

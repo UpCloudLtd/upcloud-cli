@@ -9,7 +9,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/spf13/pflag"
 	"gopkg.in/yaml.v3"
 	"k8s.io/client-go/tools/clientcmd"
@@ -55,7 +55,7 @@ func (c *configCommand) Execute(exec commands.Executor, uuid string) (output.Out
 	msg := fmt.Sprintf("Getting kubeconfig for Kubernetes cluster %s", uuid)
 	exec.PushProgressStarted(msg)
 
-	resp, err := svc.GetKubernetesKubeconfig(&request.GetKubernetesKubeconfigRequest{
+	resp, err := svc.GetKubernetesKubeconfig(exec.Context(), &request.GetKubernetesKubeconfigRequest{
 		UUID: uuid,
 	})
 	if err != nil {

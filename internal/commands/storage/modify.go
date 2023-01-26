@@ -11,9 +11,8 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/service"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/spf13/pflag"
 )
 
@@ -73,8 +72,8 @@ func (s *modifyCommand) InitCommand() {
 	s.AddFlags(flagSet)
 }
 
-func setBackupFields(storageUUID string, p modifyParams, service service.Storage, req *request.ModifyStorageRequest) error {
-	details, err := service.GetStorageDetails(&request.GetStorageDetailsRequest{UUID: storageUUID})
+func setBackupFields(storageUUID string, p modifyParams, exec commands.Executor, req *request.ModifyStorageRequest) error {
+	details, err := exec.All().GetStorageDetails(exec.Context(), &request.GetStorageDetailsRequest{UUID: storageUUID})
 	if err != nil {
 		return err
 	}
@@ -141,11 +140,11 @@ func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Out
 	exec.PushProgressStarted(msg)
 
 	req := s.params.ModifyStorageRequest
-	if err := setBackupFields(uuid, s.params, svc, &req); err != nil {
+	if err := setBackupFields(uuid, s.params, exec, &req); err != nil {
 		return commands.HandleError(exec, msg, err)
 	}
 
-	res, err := svc.ModifyStorage(&req)
+	res, err := svc.ModifyStorage(exec.Context(), &req)
 	if err != nil {
 		return commands.HandleError(exec, msg, err)
 	}
@@ -160,7 +159,7 @@ func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Out
 		msg,
 		fmt.Sprintf("%s: resizing partition and filesystem", msg),
 	)
-	backup, err := svc.ResizeStorageFilesystem(&request.ResizeStorageFilesystemRequest{UUID: uuid})
+	backup, err := svc.ResizeStorageFilesystem(exec.Context(), &request.ResizeStorageFilesystemRequest{UUID: uuid})
 	// If there was an error during resize attempt, we consider the overall modify operation successful and just log warning about failed resize
 	if err != nil {
 		exec.PushProgressUpdate(messages.Update{

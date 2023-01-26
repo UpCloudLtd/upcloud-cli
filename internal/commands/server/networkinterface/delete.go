@@ -7,7 +7,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/spf13/pflag"
 )
 
@@ -49,7 +49,7 @@ func (s *deleteCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 	msg := fmt.Sprintf("Deleting network interface %d of server %s", s.interfaceIndex, arg)
 	exec.PushProgressStarted(msg)
 
-	err := exec.Network().DeleteNetworkInterface(&request.DeleteNetworkInterfaceRequest{
+	err := exec.Network().DeleteNetworkInterface(exec.Context(), &request.DeleteNetworkInterfaceRequest{
 		ServerUUID: arg,
 		Index:      s.interfaceIndex,
 	})

@@ -6,7 +6,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 )
 
 // ListCommand creates the "connection list" command
@@ -25,7 +25,7 @@ type listCommand struct {
 // Execute implements commands.MultipleArgumentCommand
 func (s *listCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.All()
-	connections, err := svc.GetManagedDatabaseConnections(&request.GetManagedDatabaseConnectionsRequest{UUID: uuid})
+	connections, err := svc.GetManagedDatabaseConnections(exec.Context(), &request.GetManagedDatabaseConnectionsRequest{UUID: uuid})
 	if err != nil {
 		return nil, err
 	}

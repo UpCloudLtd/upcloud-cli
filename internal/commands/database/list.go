@@ -5,7 +5,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/format"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 )
 
 // ListCommand creates the "database list" command
@@ -22,7 +22,7 @@ type listCommand struct {
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	svc := exec.All()
-	databases, err := svc.GetManagedDatabases(&request.GetManagedDatabasesRequest{})
+	databases, err := svc.GetManagedDatabases(exec.Context(), &request.GetManagedDatabasesRequest{})
 	if err != nil {
 		return nil, err
 	}

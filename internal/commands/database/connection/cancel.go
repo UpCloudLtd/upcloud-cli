@@ -9,7 +9,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/spf13/pflag"
 )
 
@@ -50,7 +50,7 @@ func (s *cancelCommand) Execute(exec commands.Executor, uuid string) (output.Out
 	msg := fmt.Sprintf("Cancelling connection %v to database %v", s.pid, uuid)
 	exec.PushProgressStarted(msg)
 
-	if err := svc.CancelManagedDatabaseConnection(&request.CancelManagedDatabaseConnection{
+	if err := svc.CancelManagedDatabaseConnection(exec.Context(), &request.CancelManagedDatabaseConnection{
 		UUID:      uuid,
 		Pid:       s.pid,
 		Terminate: s.terminate.Value(),

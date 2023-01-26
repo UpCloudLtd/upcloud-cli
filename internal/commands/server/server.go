@@ -6,7 +6,7 @@ import (
 
 	"github.com/UpCloudLtd/progress/messages"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 )
 
 const (
@@ -34,7 +34,7 @@ type serverCommand struct {
 func waitForServerState(uuid, state string, exec commands.Executor, msg string) {
 	exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Waiting for server %s to be in %s state", uuid, state))
 
-	if _, err := exec.All().WaitForServerState(&request.WaitForServerStateRequest{
+	if _, err := exec.All().WaitForServerState(exec.Context(), &request.WaitForServerStateRequest{
 		UUID:         uuid,
 		DesiredState: state,
 		Timeout:      5 * time.Minute,

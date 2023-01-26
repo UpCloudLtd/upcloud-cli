@@ -8,7 +8,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 )
 
 // StopCommand creates the "database stop" command
@@ -42,7 +42,7 @@ func (s *stopCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 	msg := fmt.Sprintf("Stopping database %v", uuid)
 	exec.PushProgressStarted(msg)
 
-	res, err := svc.ShutdownManagedDatabase(&request.ShutdownManagedDatabaseRequest{
+	res, err := svc.ShutdownManagedDatabase(exec.Context(), &request.ShutdownManagedDatabaseRequest{
 		UUID: uuid,
 	})
 	if err != nil {

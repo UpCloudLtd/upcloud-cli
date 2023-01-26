@@ -1,13 +1,14 @@
 package resolver_test
 
 import (
+	"context"
 	"errors"
 	"testing"
 
 	smock "github.com/UpCloudLtd/upcloud-cli/v2/internal/mock"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -23,7 +24,7 @@ func TestLoadBalancerResolution(t *testing.T) {
 		mService := &smock.Service{}
 		mService.On("GetLoadBalancers", mock.Anything).Return(mockLoadBalancers, nil)
 		res := resolver.CachingLoadBalancer{}
-		argResolver, err := res.Get(mService)
+		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 		for _, db := range mockLoadBalancers {
 			resolved, err := argResolver(db.UUID)
@@ -39,7 +40,7 @@ func TestLoadBalancerResolution(t *testing.T) {
 		mService := &smock.Service{}
 		mService.On("GetLoadBalancers", mock.Anything).Return(mockLoadBalancers, nil)
 		res := resolver.CachingLoadBalancer{}
-		argResolver, err := res.Get(mService)
+		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 
 		db := mockLoadBalancers[2]
@@ -55,7 +56,7 @@ func TestLoadBalancerResolution(t *testing.T) {
 		mService.On("GetLoadBalancers", mock.Anything).Return(mockLoadBalancers, nil)
 
 		res := resolver.CachingLoadBalancer{}
-		argResolver, err := res.Get(mService)
+		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 		var resolved string
 
@@ -84,7 +85,7 @@ func TestFailingLoadBalancerResolution(t *testing.T) {
 	mService := &smock.Service{}
 	mService.On("GetLoadBalancers", mock.Anything).Return(nil, errors.New("MOCKERROR"))
 	res := resolver.CachingLoadBalancer{}
-	argResolver, err := res.Get(mService)
+	argResolver, err := res.Get(context.TODO(), mService)
 	assert.EqualError(t, err, "MOCKERROR")
 	assert.Nil(t, argResolver)
 }

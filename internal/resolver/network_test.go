@@ -1,13 +1,14 @@
 package resolver_test
 
 import (
+	"context"
 	"errors"
 	"testing"
 
 	smock "github.com/UpCloudLtd/upcloud-cli/v2/internal/mock"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -49,7 +50,7 @@ func TestNetworkResolution(t *testing.T) {
 		mService := &smock.Service{}
 		mService.On("GetNetworks").Return(networks, nil)
 		res := resolver.CachingNetwork{}
-		argResolver, err := res.Get(mService)
+		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 		for _, network := range networks.Networks {
 			resolved, err := argResolver(network.UUID)
@@ -64,7 +65,7 @@ func TestNetworkResolution(t *testing.T) {
 		mService := &smock.Service{}
 		mService.On("GetNetworks").Return(networks, nil)
 		res := resolver.CachingNetwork{}
-		argResolver, err := res.Get(mService)
+		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 		for _, network := range unambiguousNetworks {
 			resolved, err := argResolver(network.Name)
@@ -79,7 +80,7 @@ func TestNetworkResolution(t *testing.T) {
 		mService := &smock.Service{}
 		mService.On("GetNetworks").Return(networks, nil)
 		res := resolver.CachingNetwork{}
-		argResolver, err := res.Get(mService)
+		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 
 		// ambigous name
@@ -114,7 +115,7 @@ func TestCachingNetwork_GetCached(t *testing.T) {
 	assert.Equal(t, upcloud.Network{}, cached)
 
 	// get resolver to init the cache.. TODO: is this the best way?
-	_, err = res.Get(mService)
+	_, err = res.Get(context.TODO(), mService)
 	assert.NoError(t, err)
 	for _, network := range networks.Networks {
 		cached, err := res.GetCached(network.UUID)
@@ -133,7 +134,7 @@ func TestFailingNetworkResolution(t *testing.T) {
 	var nilResponse *upcloud.Networks
 	mService.On("GetNetworks").Return(nilResponse, errors.New("MOCKERROR"))
 	res := resolver.CachingNetwork{}
-	argResolver, err := res.Get(mService)
+	argResolver, err := res.Get(context.TODO(), mService)
 	assert.EqualError(t, err, "MOCKERROR")
 	assert.Nil(t, argResolver)
 }

@@ -11,9 +11,8 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/service"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/pflag"
 )
@@ -69,16 +68,16 @@ type createParams struct {
 	remoteAccess   bool
 }
 
-func (s *createParams) processParams(planSvc service.Plans, storageSvc service.Storage) error {
+func (s *createParams) processParams(exec commands.Executor) error {
 	if s.os != "" {
 		var osStorage *upcloud.Storage
 
-		osStorage, err := storage.SearchSingleStorage(s.os, storageSvc)
+		osStorage, err := storage.SearchSingleStorage(s.os, exec)
 		if err != nil {
 			return err
 		}
 
-		plans, err := planSvc.GetPlans()
+		plans, err := exec.All().GetPlans(exec.Context())
 		if err != nil {
 			return err
 		}
@@ -117,7 +116,7 @@ func (s *createParams) processParams(planSvc service.Plans, storageSvc service.S
 	return nil
 }
 
-func (s *createParams) handleStorage(in string, storageSvc service.Storage) (*request.CreateServerStorageDevice, error) {
+func (s *createParams) handleStorage(in string, exec commands.Executor) (*request.CreateServerStorageDevice, error) {
 	sd := &request.CreateServerStorageDevice{}
 	fs := &pflag.FlagSet{}
 	args, err := commands.Parse(in)
@@ -140,7 +139,7 @@ func (s *createParams) handleStorage(in string, storageSvc service.Storage) (*re
 		if sd.Storage == "" {
 			return nil, fmt.Errorf("storage UUID or Title must be provided for %s operation", sd.Action)
 		}
-		strg, err := storage.SearchSingleStorage(sd.Storage, storageSvc)
+		strg, err := storage.SearchSingleStorage(sd.Storage, exec)
 		if err != nil {
 			return nil, err
 		}
@@ -292,13 +291,11 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		}
 	}
 
-	serverSvc := exec.Server()
-	planSvc := exec.Plan()
-	storageSvc := exec.Storage()
+	svc := exec.All()
 	msg := fmt.Sprintf("Creating server %v", s.params.Hostname)
 	exec.PushProgressStarted(msg)
 
-	if err := s.params.processParams(planSvc, storageSvc); err != nil {
+	if err := s.params.processParams(exec); err != nil {
 		return nil, err
 	}
 
@@ -325,7 +322,7 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 
 	exec.PushProgressUpdateMessage(msg, fmt.Sprintf("%s: creating storage devices", msg))
 	for _, strg := range s.params.storages {
-		strg, err := s.params.handleStorage(strg, storageSvc)
+		strg, err := s.params.handleStorage(strg, exec)
 		if err != nil {
 			return nil, err
 		}
@@ -341,7 +338,7 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	}
 
 	exec.PushProgressUpdateMessage(msg, msg)
-	res, err := serverSvc.CreateServer(&req)
+	res, err := svc.CreateServer(exec.Context(), &req)
 	if err != nil {
 		return commands.HandleError(exec, msg, err)
 	}
