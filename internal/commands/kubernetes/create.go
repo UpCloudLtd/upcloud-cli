@@ -205,7 +205,7 @@ func (c *createCommand) InitCommand() {
 		"node-group",
 		[]string{},
 		"Node group(s) for running workloads, multiple can be declared.\n"+
-			"Usage: --node-group "+
+			"Usage: `--node-group "+
 			"count=8,"+
 			"kubelet-arg=\"log-flush-frequency=5s\","+
 			"label=\"owner=devteam\","+
@@ -216,9 +216,9 @@ func (c *createCommand) InitCommand() {
 			"ssh-key=\"/path/to/your/public/ssh/key.pub\","+
 			"storage=01000000-0000-4000-8000-000160010100,"+
 			"taint=\"env=dev:NoSchedule\","+
-			"taint=\"env=dev2:NoSchedule\"",
+			"taint=\"env=dev2:NoSchedule\"`",
 	)
-	fs.StringVar(&c.params.Zone, "zone", "", "Zone where to create the server.")
+	fs.StringVar(&c.params.Zone, "zone", "", "Zone where to create the cluster.")
 	c.AddFlags(fs)
 
 	_ = c.Cobra().MarkFlagRequired("name")
