@@ -2,6 +2,7 @@ package commands
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"os"
@@ -85,7 +86,7 @@ type mockMultiResolver struct {
 	mock.Mock
 }
 
-func (m *mockMultiResolver) Get(_ internal.AllServices) (resolver.Resolver, error) {
+func (m *mockMultiResolver) Get(_ context.Context, _ internal.AllServices) (resolver.Resolver, error) {
 	return func(arg string) (uuid string, err error) {
 		if len(arg) > 5 {
 			return "", fmt.Errorf("MOCKTOOLONG")
