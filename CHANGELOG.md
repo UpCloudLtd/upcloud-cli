@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Print warning about unknown resource state before exiting when execution is interrupted with SIGINT.
+- Add `kubernetes nodegroup create`, `kubernetes nodegroup scale`, and `kubernetes nodegroup delete` commands (EXPERIMENTAL)
 
 ## [2.4.0] - 2022-12-19
 ### Added
