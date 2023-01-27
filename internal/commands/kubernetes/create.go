@@ -2,10 +2,9 @@ package kubernetes
 
 import (
 	"fmt"
-	"regexp"
-	"strings"
 
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/kubernetes/nodegroup"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
@@ -40,17 +39,6 @@ type createParams struct {
 	nodeGroups []string
 }
 
-type createNodeGroupParams struct {
-	count       int
-	name        string
-	plan        string
-	sshKeys     []string
-	storage     string
-	kubeletArgs []string
-	labels      []string
-	taints      []string
-}
-
 func (p *createParams) processParams(exec commands.Executor) error {
 	ngs := make([]upcloud.KubernetesNodeGroup, 0)
 
@@ -75,7 +63,8 @@ func (p *createParams) processParams(exec commands.Executor) error {
 }
 
 func processNodeGroup(in string) (upcloud.KubernetesNodeGroup, error) {
-	fs := &pflag.FlagSet{}
+	p := nodegroup.CreateNodeGroupParams{}
+	fs := nodegroup.GetCreateNodeGroupFlagSet(&p)
 	ng := upcloud.KubernetesNodeGroup{}
 
 	args, err := commands.ParseN(in, 2)
@@ -83,107 +72,13 @@ func processNodeGroup(in string) (upcloud.KubernetesNodeGroup, error) {
 		return ng, err
 	}
 
-	p := createNodeGroupParams{}
-	fs.IntVar(&p.count, "count", 0, "")
-	fs.StringArrayVar(&p.kubeletArgs, "kubelet-arg", []string{}, "")
-	fs.StringArrayVar(&p.labels, "label", []string{}, "")
-	fs.StringVar(&p.name, "name", "", "")
-	fs.StringVar(&p.plan, "plan", "", "")
-	fs.StringArrayVar(&p.sshKeys, "ssh-key", []string{}, "")
-	fs.StringVar(&p.storage, "storage", "", "")
-	fs.StringArrayVar(&p.taints, "taint", []string{}, "")
-
 	err = fs.Parse(args)
 
 	if err != nil {
 		return ng, err
 	}
 
-	kubeletArgs := make([]upcloud.KubernetesKubeletArg, 0)
-	for _, v := range p.kubeletArgs {
-		ka, err := processKubeletArg(v)
-		if err != nil {
-			return ng, err
-		}
-
-		kubeletArgs = append(kubeletArgs, ka)
-	}
-
-	labels := make([]upcloud.Label, 0)
-	for _, v := range p.labels {
-		l, err := processLabel(v)
-		if err != nil {
-			return ng, err
-		}
-
-		labels = append(labels, l)
-	}
-
-	sshKeys, err := commands.ParseSSHKeys(p.sshKeys)
-	if err != nil {
-		return ng, err
-	}
-
-	taints := make([]upcloud.KubernetesTaint, 0)
-	for _, v := range p.taints {
-		t, err := processTaint(v)
-		if err != nil {
-			return ng, err
-		}
-
-		taints = append(taints, t)
-	}
-
-	ng = upcloud.KubernetesNodeGroup{
-		Count:       p.count,
-		Labels:      labels,
-		Name:        p.name,
-		Plan:        p.plan,
-		SSHKeys:     sshKeys,
-		Storage:     p.storage,
-		KubeletArgs: kubeletArgs,
-		Taints:      taints,
-	}
-
-	return ng, nil
-}
-
-func processKubeletArg(in string) (upcloud.KubernetesKubeletArg, error) {
-	split := strings.SplitN(in, "=", 2)
-	if len(split) < 2 {
-		return upcloud.KubernetesKubeletArg{}, fmt.Errorf("invalid kubelet-arg: %s", in)
-	}
-
-	return upcloud.KubernetesKubeletArg{
-		Key:   split[0],
-		Value: split[1],
-	}, nil
-}
-
-func processLabel(in string) (upcloud.Label, error) {
-	split := strings.SplitN(in, "=", 2)
-	if len(split) < 2 {
-		return upcloud.Label{}, fmt.Errorf("invalid label: %s", in)
-	}
-
-	return upcloud.Label{
-		Key:   split[0],
-		Value: split[1],
-	}, nil
-}
-
-func processTaint(in string) (upcloud.KubernetesTaint, error) {
-	r := regexp.MustCompile(`^(.+)=(.+):(.+)`)
-	s := r.FindStringSubmatch(in)
-	if len(s) < 4 {
-		return upcloud.KubernetesTaint{}, fmt.Errorf("invalid taint: %s", in)
-	}
-
-	return upcloud.KubernetesTaint{
-		Effect: upcloud.KubernetesClusterTaintEffect(s[3]),
-		Key:    s[1],
-		Value:  s[2],
-	}, nil
+	return nodegroup.ProcessNodeGroupParams[upcloud.KubernetesNodeGroup](p)
 }
 
 type createCommand struct {
