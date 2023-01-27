@@ -1,8 +1,8 @@
 package router
 
 import (
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
@@ -99,7 +99,7 @@ func getNetworks(exec commands.Executor, attached upcloud.RouterNetworkSlice) ([
 		go func(uuid string) {
 			// get worker
 			workerID := <-idleWorkers
-			nw, err := exec.Network().GetNetworkDetails(&request.GetNetworkDetailsRequest{UUID: uuid})
+			nw, err := exec.Network().GetNetworkDetails(exec.Context(), &request.GetNetworkDetailsRequest{UUID: uuid})
 			if err != nil {
 				errors <- err
 			} else {

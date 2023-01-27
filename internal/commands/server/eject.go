@@ -8,7 +8,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 )
 
 type ejectCommand struct {
@@ -41,7 +41,7 @@ func (s *ejectCommand) Execute(exec commands.Executor, uuid string) (output.Outp
 	req := s.params.EjectCDROMRequest
 	req.ServerUUID = uuid
 
-	res, err := svc.EjectCDROM(&req)
+	res, err := svc.EjectCDROM(exec.Context(), &req)
 	if err != nil {
 		return commands.HandleError(exec, msg, err)
 	}

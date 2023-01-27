@@ -6,7 +6,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/spf13/pflag"
 )
 
@@ -46,7 +46,7 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	msg := fmt.Sprintf("Creating router %s", s.name)
 	exec.PushProgressStarted(msg)
 
-	res, err := exec.Network().CreateRouter(&request.CreateRouterRequest{Name: s.name})
+	res, err := exec.Network().CreateRouter(exec.Context(), &request.CreateRouterRequest{Name: s.name})
 	if err != nil {
 		return commands.HandleError(exec, msg, err)
 	}

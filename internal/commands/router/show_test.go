@@ -1,9 +1,10 @@
 package router
 
 import (
+	"context"
 	"testing"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -77,7 +78,7 @@ func TestShowCommand(t *testing.T) {
 	c := commands.BuildCommand(ShowCommand(), nil, conf)
 
 	// get resolver to trigger caching
-	_, err := c.(resolver.ResolutionProvider).Get(&mService)
+	_, err := c.(resolver.ResolutionProvider).Get(context.TODO(), &mService)
 	assert.NoError(t, err)
 
 	c.Cobra().SetArgs([]string{router.UUID})

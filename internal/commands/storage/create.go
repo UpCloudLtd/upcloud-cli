@@ -8,8 +8,8 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/spf13/pflag"
 )
 
@@ -100,7 +100,7 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	msg := fmt.Sprintf("Creating storage %s", s.params.Title)
 	exec.PushProgressStarted(msg)
 
-	res, err := svc.CreateStorage(&s.params.CreateStorageRequest)
+	res, err := svc.CreateStorage(exec.Context(), &s.params.CreateStorageRequest)
 	if err != nil {
 		return commands.HandleError(exec, msg, err)
 	}

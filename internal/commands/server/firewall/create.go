@@ -7,8 +7,8 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/m7shapan/cidr"
 	"github.com/spf13/pflag"
 )
@@ -114,7 +114,7 @@ func (s *createCommand) Execute(exec commands.Executor, arg string) (output.Outp
 	msg := fmt.Sprintf("Creating firewall rule for server %v", arg)
 	exec.PushProgressStarted(msg)
 
-	res, err := exec.Firewall().CreateFirewallRule(&request.CreateFirewallRuleRequest{
+	res, err := exec.Firewall().CreateFirewallRule(exec.Context(), &request.CreateFirewallRuleRequest{
 		ServerUUID: arg,
 		FirewallRule: upcloud.FirewallRule{
 			Action:                  s.action,

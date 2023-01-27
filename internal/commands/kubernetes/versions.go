@@ -4,7 +4,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 )
 
 // VersionsCommand creates the "kubernetes versions" command
@@ -21,7 +21,7 @@ type versionsCommand struct {
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (s *versionsCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	svc := exec.All()
-	versions, err := svc.GetKubernetesVersions(&request.GetKubernetesVersionsRequest{})
+	versions, err := svc.GetKubernetesVersions(exec.Context(), &request.GetKubernetesVersionsRequest{})
 	if err != nil {
 		return nil, err
 	}

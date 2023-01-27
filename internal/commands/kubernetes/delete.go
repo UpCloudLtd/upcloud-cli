@@ -8,7 +8,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 )
 
 // DeleteCommand creates the "kubernetes delete" command
@@ -35,7 +35,7 @@ func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Outp
 	msg := fmt.Sprintf("Deleting Kubernetes cluster %v", arg)
 	exec.PushProgressStarted(msg)
 
-	err := svc.DeleteKubernetesCluster(&request.DeleteKubernetesClusterRequest{
+	err := svc.DeleteKubernetesCluster(exec.Context(), &request.DeleteKubernetesClusterRequest{
 		UUID: arg,
 	})
 	if err != nil {

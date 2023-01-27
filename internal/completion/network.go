@@ -1,6 +1,8 @@
 package completion
 
 import (
+	"context"
+
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
 
 	"github.com/spf13/cobra"
@@ -13,8 +15,8 @@ type Network struct{}
 var _ Provider = Network{}
 
 // CompleteArgument implements completion.Provider
-func (s Network) CompleteArgument(svc service.AllServices, toComplete string) ([]string, cobra.ShellCompDirective) {
-	networks, err := svc.GetNetworks()
+func (s Network) CompleteArgument(ctx context.Context, svc service.AllServices, toComplete string) ([]string, cobra.ShellCompDirective) {
+	networks, err := svc.GetNetworks(ctx)
 	if err != nil {
 		return None(toComplete)
 	}

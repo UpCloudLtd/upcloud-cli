@@ -1,6 +1,8 @@
 package completion
 
 import (
+	"context"
+
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
 	"github.com/spf13/cobra"
 )
@@ -12,8 +14,8 @@ type Server struct{}
 var _ Provider = Server{}
 
 // CompleteArgument implements completion.Provider
-func (s Server) CompleteArgument(svc service.AllServices, toComplete string) ([]string, cobra.ShellCompDirective) {
-	servers, err := svc.GetServers()
+func (s Server) CompleteArgument(ctx context.Context, svc service.AllServices, toComplete string) ([]string, cobra.ShellCompDirective) {
+	servers, err := svc.GetServers(ctx)
 	if err != nil {
 		return None(toComplete)
 	}

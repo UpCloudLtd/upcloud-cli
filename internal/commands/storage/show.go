@@ -12,8 +12,8 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
 	"github.com/jedib0t/go-pretty/v6/text"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 )
 
 // ShowCommand creates the "storage show" command
@@ -42,9 +42,7 @@ func (s *showCommand) InitCommand() {
 // Execute implements commands.MultipleArgumentCommand
 func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	storageSvc := exec.Storage()
-	storage, err := storageSvc.GetStorageDetails(
-		&request.GetStorageDetailsRequest{UUID: uuid},
-	)
+	storage, err := storageSvc.GetStorageDetails(exec.Context(), &request.GetStorageDetailsRequest{UUID: uuid})
 	if err != nil {
 		return nil, err
 	}

@@ -13,8 +13,8 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
 	"github.com/jedib0t/go-pretty/v6/text"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 )
 
 // ShowCommand creates the "server show" command
@@ -54,10 +54,10 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 	var firewallRules *upcloud.FirewallRules
 	go func() {
 		defer wg.Done()
-		firewallRules, fwRuleErr = firewallSvc.GetFirewallRules(&request.GetFirewallRulesRequest{ServerUUID: uuid})
+		firewallRules, fwRuleErr = firewallSvc.GetFirewallRules(exec.Context(), &request.GetFirewallRulesRequest{ServerUUID: uuid})
 	}()
 
-	server, err := serverSvc.GetServerDetails(&request.GetServerDetailsRequest{UUID: uuid})
+	server, err := serverSvc.GetServerDetails(exec.Context(), &request.GetServerDetailsRequest{UUID: uuid})
 	if err != nil {
 		return nil, err
 	}

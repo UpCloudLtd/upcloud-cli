@@ -1,6 +1,8 @@
 package resolver
 
 import (
+	"context"
+
 	internal "github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
 )
 
@@ -11,7 +13,7 @@ type CompletionResolver struct{}
 var _ ResolutionProvider = CompletionResolver{}
 
 // Get is just a passthrough to respect the lib
-func (s CompletionResolver) Get(_ internal.AllServices) (Resolver, error) {
+func (s CompletionResolver) Get(_ context.Context, _ internal.AllServices) (Resolver, error) {
 	return func(arg string) (uuid string, err error) {
 		return arg, nil
 	}, nil

@@ -1,13 +1,14 @@
 package resolver_test
 
 import (
+	"context"
 	"errors"
 	"testing"
 
 	smock "github.com/UpCloudLtd/upcloud-cli/v2/internal/mock"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -88,7 +89,7 @@ func TestIPAddressResolution(t *testing.T) {
 		mService := &smock.Service{}
 		mService.On("GetIPAddresses").Return(addresses, nil)
 		res := resolver.CachingIPAddress{}
-		argResolver, err := res.Get(mService)
+		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 		for _, network := range unambiguousAddresses {
 			resolved, err := argResolver(network.Address)
@@ -103,7 +104,7 @@ func TestIPAddressResolution(t *testing.T) {
 		mService := &smock.Service{}
 		mService.On("GetIPAddresses").Return(addresses, nil)
 		res := resolver.CachingIPAddress{}
-		argResolver, err := res.Get(mService)
+		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 		for _, network := range unambiguousAddresses {
 			resolved, err := argResolver(network.PTRRecord)
@@ -118,7 +119,7 @@ func TestIPAddressResolution(t *testing.T) {
 		mService := &smock.Service{}
 		mService.On("GetIPAddresses").Return(addresses, nil)
 		res := resolver.CachingIPAddress{}
-		argResolver, err := res.Get(mService)
+		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 
 		// ambigous address
@@ -155,7 +156,7 @@ func TestFailingIPAddressResolution(t *testing.T) {
 	var nilResponse *upcloud.IPAddresses
 	mService.On("GetIPAddresses").Return(nilResponse, errors.New("MOCKERROR"))
 	res := resolver.CachingIPAddress{}
-	argResolver, err := res.Get(mService)
+	argResolver, err := res.Get(context.TODO(), mService)
 	assert.EqualError(t, err, "MOCKERROR")
 	assert.Nil(t, argResolver)
 }

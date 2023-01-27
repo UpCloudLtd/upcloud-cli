@@ -1,6 +1,7 @@
 package network
 
 import (
+	"context"
 	"testing"
 
 	"github.com/jedib0t/go-pretty/v6/text"
@@ -10,8 +11,8 @@ import (
 	smock "github.com/UpCloudLtd/upcloud-cli/v2/internal/mock"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/mockexecute"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -115,7 +116,7 @@ func TestShowCommand(t *testing.T) {
 	command := commands.BuildCommand(ShowCommand(), nil, conf)
 
 	// get resolver to initialize command cache
-	_, err := command.(*showCommand).Get(&mService)
+	_, err := command.(*showCommand).Get(context.TODO(), &mService)
 	if err != nil {
 		t.Fatal(err)
 	}

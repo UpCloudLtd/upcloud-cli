@@ -5,7 +5,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
 	"github.com/spf13/pflag"
 )
 
@@ -42,7 +42,7 @@ func (s *listCommand) InitCommand() {
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
-	routers, err := exec.Network().GetRouters()
+	routers, err := exec.Network().GetRouters(exec.Context())
 	if err != nil {
 		return nil, err
 	}

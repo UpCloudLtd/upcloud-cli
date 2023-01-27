@@ -6,10 +6,10 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
 
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/spf13/pflag"
 )
 
@@ -79,7 +79,7 @@ func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 	msg := fmt.Sprintf("Modifying network interface %q of server %q", s.currentIndex, arg)
 	exec.PushProgressStarted(msg)
 
-	res, err := exec.Network().ModifyNetworkInterface(&request.ModifyNetworkInterfaceRequest{
+	res, err := exec.Network().ModifyNetworkInterface(exec.Context(), &request.ModifyNetworkInterfaceRequest{
 		ServerUUID:        arg,
 		CurrentIndex:      s.currentIndex,
 		NewIndex:          s.newIndex,

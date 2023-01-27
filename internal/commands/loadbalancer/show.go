@@ -9,7 +9,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/jedib0t/go-pretty/v6/text"
 )
 
@@ -34,13 +34,13 @@ type showCommand struct {
 // Execute implements commands.MultipleArgumentCommand
 func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.All()
-	lb, err := svc.GetLoadBalancer(&request.GetLoadBalancerRequest{UUID: uuid})
+	lb, err := svc.GetLoadBalancer(exec.Context(), &request.GetLoadBalancerRequest{UUID: uuid})
 	if err != nil {
 		return nil, err
 	}
 
 	var networkName string
-	if network, err := svc.GetNetworkDetails(&request.GetNetworkDetailsRequest{UUID: lb.NetworkUUID}); err != nil {
+	if network, err := svc.GetNetworkDetails(exec.Context(), &request.GetNetworkDetailsRequest{UUID: lb.NetworkUUID}); err != nil {
 		networkName = ""
 	} else {
 		networkName = network.Name

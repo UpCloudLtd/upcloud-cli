@@ -1,8 +1,10 @@
 package completion
 
 import (
+	"context"
+
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/spf13/cobra"
 )
 
@@ -13,8 +15,8 @@ type LoadBalancer struct{}
 var _ Provider = LoadBalancer{}
 
 // CompleteArgument implements completion.Provider
-func (s LoadBalancer) CompleteArgument(svc service.AllServices, toComplete string) ([]string, cobra.ShellCompDirective) {
-	loadbalancers, err := svc.GetLoadBalancers(&request.GetLoadBalancersRequest{})
+func (s LoadBalancer) CompleteArgument(ctx context.Context, svc service.AllServices, toComplete string) ([]string, cobra.ShellCompDirective) {
+	loadbalancers, err := svc.GetLoadBalancers(ctx, &request.GetLoadBalancersRequest{})
 	if err != nil {
 		return None(toComplete)
 	}

@@ -22,7 +22,7 @@ type showCommand struct {
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (s *showCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	svc := exec.Account()
-	account, err := svc.GetAccount()
+	account, err := svc.GetAccount(exec.Context())
 	if err != nil {
 		return nil, err
 	}

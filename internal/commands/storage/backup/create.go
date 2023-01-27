@@ -9,7 +9,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/spf13/pflag"
 )
 
@@ -61,7 +61,7 @@ func (s *createBackupCommand) Execute(exec commands.Executor, uuid string) (outp
 	req := s.params.CreateBackupRequest
 	req.UUID = uuid
 
-	res, err := svc.CreateBackup(&req)
+	res, err := svc.CreateBackup(exec.Context(), &req)
 	if err != nil {
 		return commands.HandleError(exec, msg, err)
 	}

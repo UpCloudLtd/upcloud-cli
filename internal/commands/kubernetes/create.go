@@ -8,11 +8,10 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/spf13/pflag"
 )
 
@@ -52,7 +51,7 @@ type createNodeGroupParams struct {
 	taints      []string
 }
 
-func (p *createParams) processParams(svc service.AllServices) error {
+func (p *createParams) processParams(exec commands.Executor) error {
 	ngs := make([]upcloud.KubernetesNodeGroup, 0)
 
 	for _, v := range p.nodeGroups {
@@ -64,7 +63,7 @@ func (p *createParams) processParams(svc service.AllServices) error {
 	}
 	p.NodeGroups = ngs
 
-	networkDetails, err := svc.GetNetworkDetails(&request.GetNetworkDetailsRequest{UUID: p.Network})
+	networkDetails, err := exec.All().GetNetworkDetails(exec.Context(), &request.GetNetworkDetailsRequest{UUID: p.Network})
 
 	if err != nil || networkDetails == nil || len(networkDetails.IPNetworks) == 0 {
 		return fmt.Errorf("invalid network: %w", err)
@@ -232,13 +231,13 @@ func (c *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	svc := exec.All()
 	msg := fmt.Sprintf("Creating cluster %s", c.params.Name)
 	exec.PushProgressStarted(msg)
-	if err := c.params.processParams(svc); err != nil {
+	if err := c.params.processParams(exec); err != nil {
 		return nil, err
 	}
 
 	r := c.params.CreateKubernetesClusterRequest
 
-	res, err := svc.CreateKubernetesCluster(&r)
+	res, err := svc.CreateKubernetesCluster(exec.Context(), &r)
 	if err != nil {
 		return commands.HandleError(exec, msg, err)
 	}

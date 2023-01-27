@@ -3,7 +3,7 @@ package loadbalancer
 import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 )
 
 // PlansCommand creates the "loadbalancer plans" command
@@ -20,7 +20,7 @@ type plansCommand struct {
 // Execute implements commands.NoArgumentCommand
 func (s *plansCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	svc := exec.All()
-	plans, err := svc.GetLoadBalancerPlans(&request.GetLoadBalancerPlansRequest{})
+	plans, err := svc.GetLoadBalancerPlans(exec.Context(), &request.GetLoadBalancerPlansRequest{})
 	if err != nil {
 		return nil, err
 	}

@@ -11,7 +11,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 )
 
 // ShowCommand creates the "kubernetes show" command
@@ -35,13 +35,13 @@ type showCommand struct {
 // Execute implements commands.MultipleArgumentCommand
 func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.All()
-	cluster, err := svc.GetKubernetesCluster(&request.GetKubernetesClusterRequest{UUID: uuid})
+	cluster, err := svc.GetKubernetesCluster(exec.Context(), &request.GetKubernetesClusterRequest{UUID: uuid})
 	if err != nil {
 		return nil, err
 	}
 
 	var networkName string
-	if network, err := svc.GetNetworkDetails(&request.GetNetworkDetailsRequest{UUID: cluster.Network}); err != nil {
+	if network, err := svc.GetNetworkDetails(exec.Context(), &request.GetNetworkDetailsRequest{UUID: cluster.Network}); err != nil {
 		networkName = ""
 	} else {
 		networkName = network.Name
@@ -73,7 +73,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 		}
 
 		var storageName string
-		if storage, err := svc.GetStorageDetails(&request.GetStorageDetailsRequest{UUID: nodeGroup.Storage}); err != nil {
+		if storage, err := svc.GetStorageDetails(exec.Context(), &request.GetStorageDetailsRequest{UUID: nodeGroup.Storage}); err != nil {
 			storageName = ""
 		} else {
 			storageName = storage.Title

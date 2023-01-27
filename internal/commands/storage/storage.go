@@ -5,9 +5,8 @@ import (
 	"time"
 
 	"github.com/UpCloudLtd/progress/messages"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/service"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
 )
@@ -41,13 +40,13 @@ func matchStorages(storages []upcloud.Storage, searchVal string) []*upcloud.Stor
 	return r
 }
 
-func searchStorage(storagesPtr *[]upcloud.Storage, service service.Storage, uuidOrTitle string, unique bool) ([]*upcloud.Storage, error) {
-	if storagesPtr == nil || service == nil {
-		return nil, fmt.Errorf("no storages or service passed")
+func searchStorage(storagesPtr *[]upcloud.Storage, exec commands.Executor, uuidOrTitle string, unique bool) ([]*upcloud.Storage, error) {
+	if storagesPtr == nil || exec == nil {
+		return nil, fmt.Errorf("no storages or executor passed")
 	}
 	storages := *storagesPtr
 	if len(CachedStorages) == 0 {
-		res, err := service.GetStorages(&request.GetStoragesRequest{})
+		res, err := exec.All().GetStorages(exec.Context(), &request.GetStoragesRequest{})
 		if err != nil {
 			return nil, err
 		}
@@ -66,8 +65,8 @@ func searchStorage(storagesPtr *[]upcloud.Storage, service service.Storage, uuid
 
 // SearchSingleStorage returns exactly one storage where title or uuid matches uuidOrTitle
 // TODO: remove the cross-command dependencies
-func SearchSingleStorage(uuidOrTitle string, service service.Storage) (*upcloud.Storage, error) {
-	matchedResults, err := searchStorage(&CachedStorages, service, uuidOrTitle, true)
+func SearchSingleStorage(uuidOrTitle string, exec commands.Executor) (*upcloud.Storage, error) {
+	matchedResults, err := searchStorage(&CachedStorages, exec, uuidOrTitle, true)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +77,7 @@ func SearchSingleStorage(uuidOrTitle string, service service.Storage) (*upcloud.
 func waitForStorageState(uuid, state string, exec commands.Executor, msg string) {
 	exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Waiting for storage %s to be in %s state", uuid, state))
 
-	if _, err := exec.All().WaitForStorageState(&request.WaitForStorageStateRequest{
+	if _, err := exec.All().WaitForStorageState(exec.Context(), &request.WaitForStorageStateRequest{
 		UUID:         uuid,
 		DesiredState: state,
 		Timeout:      15 * time.Minute,

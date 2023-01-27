@@ -9,7 +9,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/spf13/pflag"
 )
 
@@ -49,11 +49,11 @@ func (s *deleteCommand) Execute(exec commands.Executor, uuid string) (output.Out
 	var err error
 	if s.deleteStorages.Value() {
 		exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Deleting server %v and attached storages", uuid))
-		err = svc.DeleteServerAndStorages(&request.DeleteServerAndStoragesRequest{
+		err = svc.DeleteServerAndStorages(exec.Context(), &request.DeleteServerAndStoragesRequest{
 			UUID: uuid,
 		})
 	} else {
-		err = svc.DeleteServer(&request.DeleteServerRequest{
+		err = svc.DeleteServer(exec.Context(), &request.DeleteServerRequest{
 			UUID: uuid,
 		})
 	}

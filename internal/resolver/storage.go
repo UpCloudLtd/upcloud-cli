@@ -1,12 +1,13 @@
 package resolver
 
 import (
+	"context"
 	"errors"
 
 	internal "github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 )
 
 // CachingStorage implements resolver for storages, caching the results
@@ -38,9 +39,9 @@ func storageMatcher(cached []upcloud.Storage) func(arg string) (uuid string, err
 }
 
 // Get implements ResolutionProvider.Get
-func (s *CachingStorage) Get(svc internal.AllServices) (Resolver, error) {
+func (s *CachingStorage) Get(ctx context.Context, svc internal.AllServices) (Resolver, error) {
 	var err error
-	s.cachedStorages, err = svc.GetStorages(&request.GetStoragesRequest{})
+	s.cachedStorages, err = svc.GetStorages(ctx, &request.GetStoragesRequest{})
 	if err != nil {
 		return nil, err
 	}

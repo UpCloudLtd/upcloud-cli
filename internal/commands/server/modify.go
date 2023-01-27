@@ -9,7 +9,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/spf13/pflag"
 )
 
@@ -76,7 +76,7 @@ func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Out
 
 	// TODO: refactor out when go-api actually supports not-set upcloud.Booleans in requests
 	// ref: https://app.asana.com/0/1191419140326561/1200258914439524
-	serverDetails, err := svc.GetServerDetails(&request.GetServerDetailsRequest{UUID: uuid})
+	serverDetails, err := svc.GetServerDetails(exec.Context(), &request.GetServerDetailsRequest{UUID: uuid})
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +102,7 @@ func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Out
 
 	req := s.params.ModifyServerRequest
 	req.UUID = uuid
-	res, err := svc.ModifyServer(&req)
+	res, err := svc.ModifyServer(exec.Context(), &req)
 	if err != nil {
 		return commands.HandleError(exec, msg, err)
 	}

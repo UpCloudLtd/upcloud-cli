@@ -88,7 +88,7 @@ func BuildCommand(child Command, parent *cobra.Command, config *config.Config) C
 				// TODO: debug log fmt.Sprintf("cannot create service for completion: %v", err)
 				return completion.None(toComplete)
 			}
-			return cp.CompleteArgument(svc, toComplete)
+			return cp.CompleteArgument(config.Context(), svc, toComplete)
 		}
 	} else {
 		// Otherwise offer no completions.

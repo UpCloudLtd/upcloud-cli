@@ -7,7 +7,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 )
 
 type deleteCommand struct {
@@ -37,7 +37,7 @@ func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Outp
 	msg := fmt.Sprintf("Deleting database %s", arg)
 	exec.PushProgressStarted(msg)
 
-	err := exec.All().DeleteManagedDatabase(&request.DeleteManagedDatabaseRequest{UUID: arg})
+	err := exec.All().DeleteManagedDatabase(exec.Context(), &request.DeleteManagedDatabaseRequest{UUID: arg})
 	if err != nil {
 		return commands.HandleError(exec, fmt.Sprintf("%s: failed", msg), err)
 	}

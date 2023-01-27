@@ -12,8 +12,8 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
 	"github.com/jedib0t/go-pretty/v6/text"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/spf13/pflag"
 )
 
@@ -90,7 +90,7 @@ func (s *createCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 	msg := fmt.Sprintf("Creating network interface for server %s network %s", arg, s.networkUUID)
 	exec.PushProgressStarted(msg)
 
-	res, err := exec.Network().CreateNetworkInterface(&request.CreateNetworkInterfaceRequest{
+	res, err := exec.Network().CreateNetworkInterface(exec.Context(), &request.CreateNetworkInterfaceRequest{
 		ServerUUID:        arg,
 		Type:              s.networkType,
 		NetworkUUID:       s.networkUUID,

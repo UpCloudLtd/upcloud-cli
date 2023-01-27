@@ -9,7 +9,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/spf13/pflag"
 )
 
@@ -57,7 +57,7 @@ func (s *restartCommand) Execute(exec commands.Executor, uuid string) (output.Ou
 	msg := fmt.Sprintf("Restarting server %v", uuid)
 	exec.PushProgressStarted(msg)
 
-	res, err := svc.RestartServer(&request.RestartServerRequest{
+	res, err := svc.RestartServer(exec.Context(), &request.RestartServerRequest{
 		UUID:          uuid,
 		StopType:      s.StopType,
 		Timeout:       defaultRestartTimeout,

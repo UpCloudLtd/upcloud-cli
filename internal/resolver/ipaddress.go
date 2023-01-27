@@ -1,6 +1,8 @@
 package resolver
 
 import (
+	"context"
+
 	internal "github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
 )
 
@@ -11,8 +13,8 @@ type CachingIPAddress struct{}
 var _ ResolutionProvider = CachingIPAddress{}
 
 // Get implements ResolutionProvider.Get
-func (s CachingIPAddress) Get(svc internal.AllServices) (Resolver, error) {
-	ipaddresses, err := svc.GetIPAddresses()
+func (s CachingIPAddress) Get(ctx context.Context, svc internal.AllServices) (Resolver, error) {
+	ipaddresses, err := svc.GetIPAddresses(ctx)
 	if err != nil {
 		return nil, err
 	}

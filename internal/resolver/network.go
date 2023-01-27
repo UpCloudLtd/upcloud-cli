@@ -1,11 +1,12 @@
 package resolver
 
 import (
+	"context"
 	"errors"
 
 	internal "github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
 )
 
 // CachingNetwork implements resolver for networks, caching the results
@@ -35,8 +36,8 @@ func networkMatcher(cached []upcloud.Network) func(arg string) (uuid string, err
 }
 
 // Get implements ResolutionProvider.Get
-func (s *CachingNetwork) Get(svc internal.AllServices) (Resolver, error) {
-	networks, err := svc.GetNetworks()
+func (s *CachingNetwork) Get(ctx context.Context, svc internal.AllServices) (Resolver, error) {
+	networks, err := svc.GetNetworks(ctx)
 	if err != nil {
 		return nil, err
 	}
