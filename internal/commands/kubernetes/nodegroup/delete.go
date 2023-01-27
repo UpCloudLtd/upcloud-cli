@@ -35,7 +35,7 @@ func (s *deleteCommand) InitCommand() {
 	flagSet.StringVar(&s.name, "name", "", "Node group name")
 	s.AddFlags(flagSet)
 
-	_ = s.Cobra().MarkFlagRequired("position")
+	_ = s.Cobra().MarkFlagRequired("name")
 }
 
 // Execute implements commands.MultipleArgumentCommand

@@ -10,6 +10,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
@@ -18,13 +19,38 @@ func TestCreateKubernetesNodeGroup(t *testing.T) {
 	clusterUUID := "9a8f4905-76d2-4a99-8e54-ab928fa42f66"
 
 	for _, test := range []struct {
-		name    string
-		args    []string
-		r       request.CreateKubernetesNodeGroupRequest
-		wantErr bool
+		name     string
+		args     []string
+		expected request.CreateKubernetesNodeGroupRequest
+		errorMsg string
 	}{
 		{
-			name: "1 nodegroup",
+			name:     "no args",
+			args:     []string{clusterUUID},
+			errorMsg: `required flag(s) "count", "name", "plan" not set`,
+		},
+		{
+			name:     "no name",
+			args:     []string{clusterUUID, "--name", "my-node-group"},
+			errorMsg: `required flag(s) "count", "plan" not set`,
+		},
+		{
+			name: "simple nodegroup",
+			args: []string{clusterUUID, "--count", "2", "--name", "my-node-group", "--plan", "2xCPU-4GB"},
+			expected: request.CreateKubernetesNodeGroupRequest{
+				ClusterUUID: clusterUUID,
+				NodeGroup: request.KubernetesNodeGroup{
+					Count:       2,
+					Name:        "my-node-group",
+					Plan:        "2xCPU-4GB",
+					Labels:      []upcloud.Label{},
+					KubeletArgs: []upcloud.KubernetesKubeletArg{},
+					Taints:      []upcloud.KubernetesTaint{},
+				},
+			},
+		},
+		{
+			name: "complex nodegroup",
 			args: []string{
 				clusterUUID,
 				"--count", "2",
@@ -38,7 +64,7 @@ func TestCreateKubernetesNodeGroup(t *testing.T) {
 				"--taint=env=dev:NoSchedule",
 				"--taint=env=dev2:NoSchedule",
 			},
-			r: request.CreateKubernetesNodeGroupRequest{
+			expected: request.CreateKubernetesNodeGroupRequest{
 				ClusterUUID: clusterUUID,
 				NodeGroup: request.KubernetesNodeGroup{
 					Count: 2,
@@ -78,7 +104,6 @@ func TestCreateKubernetesNodeGroup(t *testing.T) {
 					},
 				},
 			},
-			wantErr: false,
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
@@ -86,7 +111,7 @@ func TestCreateKubernetesNodeGroup(t *testing.T) {
 			testCmd := CreateCommand()
 			mService := new(smock.Service)
 
-			mService.On("CreateKubernetesNodeGroup", &test.r).Return(&upcloud.KubernetesNodeGroup{}, nil)
+			mService.On("CreateKubernetesNodeGroup", &test.expected).Return(&upcloud.KubernetesNodeGroup{}, nil)
 			mService.On("GetNetworkDetails", mock.Anything).Return(&upcloud.Network{IPNetworks: []upcloud.IPNetwork{{Address: "172.16.1.0/24"}}}, nil)
 
 			c := commands.BuildCommand(testCmd, nil, conf)
@@ -94,8 +119,8 @@ func TestCreateKubernetesNodeGroup(t *testing.T) {
 			c.Cobra().SetArgs(test.args)
 			_, err := mockexecute.MockExecute(c, mService, conf)
 
-			if test.wantErr {
-				require.Error(t, err)
+			if test.errorMsg != "" {
+				assert.EqualError(t, err, test.errorMsg)
 			} else {
 				require.NoError(t, err)
 				mService.AssertNumberOfCalls(t, "CreateKubernetesNodeGroup", 1)

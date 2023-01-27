@@ -10,6 +10,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -17,11 +18,16 @@ func TestScaleKubernetesNodeGroup(t *testing.T) {
 	clusterUUID := "28c80353-98fd-4221-85e0-82d7603756ba"
 
 	for _, test := range []struct {
-		name    string
-		args    []string
-		r       request.ModifyKubernetesNodeGroupRequest
-		wantErr bool
+		name     string
+		args     []string
+		expected request.ModifyKubernetesNodeGroupRequest
+		errorMsg string
 	}{
+		{
+			name:     "no args",
+			args:     []string{clusterUUID},
+			errorMsg: `required flag(s) "name", "count" not set`,
+		},
 		{
 			name: "delete success",
 			args: []string{
@@ -29,12 +35,11 @@ func TestScaleKubernetesNodeGroup(t *testing.T) {
 				"--name", "my-node-group",
 				"--count=6",
 			},
-			r: request.ModifyKubernetesNodeGroupRequest{
+			expected: request.ModifyKubernetesNodeGroupRequest{
 				ClusterUUID: clusterUUID,
 				Name:        "my-node-group",
 				NodeGroup:   request.ModifyKubernetesNodeGroup{Count: 6},
 			},
-			wantErr: false,
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
@@ -42,15 +47,15 @@ func TestScaleKubernetesNodeGroup(t *testing.T) {
 			testCmd := ScaleCommand()
 			mService := new(smock.Service)
 
-			mService.On("ModifyKubernetesNodeGroup", &test.r).Return(&upcloud.KubernetesNodeGroup{}, nil)
+			mService.On("ModifyKubernetesNodeGroup", &test.expected).Return(&upcloud.KubernetesNodeGroup{}, nil)
 
 			c := commands.BuildCommand(testCmd, nil, conf)
 
 			c.Cobra().SetArgs(test.args)
 			_, err := mockexecute.MockExecute(c, mService, conf)
 
-			if test.wantErr {
-				require.Error(t, err)
+			if test.errorMsg != "" {
+				assert.EqualError(t, err, test.errorMsg)
 			} else {
 				require.NoError(t, err)
 				mService.AssertNumberOfCalls(t, "ModifyKubernetesNodeGroup", 1)
