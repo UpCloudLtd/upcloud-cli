@@ -908,13 +908,25 @@ func (m *Service) GetKubernetesNodeGroup(ctx context.Context, r *request.GetKube
 }
 
 func (m *Service) CreateKubernetesNodeGroup(ctx context.Context, r *request.CreateKubernetesNodeGroupRequest) (*upcloud.KubernetesNodeGroup, error) {
-	return nil, nil
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.KubernetesNodeGroup), args.Error(1)
 }
 
 func (m *Service) ModifyKubernetesNodeGroup(ctx context.Context, r *request.ModifyKubernetesNodeGroupRequest) (*upcloud.KubernetesNodeGroup, error) {
-	return nil, nil
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.KubernetesNodeGroup), args.Error(1)
 }
 
 func (m *Service) DeleteKubernetesNodeGroup(ctx context.Context, r *request.DeleteKubernetesNodeGroupRequest) error {
+	args := m.Called(r)
+	if args[0] == nil {
+		return args.Error(0)
+	}
 	return nil
 }
