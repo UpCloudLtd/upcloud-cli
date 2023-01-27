@@ -138,7 +138,7 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	// Kubernetes nodegroup operations
 	nodeGroupCommand := commands.BuildCommand(nodegroup.BaseNodeGroupCommand(), kubernetesCommand.Cobra(), conf)
 	commands.BuildCommand(nodegroup.CreateCommand(), nodeGroupCommand.Cobra(), conf)
-	// commands.BuildCommand(nodegroup.ScaleCommand(), kubernetesCommand.Cobra(), conf)
+	commands.BuildCommand(nodegroup.ScaleCommand(), nodeGroupCommand.Cobra(), conf)
 	commands.BuildCommand(nodegroup.DeleteCommand(), nodeGroupCommand.Cobra(), conf)
 
 	// Misc
