@@ -28,14 +28,14 @@ type CreateNodeGroupParams struct {
 func GetCreateNodeGroupFlagSet(p *CreateNodeGroupParams) *pflag.FlagSet {
 	fs := &pflag.FlagSet{}
 
-	fs.IntVar(&p.Count, "count", 0, "")
-	fs.StringArrayVar(&p.KubeletArgs, "kubelet-arg", []string{}, "")
-	fs.StringArrayVar(&p.Labels, "label", []string{}, "")
-	fs.StringVar(&p.Name, "name", "", "")
-	fs.StringVar(&p.Plan, "plan", "", "")
-	fs.StringArrayVar(&p.SSHKeys, "ssh-key", []string{}, "")
-	fs.StringVar(&p.Storage, "storage", "", "")
-	fs.StringArrayVar(&p.Taints, "taint", []string{}, "")
+	fs.IntVar(&p.Count, "count", 0, "Number of nodes in the node group")
+	fs.StringArrayVar(&p.KubeletArgs, "kubelet-arg", []string{}, "Arguments to use when executing kubelet in `argument=value` format")
+	fs.StringArrayVar(&p.Labels, "label", []string{}, "Labels to describe the nodes in `key=value` format. Use multiple times to define multiple labels. Labels are forwarded to the kubernetes nodes.")
+	fs.StringVar(&p.Name, "name", "", "Node group name")
+	fs.StringVar(&p.Plan, "plan", "", "Server plan to use for nodes in the node group. Run `upctl server plans` to list all available plans.")
+	fs.StringArrayVar(&p.SSHKeys, "ssh-key", []string{}, "SSH keys to be configured as authorized keys to the nodes.")
+	fs.StringVar(&p.Storage, "storage", "", "Storage template to use when creating the nodes. Deafults to `UpCloud K8s` public template.")
+	fs.StringArrayVar(&p.Taints, "taint", []string{}, "Taints to be configured to the nodes in `key=value:effect` format")
 
 	return fs
 }
