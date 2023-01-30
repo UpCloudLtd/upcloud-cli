@@ -34,7 +34,7 @@ func GetCreateNodeGroupFlagSet(p *CreateNodeGroupParams) *pflag.FlagSet {
 	fs.StringVar(&p.Name, "name", "", "Node group name")
 	fs.StringVar(&p.Plan, "plan", "", "Server plan to use for nodes in the node group. Run `upctl server plans` to list all available plans.")
 	fs.StringArrayVar(&p.SSHKeys, "ssh-key", []string{}, "SSH keys to be configured as authorized keys to the nodes.")
-	fs.StringVar(&p.Storage, "storage", "", "Storage template to use when creating the nodes. Deafults to `UpCloud K8s` public template.")
+	fs.StringVar(&p.Storage, "storage", "", "Storage template to use when creating the nodes. Defaults to `UpCloud K8s` public template.")
 	fs.StringArrayVar(&p.Taints, "taint", []string{}, "Taints to be configured to the nodes in `key=value:effect` format")
 
 	return fs
@@ -54,14 +54,20 @@ func processKubeletArg(in string) (upcloud.KubernetesKubeletArg, error) {
 
 func processLabel(in string) (upcloud.Label, error) {
 	split := strings.SplitN(in, "=", 2)
-	if len(split) < 2 {
-		return upcloud.Label{}, fmt.Errorf("invalid label: %s", in)
+	if len(split) == 1 {
+		return upcloud.Label{
+			Key: split[0],
+		}, nil
 	}
 
-	return upcloud.Label{
-		Key:   split[0],
-		Value: split[1],
-	}, nil
+	if len(split) == 2 {
+		return upcloud.Label{
+			Key:   split[0],
+			Value: split[1],
+		}, nil
+	}
+
+	return upcloud.Label{}, fmt.Errorf("invalid label: %s", in)
 }
 
 func processTaint(in string) (upcloud.KubernetesTaint, error) {

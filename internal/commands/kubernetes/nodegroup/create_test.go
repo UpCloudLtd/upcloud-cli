@@ -50,6 +50,24 @@ func TestCreateKubernetesNodeGroup(t *testing.T) {
 			},
 		},
 		{
+			name: "simple nodegroup with labels",
+			args: []string{clusterUUID, "--count", "2", "--name", "my-node-group", "--plan", "2xCPU-4GB", "--label", "key=value", "--label", "key-without-value"},
+			expected: request.CreateKubernetesNodeGroupRequest{
+				ClusterUUID: clusterUUID,
+				NodeGroup: request.KubernetesNodeGroup{
+					Count: 2,
+					Name:  "my-node-group",
+					Plan:  "2xCPU-4GB",
+					Labels: []upcloud.Label{
+						{Key: "key", Value: "value"},
+						{Key: "key-without-value", Value: ""},
+					},
+					KubeletArgs: []upcloud.KubernetesKubeletArg{},
+					Taints:      []upcloud.KubernetesTaint{},
+				},
+			},
+		},
+		{
 			name: "complex nodegroup",
 			args: []string{
 				clusterUUID,
