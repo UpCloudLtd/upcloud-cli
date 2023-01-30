@@ -19,7 +19,7 @@ type scaleCommand struct {
 	resolver.CachingKubernetes
 }
 
-// ScaleCommand creates the "kubernetes nodegroup delete" command
+// ScaleCommand creates the "kubernetes nodegroup scale" command
 func ScaleCommand() commands.Command {
 	return &scaleCommand{
 		BaseCommand: commands.New(
