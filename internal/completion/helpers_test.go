@@ -77,7 +77,7 @@ func TestMatchStringPrefix(t *testing.T) {
 			vals:          []string{"a a ", "a(0)", "aab", "a;<!`'", "bbb"},
 			key:           "a",
 			caseSensitive: false,
-			expected:      []string{"a a ", "a(0)", "aab", "a;<!`'"},
+			expected:      []string{"a\u00A0a\u00A0", "a(0)", "aab", "a;<!`'"},
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
