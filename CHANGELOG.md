@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added support for all shell completions provided by `cobra`.
 
 ### Changed
-- Remove custom bash completion logic and replace it with `completion` command provided by `cobra`.
+- Remove custom bash completion logic and replace it with `completion` command provided by `cobra`. To do this while supporting args with whitespace, whitespace in completions is replaced with non-breaking spaces.
 
 ## [2.4.0] - 2022-12-19
 ### Added
