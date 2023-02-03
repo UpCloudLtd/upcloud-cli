@@ -78,7 +78,7 @@ func processNodeGroup(in string) (upcloud.KubernetesNodeGroup, error) {
 		return ng, err
 	}
 
-	return nodegroup.ProcessNodeGroupParams[upcloud.KubernetesNodeGroup](p)
+	return nodegroup.ProcessNodeGroupParams(p)
 }
 
 type createCommand struct {
