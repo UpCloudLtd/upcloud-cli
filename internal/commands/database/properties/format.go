@@ -48,7 +48,7 @@ func alternativesString(values []interface{}) string {
 	}
 
 	whitespace := " "
-	if maxStringLen(strs) > 15 {
+	if maxStringLen(strs) > 15 || len(strs) > 3 {
 		whitespace = "\n"
 	}
 
