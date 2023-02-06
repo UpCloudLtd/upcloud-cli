@@ -65,7 +65,12 @@ func (s DatabaseProperty) CompleteArgument(ctx context.Context, svc service.AllS
 	properties := dbType.Properties
 	var vals []string
 	for key, details := range properties {
-		vals = append(vals, fmt.Sprintf("%s\t%s", key, details.Description))
+		description := details.Title
+		if description == key && details.Description != "" {
+			description = details.Description
+		}
+
+		vals = append(vals, fmt.Sprintf("%s\t%s", key, description))
 	}
 	return MatchStringPrefix(vals, toComplete, true), cobra.ShellCompDirectiveNoFileComp
 }
