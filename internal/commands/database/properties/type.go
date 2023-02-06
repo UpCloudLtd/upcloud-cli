@@ -13,7 +13,7 @@ import (
 // creates the "database properties <serviceType>" command
 func DbTypeCommand(serviceType string, serviceName string) commands.Command {
 	return &dbTypeCommand{
-		BaseCommand: commands.New(serviceType, fmt.Sprintf("List available properties for %s database", serviceName), fmt.Sprintf("upctl database properties %s", serviceType)),
+		BaseCommand: commands.New(serviceType, fmt.Sprintf("List available properties for %s databases", serviceName), fmt.Sprintf("upctl database properties %s", serviceType)),
 		serviceType: serviceType,
 	}
 }
