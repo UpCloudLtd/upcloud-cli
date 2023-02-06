@@ -122,7 +122,17 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 
 	// Database connections
 	propertiesCommand := commands.BuildCommand(databaseproperties.PropertiesCommand(), databaseCommand.Cobra(), conf)
-	commands.BuildCommand(databaseproperties.ShowCommand(), propertiesCommand.Cobra(), conf)
+	for _, i := range []struct {
+		serviceName string
+		serviceType string
+	}{
+		{serviceName: "MySQL", serviceType: "mysql"},
+		{serviceName: "PostgreSQL", serviceType: "pg"},
+		{serviceName: "Redis", serviceType: "redis"},
+	} {
+		typeCommand := commands.BuildCommand(databaseproperties.DbTypeCommand(i.serviceType, i.serviceName), propertiesCommand.Cobra(), conf)
+		commands.BuildCommand(databaseproperties.ShowCommand(i.serviceType, i.serviceName), typeCommand.Cobra(), conf)
+	}
 
 	// LoadBalancers
 	loadbalancerCommand := commands.BuildCommand(loadbalancer.BaseLoadBalancerCommand(), rootCmd, conf)

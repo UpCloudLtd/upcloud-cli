@@ -7,40 +7,32 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/format"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
-	"github.com/spf13/pflag"
 )
 
-// ShowCommand creates the "database properties show" command
-func ShowCommand() commands.Command {
+// ShowCommand creates the "database properties <serviceType> show" command
+func ShowCommand(serviceType string, serviceName string) commands.Command {
 	return &showCommand{
-		BaseCommand: commands.New("show", "Show database property details", "upctl database properties show --db=pg version", "upctl database properties --db=pg version pg_stat_statements_track"),
+		BaseCommand: commands.New("show", fmt.Sprintf("Show %s database property details", serviceName), fmt.Sprintf("upctl database properties %s show version", serviceType)),
+		serviceType: serviceType,
 	}
 }
 
 type showCommand struct {
 	*commands.BaseCommand
-	dbServiceType string
-}
-
-// InitCommand implements Command.InitCommand
-func (s *showCommand) InitCommand() {
-	flags := &pflag.FlagSet{}
-	flags.StringVar(&s.dbServiceType, "db", "", "Database service type")
-	s.AddFlags(flags)
-	_ = s.Cobra().MarkFlagRequired("db")
+	serviceType string
 }
 
 // Execute implements commands.MultipleArgumentCommand
 func (s *showCommand) Execute(exec commands.Executor, key string) (output.Output, error) {
 	svc := exec.All()
-	dbType, err := svc.GetManagedDatabaseServiceType(exec.Context(), &request.GetManagedDatabaseServiceTypeRequest{Type: s.dbServiceType})
+	dbType, err := svc.GetManagedDatabaseServiceType(exec.Context(), &request.GetManagedDatabaseServiceTypeRequest{Type: s.serviceType})
 	if err != nil {
 		return nil, err
 	}
 
 	details, ok := dbType.Properties[key]
 	if !ok {
-		return nil, fmt.Errorf(`no property "%s" available for %s database`, key, s.dbServiceType)
+		return nil, fmt.Errorf(`no property "%s" available for %s database`, key, s.serviceType)
 	}
 
 	rows := []output.DetailRow{
