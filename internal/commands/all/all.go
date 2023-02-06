@@ -130,7 +130,7 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 		{serviceName: "PostgreSQL", serviceType: "pg"},
 		{serviceName: "Redis", serviceType: "redis"},
 	} {
-		typeCommand := commands.BuildCommand(databaseproperties.DbTypeCommand(i.serviceType, i.serviceName), propertiesCommand.Cobra(), conf)
+		typeCommand := commands.BuildCommand(databaseproperties.DBTypeCommand(i.serviceType, i.serviceName), propertiesCommand.Cobra(), conf)
 		commands.BuildCommand(databaseproperties.ShowCommand(i.serviceType, i.serviceName), typeCommand.Cobra(), conf)
 	}
 
