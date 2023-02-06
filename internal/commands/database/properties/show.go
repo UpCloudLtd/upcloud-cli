@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/format"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
@@ -12,13 +13,15 @@ import (
 // ShowCommand creates the "database properties <serviceType> show" command
 func ShowCommand(serviceType string, serviceName string) commands.Command {
 	return &showCommand{
-		BaseCommand: commands.New("show", fmt.Sprintf("Show %s database property details", serviceName), fmt.Sprintf("upctl database properties %s show version", serviceType)),
-		serviceType: serviceType,
+		BaseCommand:      commands.New("show", fmt.Sprintf("Show %s database property details", serviceName), fmt.Sprintf("upctl database properties %s show version", serviceType)),
+		serviceType:      serviceType,
+		DatabaseProperty: completion.DatabaseProperty{ServiceType: serviceType},
 	}
 }
 
 type showCommand struct {
 	*commands.BaseCommand
+	completion.DatabaseProperty
 	serviceType string
 }
 
