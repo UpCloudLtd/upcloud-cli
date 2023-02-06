@@ -3,10 +3,10 @@ package databaseproperties
 import (
 	"sort"
 
-	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
-	"github.com/UpCloudLtd/upcloud-cli/internal/format"
-	"github.com/UpCloudLtd/upcloud-cli/internal/output"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/format"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 )
 
 // PropertiesCommand creates the "database properties" command
@@ -23,7 +23,7 @@ type propertiesCommand struct {
 // Execute implements commands.MultipleArgumentCommand
 func (s *propertiesCommand) Execute(exec commands.Executor, serviceType string) (output.Output, error) {
 	svc := exec.All()
-	dbType, err := svc.GetManagedDatabaseServiceType(&request.GetManagedDatabaseServiceTypeRequest{Type: serviceType})
+	dbType, err := svc.GetManagedDatabaseServiceType(exec.Context(), &request.GetManagedDatabaseServiceTypeRequest{Type: serviceType})
 	if err != nil {
 		return nil, err
 	}

@@ -3,10 +3,10 @@ package databaseproperties
 import (
 	"fmt"
 
-	"github.com/UpCloudLtd/upcloud-cli/internal/commands"
-	"github.com/UpCloudLtd/upcloud-cli/internal/format"
-	"github.com/UpCloudLtd/upcloud-cli/internal/output"
-	"github.com/UpCloudLtd/upcloud-go-api/v4/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/format"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
+	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
 	"github.com/spf13/pflag"
 )
 
@@ -33,7 +33,7 @@ func (s *showCommand) InitCommand() {
 // Execute implements commands.MultipleArgumentCommand
 func (s *showCommand) Execute(exec commands.Executor, key string) (output.Output, error) {
 	svc := exec.All()
-	dbType, err := svc.GetManagedDatabaseServiceType(&request.GetManagedDatabaseServiceTypeRequest{Type: s.dbServiceType})
+	dbType, err := svc.GetManagedDatabaseServiceType(exec.Context(), &request.GetManagedDatabaseServiceTypeRequest{Type: s.dbServiceType})
 	if err != nil {
 		return nil, err
 	}
