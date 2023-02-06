@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Remove custom bash completion logic and replace it with `completion` command provided by `cobra`. To do this while supporting args with whitespace, whitespace in completions is replaced with non-breaking spaces.
 
+### Fixed
+- In `database show`: parse database version from metadata instead of properties. This enables displaying redis version instead of `<nil>`.
+
 ## [2.4.0] - 2022-12-19
 ### Added
 - Add `kubernetes create`, `kubernetes config`, `kubernetes delete`, `kubernetes list`, `kubernetes show`, `kubernetes versions` commands (EXPERIMENTAL)

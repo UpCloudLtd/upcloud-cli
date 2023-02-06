@@ -72,7 +72,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 								{Title: "Title:", Value: db.Title},
 								{Title: "Name:", Value: db.Name},
 								{Title: "Type:", Value: prettyDatabaseType(db.Type)},
-								{Title: "Version:", Value: db.Properties.Get("version")},
+								{Title: "Version:", Value: getVersion(db), Format: format.PossiblyUnknownString},
 								{Title: "Plan:", Value: db.Plan},
 								{Title: "Zone:", Value: db.Zone},
 								{Title: "State:", Value: db.State, Format: format.DatabaseState},
@@ -126,6 +126,18 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 			},
 		},
 	}, nil
+}
+
+func getVersion(db *upcloud.ManagedDatabase) string {
+	switch db.Type {
+	case "mysql":
+		return db.Metadata.MySQLVersion
+	case "pg":
+		return db.Metadata.PGVersion
+	case "redis":
+		return db.Metadata.RedisVersion
+	}
+	return ""
 }
 
 func prettyDatabaseType(serviceType upcloud.ManagedDatabaseServiceType) string {
