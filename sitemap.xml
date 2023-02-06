@@ -16,11 +16,6 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_completion/</loc>
-         <lastmod>2023-02-06</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_version/</loc>
          <lastmod>2023-02-06</lastmod>
          <changefreq>daily</changefreq>
