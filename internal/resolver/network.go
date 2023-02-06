@@ -21,7 +21,7 @@ func networkMatcher(cached []upcloud.Network) func(arg string) (uuid string, err
 	return func(arg string) (uuid string, err error) {
 		rv := ""
 		for _, network := range cached {
-			if network.Name == arg || network.UUID == arg {
+			if MatchArgWithWhitespace(arg, network.Name) || network.UUID == arg {
 				if rv != "" {
 					return "", AmbiguousResolutionError(arg)
 				}

@@ -22,7 +22,7 @@ func (s CachingDatabase) Get(ctx context.Context, svc internal.AllServices) (Res
 	return func(arg string) (uuid string, err error) {
 		rv := ""
 		for _, db := range databases {
-			if db.Title == arg || db.UUID == arg {
+			if MatchArgWithWhitespace(arg, db.Title) || db.UUID == arg {
 				if rv != "" {
 					return "", AmbiguousResolutionError(arg)
 				}

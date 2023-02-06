@@ -22,7 +22,7 @@ func storageMatcher(cached []upcloud.Storage) func(arg string) (uuid string, err
 	return func(arg string) (uuid string, err error) {
 		rv := ""
 		for _, storage := range cached {
-			if storage.Title == arg || storage.UUID == arg {
+			if MatchArgWithWhitespace(arg, storage.Title) || storage.UUID == arg {
 				if rv != "" {
 					return "", AmbiguousResolutionError(arg)
 				}

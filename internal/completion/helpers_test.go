@@ -73,11 +73,11 @@ func TestMatchStringPrefix(t *testing.T) {
 			expected:      []string{"aba", "aBa", "Aba"},
 		},
 		{
-			name:          "escaped output",
+			name:          "output with special characters",
 			vals:          []string{"a a ", "a(0)", "aab", "a;<!`'", "bbb"},
 			key:           "a",
 			caseSensitive: false,
-			expected:      []string{"\"a a \"", "\"a(0)\"", "aab", "a;<!`'"},
+			expected:      []string{"a\u00A0a\u00A0", "a(0)", "aab", "a;<!`'"},
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
@@ -87,44 +87,6 @@ func TestMatchStringPrefix(t *testing.T) {
 				// do not compare values unless there's more than one item, to avoid nil != []string{}
 				assert.Equal(t, test.expected, result)
 			}
-		})
-	}
-}
-
-func TestEscape(t *testing.T) {
-	for _, test := range []struct {
-		name     string
-		in       string
-		expected string
-	}{
-		{
-			name:     "no escape",
-			in:       "asdasdasd",
-			expected: "asdasdasd",
-		},
-		{
-			name:     "escape spaces",
-			in:       "asdas dasd",
-			expected: "\"asdas dasd\"",
-		},
-		{
-			name:     "escape open parentheses",
-			in:       "asdas(",
-			expected: "\"asdas(\"",
-		},
-		{
-			name:     "escape closed parentheses",
-			in:       "asdas()",
-			expected: "\"asdas()\"",
-		},
-		{
-			name:     "special chars not escaped",
-			in:       "a;<!`'",
-			expected: "a;<!`'",
-		},
-	} {
-		t.Run(test.name, func(t *testing.T) {
-			assert.Equal(t, test.expected, completion.Escape(test.in))
 		})
 	}
 }

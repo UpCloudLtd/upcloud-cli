@@ -21,7 +21,7 @@ func (s CachingServer) Get(ctx context.Context, svc internal.AllServices) (Resol
 	return func(arg string) (uuid string, err error) {
 		rv := ""
 		for _, server := range servers.Servers {
-			if server.Title == arg || server.Hostname == arg || server.UUID == arg {
+			if MatchArgWithWhitespace(arg, server.Title) || server.Hostname == arg || server.UUID == arg {
 				if rv != "" {
 					return "", AmbiguousResolutionError(arg)
 				}

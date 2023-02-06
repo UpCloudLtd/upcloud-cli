@@ -27,7 +27,7 @@ func (s *CachingRouter) Get(ctx context.Context, svc internal.AllServices) (Reso
 	return func(arg string) (uuid string, err error) {
 		rv := ""
 		for _, router := range s.cached {
-			if router.Name == arg || router.UUID == arg {
+			if MatchArgWithWhitespace(arg, router.Name) || router.UUID == arg {
 				if rv != "" {
 					return "", AmbiguousResolutionError(arg)
 				}
