@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.5.0] - 2023-02-15
 ### Added
 - Print warning about unknown resource state before exiting when execution is interrupted with SIGINT.
 - Add `kubernetes nodegroup create`, `kubernetes nodegroup scale`, and `kubernetes nodegroup delete` commands (EXPERIMENTAL)
@@ -199,7 +201,8 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.4.0...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.5.0...HEAD
+[2.5.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.4.0...v2.5.0
 [2.4.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.1.0...v2.2.0
