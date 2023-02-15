@@ -5,13 +5,13 @@ import (
 	"strings"
 )
 
-var oneOrMoreWhitespace = regexp.MustCompile(`\s+`)
+var oneOrMoreSpace = regexp.MustCompile(` +`)
 
 // RemoveWordBreaks replaces all whitespaces in input strings with non-breaking spaces to prevent bash from splitting completion with whitespace into multiple completions.
 //
 // This hack allows us to use cobras built-in completion logic and can be removed once cobra supports whitespace in bash completions (See https://github.com/spf13/cobra/issues/1740).
 func RemoveWordBreaks(input string) string {
-	return oneOrMoreWhitespace.ReplaceAllString(input, "\u00A0")
+	return oneOrMoreSpace.ReplaceAllString(input, "\u00A0")
 }
 
 // MatchStringPrefix returns a list of string in vals which have a prefix as specified in key. Quotes are removed from key and output strings are escaped according to completion rules

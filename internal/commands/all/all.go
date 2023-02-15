@@ -5,6 +5,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/account"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/database"
 	databaseconnection "github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/database/connection"
+	databaseproperties "github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/database/properties"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/ipaddress"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/kubernetes"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/kubernetes/nodegroup"
@@ -118,6 +119,20 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	connectionsCommand := commands.BuildCommand(databaseconnection.BaseConnectionCommand(), databaseCommand.Cobra(), conf)
 	commands.BuildCommand(databaseconnection.CancelCommand(), connectionsCommand.Cobra(), conf)
 	commands.BuildCommand(databaseconnection.ListCommand(), connectionsCommand.Cobra(), conf)
+
+	// Database connections
+	propertiesCommand := commands.BuildCommand(databaseproperties.PropertiesCommand(), databaseCommand.Cobra(), conf)
+	for _, i := range []struct {
+		serviceName string
+		serviceType string
+	}{
+		{serviceName: "MySQL", serviceType: "mysql"},
+		{serviceName: "PostgreSQL", serviceType: "pg"},
+		{serviceName: "Redis", serviceType: "redis"},
+	} {
+		typeCommand := commands.BuildCommand(databaseproperties.DBTypeCommand(i.serviceType, i.serviceName), propertiesCommand.Cobra(), conf)
+		commands.BuildCommand(databaseproperties.ShowCommand(i.serviceType, i.serviceName), typeCommand.Cobra(), conf)
+	}
 
 	// LoadBalancers
 	loadbalancerCommand := commands.BuildCommand(loadbalancer.BaseLoadBalancerCommand(), rootCmd, conf)
