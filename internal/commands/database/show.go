@@ -129,6 +129,10 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 }
 
 func getVersion(db *upcloud.ManagedDatabase) string {
+	if db == nil || db.Metadata == nil {
+		return ""
+	}
+
 	switch db.Type {
 	case "mysql":
 		return db.Metadata.MySQLVersion
