@@ -511,6 +511,236 @@
   
   
   
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3_6" type="checkbox" id="__nav_2_3_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_3_6">
+          database properties
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="database properties" data-md-level="3">
+        <label class="md-nav__title" for="__nav_2_3_6">
+          <span class="md-nav__icon md-icon"></span>
+          database properties
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_database/properties/" class="md-nav__link">
+        properties 
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3_6_2" type="checkbox" id="__nav_2_3_6_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_3_6_2">
+          properties mysql
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="properties mysql" data-md-level="4">
+        <label class="md-nav__title" for="__nav_2_3_6_2">
+          <span class="md-nav__icon md-icon"></span>
+          properties mysql
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_database/properties/mysql/" class="md-nav__link">
+        mysql 
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_database/properties/mysql/show/" class="md-nav__link">
+        mysql show
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3_6_3" type="checkbox" id="__nav_2_3_6_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_3_6_3">
+          properties pg
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="properties pg" data-md-level="4">
+        <label class="md-nav__title" for="__nav_2_3_6_3">
+          <span class="md-nav__icon md-icon"></span>
+          properties pg
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_database/properties/pg/" class="md-nav__link">
+        pg 
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_database/properties/pg/show/" class="md-nav__link">
+        pg show
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3_6_4" type="checkbox" id="__nav_2_3_6_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_3_6_4">
+          properties redis
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="properties redis" data-md-level="4">
+        <label class="md-nav__title" for="__nav_2_3_6_4">
+          <span class="md-nav__icon md-icon"></span>
+          properties redis
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_database/properties/redis/" class="md-nav__link">
+        redis 
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_database/properties/redis/show/" class="md-nav__link">
+        redis show
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
     <li class="md-nav__item">
       <a href="../commands_reference/upctl_database/show/" class="md-nav__link">
         database show
@@ -2352,6 +2582,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>Print warning about unknown resource state before exiting when execution is interrupted with SIGINT.</li>
 <li>Add <code>kubernetes nodegroup create</code>, <code>kubernetes nodegroup scale</code>, and <code>kubernetes nodegroup delete</code> commands (EXPERIMENTAL)</li>
 <li>Added support for all shell completions provided by <code>cobra</code>.</li>
+<li>Add <code>database properties &lt;DB type&gt;</code> command to list database properties for given database type and <code>database properties &lt;DB type&gt; show</code> command to show database property details.</li>
 </ul>
 <h3 id="changed">Changed</h3>
 <ul>
