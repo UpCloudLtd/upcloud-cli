@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Completions will now only suggest private networks as arguments because names or UUIDs of public or utility networks are often not valid arguments.
+
 ## [2.5.0] - 2023-02-15
 ### Added
 - Print warning about unknown resource state before exiting when execution is interrupted with SIGINT.
