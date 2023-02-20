@@ -6,6 +6,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/kubernetes/nodegroup"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
 
@@ -35,6 +36,7 @@ func CreateCommand() commands.Command {
 
 type createParams struct {
 	request.CreateKubernetesClusterRequest
+	networkArg string
 	nodeGroups []string
 }
 
@@ -49,6 +51,12 @@ func (p *createParams) processParams(exec commands.Executor) error {
 		ngs = append(ngs, ng)
 	}
 	p.NodeGroups = ngs
+
+	var err error
+	p.Network, err = commands.ResolveNetwork(exec, p.networkArg)
+	if err != nil {
+		return err
+	}
 
 	networkDetails, err := exec.All().GetNetworkDetails(exec.Context(), &request.GetNetworkDetailsRequest{UUID: p.Network})
 
@@ -83,7 +91,6 @@ func processNodeGroup(in string) (request.KubernetesNodeGroup, error) {
 type createCommand struct {
 	*commands.BaseCommand
 	params createParams
-	completion.Kubernetes
 }
 
 // InitCommand implements Command.InitCommand
@@ -92,7 +99,7 @@ func (c *createCommand) InitCommand() {
 	c.params = createParams{CreateKubernetesClusterRequest: request.CreateKubernetesClusterRequest{}}
 
 	fs.StringVar(&c.params.Name, "name", "", "Kubernetes cluster name.")
-	fs.StringVar(&c.params.Network, "network", "", "Network to use. The value should be UUID of a private network.")
+	fs.StringVar(&c.params.networkArg, "network", "", "Network to use. The value should be name or UUID of a private network.")
 	fs.StringArrayVar(
 		&c.params.nodeGroups,
 		"node-group",
@@ -120,14 +127,20 @@ func (c *createCommand) InitCommand() {
 	_ = c.Cobra().MarkFlagRequired("zone")
 }
 
+func (c *createCommand) InitCommandWithConfig(cfg *config.Config) {
+	_ = c.Cobra().RegisterFlagCompletionFunc("network", commands.CompletionFunc(completion.Network{}, cfg))
+}
+
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (c *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	svc := exec.All()
-	msg := fmt.Sprintf("Creating cluster %s", c.params.Name)
-	exec.PushProgressStarted(msg)
+
 	if err := c.params.processParams(exec); err != nil {
 		return nil, err
 	}
+
+	msg := fmt.Sprintf("Creating cluster %s", c.params.Name)
+	exec.PushProgressStarted(msg)
 
 	r := c.params.CreateKubernetesClusterRequest
 
