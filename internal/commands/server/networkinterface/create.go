@@ -22,7 +22,7 @@ type createCommand struct {
 	ipAddresses       []string
 	bootable          config.OptionalBoolean
 	sourceIPFiltering config.OptionalBoolean
-	networkUUID       string
+	networkArg        string
 	family            string
 	interfaceIndex    int
 	networkType       string
@@ -52,7 +52,7 @@ const (
 // InitCommand implements Command.InitCommand
 func (s *createCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
-	fs.StringVar(&s.networkUUID, "network", "", "Virtual network ID or name to join.")
+	fs.StringVar(&s.networkArg, "network", "", "Private network name or UUID to join.")
 	fs.StringVar(&s.networkType, "type", defaultNetworkType, "Set the type of the network. Available: public, utility, private")
 	fs.StringVar(&s.family, "family", defaultIPAddressFamily, "The address family of new IP address.")
 	fs.IntVar(&s.interfaceIndex, "index", 0, "Interface index.")
@@ -60,6 +60,10 @@ func (s *createCommand) InitCommand() {
 	config.AddEnableDisableFlags(fs, &s.sourceIPFiltering, "source-ip-filtering", "Whether source IP filtering is enabled on the interface. Disabling it is allowed only for SDN private interfaces.")
 	fs.StringSliceVar(&s.ipAddresses, "ip-addresses", []string{}, "A comma-separated list of IP addresses")
 	s.AddFlags(fs)
+}
+
+func (c *createCommand) InitCommandWithConfig(cfg *config.Config) {
+	_ = c.Cobra().RegisterFlagCompletionFunc("network", commands.CompletionFunc(completion.Network{}, cfg))
 }
 
 // MaximumExecutions implements Command.MaximumExecutions
@@ -87,13 +91,18 @@ func (s *createCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 		ipAddresses = handled
 	}
 
-	msg := fmt.Sprintf("Creating network interface for server %s network %s", arg, s.networkUUID)
+	networkUUID, err := commands.ResolveNetwork(exec, s.networkArg)
+	if err != nil {
+		return nil, err
+	}
+
+	msg := fmt.Sprintf("Creating network interface for server %s to network %s", arg, networkUUID)
 	exec.PushProgressStarted(msg)
 
 	res, err := exec.Network().CreateNetworkInterface(exec.Context(), &request.CreateNetworkInterfaceRequest{
 		ServerUUID:        arg,
 		Type:              s.networkType,
-		NetworkUUID:       s.networkUUID,
+		NetworkUUID:       networkUUID,
 		Index:             s.interfaceIndex,
 		IPAddresses:       ipAddresses,
 		SourceIPFiltering: s.sourceIPFiltering.AsUpcloudBoolean(),
