@@ -7,6 +7,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/namedargs"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
@@ -63,7 +64,7 @@ func (s *createCommand) InitCommand() {
 }
 
 func (s *createCommand) InitCommandWithConfig(cfg *config.Config) {
-	_ = s.Cobra().RegisterFlagCompletionFunc("network", commands.CompletionFunc(completion.Network{}, cfg))
+	_ = s.Cobra().RegisterFlagCompletionFunc("network", namedargs.CompletionFunc(completion.Network{}, cfg))
 }
 
 // MaximumExecutions implements Command.MaximumExecutions
@@ -95,7 +96,7 @@ func (s *createCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 	networkUUID := ""
 	if s.networkArg != "" {
 		var err error
-		networkUUID, err = commands.ResolveNetwork(exec, s.networkArg)
+		networkUUID, err = namedargs.ResolveNetwork(exec, s.networkArg)
 		if err != nil {
 			return nil, err
 		}

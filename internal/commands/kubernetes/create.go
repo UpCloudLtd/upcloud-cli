@@ -7,6 +7,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/kubernetes/nodegroup"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/namedargs"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
 
@@ -53,7 +54,7 @@ func (p *createParams) processParams(exec commands.Executor) error {
 	p.NodeGroups = ngs
 
 	var err error
-	p.Network, err = commands.ResolveNetwork(exec, p.networkArg)
+	p.Network, err = namedargs.ResolveNetwork(exec, p.networkArg)
 	if err != nil {
 		return err
 	}
@@ -128,7 +129,7 @@ func (c *createCommand) InitCommand() {
 }
 
 func (c *createCommand) InitCommandWithConfig(cfg *config.Config) {
-	_ = c.Cobra().RegisterFlagCompletionFunc("network", commands.CompletionFunc(completion.Network{}, cfg))
+	_ = c.Cobra().RegisterFlagCompletionFunc("network", namedargs.CompletionFunc(completion.Network{}, cfg))
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
