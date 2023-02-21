@@ -91,9 +91,14 @@ func (s *createCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 		ipAddresses = handled
 	}
 
-	networkUUID, err := commands.ResolveNetwork(exec, s.networkArg)
-	if err != nil {
-		return nil, err
+	// Resolve network UUID if --network arg was given
+	networkUUID := ""
+	if s.networkArg != "" {
+		var err error
+		networkUUID, err = commands.ResolveNetwork(exec, s.networkArg)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	msg := fmt.Sprintf("Creating network interface for server %s to network %s", arg, networkUUID)

@@ -89,6 +89,21 @@ func TestCreateCommand(t *testing.T) {
 			},
 		},
 		{
+			name: "using network name",
+			flags: []string{
+				"--network", network.Name,
+				"--ip-addresses", "127.0.0.1",
+			},
+			req: request.CreateNetworkInterfaceRequest{
+				ServerUUID:  server.UUID,
+				NetworkUUID: network.UUID,
+				IPAddresses: request.CreateNetworkInterfaceIPAddressSlice{
+					{Address: "127.0.0.1", Family: upcloud.IPAddressFamilyIPv4},
+				},
+				Type: upcloud.NetworkTypePrivate,
+			},
+		},
+		{
 			name: "set optional fields",
 			flags: []string{
 				"--network", network.UUID,
