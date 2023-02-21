@@ -153,6 +153,7 @@ func (s *BaseCommand) InitCommand() {
 
 // InitCommandWithConfig is a hook for running additional initialisations with access to config.
 // E.g., can be used to set flag completion functions.
+// Note that the config might not be initialized when this function is called. Thus, config has to be used in a hook function, e.g. Cobras Command.RegisterFlagCompletionFunc.
 func (s *BaseCommand) InitCommandWithConfig(*config.Config) {
 }
 
