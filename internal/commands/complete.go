@@ -6,9 +6,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type completeFunc func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective)
+type CompleteFunc func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective)
 
-func CompletionFunc(provider completion.Provider, cfg *config.Config) completeFunc {
+func CompletionFunc(provider completion.Provider, cfg *config.Config) CompleteFunc {
 	return func(cmd *cobra.Command, _ []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		svc, err := cfg.CreateService()
 		if err != nil {

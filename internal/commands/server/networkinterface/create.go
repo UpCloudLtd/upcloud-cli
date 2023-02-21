@@ -62,8 +62,8 @@ func (s *createCommand) InitCommand() {
 	s.AddFlags(fs)
 }
 
-func (c *createCommand) InitCommandWithConfig(cfg *config.Config) {
-	_ = c.Cobra().RegisterFlagCompletionFunc("network", commands.CompletionFunc(completion.Network{}, cfg))
+func (s *createCommand) InitCommandWithConfig(cfg *config.Config) {
+	_ = s.Cobra().RegisterFlagCompletionFunc("network", commands.CompletionFunc(completion.Network{}, cfg))
 }
 
 // MaximumExecutions implements Command.MaximumExecutions
