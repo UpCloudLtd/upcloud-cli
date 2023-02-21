@@ -15,11 +15,13 @@ import (
 )
 
 var mockNetworks = &upcloud.Networks{Networks: []upcloud.Network{
-	{Name: "mock1", UUID: "abcdef"},
-	{Name: "mock2", UUID: "abcghi"},
-	{Name: "bock1", UUID: "jklmno"},
-	{Name: "bock2", UUID: "pqrstu"},
-	{Name: "dock1", UUID: "vwxyzä"},
+	{Name: "mock1", UUID: "abcdef", Type: "private"},
+	{Name: "mock2", UUID: "abcghi", Type: "private"},
+	{Name: "mock3", UUID: "123qwe", Type: "public"},
+	{Name: "mock4", UUID: "123zxc", Type: "utility"},
+	{Name: "bock1", UUID: "jklmno", Type: "private"},
+	{Name: "bock2", UUID: "pqrstu", Type: "private"},
+	{Name: "dock1", UUID: "vwxyzä", Type: "private"},
 }}
 
 func TestNetwork_CompleteArgument(t *testing.T) {
@@ -30,6 +32,8 @@ func TestNetwork_CompleteArgument(t *testing.T) {
 		expectedDirective cobra.ShellCompDirective
 	}{
 		{name: "basic uuid", complete: "pqr", expectedMatches: []string{"pqrstu"}, expectedDirective: cobra.ShellCompDirectiveNoFileComp},
+		{name: "public net", complete: "123q", expectedMatches: nil, expectedDirective: cobra.ShellCompDirectiveNoFileComp},
+		{name: "utility net", complete: "123z", expectedMatches: nil, expectedDirective: cobra.ShellCompDirectiveNoFileComp},
 		{name: "basic name", complete: "dock", expectedMatches: []string{"dock1"}, expectedDirective: cobra.ShellCompDirectiveNoFileComp},
 		{name: "multiple uuids", complete: "abc", expectedMatches: []string{"abcdef", "abcghi"}, expectedDirective: cobra.ShellCompDirectiveNoFileComp},
 		{name: "multiple names", complete: "bock", expectedMatches: []string{"bock1", "bock2"}, expectedDirective: cobra.ShellCompDirectiveNoFileComp},

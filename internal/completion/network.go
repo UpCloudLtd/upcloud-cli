@@ -21,9 +21,11 @@ func (s Network) CompleteArgument(ctx context.Context, svc service.AllServices, 
 		return None(toComplete)
 	}
 	var vals []string
-	// XXX: filter networks as it include all public/private prefixes
 	for _, v := range networks.Networks {
-		vals = append(vals, v.UUID, v.Name)
+		// Only add completions for private networks
+		if v.Type == "private" {
+			vals = append(vals, v.UUID, v.Name)
+		}
 	}
 	return MatchStringPrefix(vals, toComplete, true), cobra.ShellCompDirectiveNoFileComp
 }
