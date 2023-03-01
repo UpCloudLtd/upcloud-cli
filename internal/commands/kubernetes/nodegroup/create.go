@@ -9,8 +9,8 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
-	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
 	"github.com/spf13/pflag"
 )
 
@@ -84,8 +84,8 @@ func processTaint(in string) (upcloud.KubernetesTaint, error) {
 	}, nil
 }
 
-func ProcessNodeGroupParams(p CreateNodeGroupParams) (upcloud.KubernetesNodeGroup, error) {
-	ng := upcloud.KubernetesNodeGroup{}
+func ProcessNodeGroupParams(p CreateNodeGroupParams) (request.KubernetesNodeGroup, error) {
+	ng := request.KubernetesNodeGroup{}
 
 	kubeletArgs := make([]upcloud.KubernetesKubeletArg, 0)
 	for _, v := range p.KubeletArgs {
@@ -122,7 +122,7 @@ func ProcessNodeGroupParams(p CreateNodeGroupParams) (upcloud.KubernetesNodeGrou
 		taints = append(taints, t)
 	}
 
-	ng = upcloud.KubernetesNodeGroup{
+	ng = request.KubernetesNodeGroup{
 		Count:       p.Count,
 		Labels:      labels,
 		Name:        p.Name,
@@ -134,19 +134,6 @@ func ProcessNodeGroupParams(p CreateNodeGroupParams) (upcloud.KubernetesNodeGrou
 	}
 
 	return ng, nil
-}
-
-func upcloudNgToRequestNg(ng upcloud.KubernetesNodeGroup) request.KubernetesNodeGroup {
-	return request.KubernetesNodeGroup{
-		Count:       ng.Count,
-		Labels:      ng.Labels,
-		Name:        ng.Name,
-		Plan:        ng.Plan,
-		SSHKeys:     ng.SSHKeys,
-		Storage:     ng.Storage,
-		KubeletArgs: ng.KubeletArgs,
-		Taints:      ng.Taints,
-	}
 }
 
 type createCommand struct {
@@ -187,7 +174,7 @@ func (s *createCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 		return commands.HandleError(exec, msg, err)
 	}
 
-	res, err := exec.All().CreateKubernetesNodeGroup(exec.Context(), &request.CreateKubernetesNodeGroupRequest{ClusterUUID: arg, NodeGroup: upcloudNgToRequestNg(ng)})
+	res, err := exec.All().CreateKubernetesNodeGroup(exec.Context(), &request.CreateKubernetesNodeGroupRequest{ClusterUUID: arg, NodeGroup: ng})
 	if err != nil {
 		return commands.HandleError(exec, msg, err)
 	}

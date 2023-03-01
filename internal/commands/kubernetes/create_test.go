@@ -8,8 +8,8 @@ import (
 	smock "github.com/UpCloudLtd/upcloud-cli/v2/internal/mock"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/mockexecute"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
@@ -33,7 +33,7 @@ func TestCreateKubernetes(t *testing.T) {
 				Name:        "my-cluster",
 				Network:     "03e5ca07-f36c-4957-a676-e001e40441eb",
 				NetworkCIDR: "172.16.1.0/24",
-				NodeGroups: []upcloud.KubernetesNodeGroup{
+				NodeGroups: []request.KubernetesNodeGroup{
 					{
 						Count: 2,
 						Labels: []upcloud.Label{

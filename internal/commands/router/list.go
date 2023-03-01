@@ -5,7 +5,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
 	"github.com/spf13/pflag"
 )
 

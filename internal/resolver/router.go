@@ -6,7 +6,7 @@ import (
 
 	internal "github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
 )
 
 // CachingRouter implements resolver for routers by uuid or name, caching the results
