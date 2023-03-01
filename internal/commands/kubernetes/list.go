@@ -47,7 +47,7 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 			{Key: "network", Header: "Network UUID", Colour: ui.DefaultUUUIDColours},
 			{Key: "network_cidr", Header: "Network CIDR", Colour: ui.DefaultAddressColours},
 			{Key: "zone", Header: "Zone"},
-			{Key: "state", Header: "Operational state", Format: format.KubernetesState},
+			{Key: "state", Header: "Operational state", Format: format.KubernetesClusterState},
 		},
 		Rows: rows,
 	}, nil
