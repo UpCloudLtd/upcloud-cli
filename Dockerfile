@@ -9,7 +9,7 @@ RUN make build-dockerised
 
 FROM alpine:3.16
 
-RUN apk add --update --no-cache ca-certificates
+RUN apk add --update --no-cache ca-certificates jq
 COPY --from=build /go/upctl/bin/*dockerised-linux-amd64 /bin/upctl
 
 ENTRYPOINT ["/bin/upctl"]
