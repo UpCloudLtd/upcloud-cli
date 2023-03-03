@@ -207,6 +207,10 @@ dockers:
     - "upcloud/upctl:{{ .Tag }}"
     - "upcloud/upctl:{{ .Major }}"
     - "upcloud/upctl:{{ .Major }}.{{ .Minor }}"
+    - "ghcr.io/upcloudltd/upctl:latest"
+    - "ghcr.io/upcloudltd/upctl:{{ .Tag }}"
+    - "ghcr.io/upcloudltd/upctl:{{ .Major }}"
+    - "ghcr.io/upcloudltd/upctl:{{ .Major }}.{{ .Minor }}"
 
     build_flag_templates:
     - "--platform=linux/amd64"
