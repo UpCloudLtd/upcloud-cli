@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- The `upctl` container image now includes [jq](https://stedolan.github.io/jq/) tool for parsing values from JSON output.
+
 ### Changed
 - Completions will now only suggest private networks as arguments because names or UUIDs of public or utility networks are often not valid arguments.
 
