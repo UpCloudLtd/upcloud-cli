@@ -34,8 +34,9 @@ func TestShowCommand(t *testing.T) {
 						Value: "label-thing",
 					},
 				},
-				Name: "upcloud-go-sdk-unit-test",
-				Plan: "K8S-2xCPU-4GB",
+				Name:  "upcloud-go-sdk-unit-test",
+				Plan:  "K8S-2xCPU-4GB",
+				State: upcloud.KubernetesNodeGroupStateRunning,
 				KubeletArgs: []upcloud.KubernetesKubeletArg{
 					{
 						Key:   "somekubeletkey",
@@ -73,8 +74,9 @@ func TestShowCommand(t *testing.T) {
 						Value: "label-thing-2",
 					},
 				},
-				Name: "upcloud-go-sdk-unit-test-2",
-				Plan: "K8S-4xCPU-8GB",
+				Name:  "upcloud-go-sdk-unit-test-2",
+				Plan:  "K8S-4xCPU-8GB",
+				State: upcloud.KubernetesNodeGroupStatePending,
 				KubeletArgs: []upcloud.KubernetesKubeletArg{
 					{
 						Key:   "somekubeletkey2",
@@ -112,6 +114,7 @@ func TestShowCommand(t *testing.T) {
     Name:         upcloud-go-sdk-unit-test              
     Count:        4                                     
     Plan:         K8S-2xCPU-4GB                         
+    State:        running                               
     Storage UUID: storage-uuid                          
     Storage name: Test storage                          
     Kubelet args: somekubeletkey=somekubeletvalue       
@@ -126,6 +129,7 @@ func TestShowCommand(t *testing.T) {
     Name:         upcloud-go-sdk-unit-test-2               
     Count:        8                                        
     Plan:         K8S-4xCPU-8GB                            
+    State:        pending                                  
     Storage UUID: storage-uuid-2                           
     Storage name: Test storage                             
     Kubelet args: somekubeletkey2=somekubeletvalue2        
