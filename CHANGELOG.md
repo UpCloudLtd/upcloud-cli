@@ -6,13 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### Added
-- Add completions for `--network` argument of `kubernetes create` and `server network-interface create`.
-- Support also network name as input for `--network` argument of `kubernetes create` and `server network-interface create`
 
+## [2.6.0] - 2023-03-14
 ### Added
 - The `upctl` container image now includes [jq](https://stedolan.github.io/jq/) tool for parsing values from JSON output.
 - Add node-group states to `kubernetes show` output.
+- Add completions for `--network` argument of `kubernetes create` and `server network-interface create`.
+- Support also network name as input for `--network` argument of `kubernetes create` and `server network-interface create`
 
 ### Changed
 - Completions will now only suggest private networks as arguments because names or UUIDs of public or utility networks are often not valid arguments.
@@ -211,7 +211,8 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.5.0...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.6.0...HEAD
+[2.6.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.5.0...v2.6.0
 [2.5.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.4.0...v2.5.0
 [2.4.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.2.0...v2.3.0
