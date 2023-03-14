@@ -15,65 +15,83 @@ import (
 )
 
 func TestCreateKubernetes(t *testing.T) {
+	network := upcloud.Network{
+		UUID:       "aa39e313-d908-418a-a959-459699bdc83a",
+		Name:       "test-network",
+		IPNetworks: []upcloud.IPNetwork{{Address: "172.16.1.0/24"}},
+	}
+	networks := upcloud.Networks{Networks: []upcloud.Network{network}}
+
+	oneNodeGroupArgs := func(network string) []string {
+		return []string{
+			"--name", "my-cluster",
+			"--network", network,
+			"--node-group", "count=2,kubelet-arg=log-flush-frequency=5s,label=owner=devteam,label=env=dev,name=my-node-group,plan=K8S-2xCPU-4GB,ssh-key=ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMWq/xsiYPgA/HLsaWHcjAGnwU+pJy9BUmvIlMBpkdn2 admin@user.com,storage=01000000-0000-4000-8000-000160010100,taint=env=dev:NoSchedule,taint=env=dev2:NoSchedule",
+			"--zone", "de-fra1",
+		}
+	}
+	oneNodeGroupRequest := request.CreateKubernetesClusterRequest{
+		Name:        "my-cluster",
+		Network:     "aa39e313-d908-418a-a959-459699bdc83a",
+		NetworkCIDR: "172.16.1.0/24",
+		NodeGroups: []request.KubernetesNodeGroup{
+			{
+				Count: 2,
+				Labels: []upcloud.Label{
+					{
+						Key:   "owner",
+						Value: "devteam",
+					},
+					{
+						Key:   "env",
+						Value: "dev",
+					},
+				},
+				Name: "my-node-group",
+				Plan: "K8S-2xCPU-4GB",
+				SSHKeys: []string{
+					"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMWq/xsiYPgA/HLsaWHcjAGnwU+pJy9BUmvIlMBpkdn2 admin@user.com",
+				},
+				Storage: "01000000-0000-4000-8000-000160010100",
+				KubeletArgs: []upcloud.KubernetesKubeletArg{
+					{
+						Key:   "log-flush-frequency",
+						Value: "5s",
+					},
+				},
+				Taints: []upcloud.KubernetesTaint{
+					{
+						Effect: "NoSchedule",
+						Key:    "env",
+						Value:  "dev",
+					},
+					{
+						Effect: "NoSchedule",
+						Key:    "env",
+						Value:  "dev2",
+					},
+				},
+			},
+		},
+		Zone: "de-fra1",
+	}
+
 	for _, test := range []struct {
 		name    string
 		args    []string
-		r       request.CreateKubernetesClusterRequest
+		request request.CreateKubernetesClusterRequest
 		wantErr bool
 	}{
 		{
-			name: "1 node group",
-			args: []string{
-				"--name", "my-cluster",
-				"--network", "03e5ca07-f36c-4957-a676-e001e40441eb",
-				"--node-group", "count=2,kubelet-arg=log-flush-frequency=5s,label=owner=devteam,label=env=dev,name=my-node-group,plan=K8S-2xCPU-4GB,ssh-key=ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMWq/xsiYPgA/HLsaWHcjAGnwU+pJy9BUmvIlMBpkdn2 admin@user.com,storage=01000000-0000-4000-8000-000160010100,taint=env=dev:NoSchedule,taint=env=dev2:NoSchedule",
-				"--zone", "de-fra1",
-			},
-			r: request.CreateKubernetesClusterRequest{
-				Name:        "my-cluster",
-				Network:     "03e5ca07-f36c-4957-a676-e001e40441eb",
-				NetworkCIDR: "172.16.1.0/24",
-				NodeGroups: []request.KubernetesNodeGroup{
-					{
-						Count: 2,
-						Labels: []upcloud.Label{
-							{
-								Key:   "owner",
-								Value: "devteam",
-							},
-							{
-								Key:   "env",
-								Value: "dev",
-							},
-						},
-						Name: "my-node-group",
-						Plan: "K8S-2xCPU-4GB",
-						SSHKeys: []string{
-							"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMWq/xsiYPgA/HLsaWHcjAGnwU+pJy9BUmvIlMBpkdn2 admin@user.com",
-						},
-						Storage: "01000000-0000-4000-8000-000160010100",
-						KubeletArgs: []upcloud.KubernetesKubeletArg{
-							{
-								Key:   "log-flush-frequency",
-								Value: "5s",
-							},
-						},
-						Taints: []upcloud.KubernetesTaint{
-							{
-								Effect: "NoSchedule",
-								Key:    "env",
-								Value:  "dev",
-							},
-							{
-								Effect: "NoSchedule",
-								Key:    "env",
-								Value:  "dev2",
-							},
-						},
-					},
-				},
-				Zone: "de-fra1",
-			},
+			name:    "1 node group",
+			args:    oneNodeGroupArgs(network.UUID),
+			request: oneNodeGroupRequest,
+			wantErr: false,
+		},
+		{
+			name:    "resolve network from name",
+			args:    oneNodeGroupArgs(network.Name),
+			request: oneNodeGroupRequest,
 			wantErr: false,
 		},
 	} {
@@ -82,8 +100,9 @@ func TestCreateKubernetes(t *testing.T) {
 			testCmd := CreateCommand()
 			mService := new(smock.Service)
 
-			mService.On("CreateKubernetesCluster", &test.r).Return(&upcloud.KubernetesCluster{}, nil)
-			mService.On("GetNetworkDetails", mock.Anything).Return(&upcloud.Network{IPNetworks: []upcloud.IPNetwork{{Address: "172.16.1.0/24"}}}, nil)
+			mService.On("CreateKubernetesCluster", &test.request).Return(&upcloud.KubernetesCluster{}, nil)
+			mService.On("GetNetworks").Return(&networks, nil)
+			mService.On("GetNetworkDetails", mock.Anything).Return(&network, nil)
 
 			c := commands.BuildCommand(testCmd, nil, conf)
 
