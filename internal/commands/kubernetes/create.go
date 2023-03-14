@@ -9,8 +9,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
 	"github.com/spf13/pflag"
 )
 
@@ -40,7 +39,7 @@ type createParams struct {
 }
 
 func (p *createParams) processParams(exec commands.Executor) error {
-	ngs := make([]upcloud.KubernetesNodeGroup, 0)
+	ngs := make([]request.KubernetesNodeGroup, 0)
 
 	for _, v := range p.nodeGroups {
 		ng, err := processNodeGroup(v)
@@ -62,10 +61,10 @@ func (p *createParams) processParams(exec commands.Executor) error {
 	return nil
 }
 
-func processNodeGroup(in string) (upcloud.KubernetesNodeGroup, error) {
+func processNodeGroup(in string) (request.KubernetesNodeGroup, error) {
 	p := nodegroup.CreateNodeGroupParams{}
 	fs := nodegroup.GetCreateNodeGroupFlagSet(&p)
-	ng := upcloud.KubernetesNodeGroup{}
+	ng := request.KubernetesNodeGroup{}
 
 	args, err := commands.ParseN(in, 2)
 	if err != nil {

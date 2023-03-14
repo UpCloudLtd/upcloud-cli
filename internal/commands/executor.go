@@ -14,7 +14,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	internal "github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/service"
+	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/service"
 	"github.com/gemalto/flume"
 )
 

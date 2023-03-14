@@ -13,8 +13,8 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
 	"github.com/jedib0t/go-pretty/v6/text"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
 )
 
 // ShowCommand creates the "server show" command

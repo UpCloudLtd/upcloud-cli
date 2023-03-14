@@ -11,7 +11,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
 )
 
 // ShowCommand creates the "kubernetes show" command
@@ -90,6 +90,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 									{Title: "Name:", Value: nodeGroup.Name},
 									{Title: "Count:", Value: nodeGroup.Count},
 									{Title: "Plan:", Value: nodeGroup.Plan},
+									{Title: "State:", Value: nodeGroup.State, Format: format.KubernetesNodeGroupState},
 									{Title: "Storage UUID:", Value: nodeGroup.Storage, Colour: ui.DefaultUUUIDColours},
 									{Title: "Storage name:", Value: storageName, Format: format.PossiblyUnknownString},
 									{Title: "Kubelet args:", Value: kubeletArgs.String()},
@@ -120,7 +121,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 								{Title: "Network name:", Value: networkName, Format: format.PossiblyUnknownString},
 								{Title: "Network CIDR:", Value: cluster.NetworkCIDR, Colour: ui.DefaultAddressColours},
 								{Title: "Zone", Value: cluster.Zone},
-								{Title: "Operational state:", Value: cluster.State, Format: format.KubernetesState},
+								{Title: "Operational state:", Value: cluster.State, Format: format.KubernetesClusterState},
 							},
 						},
 					},

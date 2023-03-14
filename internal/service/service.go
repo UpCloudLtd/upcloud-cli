@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/UpCloudLtd/upcloud-go-api/v5/upcloud/service"
+	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/service"
 )
 
 // AllServices is a convenience interface for providing all services
