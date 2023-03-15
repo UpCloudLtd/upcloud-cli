@@ -3,6 +3,7 @@ package all
 import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/account"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/account/permissions"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/database"
 	databaseindex "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/database/index"
 	databaseproperties "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/database/properties"
@@ -103,6 +104,11 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	// Account
 	accountCommand := commands.BuildCommand(account.BaseAccountCommand(), rootCmd, conf)
 	commands.BuildCommand(account.ShowCommand(), accountCommand.Cobra(), conf)
+	commands.BuildCommand(account.ListCommand(), accountCommand.Cobra(), conf)
+
+	// Account permissions
+	permissionsCommand := commands.BuildCommand(permissions.BasePermissionsCommand(), accountCommand.Cobra(), conf)
+	commands.BuildCommand(permissions.ListCommand(), permissionsCommand.Cobra(), conf)
 
 	// Zone
 	zoneCommand := commands.BuildCommand(zone.BaseZoneCommand(), rootCmd, conf)

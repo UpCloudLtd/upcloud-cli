@@ -1184,3 +1184,27 @@ func (m *Service) WaitForManagedObjectStorageOperationalState(ctx context.Contex
 func (m *Service) WaitForManagedObjectStorageDeletion(ctx context.Context, r *request.WaitForManagedObjectStorageDeletionRequest) error {
 	return nil
 }
+
+func (m *Service) GetPermissions(ctx context.Context, r *request.GetPermissionsRequest) (upcloud.Permissions, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(upcloud.Permissions), args.Error(1)
+}
+
+func (m *Service) GrantPermission(ctx context.Context, r *request.GrantPermissionRequest) (*upcloud.Permission, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.Permission), args.Error(1)
+}
+
+func (m *Service) RevokePermission(ctx context.Context, r *request.RevokePermissionRequest) error {
+	args := m.Called(r)
+	if args[0] == nil {
+		return args.Error(0)
+	}
+	return nil
+}

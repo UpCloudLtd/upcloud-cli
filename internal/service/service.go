@@ -18,4 +18,5 @@ type AllServices interface {
 	service.Kubernetes
 	service.ServerGroup
 	service.ManagedObjectStorage
+	service.Permission
 }

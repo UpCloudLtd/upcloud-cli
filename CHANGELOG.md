@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support for storage encryption to storage `create`, `clone`, `show`, and `list` commands as well as server `create` and `show` commands.
 - _Managed object storages_ field to human readable output of `account show`.
+- Commands for listing accounts and permissions.
 
 ### Removed
 
