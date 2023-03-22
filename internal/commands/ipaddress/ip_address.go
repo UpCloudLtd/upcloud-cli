@@ -13,12 +13,17 @@ const maxIPAddressActions = 10
 // BaseIPAddressCommand creates the base 'ip-address' command
 func BaseIPAddressCommand() commands.Command {
 	return &ipAddressCommand{
-		commands.New("ip-address", "Manage ip address"),
+		commands.New("ip-address", "Manage IP addresses"),
 	}
 }
 
 type ipAddressCommand struct {
 	*commands.BaseCommand
+}
+
+// InitCommand implements Command.InitCommand
+func (k *ipAddressCommand) InitCommand() {
+	k.Cobra().Aliases = []string{"ip"}
 }
 
 // GetFamily returns a human-readable string (`"IPv4"` or `"IPv6"`) of the address family of the ip parsed from the string
