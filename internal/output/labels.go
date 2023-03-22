@@ -2,7 +2,8 @@ package output
 
 import "github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
 
-func labelsSection(labels []upcloud.Label) CombinedSection {
+// GetLabelsSection returns labels table as CombinedSection
+func GetLabelsSection(labels []upcloud.Label) CombinedSection {
 	var rows []TableRow
 	for _, i := range labels {
 		rows = append(rows, TableRow{i.Key, i.Value})
@@ -32,6 +33,6 @@ func InsertLabelsIntoCombined(combined Combined, labels []upcloud.Label) Combine
 		combined[:2],
 		combined[1:]...,
 	)
-	r[1] = labelsSection(labels)
+	r[1] = GetLabelsSection(labels)
 	return r
 }

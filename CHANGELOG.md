@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Add `ip` and `net` as aliases to `ip-address` and `network` commands, respectively.
-- Add _Labels_ table to `loadbalancer show` and `server show` outputs.
+- Add _Labels_ table to `loadbalancer show`, `network show`, and `server show` outputs.
 
 ## [2.6.0] - 2023-03-14
 ### Added

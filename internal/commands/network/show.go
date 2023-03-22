@@ -64,6 +64,10 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 		},
 	}
 
+	if len(network.Labels) > 0 {
+		combined = append(combined, output.GetLabelsSection(network.Labels))
+	}
+
 	if len(network.IPNetworks) > 0 {
 		networkRows := make([]output.TableRow, 0)
 		for _, nip := range network.IPNetworks {
