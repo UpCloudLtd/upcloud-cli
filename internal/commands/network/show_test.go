@@ -90,6 +90,10 @@ func TestShowCommand(t *testing.T) {
     Type:   utility                              
     Zone:   uk-lon1                              
 
+  Labels:
+
+    No labels defined for this resource.
+    
   IP Networks:
 
      Address      Family   DHCP   DHCP Def Router   DHCP DNS              

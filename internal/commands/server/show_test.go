@@ -164,6 +164,10 @@ func TestServerHumanOutput(t *testing.T) {
     Host ID:       7653311107                           
     Tags:          DEV,Ubuntu                           
 
+  Labels:
+
+    No labels defined for this resource.
+    
   Storage: (Flags: B = bootdisk, P = part of plan)
 
      UUID                                   Title                             Type   Address    Size (GiB)   Flags 

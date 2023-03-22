@@ -140,6 +140,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 				},
 			},
 		},
+		labels.GetLabelsSection(server.Labels),
 		output.CombinedSection{
 			Key:   "storage",
 			Title: "Storage: (Flags: B = bootdisk, P = part of plan)",
@@ -170,11 +171,6 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 				Rows: nicRows,
 			},
 		},
-	}
-
-	// Add labels table after Overview if server has labels
-	if len(server.Labels) > 0 {
-		combined = labels.InsertLabelsIntoCombined(combined, server.Labels)
 	}
 
 	// Firewall rules

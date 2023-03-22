@@ -70,6 +70,7 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 				},
 			},
 		},
+		labels.GetLabelsSection(router.Labels),
 		output.CombinedSection{
 			Key:   "networks",
 			Title: "Networks:",
@@ -83,10 +84,6 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 				Rows: networkRows,
 			},
 		},
-	}
-
-	if len(router.Labels) > 0 {
-		combined = labels.InsertLabelsIntoCombined(combined, router.Labels)
 	}
 
 	return combined, nil

@@ -63,10 +63,7 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 				},
 			},
 		},
-	}
-
-	if len(network.Labels) > 0 {
-		combined = append(combined, labels.GetLabelsSection(network.Labels))
+		labels.GetLabelsSection(network.Labels),
 	}
 
 	if len(network.IPNetworks) > 0 {

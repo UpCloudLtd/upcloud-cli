@@ -76,9 +76,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 		storageSection,
 	}
 
-	if len(storage.Labels) > 0 {
-		combined = append(combined, labels.GetLabelsSection(storage.Labels))
-	}
+	combined = append(combined, labels.GetLabelsSection(storage.Labels))
 
 	// Backups
 	if storage.BackupRule != nil && storage.BackupRule.Interval != "" {

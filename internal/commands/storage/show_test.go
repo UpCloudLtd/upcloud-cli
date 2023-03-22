@@ -64,6 +64,10 @@ func TestStorageHumanOutput(t *testing.T) {
     Created: 0001-01-01 00:00:00 +0000 UTC        
     Licence: 0                                    
 
+  Labels:
+
+    No labels defined for this resource.
+    
   
   Backup Rule
     Interval:  daily 

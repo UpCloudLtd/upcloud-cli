@@ -106,6 +106,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 				},
 			},
 		},
+		labels.GetLabelsSection(lb.Labels),
 		output.CombinedSection{
 			Title: "Backends:",
 			Contents: output.Table{
@@ -141,11 +142,6 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 				Rows: resolverRows,
 			},
 		},
-	}
-
-	// Add labels table after Overview if server has labels
-	if len(lb.Labels) > 0 {
-		combined = labels.InsertLabelsIntoCombined(combined, lb.Labels)
 	}
 
 	// For JSON and YAML output, passthrough API response
