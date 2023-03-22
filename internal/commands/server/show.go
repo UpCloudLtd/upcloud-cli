@@ -171,6 +171,11 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 		},
 	}
 
+	// Add labels table after Overview if server has labels
+	if len(server.Labels) > 0 {
+		combined = output.InsertLabelsIntoCombined(combined, server.Labels)
+	}
+
 	// Firewall rules
 	if server.Firewall == "on" {
 		fwRows := []output.TableRow{}
