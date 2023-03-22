@@ -32,10 +32,10 @@ func InsertLabelsIntoCombined(combined output.Combined, labels []upcloud.Label) 
 		rows = append(rows, output.TableRow{i.Key, i.Value})
 	}
 
-	r := append(
+	combined = append(
 		combined[:2],
 		combined[1:]...,
 	)
-	r[1] = GetLabelsSection(labels)
-	return r
+	combined[1] = GetLabelsSection(labels)
+	return combined
 }
