@@ -127,3 +127,78 @@ func TestShowCommand(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, expected, output)
 }
+
+func TestShowCommand_Labels(t *testing.T) {
+	text.DisableColors()
+
+	network := upcloud.Network{
+		IPNetworks: upcloud.IPNetworkSlice{
+			{
+				Address:          "196.12.0.1",
+				DHCP:             upcloud.FromBool(true),
+				DHCPDefaultRoute: upcloud.FromBool(true),
+				DHCPDns:          []string{"196.12.0.3", "196.12.0.4"},
+				Family:           upcloud.IPAddressFamilyIPv4,
+				Gateway:          "196.12.0.5",
+			},
+			{
+				Address:          "196.15.0.1",
+				DHCP:             upcloud.FromBool(true),
+				DHCPDefaultRoute: upcloud.FromBool(false),
+				DHCPDns:          []string{"196.15.0.3", "196.15.0.4"},
+				Family:           upcloud.IPAddressFamilyIPv4,
+				Gateway:          "196.15.0.5",
+			},
+		},
+		Name: "test-network",
+		Type: "private",
+		UUID: "ce6a9934-c0c6-4d84-9ad4-0611f5b95e79",
+		Zone: "de-fra1",
+		Labels: []upcloud.Label{
+			{Key: "key", Value: "value"},
+			{Key: "test", Value: "snapshot"},
+		},
+	}
+
+	expected := `  
+  Common
+    UUID:   ce6a9934-c0c6-4d84-9ad4-0611f5b95e79 
+    Name:   test-network                         
+    Router:                                      
+    Type:   private                              
+    Zone:   de-fra1                              
+
+  Labels:
+
+     Key    Value    
+    ────── ──────────
+     key    value    
+     test   snapshot 
+    
+  IP Networks:
+
+     Address      Family   DHCP   DHCP Def Router   DHCP DNS              
+    ──────────── ──────── ────── ───────────────── ───────────────────────
+     196.12.0.1   IPv4     yes    yes               196.12.0.3 196.12.0.4 
+     196.15.0.1   IPv4     yes    no                196.15.0.3 196.15.0.4 
+    
+`
+
+	mService := smock.Service{}
+	mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{network}}, nil)
+
+	conf := config.New()
+	command := commands.BuildCommand(ShowCommand(), nil, conf)
+
+	// get resolver to initialize command cache
+	_, err := command.(*showCommand).Get(context.TODO(), &mService)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	command.Cobra().SetArgs([]string{network.UUID})
+	output, err := mockexecute.MockExecute(command, &mService, conf)
+
+	assert.NoError(t, err)
+	assert.Equal(t, expected, output)
+}
