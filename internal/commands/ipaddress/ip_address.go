@@ -22,8 +22,8 @@ type ipAddressCommand struct {
 }
 
 // InitCommand implements Command.InitCommand
-func (k *ipAddressCommand) InitCommand() {
-	k.Cobra().Aliases = []string{"ip"}
+func (i *ipAddressCommand) InitCommand() {
+	i.Cobra().Aliases = []string{"ip"}
 }
 
 // GetFamily returns a human-readable string (`"IPv4"` or `"IPv6"`) of the address family of the ip parsed from the string

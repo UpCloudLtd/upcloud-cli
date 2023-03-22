@@ -25,8 +25,8 @@ type networkCommand struct {
 }
 
 // InitCommand implements Command.InitCommand
-func (k *networkCommand) InitCommand() {
-	k.Cobra().Aliases = []string{"net"}
+func (n *networkCommand) InitCommand() {
+	n.Cobra().Aliases = []string{"net"}
 }
 
 // TODO: figure out a nicer way to do this..
