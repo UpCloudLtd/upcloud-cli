@@ -1,4 +1,4 @@
-//nolint:nilnil // Here nil, nil returns are used in not-implemented methods required to satisfy an interface
+//nolint:nilnil,revive // Here nil, nil returns and unused parameters are used in not-implemented methods required to satisfy an interface and it does not make sense to rename them when copying functions from our SDK
 package mock
 
 import (
