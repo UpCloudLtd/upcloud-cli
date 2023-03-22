@@ -7,6 +7,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/format"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/labels"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
@@ -65,7 +66,7 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 	}
 
 	if len(network.Labels) > 0 {
-		combined = append(combined, output.GetLabelsSection(network.Labels))
+		combined = append(combined, labels.GetLabelsSection(network.Labels))
 	}
 
 	if len(network.IPNetworks) > 0 {
