@@ -85,64 +85,71 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 		})
 	}
 
-	// For JSON and YAML output, passthrough API response
-	return output.MarshaledWithHumanOutput{
-		Value: lb,
-		Output: output.Combined{
-			output.CombinedSection{
-				Contents: output.Details{
-					Sections: []output.DetailSection{
-						{
-							Title: "Overview:",
-							Rows: []output.DetailRow{
-								{Title: "UUID:", Value: lb.UUID, Colour: ui.DefaultUUUIDColours},
-								{Title: "Name:", Value: lb.Name},
-								{Title: "Plan:", Value: lb.Plan},
-								{Title: "Zone:", Value: lb.Zone},
-								{Title: "DNS name", Value: lb.DNSName},
-								{Title: "Network name", Value: networkName, Format: format.PossiblyUnknownString},
-								{Title: "Network UUID", Value: lb.NetworkUUID},
-								{Title: "Operational state:", Value: lb.OperationalState, Format: format.LoadBalancerState},
-							},
+	combined := output.Combined{
+		output.CombinedSection{
+			Contents: output.Details{
+				Sections: []output.DetailSection{
+					{
+						Title: "Overview:",
+						Rows: []output.DetailRow{
+							{Title: "UUID:", Value: lb.UUID, Colour: ui.DefaultUUUIDColours},
+							{Title: "Name:", Value: lb.Name},
+							{Title: "Plan:", Value: lb.Plan},
+							{Title: "Zone:", Value: lb.Zone},
+							{Title: "DNS name", Value: lb.DNSName},
+							{Title: "Network name", Value: networkName, Format: format.PossiblyUnknownString},
+							{Title: "Network UUID", Value: lb.NetworkUUID},
+							{Title: "Operational state:", Value: lb.OperationalState, Format: format.LoadBalancerState},
 						},
 					},
 				},
 			},
-			output.CombinedSection{
-				Title: "Backends:",
-				Contents: output.Table{
-					Columns: []output.TableColumn{
-						{Key: "name", Header: "Name"},
-						{Key: "resolver", Header: "Resolver"},
-						{Key: "members", Header: "Members"},
-					},
-					Rows: backEndRows,
+		},
+		output.CombinedSection{
+			Title: "Backends:",
+			Contents: output.Table{
+				Columns: []output.TableColumn{
+					{Key: "name", Header: "Name"},
+					{Key: "resolver", Header: "Resolver"},
+					{Key: "members", Header: "Members"},
 				},
-			},
-			output.CombinedSection{
-				Title: "Frontends:",
-				Contents: output.Table{
-					Columns: []output.TableColumn{
-						{Key: "name", Header: "Name"},
-						{Key: "mode", Header: "Mode"},
-						{Key: "port", Header: "Port"},
-						{Key: "tls_configs", Header: "TLS configs"},
-						{Key: "default_backend", Header: "Default Backend"},
-						{Key: "rules", Header: "Rules"},
-					},
-					Rows: frontEndRows,
-				},
-			},
-			output.CombinedSection{
-				Title: "Resolvers:",
-				Contents: output.Table{
-					Columns: []output.TableColumn{
-						{Key: "name", Header: "Name"},
-						{Key: "nameservers", Header: "Nameservers"},
-					},
-					Rows: resolverRows,
-				},
+				Rows: backEndRows,
 			},
 		},
+		output.CombinedSection{
+			Title: "Frontends:",
+			Contents: output.Table{
+				Columns: []output.TableColumn{
+					{Key: "name", Header: "Name"},
+					{Key: "mode", Header: "Mode"},
+					{Key: "port", Header: "Port"},
+					{Key: "tls_configs", Header: "TLS configs"},
+					{Key: "default_backend", Header: "Default Backend"},
+					{Key: "rules", Header: "Rules"},
+				},
+				Rows: frontEndRows,
+			},
+		},
+		output.CombinedSection{
+			Title: "Resolvers:",
+			Contents: output.Table{
+				Columns: []output.TableColumn{
+					{Key: "name", Header: "Name"},
+					{Key: "nameservers", Header: "Nameservers"},
+				},
+				Rows: resolverRows,
+			},
+		},
+	}
+
+	// Add labels table after Overview if server has labels
+	if len(lb.Labels) > 0 {
+		combined = output.InsertLabelsIntoCombined(combined, lb.Labels)
+	}
+
+	// For JSON and YAML output, passthrough API response
+	return output.MarshaledWithHumanOutput{
+		Value:  lb,
+		Output: combined,
 	}, nil
 }
