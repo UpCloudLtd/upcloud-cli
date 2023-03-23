@@ -20,7 +20,7 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestReaderCounterInterface(t *testing.T) {
+func TestReaderCounterInterface(_ *testing.T) {
 	rc := &readerCounter{}
 	var _ io.Reader = rc
 }

@@ -23,15 +23,15 @@ Usage:
 upctl [command]
 
 Available Commands:
-account      Manage account
-completion   Generates shell completion
+account      Manage accounts
+completion   Generate the autocompletion script for the specified shell
 database     Manage databases
 help         Help about any command
-ip-address   Manage ip address
-kubernetes   Manage Kubernetes clusters
+ip-address   Manage IP addresses
+kubernetes   Manage Kubernetes clusters (EXPERIMENTAL)
 loadbalancer Manage load balancers
-network      Manage network
-router       Manage router
+network      Manage networks
+router       Manage routers
 server       Manage servers
 storage      Manage storages
 version      Display software information
