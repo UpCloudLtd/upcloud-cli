@@ -61,6 +61,10 @@ func TestShowCommand(t *testing.T) {
   Name: test-router                          
   Type: normal                               
 
+  Labels:
+
+    No labels defined for this resource.
+    
   Networks:
 
      UUID                                   Name           Type      Zone    

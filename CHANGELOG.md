@@ -6,8 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-## Added
+### Added
 - Add `ip` and `net` as aliases to `ip-address` and `network` commands, respectively.
+- Add _Labels_ table to `loadbalancer show`, `network show`, `router show`, `server show`, and `storage show` outputs.
 
 ## [2.6.0] - 2023-03-14
 ### Added

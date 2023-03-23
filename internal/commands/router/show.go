@@ -6,6 +6,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/labels"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
@@ -55,7 +56,7 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 			network.Zone,
 		}
 	}
-	return output.Combined{
+	combined := output.Combined{
 		output.CombinedSection{
 			Key:   "",
 			Title: "Common",
@@ -69,6 +70,7 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 				},
 			},
 		},
+		labels.GetLabelsSection(router.Labels),
 		output.CombinedSection{
 			Key:   "networks",
 			Title: "Networks:",
@@ -82,7 +84,9 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 				Rows: networkRows,
 			},
 		},
-	}, nil
+	}
+
+	return combined, nil
 }
 
 func getNetworks(exec commands.Executor, attached upcloud.RouterNetworkSlice) ([]upcloud.Network, error) {

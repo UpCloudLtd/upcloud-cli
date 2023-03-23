@@ -7,6 +7,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/format"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/labels"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
@@ -74,6 +75,8 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 	combined := output.Combined{
 		storageSection,
 	}
+
+	combined = append(combined, labels.GetLabelsSection(storage.Labels))
 
 	// Backups
 	if storage.BackupRule != nil && storage.BackupRule.Interval != "" {

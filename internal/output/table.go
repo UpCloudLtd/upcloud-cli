@@ -28,9 +28,10 @@ type TableColumn struct {
 
 // Table represents command output rendered as a table
 type Table struct {
-	Columns    []TableColumn
-	Rows       []TableRow
-	HideHeader bool
+	Columns      []TableColumn
+	Rows         []TableRow
+	EmptyMessage string
+	HideHeader   bool
 }
 
 func (s Table) asListOfMaps() []map[string]interface{} {
@@ -52,6 +53,10 @@ func (s Table) MarshalJSON() ([]byte, error) {
 
 // MarshalHuman returns table output in a human-readable form
 func (s Table) MarshalHuman() ([]byte, error) {
+	if len(s.Rows) == 0 && len(s.EmptyMessage) > 0 {
+		return []byte(text.FgHiBlack.Sprintf("\n%s\n", s.EmptyMessage)), nil
+	}
+
 	t := &table.Table{}
 	columnKeyPos := make(map[string]int)
 	columnConfig := make(map[string]*table.ColumnConfig)
