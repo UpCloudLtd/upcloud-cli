@@ -930,3 +930,11 @@ func (m *Service) DeleteKubernetesNodeGroup(ctx context.Context, r *request.Dele
 	}
 	return nil
 }
+
+func (m *Service) GetKubernetesPlans(ctx context.Context, r *request.GetKubernetesPlansRequest) ([]upcloud.KubernetesPlan, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].([]upcloud.KubernetesPlan), args.Error(1)
+}
