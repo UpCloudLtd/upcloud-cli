@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add `ip` and `net` as aliases to `ip-address` and `network` commands, respectively.
 - Add _Labels_ table to `loadbalancer show`, `network show`, `router show`, `server show`, and `storage show` outputs.
+- Add `--wait` flag to `kubernetes create` command for waiting created cluster to reach running state.
 
 ## [2.6.0] - 2023-03-14
 ### Added
