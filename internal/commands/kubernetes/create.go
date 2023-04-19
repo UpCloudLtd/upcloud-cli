@@ -28,6 +28,7 @@ func CreateCommand() commands.Command {
 				--zone de-fra1`,
 			`upctl kubernetes create \
 				--name my-cluster \
+				--plan production-small \
 				--network 03e5ca07-f36c-4957-a676-e001e40441eb \
 				--node-group count=4,kubelet-arg="log-flush-frequency=5s",label="owner=devteam",label="env=dev",name=my-node-group,plan=K8S-4xCPU-8GB,ssh-key="ssh-ed25519 AAAAo admin@user.com",ssh-key="/path/to/your/public/ssh/key.pub",storage=01000000-0000-4000-8000-000160010100,taint="env=dev:NoSchedule",taint="env=dev2:NoSchedule" \
 				--zone de-fra1`,
@@ -100,6 +101,7 @@ func (c *createCommand) InitCommand() {
 	c.params = createParams{CreateKubernetesClusterRequest: request.CreateKubernetesClusterRequest{}}
 
 	fs.StringVar(&c.params.Name, "name", "", "Kubernetes cluster name.")
+	fs.StringVar(&c.params.Plan, "plan", "development", "Plan to use for the cluster. Run `upctl kubernetes plans` to list all available plans.")
 	fs.StringVar(&c.params.networkArg, "network", "", "Network to use. The value should be name or UUID of a private network.")
 	fs.StringArrayVar(
 		&c.params.nodeGroups,
