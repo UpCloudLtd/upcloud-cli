@@ -11,6 +11,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
 
+	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
 	"github.com/spf13/pflag"
 )
@@ -40,6 +41,7 @@ type createParams struct {
 	request.CreateKubernetesClusterRequest
 	networkArg string
 	nodeGroups []string
+	wait       config.OptionalBoolean
 }
 
 func (p *createParams) processParams(exec commands.Executor) error {
@@ -122,6 +124,7 @@ func (c *createCommand) InitCommand() {
 			"taint=\"env=dev2:NoSchedule\"`",
 	)
 	fs.StringVar(&c.params.Zone, "zone", "", "Zone where to create the cluster.")
+	config.AddToggleFlag(fs, &c.params.wait, "wait", false, "Wait for cluster to be in running state before returning.")
 	c.AddFlags(fs)
 
 	_ = c.Cobra().MarkFlagRequired("name")
@@ -152,7 +155,11 @@ func (c *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		return commands.HandleError(exec, msg, err)
 	}
 
-	exec.PushProgressSuccess(msg)
+	if c.params.wait.Value() {
+		waitForClusterState(res.UUID, upcloud.KubernetesClusterStateRunning, exec, msg)
+	} else {
+		exec.PushProgressSuccess(msg)
+	}
 
 	return output.MarshaledWithHumanDetails{Value: res, Details: []output.DetailRow{
 		{Title: "UUID", Value: res.UUID, Colour: ui.DefaultUUUIDColours},

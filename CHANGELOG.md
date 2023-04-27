@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add _Labels_ table to `loadbalancer show`, `network show`, `router show`, `server show`, and `storage show` outputs.
 - Add `kubernetes plans` command for listing available plans.
 - Add `--plan` argument to `kubernetes create` command for selecting cluster plan.
+- Add `--wait` flag to `kubernetes create` command for waiting created cluster to reach running state.
 
 ## [2.6.0] - 2023-03-14
 ### Added
