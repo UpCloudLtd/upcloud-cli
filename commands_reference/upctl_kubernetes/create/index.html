@@ -1169,6 +1169,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../plans/" class="md-nav__link">
+        kubernetes plans
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../show/" class="md-nav__link">
         kubernetes show
       </a>
@@ -2396,6 +2410,7 @@
                 --zone de-fra1
 upctl kubernetes create \
                 --name my-cluster \
+                --plan production-small \
                 --network 03e5ca07-f36c-4957-a676-e001e40441eb \
                 --node-group count=4,kubelet-arg=&quot;log-flush-frequency=5s&quot;,label=&quot;owner=devteam&quot;,label=&quot;env=dev&quot;,name=my-node-group,plan=K8S-4xCPU-8GB,ssh-key=&quot;ssh-ed25519 AAAAo admin@user.com&quot;,ssh-key=&quot;/path/to/your/public/ssh/key.pub&quot;,storage=01000000-0000-4000-8000-000160010100,taint=&quot;env=dev:NoSchedule&quot;,taint=&quot;env=dev2:NoSchedule&quot; \
                 --zone de-fra1
@@ -2412,6 +2427,10 @@ upctl kubernetes create \
 <tr>
 <td><code>--name</code></td>
 <td>Kubernetes cluster name.</td>
+</tr>
+<tr>
+<td><code>--plan</code></td>
+<td>Plan to use for the cluster. Run <code>upctl kubernetes plans</code> to list all available plans.<br/>Default: <code>development</code></td>
 </tr>
 <tr>
 <td><code>--network</code></td>
