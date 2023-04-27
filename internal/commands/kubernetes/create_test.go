@@ -73,8 +73,13 @@ func TestCreateKubernetes(t *testing.T) {
 				},
 			},
 		},
+		Plan: "development",
 		Zone: "de-fra1",
 	}
+
+	prodArg := []string{"--plan", "production-small"}
+	prodPlanRequest := oneNodeGroupRequest
+	prodPlanRequest.Plan = "production-small"
 
 	for _, test := range []struct {
 		name    string
@@ -92,6 +97,12 @@ func TestCreateKubernetes(t *testing.T) {
 			name:    "resolve network from name",
 			args:    oneNodeGroupArgs(network.Name),
 			request: oneNodeGroupRequest,
+			wantErr: false,
+		},
+		{
+			name:    "use productions-small plan",
+			args:    append(oneNodeGroupArgs(network.Name), prodArg...),
+			request: prodPlanRequest,
 			wantErr: false,
 		},
 	} {
