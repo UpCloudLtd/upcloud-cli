@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.7.0] - 2023-05-02
 ### Added
 - Add `ip` and `net` as aliases to `ip-address` and `network` commands, respectively.
 - Add _Labels_ table to `loadbalancer show`, `network show`, `router show`, `server show`, and `storage show` outputs.
@@ -217,7 +219,8 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.6.0...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.7.0...HEAD
+[2.7.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.6.0...v2.7.0
 [2.6.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.5.0...v2.6.0
 [2.5.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.4.0...v2.5.0
 [2.4.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.3.0...v2.4.0
