@@ -76,7 +76,7 @@ func TestCreateKubernetesNodeGroup(t *testing.T) {
 				"--label=owner=devteam",
 				"--label=env=dev",
 				"--name=my-node-group",
-				"--plan=K8S-2xCPU-4GB",
+				"--plan=2xCPU-4GB",
 				"--ssh-key=ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMWq/xsiYPgA/HLsaWHcjAGnwU+pJy9BUmvIlMBpkdn2 admin@user.com",
 				"--storage=01000000-0000-4000-8000-000160010100",
 				"--taint=env=dev:NoSchedule",
@@ -97,7 +97,7 @@ func TestCreateKubernetesNodeGroup(t *testing.T) {
 						},
 					},
 					Name: "my-node-group",
-					Plan: "K8S-2xCPU-4GB",
+					Plan: "2xCPU-4GB",
 					SSHKeys: []string{
 						"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMWq/xsiYPgA/HLsaWHcjAGnwU+pJy9BUmvIlMBpkdn2 admin@user.com",
 					},
