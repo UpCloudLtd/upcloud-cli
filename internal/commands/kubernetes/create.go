@@ -25,13 +25,13 @@ func CreateCommand() commands.Command {
 			`upctl kubernetes create \
 				--name my-cluster \
 				--network 03e5ca07-f36c-4957-a676-e001e40441eb \
-				--node-group count=2,name=my-minimal-node-group,plan=K8S-2xCPU-4GB, \
+				--node-group count=2,name=my-minimal-node-group,plan=2xCPU-4GB, \
 				--zone de-fra1`,
 			`upctl kubernetes create \
 				--name my-cluster \
 				--plan production-small \
 				--network 03e5ca07-f36c-4957-a676-e001e40441eb \
-				--node-group count=4,kubelet-arg="log-flush-frequency=5s",label="owner=devteam",label="env=dev",name=my-node-group,plan=K8S-4xCPU-8GB,ssh-key="ssh-ed25519 AAAAo admin@user.com",ssh-key="/path/to/your/public/ssh/key.pub",storage=01000000-0000-4000-8000-000160010100,taint="env=dev:NoSchedule",taint="env=dev2:NoSchedule" \
+				--node-group count=4,kubelet-arg="log-flush-frequency=5s",label="owner=devteam",label="env=dev",name=my-node-group,plan=4xCPU-8GB,ssh-key="ssh-ed25519 AAAAo admin@user.com",ssh-key="/path/to/your/public/ssh/key.pub",storage=01000000-0000-4000-8000-000160010100,taint="env=dev:NoSchedule",taint="env=dev2:NoSchedule" \
 				--zone de-fra1`,
 		),
 	}
@@ -116,7 +116,7 @@ func (c *createCommand) InitCommand() {
 			"label=\"owner=devteam\","+
 			"label=\"env=dev\","+
 			"name=my-node-group,"+
-			"plan=K8S-2xCPU-4GB,"+
+			"plan=2xCPU-4GB,"+
 			"ssh-key=\"ssh-ed25519 AAAAo admin@user.com\","+
 			"ssh-key=\"/path/to/your/public/ssh/key.pub\","+
 			"storage=01000000-0000-4000-8000-000160010100,"+

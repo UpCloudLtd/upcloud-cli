@@ -113,7 +113,7 @@ func TestShowCommand(t *testing.T) {
   Node group 1 (upcloud-go-sdk-unit-test):
     Name:         upcloud-go-sdk-unit-test              
     Count:        4                                     
-    Plan:         K8S-2xCPU-4GB                         
+    Plan:         2xCPU-4GB                             
     State:        running                               
     Storage UUID: storage-uuid                          
     Storage name: Test storage                          
@@ -128,7 +128,7 @@ func TestShowCommand(t *testing.T) {
   Node group 2 (upcloud-go-sdk-unit-test-2):
     Name:         upcloud-go-sdk-unit-test-2               
     Count:        8                                        
-    Plan:         K8S-4xCPU-8GB                            
+    Plan:         4xCPU-8GB                                
     State:        pending                                  
     Storage UUID: storage-uuid-2                           
     Storage name: Test storage                             
