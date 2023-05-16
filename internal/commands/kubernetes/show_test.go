@@ -35,7 +35,7 @@ func TestShowCommand(t *testing.T) {
 					},
 				},
 				Name:  "upcloud-go-sdk-unit-test",
-				Plan:  "K8S-2xCPU-4GB",
+				Plan:  "2xCPU-4GB",
 				State: upcloud.KubernetesNodeGroupStateRunning,
 				KubeletArgs: []upcloud.KubernetesKubeletArg{
 					{
@@ -75,7 +75,7 @@ func TestShowCommand(t *testing.T) {
 					},
 				},
 				Name:  "upcloud-go-sdk-unit-test-2",
-				Plan:  "K8S-4xCPU-8GB",
+				Plan:  "4xCPU-8GB",
 				State: upcloud.KubernetesNodeGroupStatePending,
 				KubeletArgs: []upcloud.KubernetesKubeletArg{
 					{
