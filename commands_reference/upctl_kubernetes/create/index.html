@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_kubernetes/create/">
       
       <link rel="icon" href="../../../favicon.png">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-8.5.10">
     
     
       
@@ -2406,13 +2406,13 @@
 <pre><code>upctl kubernetes create \
                 --name my-cluster \
                 --network 03e5ca07-f36c-4957-a676-e001e40441eb \
-                --node-group count=2,name=my-minimal-node-group,plan=K8S-2xCPU-4GB, \
+                --node-group count=2,name=my-minimal-node-group,plan=2xCPU-4GB, \
                 --zone de-fra1
 upctl kubernetes create \
                 --name my-cluster \
                 --plan production-small \
                 --network 03e5ca07-f36c-4957-a676-e001e40441eb \
-                --node-group count=4,kubelet-arg=&quot;log-flush-frequency=5s&quot;,label=&quot;owner=devteam&quot;,label=&quot;env=dev&quot;,name=my-node-group,plan=K8S-4xCPU-8GB,ssh-key=&quot;ssh-ed25519 AAAAo admin@user.com&quot;,ssh-key=&quot;/path/to/your/public/ssh/key.pub&quot;,storage=01000000-0000-4000-8000-000160010100,taint=&quot;env=dev:NoSchedule&quot;,taint=&quot;env=dev2:NoSchedule&quot; \
+                --node-group count=4,kubelet-arg=&quot;log-flush-frequency=5s&quot;,label=&quot;owner=devteam&quot;,label=&quot;env=dev&quot;,name=my-node-group,plan=4xCPU-8GB,ssh-key=&quot;ssh-ed25519 AAAAo admin@user.com&quot;,ssh-key=&quot;/path/to/your/public/ssh/key.pub&quot;,storage=01000000-0000-4000-8000-000160010100,taint=&quot;env=dev:NoSchedule&quot;,taint=&quot;env=dev2:NoSchedule&quot; \
                 --zone de-fra1
 </code></pre>
 <h2 id="options">Options</h2>
@@ -2438,7 +2438,7 @@ upctl kubernetes create \
 </tr>
 <tr>
 <td><code>--node-group</code></td>
-<td>Node group(s) for running workloads, multiple can be declared.<br/>Usage: <code>--node-group count=8,kubelet-arg="log-flush-frequency=5s",label="owner=devteam",label="env=dev",name=my-node-group,plan=K8S-2xCPU-4GB,ssh-key="ssh-ed25519 AAAAo admin@user.com",ssh-key="/path/to/your/public/ssh/key.pub",storage=01000000-0000-4000-8000-000160010100,taint="env=dev:NoSchedule",taint="env=dev2:NoSchedule"</code><br/>Default: <code>[]</code></td>
+<td>Node group(s) for running workloads, multiple can be declared.<br/>Usage: <code>--node-group count=8,kubelet-arg="log-flush-frequency=5s",label="owner=devteam",label="env=dev",name=my-node-group,plan=2xCPU-4GB,ssh-key="ssh-ed25519 AAAAo admin@user.com",ssh-key="/path/to/your/public/ssh/key.pub",storage=01000000-0000-4000-8000-000160010100,taint="env=dev:NoSchedule",taint="env=dev2:NoSchedule"</code><br/>Default: <code>[]</code></td>
 </tr>
 <tr>
 <td><code>--zone</code></td>
