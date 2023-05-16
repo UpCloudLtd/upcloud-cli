@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.7.1] - 2023-05-16
+### Fixed
+- Updated examples of `kubernetes create` command to use valid plans.
+
 ## [2.7.0] - 2023-05-02
 ### Added
 - Add `ip` and `net` as aliases to `ip-address` and `network` commands, respectively.
@@ -219,7 +223,8 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.7.0...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.7.1...HEAD
+[2.7.1]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.7.0...v2.7.1
 [2.7.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.6.0...v2.7.0
 [2.6.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.5.0...v2.6.0
 [2.5.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.4.0...v2.5.0
