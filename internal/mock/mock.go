@@ -592,6 +592,14 @@ func (m *Service) CreateManagedDatabase(_ context.Context, r *request.CreateMana
 	return nil, nil
 }
 
+func (m *Service) DeleteManagedDatabaseIndex(_ context.Context, r *request.DeleteManagedDatabaseIndexRequest) error {
+	args := m.Called(r)
+	if args[0] != nil {
+		return args.Error(0)
+	}
+	return nil
+}
+
 func (m *Service) GetManagedDatabase(_ context.Context, r *request.GetManagedDatabaseRequest) (*upcloud.ManagedDatabase, error) {
 	return nil, nil
 }
@@ -604,7 +612,15 @@ func (m *Service) GetManagedDatabases(_ context.Context, r *request.GetManagedDa
 	return args[0].([]upcloud.ManagedDatabase), args.Error(1)
 }
 
+func (m *Service) GetManagedDatabaseAccessControl(_ context.Context, r *request.GetManagedDatabaseAccessControlRequest) (*upcloud.ManagedDatabaseAccessControl, error) {
+	return nil, nil
+}
+
 func (m *Service) GetManagedDatabaseConnections(_ context.Context, r *request.GetManagedDatabaseConnectionsRequest) ([]upcloud.ManagedDatabaseConnection, error) {
+	return nil, nil
+}
+
+func (m *Service) GetManagedDatabaseIndices(_ context.Context, r *request.GetManagedDatabaseIndicesRequest) ([]upcloud.ManagedDatabaseIndex, error) {
 	return nil, nil
 }
 
@@ -646,6 +662,10 @@ func (m *Service) DeleteManagedDatabase(_ context.Context, r *request.DeleteMana
 }
 
 func (m *Service) ModifyManagedDatabase(_ context.Context, r *request.ModifyManagedDatabaseRequest) (*upcloud.ManagedDatabase, error) {
+	return nil, nil
+}
+
+func (m *Service) ModifyManagedDatabaseAccessControl(_ context.Context, r *request.ModifyManagedDatabaseAccessControlRequest) (*upcloud.ManagedDatabaseAccessControl, error) {
 	return nil, nil
 }
 

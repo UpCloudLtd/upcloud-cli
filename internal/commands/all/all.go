@@ -5,6 +5,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/account"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/database"
 	databaseconnection "github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/database/connection"
+	databaseindex "github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/database/index"
 	databaseproperties "github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/database/properties"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/ipaddress"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/kubernetes"
@@ -133,6 +134,11 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 		typeCommand := commands.BuildCommand(databaseproperties.DBTypeCommand(i.serviceType, i.serviceName), propertiesCommand.Cobra(), conf)
 		commands.BuildCommand(databaseproperties.ShowCommand(i.serviceType, i.serviceName), typeCommand.Cobra(), conf)
 	}
+
+	// Database indices
+	indexCommand := commands.BuildCommand(databaseindex.BaseIndexCommand(), databaseCommand.Cobra(), conf)
+	commands.BuildCommand(databaseindex.DeleteCommand(), indexCommand.Cobra(), conf)
+	commands.BuildCommand(databaseindex.ListCommand(), indexCommand.Cobra(), conf)
 
 	// LoadBalancers
 	loadbalancerCommand := commands.BuildCommand(loadbalancer.BaseLoadBalancerCommand(), rootCmd, conf)

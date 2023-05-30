@@ -58,46 +58,63 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 		})
 	}
 
+	detailSections := []output.DetailSection{
+		{
+			Title: "Overview:",
+			Rows: []output.DetailRow{
+				{Title: "UUID:", Value: db.UUID, Colour: ui.DefaultUUUIDColours},
+				{Title: "Title:", Value: db.Title},
+				{Title: "Name:", Value: db.Name},
+				{Title: "Type:", Value: prettyDatabaseType(db.Type)},
+				{Title: "Version:", Value: getVersion(db), Format: format.PossiblyUnknownString},
+				{Title: "Plan:", Value: db.Plan},
+				{Title: "Zone:", Value: db.Zone},
+				{Title: "State:", Value: db.State, Format: format.DatabaseState},
+			},
+		},
+		{
+			Title: "Maintenance schedule:",
+			Rows: []output.DetailRow{
+				{Title: "Weekday:", Value: db.Maintenance.DayOfWeek},
+				{Title: "Time:", Value: db.Maintenance.Time},
+			},
+		},
+		{
+			Title: "Authentication:",
+			Rows: []output.DetailRow{
+				{Title: "Service URI:", Value: db.ServiceURI},
+				{Title: "Database name:", Value: db.ServiceURIParams.DatabaseName},
+				{Title: "Host:", Value: db.ServiceURIParams.Host},
+				{Title: "Password:", Value: db.ServiceURIParams.Password},
+				{Title: "Port:", Value: db.ServiceURIParams.Port},
+				{Title: "SSL mode:", Value: db.ServiceURIParams.SSLMode},
+				{Title: "User:", Value: db.ServiceURIParams.User},
+			},
+		},
+	}
+
+	if db.Type == upcloud.ManagedDatabaseServiceTypeOpenSearch {
+		acl, err := svc.GetManagedDatabaseAccessControl(exec.Context(), &request.GetManagedDatabaseAccessControlRequest{ServiceUUID: uuid})
+		if err != nil {
+			return nil, err
+		}
+
+		detailSections = append(detailSections, output.DetailSection{
+			Title: "Access control settings:",
+			Rows: []output.DetailRow{
+				{Title: "Access control:", Value: acl.ACLsEnabled, Format: format.Boolean},
+				{Title: "Extended access control:", Value: acl.ExtendedACLsEnabled, Format: format.Boolean},
+			},
+		})
+	}
+
 	// For JSON and YAML output, passthrough API response
 	return output.MarshaledWithHumanOutput{
 		Value: db,
 		Output: output.Combined{
 			output.CombinedSection{
 				Contents: output.Details{
-					Sections: []output.DetailSection{
-						{
-							Title: "Overview:",
-							Rows: []output.DetailRow{
-								{Title: "UUID:", Value: db.UUID, Colour: ui.DefaultUUUIDColours},
-								{Title: "Title:", Value: db.Title},
-								{Title: "Name:", Value: db.Name},
-								{Title: "Type:", Value: prettyDatabaseType(db.Type)},
-								{Title: "Version:", Value: getVersion(db), Format: format.PossiblyUnknownString},
-								{Title: "Plan:", Value: db.Plan},
-								{Title: "Zone:", Value: db.Zone},
-								{Title: "State:", Value: db.State, Format: format.DatabaseState},
-							},
-						},
-						{
-							Title: "Maintenance schedule:",
-							Rows: []output.DetailRow{
-								{Title: "Weekday:", Value: db.Maintenance.DayOfWeek},
-								{Title: "Time:", Value: db.Maintenance.Time},
-							},
-						},
-						{
-							Title: "Authentication:",
-							Rows: []output.DetailRow{
-								{Title: "Service URI:", Value: db.ServiceURI},
-								{Title: "Database name:", Value: db.ServiceURIParams.DatabaseName},
-								{Title: "Host:", Value: db.ServiceURIParams.Host},
-								{Title: "Password:", Value: db.ServiceURIParams.Password},
-								{Title: "Port:", Value: db.ServiceURIParams.Port},
-								{Title: "SSL mode:", Value: db.ServiceURIParams.SSLMode},
-								{Title: "User:", Value: db.ServiceURIParams.User},
-							},
-						},
-					},
+					Sections: detailSections,
 				},
 			},
 			output.CombinedSection{
@@ -136,6 +153,8 @@ func getVersion(db *upcloud.ManagedDatabase) string {
 	switch db.Type {
 	case "mysql":
 		return db.Metadata.MySQLVersion
+	case "opensearch":
+		return db.Metadata.OpenSearchVersion
 	case "pg":
 		return db.Metadata.PGVersion
 	case "redis":
@@ -148,6 +167,8 @@ func prettyDatabaseType(serviceType upcloud.ManagedDatabaseServiceType) string {
 	switch serviceType {
 	case upcloud.ManagedDatabaseServiceTypeMySQL:
 		return "MySQL"
+	case upcloud.ManagedDatabaseServiceTypeOpenSearch:
+		return "OpenSearch"
 	case upcloud.ManagedDatabaseServiceTypePostgreSQL:
 		return "PostgreSQL"
 	default:
