@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Add completions for `--zone` arguments.
+
 ## [2.7.1] - 2023-05-16
 ### Fixed
 - Updated examples of `kubernetes create` command to use valid plans.

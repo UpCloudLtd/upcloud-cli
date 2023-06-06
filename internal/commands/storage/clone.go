@@ -5,6 +5,8 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/namedargs"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 
@@ -50,11 +52,15 @@ func (s *cloneCommand) InitCommand() {
 	flagSet := &pflag.FlagSet{}
 	flagSet.StringVar(&s.params.Tier, "tier", defaultCloneParams.Tier, "The storage tier to use.")
 	flagSet.StringVar(&s.params.Title, "title", defaultCloneParams.Title, "A short, informational description.")
-	flagSet.StringVar(&s.params.Zone, "zone", defaultCloneParams.Zone, "The zone in which the storage will be created, e.g. fi-hel1.")
+	flagSet.StringVar(&s.params.Zone, "zone", defaultCloneParams.Zone, namedargs.ZoneDescription("storage"))
 
 	s.AddFlags(flagSet)
 	_ = s.Cobra().MarkFlagRequired("title")
 	_ = s.Cobra().MarkFlagRequired("zone")
+}
+
+func (s *cloneCommand) InitCommandWithConfig(cfg *config.Config) {
+	_ = s.Cobra().RegisterFlagCompletionFunc("zone", namedargs.CompletionFunc(completion.Zone{}, cfg))
 }
 
 // Execute implements commands.MultipleArgumentCommand

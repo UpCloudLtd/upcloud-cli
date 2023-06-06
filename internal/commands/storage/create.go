@@ -5,6 +5,9 @@ import (
 	"time"
 
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/namedargs"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
 
@@ -71,7 +74,7 @@ type createCommand struct {
 func applyCreateFlags(fs *pflag.FlagSet, dst, def *createParams) {
 	fs.StringVar(&dst.Title, "title", def.Title, "A short, informational description.")
 	fs.IntVar(&dst.Size, "size", def.Size, "Size of the storage in GiB.")
-	fs.StringVar(&dst.Zone, "zone", def.Zone, "Physical location of the storage. See zone listing for valid zones.")
+	fs.StringVar(&dst.Zone, "zone", def.Zone, namedargs.ZoneDescription("storage"))
 	fs.StringVar(&dst.Tier, "tier", def.Tier, "Storage tier.")
 	fs.StringVar(&dst.backupTime, "backup-time", def.backupTime, "The time when to create a backup in HH:MM. Empty value means no backups.")
 	fs.StringVar(&dst.BackupRule.Interval, "backup-interval", def.BackupRule.Interval, "The interval of the backup.\nAvailable: daily,mon,tue,wed,thu,fri,sat,sun")
@@ -87,6 +90,10 @@ func (s *createCommand) InitCommand() {
 	s.AddFlags(s.flagSet)
 	_ = s.Cobra().MarkFlagRequired("title")
 	_ = s.Cobra().MarkFlagRequired("zone")
+}
+
+func (s *createCommand) InitCommandWithConfig(cfg *config.Config) {
+	_ = s.Cobra().RegisterFlagCompletionFunc("zone", namedargs.CompletionFunc(completion.Zone{}, cfg))
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
