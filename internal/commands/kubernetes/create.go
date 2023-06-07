@@ -39,9 +39,10 @@ func CreateCommand() commands.Command {
 
 type createParams struct {
 	request.CreateKubernetesClusterRequest
-	networkArg string
-	nodeGroups []string
-	wait       config.OptionalBoolean
+	networkArg        string
+	nodeGroups        []string
+	privateNodeGroups config.OptionalBoolean
+	wait              config.OptionalBoolean
 }
 
 func (p *createParams) processParams(exec commands.Executor) error {
@@ -55,6 +56,7 @@ func (p *createParams) processParams(exec commands.Executor) error {
 		ngs = append(ngs, ng)
 	}
 	p.NodeGroups = ngs
+	p.PrivateNodeGroups = p.privateNodeGroups.IsSet()
 
 	var err error
 	p.Network, err = namedargs.ResolveNetwork(exec, p.networkArg)
@@ -123,6 +125,7 @@ func (c *createCommand) InitCommand() {
 			"taint=\"env=dev:NoSchedule\","+
 			"taint=\"env=dev2:NoSchedule\"`",
 	)
+	config.AddToggleFlag(fs, &c.params.privateNodeGroups, "private-node-groups", false, "Do not assign public IPs to worker nodes. If set, the attached network should have a NAT gateway configured to provide internet access to the worker nodes.")
 	fs.StringVar(&c.params.Zone, "zone", "", namedargs.ZoneDescription("cluster"))
 	config.AddToggleFlag(fs, &c.params.wait, "wait", false, "Wait for cluster to be in running state before returning.")
 	c.AddFlags(fs)
