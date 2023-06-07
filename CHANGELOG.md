@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for OpenSearch database type
 - Add `database index list` and `database index` commands for managing OpenSearch database indices 
 - Add completions for `--zone` arguments.
+- Add `--private-node-groups` argument to `kubernetes create` command.
+- Add _Private node groups_ field to `kubernetes show` output.
 
 ## [2.7.1] - 2023-05-16
 ### Fixed
