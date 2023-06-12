@@ -26,7 +26,7 @@ func CancelCommand() commands.Command {
 	return &cancelCommand{
 		BaseCommand: commands.New(
 			"cancel",
-			"Terminate client connection or cancel runnig query for a database",
+			"Terminate client connection or cancel running query for a database",
 			`upctl database connection cancel 0fa980c4-0e4f-460b-9869-11b7bd62b833 --pid 2345421`,
 			`upctl database connection cancel 0fa980c4-0e4f-460b-9869-11b7bd62b833 --pid 2345421 --terminate`,
 		),
