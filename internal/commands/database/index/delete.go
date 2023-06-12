@@ -19,7 +19,7 @@ type deleteCommand struct {
 	resolver.CachingDatabase
 }
 
-// DeleteCommand creates the "kubernetes indices delete" command
+// DeleteCommand creates the "opensearch index delete" command
 func DeleteCommand() commands.Command {
 	return &deleteCommand{
 		BaseCommand: commands.New(
