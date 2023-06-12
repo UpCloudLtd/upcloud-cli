@@ -128,6 +128,7 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 		serviceType string
 	}{
 		{serviceName: "MySQL", serviceType: "mysql"},
+		{serviceName: "OpenSearch", serviceType: "opensearch"},
 		{serviceName: "PostgreSQL", serviceType: "pg"},
 		{serviceName: "Redis", serviceType: "redis"},
 	} {
