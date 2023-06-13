@@ -13,7 +13,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
 )
 
-// ListCommand creates the "index list" command
+// ListCommand creates the "database index list" command
 func ListCommand() commands.Command {
 	return &listCommand{
 		BaseCommand: commands.New("list", "List current indices of the specified databases", "upctl database index list 55199a44-4751-4e27-9394-7c7661910be3"),
