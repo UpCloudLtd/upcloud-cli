@@ -4,7 +4,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
 )
 
-// BaseIndexCommand creates the base "index" command
+// BaseIndexCommand creates the base "database index" command
 func BaseIndexCommand() commands.Command {
 	return &databaseIndexCommand{
 		commands.New("index", "Manage database indices"),
