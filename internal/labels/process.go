@@ -8,11 +8,12 @@ import (
 )
 
 func StringsToUpCloudLabelSlice(in []string) (*upcloud.LabelSlice, error) {
+	upCloudlabelSlice := upcloud.LabelSlice{}
+
 	if in == nil {
-		return nil, nil
+		return &upCloudlabelSlice, nil
 	}
 
-	upCloudlabelSlice := upcloud.LabelSlice{}
 	for _, l := range in {
 		label, err := stringToLabel(l)
 		if err != nil {
@@ -25,11 +26,12 @@ func StringsToUpCloudLabelSlice(in []string) (*upcloud.LabelSlice, error) {
 }
 
 func StringsToSliceOfLabels(in []string) ([]upcloud.Label, error) {
+	labelSlice := make([]upcloud.Label, 0)
+
 	if in == nil {
-		return nil, nil
+		return labelSlice, nil
 	}
 
-	labelSlice := make([]upcloud.Label, 0)
 	for _, l := range in {
 		label, err := stringToLabel(l)
 		if err != nil {
