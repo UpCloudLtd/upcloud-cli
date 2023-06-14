@@ -6,6 +6,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/labels"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 
@@ -39,6 +40,7 @@ type modifyCommand struct {
 
 type modifyParams struct {
 	request.ModifyServerRequest
+	labels []string
 }
 
 var defaultModifyParams = modifyParams{
@@ -54,6 +56,7 @@ func (s *modifyCommand) InitCommand() {
 	flags.StringVar(&s.params.Hostname, "hostname", defaultModifyParams.Hostname, "Hostname.")
 	config.AddEnableDisableFlags(flags, &s.firewall, "firewall", "firewall")
 	// flags.StringVar(&s.params.Firewall, "firewall", defaultModifyParams.Firewall, "Enables or disables firewall on the server. You can manage firewall rules with the firewall command.\nAvailable: true, false")
+	flags.StringArrayVar(&s.params.labels, "label", defaultModifyParams.labels, "Labels to describe the server in `key=value` format, multiple can be declared.\nUsage: --label env=dev\n\n--label owner=operations")
 	flags.IntVar(&s.params.MemoryAmount, "memory", defaultModifyParams.MemoryAmount, "Memory amount in MiB. Sets server plan to custom.")
 	config.AddEnableDisableFlags(flags, &s.setMetadata, "metadata", "metadata service")
 	// flags.StringVar(&s.params.metadata, "metadata", defaultModifyParams.metadata, "Enable metadata service.")
@@ -96,6 +99,13 @@ func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Out
 	if s.params.CoreNumber != 0 || s.params.MemoryAmount != 0 {
 		s.params.Plan = "custom" // Valid for all custom plans.
 	}
+
+	labelSlice, err := labels.StringsToUpCloudLabelSlice(s.params.labels)
+	if err != nil {
+		return nil, err
+	}
+
+	s.params.Labels = labelSlice
 
 	msg := fmt.Sprintf("Modifying server %v", uuid)
 	exec.PushProgressStarted(msg)
