@@ -100,12 +100,14 @@ func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Out
 		s.params.Plan = "custom" // Valid for all custom plans.
 	}
 
-	labelSlice, err := labels.StringsToUpCloudLabelSlice(s.params.labels)
-	if err != nil {
-		return nil, err
-	}
+	if len(s.params.labels) > 0 {
+		labelSlice, err := labels.StringsToUpCloudLabelSlice(s.params.labels)
+		if err != nil {
+			return nil, err
+		}
 
-	s.params.Labels = labelSlice
+		s.params.Labels = labelSlice
+	}
 
 	msg := fmt.Sprintf("Modifying server %v", uuid)
 	exec.PushProgressStarted(msg)

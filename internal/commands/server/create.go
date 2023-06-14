@@ -116,13 +116,14 @@ func (s *createParams) processParams(exec commands.Executor) error {
 		s.LoginUser.Username = s.username
 	}
 
-	labelSlice, err := labels.StringsToUpCloudLabelSlice(s.labels)
-	if err != nil {
-		return err
+	if len(s.labels) > 0 {
+		labelSlice, err := labels.StringsToUpCloudLabelSlice(s.labels)
+		if err != nil {
+			return err
+		}
+
+		s.Labels = labelSlice
 	}
-
-	s.Labels = labelSlice
-
 	return nil
 }
 
