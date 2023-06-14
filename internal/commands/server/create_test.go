@@ -121,7 +121,6 @@ func TestCreateServer(t *testing.T) {
 					Tier:    upcloud.StorageTierMaxIOPS,
 					Type:    upcloud.StorageTypeDisk,
 				}},
-				Labels: nil,
 			},
 		},
 		{
