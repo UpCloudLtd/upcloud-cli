@@ -103,6 +103,7 @@ func TestServerHumanOutput(t *testing.T) {
 		},
 		NICModel:     "virtio",
 		SimpleBackup: "0100,dailies",
+		ServerGroup:  "a4643646-8342-4324-4134-364138712378",
 		StorageDevices: []upcloud.ServerStorageDevice{
 			{
 				Address:    "virtio:0",
@@ -162,6 +163,7 @@ func TestServerHumanOutput(t *testing.T) {
     Metadata:      True                                 
     Timezone:      UTC                                  
     Host ID:       7653311107                           
+    Server Group:  a4643646-8342-4324-4134-364138712378 
     Tags:          DEV,Ubuntu                           
 
   Labels:

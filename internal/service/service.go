@@ -16,4 +16,5 @@ type AllServices interface {
 	service.ManagedDatabaseServiceManager
 	service.LoadBalancer
 	service.Kubernetes
+	service.ServerGroup
 }

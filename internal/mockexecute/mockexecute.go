@@ -3,13 +3,13 @@ package mockexecute
 import (
 	"bytes"
 
-	"github.com/gemalto/flume"
-	"github.com/spf13/cobra"
-
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
+
+	"github.com/gemalto/flume"
+	"github.com/spf13/cobra"
 )
 
 func MockExecute(command commands.Command, service service.AllServices, conf *config.Config) (string, error) {
