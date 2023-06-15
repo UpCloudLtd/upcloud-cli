@@ -59,6 +59,12 @@ Use "upctl [command] --help" for more information about a command.
 
 ## Installation
 
+Install the latest with Go by running:
+
+```bash
+go install github.com/UpCloudLtd/upcloud-cli/cmd/upctl/v2@latest
+```
+
 To use upctl as a binary, download it from the
 [Releases](https://github.com/UpCloudLtd/upcloud-cli/releases) page. After downloading, verify that the client works.
 

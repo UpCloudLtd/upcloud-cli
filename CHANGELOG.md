@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `database index list` and `database index` commands for managing OpenSearch database indices 
 - Add `--label` flag to `server create` and `server modify` commands
 
+### Added
+- Add completions for `--zone` arguments.
+
 ## [2.7.1] - 2023-05-16
 ### Fixed
 - Updated examples of `kubernetes create` command to use valid plans.

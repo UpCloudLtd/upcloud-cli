@@ -5,6 +5,9 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/ipaddress"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/namedargs"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
@@ -39,7 +42,7 @@ func CreateCommand() commands.Command {
 func (s *createCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.name, "name", s.name, "Names the network.")
-	fs.StringVar(&s.zone, "zone", s.zone, "The zone in which the network is configured.")
+	fs.StringVar(&s.zone, "zone", s.zone, namedargs.ZoneDescription("network"))
 	fs.StringVar(&s.router, "router", s.router, "Add this network to an existing router.")
 	// TODO: handle multiline flag doc (try nested flags)
 	fs.StringArrayVar(&s.networks, "ip-network", s.networks, "A network interface for the server, multiple can be declared.\n\n "+
@@ -55,6 +58,10 @@ func (s *createCommand) InitCommand() {
 	_ = s.Cobra().MarkFlagRequired("name")
 	_ = s.Cobra().MarkFlagRequired("zone")
 	_ = s.Cobra().MarkFlagRequired("ip-network")
+}
+
+func (s *createCommand) InitCommandWithConfig(cfg *config.Config) {
+	_ = s.Cobra().RegisterFlagCompletionFunc("zone", namedargs.CompletionFunc(completion.Zone{}, cfg))
 }
 
 // MaximumExecutions implements Command.MaximumExecutions

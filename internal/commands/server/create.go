@@ -7,8 +7,10 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/ipaddress"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/storage"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/labels"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/namedargs"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
 
@@ -269,7 +271,7 @@ func (s *createCommand) InitCommand() {
 	fs.StringVar(&s.params.username, "username", def.username, "Admin account username.")
 	fs.StringVar(&s.params.VideoModel, "video-model", def.VideoModel, "Video interface model of the server. Available: vga, cirrus")
 	config.AddToggleFlag(fs, &s.wait, "wait", false, "Wait for server to be in started state before returning.")
-	fs.StringVar(&s.params.Zone, "zone", def.Zone, "Zone where to create the server.")
+	fs.StringVar(&s.params.Zone, "zone", def.Zone, namedargs.ZoneDescription("server"))
 	// fs.BoolVar(&s.params.firewall, "firewall", def.firewall, "Enables the firewall. You can manage firewall rules with the firewall command.")
 	// fs.BoolVar(&s.params.metadata, "metadata", def.metadata, "Enable metadata service.")
 	// fs.BoolVar(&s.params.remoteAccess, "remote-access-enabled", def.remoteAccess, "Enables or disables the remote access.")
@@ -277,6 +279,10 @@ func (s *createCommand) InitCommand() {
 
 	_ = s.Cobra().MarkFlagRequired("hostname")
 	_ = s.Cobra().MarkFlagRequired("zone")
+}
+
+func (s *createCommand) InitCommandWithConfig(cfg *config.Config) {
+	_ = s.Cobra().RegisterFlagCompletionFunc("zone", namedargs.CompletionFunc(completion.Zone{}, cfg))
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
