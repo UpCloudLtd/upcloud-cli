@@ -2577,6 +2577,10 @@ upctl kubernetes create \
 <td>Node group(s) for running workloads, multiple can be declared.<br/>Usage: <code>--node-group count=8,kubelet-arg="log-flush-frequency=5s",label="owner=devteam",label="env=dev",name=my-node-group,plan=2xCPU-4GB,ssh-key="ssh-ed25519 AAAAo admin@user.com",ssh-key="/path/to/your/public/ssh/key.pub",storage=01000000-0000-4000-8000-000160010100,taint="env=dev:NoSchedule",taint="env=dev2:NoSchedule"</code><br/>Default: <code>[]</code></td>
 </tr>
 <tr>
+<td><code>--private-node-groups</code></td>
+<td>Do not assign public IPs to worker nodes. If set, the attached network should have a NAT gateway configured to provide internet access to the worker nodes.</td>
+</tr>
+<tr>
 <td><code>--zone</code></td>
 <td>Zone where to create the cluster. Run <code>upctl zone list</code> to list all available zones.</td>
 </tr>
