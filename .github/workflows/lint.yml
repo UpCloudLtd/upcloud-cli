@@ -7,9 +7,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
-          go-version: 1.18
+          go-version-file: 'go.mod'
       - name: Checkout head
         uses: actions/checkout@v3
       - name: Run golangci-lint-action
