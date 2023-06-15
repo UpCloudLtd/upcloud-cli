@@ -2535,7 +2535,7 @@
 <!-- Hide edit button as command reference and changelog do not exist on main branch -->
 
 <h1 id="upctl-ip-address-assign">upctl ip-address assign</h1>
-<p>Assign an ip address</p>
+<p>Assign or create an IP address</p>
 <pre><code>upctl ip-address assign [flags]
 </code></pre>
 <h2 id="examples">Examples</h2>
@@ -2571,7 +2571,7 @@ upctl ip-address assign --server 00b78f8b-521d-4ffb-8baa-adf96c7b8f45 --floating
 </tr>
 <tr>
 <td><code>--zone</code></td>
-<td>Zone of address. Required for detached floating IP address if MAC address is not speficied.</td>
+<td>Zone where to create the IP address. Run <code>upctl zone list</code> to list all available zones. Required when creating a detached floating IP address, i.e. when MAC address is not speficied.</td>
 </tr>
 <tr>
 <td><code>--floating</code></td>
