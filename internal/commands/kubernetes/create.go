@@ -123,7 +123,7 @@ func (c *createCommand) InitCommand() {
 			"taint=\"env=dev:NoSchedule\","+
 			"taint=\"env=dev2:NoSchedule\"`",
 	)
-	fs.StringVar(&c.params.Zone, "zone", "", "Zone where to create the cluster.")
+	fs.StringVar(&c.params.Zone, "zone", "", namedargs.ZoneDescription("cluster"))
 	config.AddToggleFlag(fs, &c.params.wait, "wait", false, "Wait for cluster to be in running state before returning.")
 	c.AddFlags(fs)
 
@@ -135,6 +135,7 @@ func (c *createCommand) InitCommand() {
 
 func (c *createCommand) InitCommandWithConfig(cfg *config.Config) {
 	_ = c.Cobra().RegisterFlagCompletionFunc("network", namedargs.CompletionFunc(completion.Network{}, cfg))
+	_ = c.Cobra().RegisterFlagCompletionFunc("zone", namedargs.CompletionFunc(completion.Zone{}, cfg))
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand

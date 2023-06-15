@@ -4,7 +4,9 @@ import (
 	"fmt"
 
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/namedargs"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
 
@@ -28,7 +30,7 @@ func AssignCommand() commands.Command {
 	return &assignCommand{
 		BaseCommand: commands.New(
 			"assign",
-			"Assign an ip address",
+			"Assign or create an IP address",
 			"upctl ip-address assign --server 00038afc-d526-4148-af0e-d2f1eeaded9b",
 			"upctl ip-address assign --server 00944977-89ce-4d10-89c3-bb5ba482e48d --family IPv6",
 			"upctl ip-address assign --server 00944977-89ce-4d10-89c3-bb5ba482e48d --floating --zone pl-waw1",
@@ -49,9 +51,13 @@ func (s *assignCommand) InitCommand() {
 	fs.StringVar(&s.family, "family", defaultFamily, "The address family of new IP address.")
 	fs.StringVar(&s.serverUUID, "server", "", "The server the ip address is assigned to.")
 	fs.StringVar(&s.mac, "mac", "", "MAC address of server interface to assign address to. Required for detached floating IP address if zone is not specified.")
-	fs.StringVar(&s.zone, "zone", "", "Zone of address. Required for detached floating IP address if MAC address is not speficied.")
+	fs.StringVar(&s.zone, "zone", "", (namedargs.ZoneDescription("IP address") + " Required when creating a detached floating IP address, i.e. when MAC address is not speficied."))
 	config.AddToggleFlag(fs, &s.floating, "floating", false, "Whether the address to be assigned is a floating one.")
 	s.AddFlags(fs)
+}
+
+func (s *assignCommand) InitCommandWithConfig(cfg *config.Config) {
+	_ = s.Cobra().RegisterFlagCompletionFunc("zone", namedargs.CompletionFunc(completion.Zone{}, cfg))
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
