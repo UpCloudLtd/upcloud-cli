@@ -56,7 +56,7 @@ func (s *modifyCommand) InitCommand() {
 	flags.StringVar(&s.params.Hostname, "hostname", defaultModifyParams.Hostname, "Hostname.")
 	config.AddEnableDisableFlags(flags, &s.firewall, "firewall", "firewall")
 	// flags.StringVar(&s.params.Firewall, "firewall", defaultModifyParams.Firewall, "Enables or disables firewall on the server. You can manage firewall rules with the firewall command.\nAvailable: true, false")
-	flags.StringArrayVar(&s.params.labels, "label", defaultModifyParams.labels, "Labels to describe the server in `key=value` format, multiple can be declared.\nUsage: --label env=dev\n\n--label owner=operations")
+	flags.StringArrayVar(&s.params.labels, "label", defaultModifyParams.labels, "Labels to describe the server in `key=value` format, multiple can be declared. If set, all the existing labels will be replaced with provided ones.\nUsage: --label env=dev\n\n--label owner=operations")
 	flags.IntVar(&s.params.MemoryAmount, "memory", defaultModifyParams.MemoryAmount, "Memory amount in MiB. Sets server plan to custom.")
 	config.AddEnableDisableFlags(flags, &s.setMetadata, "metadata", "metadata service")
 	// flags.StringVar(&s.params.metadata, "metadata", defaultModifyParams.metadata, "Enable metadata service.")
