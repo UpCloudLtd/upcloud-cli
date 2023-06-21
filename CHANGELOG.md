@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.8.0] - 2023-06-21
 ### Added
 - Add support for OpenSearch database type
 - Add `database index list` and `database index` commands for managing OpenSearch database indices 
@@ -230,7 +232,8 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.7.1...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.8.0...HEAD
+[2.8.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.7.1...v2.8.0
 [2.7.1]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.7.0...v2.7.1
 [2.7.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.6.0...v2.7.0
 [2.6.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.5.0...v2.6.0
