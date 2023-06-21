@@ -2593,6 +2593,10 @@ upctl server create --zone fi-hel1 --hostname myapp --ssh-keys /path/to/publicke
 <td>Server hostname.</td>
 </tr>
 <tr>
+<td><code>--label</code></td>
+<td>Labels to describe the server in <code>key=value</code> format, multiple can be declared.<br/>Usage: --label env=dev<br/><br/>--label owner=operations<br/>Default: <code>[]</code></td>
+</tr>
+<tr>
 <td><code>--memory</code></td>
 <td>Memory amount in MiB. Only allowed if <code>plan</code> option is set to "custom".<br/>Default: <code>0</code></td>
 </tr>

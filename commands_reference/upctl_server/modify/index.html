@@ -2574,6 +2574,10 @@ upctl server modify myapp --hostname superapp
 <td>Disable firewall.</td>
 </tr>
 <tr>
+<td><code>--label</code></td>
+<td>Labels to describe the server in <code>key=value</code> format, multiple can be declared. If set, all the existing labels will be replaced with provided ones.<br/>Usage: --label env=dev<br/><br/>--label owner=operations<br/>Default: <code>[]</code></td>
+</tr>
+<tr>
 <td><code>--memory</code></td>
 <td>Memory amount in MiB. Sets server plan to custom.<br/>Default: <code>0</code></td>
 </tr>
