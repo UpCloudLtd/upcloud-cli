@@ -7,8 +7,10 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/labels"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
+
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
 	"github.com/spf13/pflag"
@@ -52,24 +54,6 @@ func processKubeletArg(in string) (upcloud.KubernetesKubeletArg, error) {
 	}, nil
 }
 
-func processLabel(in string) (upcloud.Label, error) {
-	split := strings.SplitN(in, "=", 2)
-	if len(split) == 1 {
-		return upcloud.Label{
-			Key: split[0],
-		}, nil
-	}
-
-	if len(split) == 2 {
-		return upcloud.Label{
-			Key:   split[0],
-			Value: split[1],
-		}, nil
-	}
-
-	return upcloud.Label{}, fmt.Errorf("invalid label: %s", in)
-}
-
 func processTaint(in string) (upcloud.KubernetesTaint, error) {
 	r := regexp.MustCompile(`^(.+)=(.+):(.+)`)
 	s := r.FindStringSubmatch(in)
@@ -97,14 +81,9 @@ func ProcessNodeGroupParams(p CreateNodeGroupParams) (request.KubernetesNodeGrou
 		kubeletArgs = append(kubeletArgs, ka)
 	}
 
-	labels := make([]upcloud.Label, 0)
-	for _, v := range p.Labels {
-		l, err := processLabel(v)
-		if err != nil {
-			return ng, err
-		}
-
-		labels = append(labels, l)
+	labelSlice, err := labels.StringsToSliceOfLabels(p.Labels)
+	if err != nil {
+		return ng, err
 	}
 
 	sshKeys, err := commands.ParseSSHKeys(p.SSHKeys)
@@ -124,7 +103,7 @@ func ProcessNodeGroupParams(p CreateNodeGroupParams) (request.KubernetesNodeGrou
 
 	ng = request.KubernetesNodeGroup{
 		Count:       p.Count,
-		Labels:      labels,
+		Labels:      labelSlice,
 		Name:        p.Name,
 		Plan:        p.Plan,
 		SSHKeys:     sshKeys,

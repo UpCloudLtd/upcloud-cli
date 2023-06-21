@@ -176,6 +176,7 @@ func TestCreateServer(t *testing.T) {
 				"--enable-remote-access",
 				"--remote-access-type", upcloud.RemoteAccessTypeVNC,
 				"--remote-access-password", "secret",
+				"--label", "env=test",
 			},
 			createServerReq: request.CreateServerRequest{
 				Hostname:             "example.com",
@@ -207,6 +208,54 @@ func TestCreateServer(t *testing.T) {
 					Tier:    upcloud.StorageTierMaxIOPS,
 					Type:    upcloud.StorageTypeDisk,
 				}},
+				Labels: &upcloud.LabelSlice{upcloud.Label{
+					Key:   "env",
+					Value: "test",
+				}},
+			},
+		},
+		{
+			name: "multiple labels",
+			args: []string{
+				"--hostname", "example.com",
+				"--title", "test-server",
+				"--zone", "uk-lon1",
+				"--password-delivery", "email",
+				"--label", "env=test",
+				"--label", "env1=test1",
+				"--label", "only_key",
+			},
+			createServerReq: request.CreateServerRequest{
+				VideoModel:       "vga",
+				TimeZone:         "UTC",
+				Plan:             "1xCPU-2GB",
+				Hostname:         "example.com",
+				Title:            "test-server",
+				Zone:             "uk-lon1",
+				PasswordDelivery: "email",
+				LoginUser:        &request.LoginUser{CreatePassword: "yes"},
+				StorageDevices: request.CreateServerStorageDeviceSlice{request.CreateServerStorageDevice{
+					Action:  "clone",
+					Address: "virtio",
+					Storage: StorageDef.UUID,
+					Title:   "example.com-OS",
+					Size:    50,
+					Tier:    upcloud.StorageTierMaxIOPS,
+					Type:    upcloud.StorageTypeDisk,
+				}},
+				Labels: &upcloud.LabelSlice{
+					upcloud.Label{
+						Key:   "env",
+						Value: "test",
+					},
+					upcloud.Label{
+						Key:   "env1",
+						Value: "test1",
+					},
+					upcloud.Label{
+						Key: "only_key",
+					},
+				},
 			},
 		},
 		{
@@ -384,6 +433,17 @@ func TestCreateServer(t *testing.T) {
 				"--hostname", "hostname",
 			},
 			error: `required flag(s) "zone" not set`,
+		},
+		{
+			name: "label argument missing",
+			args: []string{
+				"--title", "title",
+				"--hostname", "hostname",
+				"--zone", "zone",
+				"--label", "env=test",
+				"--label",
+			},
+			error: `flag needs an argument: --label`,
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {

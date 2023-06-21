@@ -38,7 +38,7 @@ func (m *Service) GetPriceZones(context.Context) (*upcloud.PriceZones, error) {
 	return nil, nil
 }
 
-// GetPriceZones implements service.Zones.GetPriceZones
+// GetTimeZones implements service.Zones.GetPriceZones
 func (m *Service) GetTimeZones(context.Context) (*upcloud.TimeZones, error) {
 	return nil, nil
 }

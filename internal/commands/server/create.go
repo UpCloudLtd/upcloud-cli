@@ -9,6 +9,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/storage"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/labels"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/namedargs"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
@@ -61,6 +62,7 @@ type createParams struct {
 	os            string
 	osStorageSize int
 
+	labels   []string
 	storages []string
 	networks []string
 
@@ -114,6 +116,15 @@ func (s *createParams) processParams(exec commands.Executor) error {
 	s.LoginUser.CreatePassword = "no"
 	if s.username != "" {
 		s.LoginUser.Username = s.username
+	}
+
+	if len(s.labels) > 0 {
+		labelSlice, err := labels.StringsToUpCloudLabelSlice(s.labels)
+		if err != nil {
+			return err
+		}
+
+		s.Labels = labelSlice
 	}
 	return nil
 }
@@ -242,6 +253,7 @@ func (s *createCommand) InitCommand() {
 	config.AddEnableOrDisableFlag(fs, &s.remoteAccess, def.remoteAccess, "remote-access", "remote access")
 	fs.IntVar(&s.params.Host, "host", def.Host, "Use this to start a VM on a specific private cloud host. Refers to value from host -attribute. Only available in private clouds.")
 	fs.StringVar(&s.params.Hostname, "hostname", def.Hostname, "Server hostname.")
+	fs.StringArrayVar(&s.params.labels, "label", def.labels, "Labels to describe the server in `key=value` format, multiple can be declared.\nUsage: --label env=dev\n\n--label owner=operations")
 	fs.IntVar(&s.params.MemoryAmount, "memory", def.MemoryAmount, "Memory amount in MiB. Only allowed if `plan` option is set to \"custom\".")
 	fs.StringArrayVar(&s.params.networks, "network", def.networks, "A network interface for the server, multiple can be declared.\nUsage: --network family=IPv4,type=public\n\n--network type=private,network=037a530b-533e-4cef-b6ad-6af8094bb2bc,ip-address=10.0.0.1")
 	fs.StringVar(&s.params.os, "os", def.os, "Server OS to use (will be the first storage device). The value should be title or UUID of an either public or private template. Set to empty to fully customise the storages.")

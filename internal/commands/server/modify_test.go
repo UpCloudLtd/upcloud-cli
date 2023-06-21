@@ -58,6 +58,7 @@ func TestModifyCommand(t *testing.T) {
 				"--enable-remote-access",
 				"--remote-access-type", upcloud.RemoteAccessTypeVNC,
 				"--remote-access-password", "secret",
+				"--label", "env=test",
 			},
 			server: Server1,
 			modifyCall: request.ModifyServerRequest{
@@ -76,6 +77,10 @@ func TestModifyCommand(t *testing.T) {
 				RemoteAccessEnabled:  upcloud.FromBool(true),
 				RemoteAccessType:     upcloud.RemoteAccessTypeVNC,
 				RemoteAccessPassword: "secret",
+				Labels: &upcloud.LabelSlice{upcloud.Label{
+					Key:   "env",
+					Value: "test",
+				}},
 			},
 		},
 	} {

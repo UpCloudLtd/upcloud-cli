@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add completions for `--zone` arguments.
 - Add `--private-node-groups` argument to `kubernetes create` command.
 - Add _Private node groups_ field to `kubernetes show` output.
+- Add `--label` flag to `server create` and `server modify` commands
 
 ## [2.7.1] - 2023-05-16
 ### Fixed
