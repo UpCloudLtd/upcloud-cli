@@ -1,4 +1,4 @@
-FROM golang:1.18-alpine3.16 as build
+FROM golang:1.20-alpine as build
 
 RUN apk add --update --no-cache ca-certificates git make
 

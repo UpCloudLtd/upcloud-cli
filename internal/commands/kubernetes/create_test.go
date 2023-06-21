@@ -81,6 +81,10 @@ func TestCreateKubernetes(t *testing.T) {
 	prodPlanRequest := oneNodeGroupRequest
 	prodPlanRequest.Plan = "production-small"
 
+	privateNodeGroupsArg := []string{"--private-node-groups"}
+	privateNodeGroupsRequest := oneNodeGroupRequest
+	privateNodeGroupsRequest.PrivateNodeGroups = true
+
 	for _, test := range []struct {
 		name    string
 		args    []string
@@ -103,6 +107,12 @@ func TestCreateKubernetes(t *testing.T) {
 			name:    "use productions-small plan",
 			args:    append(oneNodeGroupArgs(network.Name), prodArg...),
 			request: prodPlanRequest,
+			wantErr: false,
+		},
+		{
+			name:    "with private node groups",
+			args:    append(oneNodeGroupArgs(network.Name), privateNodeGroupsArg...),
+			request: privateNodeGroupsRequest,
 			wantErr: false,
 		},
 	} {

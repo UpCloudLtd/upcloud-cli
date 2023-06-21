@@ -101,13 +101,14 @@ func TestShowCommand(t *testing.T) {
 
 	expected := `  
   Overview:
-    UUID:              0ddab8f4-97c0-4222-91ba-85a4fff7499b 
-    Name:              upcloud-go-sdk-unit-test             
-    Network UUID:      03a98be3-7daa-443f-bb25-4bc6854b396c 
-    Network name:      Test network                         
-    Network CIDR:      172.16.1.0/24                        
-    Zone               de-fra1                              
-    Operational state: running                              
+    UUID:                0ddab8f4-97c0-4222-91ba-85a4fff7499b 
+    Name:                upcloud-go-sdk-unit-test             
+    Network UUID:        03a98be3-7daa-443f-bb25-4bc6854b396c 
+    Network name:        Test network                         
+    Network CIDR:        172.16.1.0/24                        
+    Private node groups: no                                   
+    Zone:                de-fra1                              
+    Operational state:   running                              
 
   
   Node group 1 (upcloud-go-sdk-unit-test):
