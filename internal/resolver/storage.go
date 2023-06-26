@@ -50,7 +50,7 @@ func (s *CachingStorage) Get(ctx context.Context, svc internal.AllServices) (Res
 
 // PositionalArgumentHelp implements resolver.ResolutionProvider
 func (s *CachingStorage) PositionalArgumentHelp() string {
-	return "<UUID/Title...>"
+	return helpUUIDTitle
 }
 
 // Resolve is a helper method for commands to resolve networks inside Execute(), outside arguments

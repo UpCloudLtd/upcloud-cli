@@ -168,6 +168,10 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	// Server group operations
 	serverGroupCommand := commands.BuildCommand(servergroup.BaseServergroupCommand(), rootCmd, conf)
 	commands.BuildCommand(servergroup.CreateCommand(), serverGroupCommand.Cobra(), conf)
+	commands.BuildCommand(servergroup.DeleteCommand(), serverGroupCommand.Cobra(), conf)
+	commands.BuildCommand(servergroup.ListCommand(), serverGroupCommand.Cobra(), conf)
+	commands.BuildCommand(servergroup.ModifyCommand(), serverGroupCommand.Cobra(), conf)
+	commands.BuildCommand(servergroup.ShowCommand(), serverGroupCommand.Cobra(), conf)
 
 	// Misc
 	commands.BuildCommand(

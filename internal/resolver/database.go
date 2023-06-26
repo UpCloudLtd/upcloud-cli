@@ -38,5 +38,5 @@ func (s CachingDatabase) Get(ctx context.Context, svc internal.AllServices) (Res
 
 // PositionalArgumentHelp implements resolver.ResolutionProvider
 func (s CachingDatabase) PositionalArgumentHelp() string {
-	return "<UUID/Title...>"
+	return helpUUIDTitle
 }

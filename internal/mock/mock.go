@@ -972,11 +972,15 @@ func (m *Service) GetServerGroups(ctx context.Context, r *request.GetServerGroup
 	if args[0] == nil {
 		return nil, args.Error(1)
 	}
-	return args[0].([]upcloud.ServerGroup), args.Error(1)
+	return args[0].(upcloud.ServerGroups), args.Error(1)
 }
 
 func (m *Service) GetServerGroup(ctx context.Context, r *request.GetServerGroupRequest) (*upcloud.ServerGroup, error) {
-	return nil, nil
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.ServerGroup), args.Error(1)
 }
 
 func (m *Service) ModifyServerGroup(ctx context.Context, r *request.ModifyServerGroupRequest) (*upcloud.ServerGroup, error) {

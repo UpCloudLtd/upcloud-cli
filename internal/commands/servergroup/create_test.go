@@ -28,7 +28,7 @@ func TestCreateServerGroup(t *testing.T) {
 		{
 			name: "use default values",
 			args: []string{
-				"--name", "test",
+				"--title", "test",
 			},
 			req: request.CreateServerGroupRequest{
 				Title:              "test",
@@ -36,12 +36,12 @@ func TestCreateServerGroup(t *testing.T) {
 			},
 		},
 		{
-			name: "missing name",
+			name: "missing title",
 			args: []string{},
 			req: request.CreateServerGroupRequest{
 				AntiAffinityPolicy: upcloud.ServerGroupAntiAffinityPolicyBestEffort,
 			},
-			error: `required flag(s) "name" not set`,
+			error: `required flag(s) "title" not set`,
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
