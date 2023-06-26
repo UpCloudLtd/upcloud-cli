@@ -262,7 +262,7 @@ func (s *createCommand) InitCommand() {
 	fs.StringVar(&s.params.Plan, "plan", def.Plan, "Server plan name. See \"server plans\" command for valid plans. Set to \"custom\" and use `cores` and `memory` options for flexible plan.")
 	fs.StringVar(&s.params.RemoteAccessPassword, "remote-access-password", def.RemoteAccessPassword, "Defines the remote access password.")
 	fs.StringVar(&s.params.RemoteAccessType, "remote-access-type", def.RemoteAccessType, "Set a remote access type. Available: vnc, spice")
-	fs.StringVar(&s.params.ServerGroup, "server-group", def.ServerGroup, "UUID of a server group for the server. To remove the server from the group, see `server-group server remove")
+	fs.StringVar(&s.params.ServerGroup, "server-group", def.ServerGroup, "UUID of a server group for the server. To remove the server from the group, see `servergroup modify")
 	fs.StringVar(&s.params.SimpleBackup, "simple-backup", def.SimpleBackup, "Simple backup rule. Format (HHMM,{dailies,weeklies,monthlies}). Example: 2300,dailies")
 	fs.StringSliceVar(&s.params.sshKeys, "ssh-keys", def.sshKeys, "Add one or more SSH keys to the admin account. Accepted values are SSH public keys or filenames from where to read the keys.")
 	fs.StringArrayVar(&s.params.storages, "storage", def.storages, "A storage connected to the server, multiple can be declared.\nUsage: --storage action=attach,storage=01000000-0000-4000-8000-000020010301,type=cdrom")
