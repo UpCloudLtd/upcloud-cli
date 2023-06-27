@@ -3,14 +3,16 @@ package servergroup
 import (
 	"fmt"
 
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/labels"
-	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
-
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/labels"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/namedargs"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
+
+	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
 	"github.com/spf13/pflag"
 )
 
@@ -106,4 +108,8 @@ func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Out
 	exec.PushProgressSuccess(msg)
 
 	return output.OnlyMarshaled{Value: res}, nil
+}
+
+func (c *modifyCommand) InitCommandWithConfig(cfg *config.Config) {
+	_ = c.Cobra().RegisterFlagCompletionFunc("server", namedargs.CompletionFunc(completion.Server{}, cfg))
 }
