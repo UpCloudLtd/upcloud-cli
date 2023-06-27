@@ -78,6 +78,11 @@ func TestShowCommand(t *testing.T) {
 				Value: "label-thing",
 			},
 		},
+		Members: upcloud.ServerUUIDSlice{
+			server1.UUID,
+			server2.UUID,
+			server3.UUID,
+		},
 		Title: "test1",
 		UUID:  "0bb022ba-7ab5-4c94-8671-2e32fa543a79",
 	}
@@ -99,11 +104,11 @@ func TestShowCommand(t *testing.T) {
     
   Servers:
 
-     UUID                                   Hostname:   Zone:     Host:        Anti-affinity state: 
-    ────────────────────────────────────── ─────────── ───────── ──────────── ──────────────────────
-     00fda506-2e8f-44f7-9d06-74d197d029f3   test1       pl-waw1   4815602307   met                  
-     00333d1b-3a4a-4b75-820a-4a56d70395dd   test2       pl-waw1   8573698691   unmet                
-     33333d1b-3a4a-4b75-820a-4a56d7039533   test3       pl-waw1   8573698691   unmet                
+     UUID                                   Hostname   Zone      Host         Anti-affinity state 
+    ────────────────────────────────────── ────────── ───────── ──────────── ─────────────────────
+     00fda506-2e8f-44f7-9d06-74d197d029f3   test1      pl-waw1   4815602307   met                 
+     00333d1b-3a4a-4b75-820a-4a56d70395dd   test2      pl-waw1   8573698691   unmet               
+     33333d1b-3a4a-4b75-820a-4a56d7039533   test3      pl-waw1   8573698691   unmet               
     
 `
 

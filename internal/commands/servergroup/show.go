@@ -11,6 +11,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
 
+	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
 )
 
@@ -33,23 +34,43 @@ type showCommand struct {
 }
 
 // Execute implements commands.MultipleArgumentCommand
-func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
+func (c *showCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.All()
 	serverGroup, err := svc.GetServerGroup(exec.Context(), &request.GetServerGroupRequest{UUID: uuid})
 	if err != nil {
 		return nil, err
 	}
 
-	statusSummary := "-"
+	statusEnabled := false
+	groupStatus := notApplicable
+
+	if serverGroup.AntiAffinityPolicy != upcloud.ServerGroupAntiAffinityPolicyOff {
+		statusEnabled = true
+		groupStatus = met
+	}
+
+	statusMap := make(map[string]string, 0)
+	if statusEnabled {
+		for _, serverState := range serverGroup.AntiAffinityStatus {
+			status := string(serverState.Status)
+			statusMap[serverState.ServerUUID] = status
+
+			if status == unMet {
+				groupStatus = unMet
+			}
+		}
+	}
+
 	serverRows := []output.TableRow{}
-	for _, status := range serverGroup.AntiAffinityStatus {
-		serverDetails, err := svc.GetServerDetails(exec.Context(), &request.GetServerDetailsRequest{UUID: status.ServerUUID})
+	for _, member := range serverGroup.Members {
+		serverDetails, err := svc.GetServerDetails(exec.Context(), &request.GetServerDetailsRequest{UUID: member})
 		if err != nil {
 			return nil, err
 		}
 
-		if statusSummary == "-" || statusSummary == "met" {
-			statusSummary = string(status.Status)
+		status := groupStatus
+		if statusEnabled {
+			status = statusMap[member]
 		}
 
 		serverRows = append(serverRows, output.TableRow{
@@ -57,16 +78,16 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 			serverDetails.Hostname,
 			serverDetails.Zone,
 			strconv.Itoa(serverDetails.Host),
-			string(status.Status),
+			status,
 		})
 	}
 
 	serverColumns := []output.TableColumn{
 		{Key: "uuid", Header: "UUID", Colour: ui.DefaultUUUIDColours},
-		{Key: "hostname", Header: "Hostname:"},
-		{Key: "zone", Header: "Zone:"},
-		{Key: "host", Header: "Host:"},
-		{Key: "anti_affinity_state", Header: "Anti-affinity state:", Format: format.ServerGroupAntiAffinityState},
+		{Key: "hostname", Header: "Hostname"},
+		{Key: "zone", Header: "Zone"},
+		{Key: "host", Header: "Host"},
+		{Key: "anti_affinity_state", Header: "Anti-affinity state", Format: format.ServerGroupAntiAffinityState},
 	}
 
 	// For JSON and YAML output, passthrough API response
@@ -82,7 +103,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 								{Title: "UUID:", Value: serverGroup.UUID, Colour: ui.DefaultUUUIDColours},
 								{Title: "Title:", Value: serverGroup.Title},
 								{Title: "Anti-affinity policy:", Value: serverGroup.AntiAffinityPolicy},
-								{Title: "Anti-affinity state:", Value: statusSummary, Format: format.ServerGroupAntiAffinityState},
+								{Title: "Anti-affinity state:", Value: groupStatus, Format: format.ServerGroupAntiAffinityState},
 								{Title: "Server count:", Value: len(serverGroup.AntiAffinityStatus)},
 							},
 						},

@@ -5,6 +5,8 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/format"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
+
+	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
 )
 
@@ -29,10 +31,14 @@ func (c *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 
 	rows := []output.TableRow{}
 	for _, serverGroup := range serverGroups {
-		statusSummary := "-"
-		for _, status := range serverGroup.AntiAffinityStatus {
-			if statusSummary == "-" || statusSummary == "met" {
-				statusSummary = string(status.Status)
+		groupStatus := notApplicable
+
+		if serverGroup.AntiAffinityPolicy != upcloud.ServerGroupAntiAffinityPolicyOff {
+			groupStatus = met
+			for _, serverState := range serverGroup.AntiAffinityStatus {
+				if string(serverState.Status) == unMet {
+					groupStatus = unMet
+				}
 			}
 		}
 
@@ -40,7 +46,7 @@ func (c *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 			serverGroup.UUID,
 			serverGroup.Title,
 			serverGroup.AntiAffinityPolicy,
-			statusSummary,
+			groupStatus,
 			len(serverGroup.AntiAffinityStatus),
 		})
 	}

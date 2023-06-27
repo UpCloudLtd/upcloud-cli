@@ -6,6 +6,12 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
 )
 
+const (
+	met           = "met"
+	notApplicable = "-"
+	unMet         = "unmet"
+)
+
 // BaseServergroupCommand creates the base "servergroup" command
 func BaseServergroupCommand() commands.Command {
 	return &servergroupCommand{
