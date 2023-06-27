@@ -2,9 +2,9 @@ package servergroup
 
 import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/format"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
-
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
 )
 
@@ -22,26 +22,41 @@ type listCommand struct {
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	svc := exec.All()
-	clusters, err := svc.GetServerGroups(exec.Context(), &request.GetServerGroupsRequest{})
+	serverGroups, err := svc.GetServerGroups(exec.Context(), &request.GetServerGroupsRequest{})
 	if err != nil {
 		return nil, err
 	}
 
 	rows := []output.TableRow{}
-	for _, serverGroup := range clusters {
+	for _, serverGroup := range serverGroups {
+		statusSummary := "-"
+		for _, status := range serverGroup.AntiAffinityStatus {
+			if statusSummary == "-" || statusSummary == "met" {
+				statusSummary = string(status.Status)
+			}
+		}
+
 		rows = append(rows, output.TableRow{
 			serverGroup.UUID,
 			serverGroup.Title,
 			serverGroup.AntiAffinityPolicy,
+			statusSummary,
+			len(serverGroup.AntiAffinityStatus),
 		})
 	}
 
-	return output.Table{
-		Columns: []output.TableColumn{
-			{Key: "uuid", Header: "UUID", Colour: ui.DefaultUUUIDColours},
-			{Key: "title", Header: "Title"},
-			{Key: "anti_affinity", Header: "Anti-affinity policy"},
+	// For JSON and YAML output, passthrough API response
+	return output.MarshaledWithHumanOutput{
+		Value: serverGroups,
+		Output: output.Table{
+			Columns: []output.TableColumn{
+				{Key: "uuid", Header: "UUID", Colour: ui.DefaultUUUIDColours},
+				{Key: "title", Header: "Title"},
+				{Key: "anti_affinity", Header: "Anti-affinity policy"},
+				{Key: "anti_affinity_status", Header: "Anti-affinity status", Format: format.ServerGroupAntiAffinityState},
+				{Key: "anti_affinity_met", Header: "Server count"},
+			},
+			Rows: rows,
 		},
-		Rows: rows,
 	}, nil
 }
