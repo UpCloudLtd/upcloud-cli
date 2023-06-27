@@ -47,7 +47,7 @@ func (c *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 			serverGroup.Title,
 			serverGroup.AntiAffinityPolicy,
 			groupStatus,
-			len(serverGroup.AntiAffinityStatus),
+			len(serverGroup.Members),
 		})
 	}
 

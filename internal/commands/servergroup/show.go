@@ -62,23 +62,29 @@ func (c *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 	}
 
 	serverRows := []output.TableRow{}
-	for _, member := range serverGroup.Members {
-		serverDetails, err := svc.GetServerDetails(exec.Context(), &request.GetServerDetailsRequest{UUID: member})
+	for _, serverUUID := range serverGroup.Members {
+		serverDetails, err := svc.GetServerDetails(exec.Context(), &request.GetServerDetailsRequest{UUID: serverUUID})
 		if err != nil {
 			return nil, err
 		}
 
-		status := groupStatus
-		if statusEnabled {
-			status = statusMap[member]
+		status, ok := statusMap[serverUUID]
+		if !ok {
+			status = notApplicable
+		}
+
+		host := strconv.Itoa(serverDetails.Host)
+		if host == "0" {
+			host = notApplicable
 		}
 
 		serverRows = append(serverRows, output.TableRow{
 			serverDetails.UUID,
 			serverDetails.Hostname,
 			serverDetails.Zone,
-			strconv.Itoa(serverDetails.Host),
+			host,
 			status,
+			serverDetails.State,
 		})
 	}
 
@@ -88,6 +94,7 @@ func (c *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 		{Key: "zone", Header: "Zone"},
 		{Key: "host", Header: "Host"},
 		{Key: "anti_affinity_state", Header: "Anti-affinity state", Format: format.ServerGroupAntiAffinityState},
+		{Key: "state", Header: "State", Format: format.ServerState},
 	}
 
 	// For JSON and YAML output, passthrough API response
@@ -104,7 +111,7 @@ func (c *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 								{Title: "Title:", Value: serverGroup.Title},
 								{Title: "Anti-affinity policy:", Value: serverGroup.AntiAffinityPolicy},
 								{Title: "Anti-affinity state:", Value: groupStatus, Format: format.ServerGroupAntiAffinityState},
-								{Title: "Server count:", Value: len(serverGroup.AntiAffinityStatus)},
+								{Title: "Server count:", Value: len(serverGroup.Members)},
 							},
 						},
 					},
