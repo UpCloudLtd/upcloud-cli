@@ -20,7 +20,7 @@ type listCommand struct {
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
-func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
+func (c *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	svc := exec.All()
 	serverGroups, err := svc.GetServerGroups(exec.Context(), &request.GetServerGroupsRequest{})
 	if err != nil {

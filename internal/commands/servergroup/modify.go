@@ -78,21 +78,21 @@ func (p *modifyParams) processParams(exec commands.Executor, uuid string) error 
 }
 
 // InitCommand implements Command.InitCommand
-func (s *modifyCommand) InitCommand() {
+func (c *modifyCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
-	fs.StringVar(&s.params.antiAffinityPolicy, "anti-affinity-policy", defaultModifyParams.antiAffinityPolicy, "Anti-affinity policy. Valid values are `yes` (best effort), `strict` and `no`. Will take effect upon server start.")
-	fs.StringArrayVar(&s.params.labels, "label", defaultModifyParams.labels, "Labels to describe the server in `key=value` format, multiple can be declared. If set, all the existing labels will be replaced with provided ones.\nUsage: --label env=dev\n\n--label owner=operations")
-	fs.StringVar(&s.params.Title, "title", defaultModifyParams.Title, "New server group title.")
-	fs.StringArrayVar(&s.params.servers, "server", defaultModifyParams.servers, "Servers that belong to the server group, multiple can be declared. If set, all the existing server entries will be replaced with provided ones.\nUsage: --server my-server\n\n--server 00333d1b-3a4a-4b75-820a-4a56d70395dd")
+	fs.StringVar(&c.params.antiAffinityPolicy, "anti-affinity-policy", defaultModifyParams.antiAffinityPolicy, "Anti-affinity policy. Valid values are `yes` (best effort), `strict` and `no`. Will take effect upon server start.")
+	fs.StringArrayVar(&c.params.labels, "label", defaultModifyParams.labels, "Labels to describe the server in `key=value` format, multiple can be declared. If set, all the existing labels will be replaced with provided ones.\nUsage: --label env=dev\n\n--label owner=operations")
+	fs.StringVar(&c.params.Title, "title", defaultModifyParams.Title, "New server group title.")
+	fs.StringArrayVar(&c.params.servers, "server", defaultModifyParams.servers, "Servers that belong to the server group, multiple can be declared. If set, all the existing server entries will be replaced with provided ones.\nUsage: --server my-server\n\n--server 00333d1b-3a4a-4b75-820a-4a56d70395dd")
 
-	s.AddFlags(fs)
+	c.AddFlags(fs)
 }
 
 // Execute implements commands.MultipleArgumentCommand
-func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
+func (c *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.All()
 
-	err := s.params.processParams(exec, uuid)
+	err := c.params.processParams(exec, uuid)
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +100,7 @@ func (s *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Out
 	msg := fmt.Sprintf("Modifying server group %s", uuid)
 	exec.PushProgressStarted(msg)
 
-	res, err := svc.ModifyServerGroup(exec.Context(), &s.params.ModifyServerGroupRequest)
+	res, err := svc.ModifyServerGroup(exec.Context(), &c.params.ModifyServerGroupRequest)
 	if err != nil {
 		return commands.HandleError(exec, msg, err)
 	}

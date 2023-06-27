@@ -30,7 +30,7 @@ type deleteCommand struct {
 }
 
 // Execute implements commands.MultipleArgumentCommand
-func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
+func (c *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	svc := exec.All()
 	msg := fmt.Sprintf("Deleting server group %v", arg)
 	exec.PushProgressStarted(msg)
