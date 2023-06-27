@@ -54,7 +54,7 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 				{Key: "title", Header: "Title"},
 				{Key: "anti_affinity", Header: "Anti-affinity policy"},
 				{Key: "anti_affinity_status", Header: "Anti-affinity status", Format: format.ServerGroupAntiAffinityState},
-				{Key: "anti_affinity_met", Header: "Server count"},
+				{Key: "server_count", Header: "Server count"},
 			},
 			Rows: rows,
 		},
