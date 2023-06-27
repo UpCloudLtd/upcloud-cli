@@ -41,6 +41,17 @@ func TestShowCommand(t *testing.T) {
 		ServerGroup: "0bb022ba-7ab5-4c94-8671-2e32fa543a79",
 	}
 
+	server3 := upcloud.ServerDetails{
+		Server: upcloud.Server{
+			Hostname: "test3",
+			Title:    "test3",
+			UUID:     "33333d1b-3a4a-4b75-820a-4a56d7039533",
+			Zone:     "pl-waw1",
+		},
+		Host:        8573698691,
+		ServerGroup: "0bb022ba-7ab5-4c94-8671-2e32fa543a79",
+	}
+
 	serverGroup1 := upcloud.ServerGroup{
 		AntiAffinityPolicy: upcloud.ServerGroupAntiAffinityPolicyStrict,
 		AntiAffinityStatus: []upcloud.ServerGroupMemberAntiAffinityStatus{
@@ -50,13 +61,17 @@ func TestShowCommand(t *testing.T) {
 			},
 			{
 				ServerUUID: server2.UUID,
-				Status:     "met",
+				Status:     "unmet",
+			},
+			{
+				ServerUUID: server3.UUID,
+				Status:     "unmet",
 			},
 		},
 		Labels: []upcloud.Label{
 			{
 				Key:   "managedBy",
-				Value: "upcloud-go-sdk-unit-test",
+				Value: "upcloud-cli-unit-test",
 			},
 			{
 				Key:   "another",
@@ -72,30 +87,24 @@ func TestShowCommand(t *testing.T) {
     UUID:                 0bb022ba-7ab5-4c94-8671-2e32fa543a79 
     Title:                test1                                
     Anti-affinity policy: strict                               
+    Anti-affinity state:  unmet                                
+    Server count:         3                                    
 
   Labels:
 
-     Key         Value                    
-    ─────────── ──────────────────────────
-     managedBy   upcloud-go-sdk-unit-test 
-     another     label-thing              
+     Key         Value                 
+    ─────────── ───────────────────────
+     managedBy   upcloud-cli-unit-test 
+     another     label-thing           
     
-  
-  Server 1 (00fda506-2e8f-44f7-9d06-74d197d029f3):
-    Title:               test1      
-    Hostname:            test1      
-    Host:                4815602307 
-    Zone:                pl-waw1    
-    Anti-affinity state: met        
+  Servers:
 
-  
-  Server 2 (00333d1b-3a4a-4b75-820a-4a56d70395dd):
-    Title:               test2      
-    Hostname:            test2      
-    Host:                8573698691 
-    Zone:                pl-waw1    
-    Anti-affinity state: met        
-
+     UUID                                   Hostname:   Zone:     Host:        Anti-affinity state: 
+    ────────────────────────────────────── ─────────── ───────── ──────────── ──────────────────────
+     00fda506-2e8f-44f7-9d06-74d197d029f3   test1       pl-waw1   4815602307   met                  
+     00333d1b-3a4a-4b75-820a-4a56d70395dd   test2       pl-waw1   8573698691   unmet                
+     33333d1b-3a4a-4b75-820a-4a56d7039533   test3       pl-waw1   8573698691   unmet                
+    
 `
 
 	mService := smock.Service{}
@@ -103,6 +112,7 @@ func TestShowCommand(t *testing.T) {
 	mService.On("GetServerGroup", &request.GetServerGroupRequest{UUID: serverGroup1.UUID}).Return(&serverGroup1, nil)
 	mService.On("GetServerDetails", &request.GetServerDetailsRequest{UUID: server1.UUID}).Return(&server1, nil)
 	mService.On("GetServerDetails", &request.GetServerDetailsRequest{UUID: server2.UUID}).Return(&server2, nil)
+	mService.On("GetServerDetails", &request.GetServerDetailsRequest{UUID: server3.UUID}).Return(&server3, nil)
 
 	conf := config.New()
 	command := commands.BuildCommand(ShowCommand(), nil, conf)
