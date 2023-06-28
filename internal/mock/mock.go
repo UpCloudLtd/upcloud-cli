@@ -923,7 +923,7 @@ func (m *Service) GetKubernetesNodeGroups(ctx context.Context, r *request.GetKub
 	return nil, nil
 }
 
-func (m *Service) GetKubernetesNodeGroup(ctx context.Context, r *request.GetKubernetesNodeGroupRequest) (*upcloud.KubernetesNodeGroup, error) {
+func (m *Service) GetKubernetesNodeGroup(ctx context.Context, r *request.GetKubernetesNodeGroupRequest) (*upcloud.KubernetesNodeGroupDetails, error) {
 	return nil, nil
 }
 
@@ -944,6 +944,14 @@ func (m *Service) ModifyKubernetesNodeGroup(ctx context.Context, r *request.Modi
 }
 
 func (m *Service) DeleteKubernetesNodeGroup(ctx context.Context, r *request.DeleteKubernetesNodeGroupRequest) error {
+	args := m.Called(r)
+	if args[0] == nil {
+		return args.Error(0)
+	}
+	return nil
+}
+
+func (m *Service) DeleteKubernetesNodeGroupNode(ctx context.Context, r *request.DeleteKubernetesNodeGroupNodeRequest) error {
 	args := m.Called(r)
 	if args[0] == nil {
 		return args.Error(0)

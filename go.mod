@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/UpCloudLtd/progress v1.0.1
-	github.com/UpCloudLtd/upcloud-go-api/v6 v6.3.2
+	github.com/UpCloudLtd/upcloud-go-api/v6 v6.3.3-0.20230628074326-cd47188bb011
 	github.com/adrg/xdg v0.3.2
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d
 	github.com/gemalto/flume v0.12.0
@@ -29,7 +29,6 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/gofuzz v1.1.0 // indirect
-	github.com/hashicorp/go-cleanhttp v0.5.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/imdario/mergo v0.3.6 // indirect
 	github.com/inconshreveable/mousetrap v1.0.1 // indirect

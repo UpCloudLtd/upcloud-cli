@@ -96,6 +96,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 									{Title: "Kubelet args:", Value: kubeletArgs.String()},
 									{Title: "Labels:", Value: labels.String()},
 									{Title: "Taints:", Value: taints.String()},
+									{Title: "Utility network access:", Value: nodeGroup.UtilityNetworkAccess, Format: format.Boolean},
 								},
 							},
 						},

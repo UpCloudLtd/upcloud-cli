@@ -7,6 +7,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/labels"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
@@ -17,14 +18,15 @@ import (
 )
 
 type CreateNodeGroupParams struct {
-	Count       int
-	Name        string
-	Plan        string
-	SSHKeys     []string
-	Storage     string
-	KubeletArgs []string
-	Labels      []string
-	Taints      []string
+	Count                int
+	Name                 string
+	Plan                 string
+	SSHKeys              []string
+	Storage              string
+	KubeletArgs          []string
+	Labels               []string
+	Taints               []string
+	UtilityNetworkAccess config.OptionalBoolean
 }
 
 func GetCreateNodeGroupFlagSet(p *CreateNodeGroupParams) *pflag.FlagSet {
@@ -38,6 +40,7 @@ func GetCreateNodeGroupFlagSet(p *CreateNodeGroupParams) *pflag.FlagSet {
 	fs.StringArrayVar(&p.SSHKeys, "ssh-key", []string{}, "SSH keys to be configured as authorized keys to the nodes.")
 	fs.StringVar(&p.Storage, "storage", "", "Storage template to use when creating the nodes. Defaults to `UpCloud K8s` public template.")
 	fs.StringArrayVar(&p.Taints, "taint", []string{}, "Taints to be configured to the nodes in `key=value:effect` format")
+	config.AddEnableOrDisableFlag(fs, &p.UtilityNetworkAccess, true, "utility-network-access", "utility network access. Enabled by default")
 
 	return fs
 }
@@ -102,14 +105,15 @@ func ProcessNodeGroupParams(p CreateNodeGroupParams) (request.KubernetesNodeGrou
 	}
 
 	ng = request.KubernetesNodeGroup{
-		Count:       p.Count,
-		Labels:      labelSlice,
-		Name:        p.Name,
-		Plan:        p.Plan,
-		SSHKeys:     sshKeys,
-		Storage:     p.Storage,
-		KubeletArgs: kubeletArgs,
-		Taints:      taints,
+		Count:                p.Count,
+		Labels:               labelSlice,
+		Name:                 p.Name,
+		Plan:                 p.Plan,
+		SSHKeys:              sshKeys,
+		Storage:              p.Storage,
+		KubeletArgs:          kubeletArgs,
+		Taints:               taints,
+		UtilityNetworkAccess: p.UtilityNetworkAccess.Value(),
 	}
 
 	return ng, nil
