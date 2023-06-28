@@ -22,6 +22,7 @@ func TestShowCommand(t *testing.T) {
 	server1 := upcloud.ServerDetails{
 		Server: upcloud.Server{
 			Hostname: "test1",
+			State:    upcloud.ServerStateStarted,
 			Title:    "test1",
 			UUID:     "00fda506-2e8f-44f7-9d06-74d197d029f3",
 			Zone:     "pl-waw1",
@@ -33,6 +34,7 @@ func TestShowCommand(t *testing.T) {
 	server2 := upcloud.ServerDetails{
 		Server: upcloud.Server{
 			Hostname: "test2",
+			State:    upcloud.ServerStateStarted,
 			Title:    "test2",
 			UUID:     "00333d1b-3a4a-4b75-820a-4a56d70395dd",
 			Zone:     "pl-waw1",
@@ -44,6 +46,7 @@ func TestShowCommand(t *testing.T) {
 	server3 := upcloud.ServerDetails{
 		Server: upcloud.Server{
 			Hostname: "test3",
+			State:    upcloud.ServerStateStarted,
 			Title:    "test3",
 			UUID:     "33333d1b-3a4a-4b75-820a-4a56d7039533",
 			Zone:     "pl-waw1",
@@ -104,11 +107,11 @@ func TestShowCommand(t *testing.T) {
     
   Servers:
 
-     UUID                                   Hostname   Zone      Host         Anti-affinity state 
-    ────────────────────────────────────── ────────── ───────── ──────────── ─────────────────────
-     00fda506-2e8f-44f7-9d06-74d197d029f3   test1      pl-waw1   4815602307   met                 
-     00333d1b-3a4a-4b75-820a-4a56d70395dd   test2      pl-waw1   8573698691   unmet               
-     33333d1b-3a4a-4b75-820a-4a56d7039533   test3      pl-waw1   8573698691   unmet               
+     UUID                                   Hostname   Zone      Host         Anti-affinity state   State   
+    ────────────────────────────────────── ────────── ───────── ──────────── ───────────────────── ─────────
+     00fda506-2e8f-44f7-9d06-74d197d029f3   test1      pl-waw1   4815602307   met                   started 
+     00333d1b-3a4a-4b75-820a-4a56d70395dd   test2      pl-waw1   8573698691   unmet                 started 
+     33333d1b-3a4a-4b75-820a-4a56d7039533   test3      pl-waw1   8573698691   unmet                 started 
     
 `
 
