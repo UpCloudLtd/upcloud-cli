@@ -18,6 +18,7 @@ import (
 	serverfirewall "github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/server/firewall"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/server/networkinterface"
 	serverstorage "github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/server/storage"
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/servergroup"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/storage"
 	storagebackup "github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/storage/backup"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/zone"
@@ -163,6 +164,14 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	commands.BuildCommand(nodegroup.CreateCommand(), nodeGroupCommand.Cobra(), conf)
 	commands.BuildCommand(nodegroup.ScaleCommand(), nodeGroupCommand.Cobra(), conf)
 	commands.BuildCommand(nodegroup.DeleteCommand(), nodeGroupCommand.Cobra(), conf)
+
+	// Server group operations
+	serverGroupCommand := commands.BuildCommand(servergroup.BaseServergroupCommand(), rootCmd, conf)
+	commands.BuildCommand(servergroup.CreateCommand(), serverGroupCommand.Cobra(), conf)
+	commands.BuildCommand(servergroup.DeleteCommand(), serverGroupCommand.Cobra(), conf)
+	commands.BuildCommand(servergroup.ListCommand(), serverGroupCommand.Cobra(), conf)
+	commands.BuildCommand(servergroup.ModifyCommand(), serverGroupCommand.Cobra(), conf)
+	commands.BuildCommand(servergroup.ShowCommand(), serverGroupCommand.Cobra(), conf)
 
 	// Misc
 	commands.BuildCommand(

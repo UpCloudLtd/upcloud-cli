@@ -35,7 +35,7 @@ func formatFlags(fs *pflag.FlagSet) string {
 		flagText.WriteString(fmt.Sprintf("--%s %s", flag.Name, flag.Value.Type()))
 		flagUsage.WriteString(text.WrapSoft(flag.Usage, wrappingLineLength))
 		def := flag.DefValue
-		if strings.HasSuffix(flag.Value.Type(), "Slice") {
+		if strings.HasSuffix(flag.Value.Type(), "Slice") || strings.HasSuffix(flag.Value.Type(), "Array") {
 			def = strings.TrimPrefix(def, "[")
 			def = strings.TrimSuffix(def, "]")
 		}

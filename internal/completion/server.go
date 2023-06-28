@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Server implements argument completion for routers, by uuid, name or hostname.
+// Server implements argument completion for servers, by uuid, name or hostname.
 type Server struct{}
 
 // make sure Server implements the interface

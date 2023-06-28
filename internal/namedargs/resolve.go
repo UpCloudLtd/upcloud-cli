@@ -16,12 +16,3 @@ func Resolve(provider resolver.ResolutionProvider, exec commands.Executor, arg s
 
 	return resolver(arg)
 }
-
-// ResolveNetwork resolves network UUID from values provided to named args (e.g., --network net-name)
-func ResolveNetwork(exec commands.Executor, arg string) (string, error) {
-	net, err := Resolve(&resolver.CachingNetwork{}, exec, arg)
-	if err != nil {
-		err = fmt.Errorf("could not resolve network: %w", err)
-	}
-	return net, err
-}

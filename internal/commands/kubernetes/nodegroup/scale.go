@@ -34,7 +34,7 @@ func ScaleCommand() commands.Command {
 func (s *scaleCommand) InitCommand() {
 	flagSet := &pflag.FlagSet{}
 	flagSet.StringVar(&s.name, "name", "", "Node group name")
-	flagSet.IntVar(&s.count, "count", 0, "Node group name")
+	flagSet.IntVar(&s.count, "count", 0, "Node count")
 	s.AddFlags(flagSet)
 
 	_ = s.Cobra().MarkFlagRequired("name")

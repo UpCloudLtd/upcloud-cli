@@ -134,6 +134,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 							{Title: "Metadata:", Key: "metadata", Value: server.Metadata.String()},
 							{Title: "Timezone:", Key: "timezone", Value: server.Timezone},
 							{Title: "Host ID:", Key: "host_id", Value: server.Host},
+							{Title: "Server Group:", Key: "server_group", Value: server.ServerGroup},
 							{Title: "Tags:", Key: "tags", Value: strings.Join(server.Tags, ",")},
 						},
 					},

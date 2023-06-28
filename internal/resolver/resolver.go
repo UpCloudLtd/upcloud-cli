@@ -6,6 +6,8 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
 )
 
+const helpUUIDTitle = "<UUID/Title...>"
+
 // Resolver represents the most basic argument resolver, a function that accepts and argument and returns an uuid (or error)
 type Resolver func(arg string) (uuid string, err error)
 
