@@ -34,10 +34,9 @@ func (c *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 		groupStatus := notApplicable
 
 		if serverGroup.AntiAffinityPolicy != upcloud.ServerGroupAntiAffinityPolicyOff {
-			groupStatus = met
 			for _, serverState := range serverGroup.AntiAffinityStatus {
-				if string(serverState.Status) == unMet {
-					groupStatus = unMet
+				if groupStatus != unMet {
+					groupStatus = string(serverState.Status)
 				}
 			}
 		}

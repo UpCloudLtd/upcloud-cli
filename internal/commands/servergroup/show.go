@@ -41,22 +41,16 @@ func (c *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 		return nil, err
 	}
 
-	statusEnabled := false
 	groupStatus := notApplicable
 
-	if serverGroup.AntiAffinityPolicy != upcloud.ServerGroupAntiAffinityPolicyOff {
-		statusEnabled = true
-		groupStatus = met
-	}
-
 	statusMap := make(map[string]string, 0)
-	if statusEnabled {
+	if serverGroup.AntiAffinityPolicy != upcloud.ServerGroupAntiAffinityPolicyOff {
 		for _, serverState := range serverGroup.AntiAffinityStatus {
 			status := string(serverState.Status)
 			statusMap[serverState.ServerUUID] = status
 
-			if status == unMet {
-				groupStatus = unMet
+			if groupStatus != unMet {
+				groupStatus = status
 			}
 		}
 	}
