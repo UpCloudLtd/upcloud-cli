@@ -34,7 +34,7 @@ jobs:
           go-version-file: 'go.mod'
       - name: Get tag version
         id: git
-        run: echo "::set-output name=tag_version::$(make version)"
+        run: echo "tag_version=$(make version)" >> "$GITHUB_OUTPUT"
       - name: Run goreleaser-action
         uses: goreleaser/goreleaser-action@b508e2e3ef3b19d4e4146d4f8fb3ba9db644a757 # v3.2.0
         with:
