@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.1] - 2023-07-06
+### Changed
+- Release artifacts to follow package naming conventions provided by [nFPM](https://github.com/goreleaser/nfpm).
+    ```
+    upcloud-cli-2.9.0_x86_64.rpm  vs  upcloud-cli-2.9.1.x86_64.rpm  # no convention changes
+    upcloud-cli-2.9.0_arm64.rpm   vs  upcloud-cli-2.9.1.aarch64.rpm # `arm64` -> `aarch64`
+
+    upcloud-cli-2.9.0_amd64.apk   vs  upcloud-cli_2.9.1_x86_64.apk  # `cli-`  ->  `cli_`  & `amd64` -> `x86_64`
+    upcloud-cli-2.9.0_arm64.apk   vs  upcloud-cli_2.9.1_aarch64.apk # `cli-`  ->  `cli_`  & `arm64` -> `aarch64`
+
+    upcloud-cli-2.9.0_amd64.deb   vs  upcloud-cli_2.9.1_amd64.deb   # `cli-`  ->  `cli_`
+    upcloud-cli-2.9.0_arm64.deb   vs  upcloud-cli_2.9.1_arm64.deb   # `cli-`  ->  `cli_`
+    ```
+
 ## [2.9.0] - 2023-06-30
 ### Added
 - Add `servergroup` commands (`create`, `delete`, `list`, `modify`, `show`) for server group management
