@@ -48,6 +48,15 @@ snapshot:
   name_template: "{{ .Tag }}-next"
 
 changelog:
+  # Set this to true if you don't want any changelog at all.
+  #
+  # Warning: this will also ignore any changelog files passed via `--release-notes`,
+  # and will render an empty changelog.
+  #
+  # This may result in an empty release notes on GitHub/GitLab/Gitea.
+  #
+  # Templates: allowed
+  skip: false
   sort: asc
   filters:
 
@@ -99,6 +108,10 @@ brews:
     commit_author:
       name: goreleaserbot
       email: goreleaser@carlosbecker.com
+
+    # Folder inside the repository to put the formula.
+    # Default is the root folder.
+    folder: Formula
 
     homepage: "https://upcloud.com/"
     description: "CLI tool for managing UpCloud services."
