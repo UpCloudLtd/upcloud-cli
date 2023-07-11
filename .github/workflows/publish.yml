@@ -35,11 +35,14 @@ jobs:
       - name: Get tag version
         id: git
         run: echo "tag_version=$(make version)" >> "$GITHUB_OUTPUT"
+      - name: Get release notes
+        id: release_notes
+        run: echo "release_notes=$(make release-notes)" >> "$GITHUB_OUTPUT"
       - name: Run goreleaser-action
-        uses: goreleaser/goreleaser-action@b508e2e3ef3b19d4e4146d4f8fb3ba9db644a757 # v3.2.0
+        uses: goreleaser/goreleaser-action@336e29918d653399e599bfca99fadc1d7ffbc9f7 # v4.3.0
         with:
           version: latest
-          args: release --clean --release-notes <(make release-notes)
+          args: release --clean --release-notes ${{ steps.release_notes.outputs.release_notes }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
