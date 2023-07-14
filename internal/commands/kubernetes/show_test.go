@@ -60,8 +60,9 @@ func TestShowCommand(t *testing.T) {
 						Value:  "sometaintvalue",
 					},
 				},
-				Storage: "storage-uuid",
-				SSHKeys: []string{"somekey"},
+				Storage:              "storage-uuid",
+				SSHKeys:              []string{"somekey"},
+				UtilityNetworkAccess: true,
 			}, {
 				Count: 8,
 				Labels: []upcloud.Label{
@@ -90,8 +91,9 @@ func TestShowCommand(t *testing.T) {
 						Value:  "sometaintvalue2",
 					},
 				},
-				Storage: "storage-uuid-2",
-				SSHKeys: []string{"somekey2"},
+				Storage:              "storage-uuid-2",
+				SSHKeys:              []string{"somekey2"},
+				UtilityNetworkAccess: false,
 			},
 		},
 		State: upcloud.KubernetesClusterStateRunning,
@@ -112,31 +114,33 @@ func TestShowCommand(t *testing.T) {
 
   
   Node group 1 (upcloud-go-sdk-unit-test):
-    Name:         upcloud-go-sdk-unit-test              
-    Count:        4                                     
-    Plan:         2xCPU-4GB                             
-    State:        running                               
-    Storage UUID: storage-uuid                          
-    Storage name: Test storage                          
-    Kubelet args: somekubeletkey=somekubeletvalue       
-    Labels:       managedBy=upcloud-go-sdk-unit-test    
-                  another=label-thing                   
-    Taints:       sometaintkey=sometaintvalue:NoExecute 
-                  sometaintkey=sometaintvalue:NoExecute 
-                  sometaintkey=sometaintvalue:NoExecute 
+    Name:                   upcloud-go-sdk-unit-test              
+    Count:                  4                                     
+    Plan:                   2xCPU-4GB                             
+    State:                  running                               
+    Storage UUID:           storage-uuid                          
+    Storage name:           Test storage                          
+    Kubelet args:           somekubeletkey=somekubeletvalue       
+    Labels:                 managedBy=upcloud-go-sdk-unit-test    
+                            another=label-thing                   
+    Taints:                 sometaintkey=sometaintvalue:NoExecute 
+                            sometaintkey=sometaintvalue:NoExecute 
+                            sometaintkey=sometaintvalue:NoExecute 
+    Utility network access: yes                                   
 
   
   Node group 2 (upcloud-go-sdk-unit-test-2):
-    Name:         upcloud-go-sdk-unit-test-2               
-    Count:        8                                        
-    Plan:         4xCPU-8GB                                
-    State:        pending                                  
-    Storage UUID: storage-uuid-2                           
-    Storage name: Test storage                             
-    Kubelet args: somekubeletkey2=somekubeletvalue2        
-    Labels:       managedBy=upcloud-go-sdk-unit-test-2     
-                  another2=label-thing-2                   
-    Taints:       sometaintkey2=sometaintvalue2:NoSchedule 
+    Name:                   upcloud-go-sdk-unit-test-2               
+    Count:                  8                                        
+    Plan:                   4xCPU-8GB                                
+    State:                  pending                                  
+    Storage UUID:           storage-uuid-2                           
+    Storage name:           Test storage                             
+    Kubelet args:           somekubeletkey2=somekubeletvalue2        
+    Labels:                 managedBy=upcloud-go-sdk-unit-test-2     
+                            another2=label-thing-2                   
+    Taints:                 sometaintkey2=sometaintvalue2:NoSchedule 
+    Utility network access: no                                       
 
 `
 

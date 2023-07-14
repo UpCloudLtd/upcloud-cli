@@ -22,15 +22,16 @@ func TestCreateKubernetes(t *testing.T) {
 	}
 	networks := upcloud.Networks{Networks: []upcloud.Network{network}}
 
-	oneNodeGroupArgs := func(network string) []string {
+	nodeGroupArgs := func(network string) []string {
 		return []string{
 			"--name", "my-cluster",
 			"--network", network,
 			"--node-group", "count=2,kubelet-arg=log-flush-frequency=5s,label=owner=devteam,label=env=dev,name=my-node-group,plan=2xCPU-4GB,ssh-key=ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMWq/xsiYPgA/HLsaWHcjAGnwU+pJy9BUmvIlMBpkdn2 admin@user.com,storage=01000000-0000-4000-8000-000160010100,taint=env=dev:NoSchedule,taint=env=dev2:NoSchedule",
+			"--node-group", "count=1,name=my-node-group2,plan=2xCPU-4GB,ssh-key=ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMWq/xsiYPgA/HLsaWHcjAGnwU+pJy9BUmvIlMBpkdn2 admin@user.com,disable-utility-network-access",
 			"--zone", "de-fra1",
 		}
 	}
-	oneNodeGroupRequest := request.CreateKubernetesClusterRequest{
+	nodeGroupRequest := request.CreateKubernetesClusterRequest{
 		Name:        "my-cluster",
 		Network:     "aa39e313-d908-418a-a959-459699bdc83a",
 		NetworkCIDR: "172.16.1.0/24",
@@ -71,6 +72,19 @@ func TestCreateKubernetes(t *testing.T) {
 						Value:  "dev2",
 					},
 				},
+				UtilityNetworkAccess: upcloud.BoolPtr(true),
+			},
+			{
+				Count:       1,
+				KubeletArgs: []upcloud.KubernetesKubeletArg{},
+				Labels:      []upcloud.Label{},
+				Name:        "my-node-group2",
+				Plan:        "2xCPU-4GB",
+				SSHKeys: []string{
+					"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMWq/xsiYPgA/HLsaWHcjAGnwU+pJy9BUmvIlMBpkdn2 admin@user.com",
+				},
+				Taints:               []upcloud.KubernetesTaint{},
+				UtilityNetworkAccess: upcloud.BoolPtr(false),
 			},
 		},
 		Plan: "development",
@@ -78,11 +92,11 @@ func TestCreateKubernetes(t *testing.T) {
 	}
 
 	prodArg := []string{"--plan", "production-small"}
-	prodPlanRequest := oneNodeGroupRequest
+	prodPlanRequest := nodeGroupRequest
 	prodPlanRequest.Plan = "production-small"
 
 	privateNodeGroupsArg := []string{"--private-node-groups"}
-	privateNodeGroupsRequest := oneNodeGroupRequest
+	privateNodeGroupsRequest := nodeGroupRequest
 	privateNodeGroupsRequest.PrivateNodeGroups = true
 
 	for _, test := range []struct {
@@ -92,26 +106,26 @@ func TestCreateKubernetes(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "1 node group",
-			args:    oneNodeGroupArgs(network.UUID),
-			request: oneNodeGroupRequest,
+			name:    "2 node groups",
+			args:    nodeGroupArgs(network.UUID),
+			request: nodeGroupRequest,
 			wantErr: false,
 		},
 		{
 			name:    "resolve network from name",
-			args:    oneNodeGroupArgs(network.Name),
-			request: oneNodeGroupRequest,
+			args:    nodeGroupArgs(network.Name),
+			request: nodeGroupRequest,
 			wantErr: false,
 		},
 		{
 			name:    "use productions-small plan",
-			args:    append(oneNodeGroupArgs(network.Name), prodArg...),
+			args:    append(nodeGroupArgs(network.Name), prodArg...),
 			request: prodPlanRequest,
 			wantErr: false,
 		},
 		{
 			name:    "with private node groups",
-			args:    append(oneNodeGroupArgs(network.Name), privateNodeGroupsArg...),
+			args:    append(nodeGroupArgs(network.Name), privateNodeGroupsArg...),
 			request: privateNodeGroupsRequest,
 			wantErr: false,
 		},

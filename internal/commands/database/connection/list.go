@@ -25,7 +25,7 @@ type listCommand struct {
 // Execute implements commands.MultipleArgumentCommand
 func (s *listCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.All()
-	connections, err := svc.GetManagedDatabaseConnections(exec.Context(), &request.GetManagedDatabaseConnectionsRequest{UUID: uuid})
+	connections, err := svc.GetManagedDatabaseConnections(exec.Context(), &request.GetManagedDatabaseConnectionsRequest{UUID: uuid}) //nolint:staticcheck // Deprecated, replace in a feature PR
 	if err != nil {
 		return nil, err
 	}

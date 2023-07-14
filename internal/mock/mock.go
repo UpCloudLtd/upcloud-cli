@@ -584,6 +584,14 @@ func (m *Service) CancelManagedDatabaseConnection(_ context.Context, r *request.
 	return nil
 }
 
+func (m *Service) CancelManagedDatabaseSession(_ context.Context, r *request.CancelManagedDatabaseSession) error {
+	args := m.Called(r)
+	if args[0] != nil {
+		return args.Error(0)
+	}
+	return nil
+}
+
 func (m *Service) CloneManagedDatabase(_ context.Context, r *request.CloneManagedDatabaseRequest) (*upcloud.ManagedDatabase, error) {
 	return nil, nil
 }
@@ -618,6 +626,10 @@ func (m *Service) GetManagedDatabaseAccessControl(_ context.Context, r *request.
 
 func (m *Service) GetManagedDatabaseConnections(_ context.Context, r *request.GetManagedDatabaseConnectionsRequest) ([]upcloud.ManagedDatabaseConnection, error) {
 	return nil, nil
+}
+
+func (m *Service) GetManagedDatabaseSessions(_ context.Context, r *request.GetManagedDatabaseSessionsRequest) (upcloud.ManagedDatabaseSessions, error) {
+	return upcloud.ManagedDatabaseSessions{}, nil
 }
 
 func (m *Service) GetManagedDatabaseIndices(_ context.Context, r *request.GetManagedDatabaseIndicesRequest) ([]upcloud.ManagedDatabaseIndex, error) {
@@ -923,7 +935,7 @@ func (m *Service) GetKubernetesNodeGroups(ctx context.Context, r *request.GetKub
 	return nil, nil
 }
 
-func (m *Service) GetKubernetesNodeGroup(ctx context.Context, r *request.GetKubernetesNodeGroupRequest) (*upcloud.KubernetesNodeGroup, error) {
+func (m *Service) GetKubernetesNodeGroup(ctx context.Context, r *request.GetKubernetesNodeGroupRequest) (*upcloud.KubernetesNodeGroupDetails, error) {
 	return nil, nil
 }
 
@@ -944,6 +956,14 @@ func (m *Service) ModifyKubernetesNodeGroup(ctx context.Context, r *request.Modi
 }
 
 func (m *Service) DeleteKubernetesNodeGroup(ctx context.Context, r *request.DeleteKubernetesNodeGroupRequest) error {
+	args := m.Called(r)
+	if args[0] == nil {
+		return args.Error(0)
+	}
+	return nil
+}
+
+func (m *Service) DeleteKubernetesNodeGroupNode(ctx context.Context, r *request.DeleteKubernetesNodeGroupNodeRequest) error {
 	args := m.Called(r)
 	if args[0] == nil {
 		return args.Error(0)
