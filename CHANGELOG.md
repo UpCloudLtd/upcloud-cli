@@ -8,7 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Add `--disable-utility-network-access` for `kubernetes nodegroup create` command
-- Add `database index list` and `database index` commands for managing OpenSearch database indices
 
 ## [2.9.1] - 2023-07-06
 ### Changed
