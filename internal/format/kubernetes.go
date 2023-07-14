@@ -24,6 +24,10 @@ func kubernetesNodeGroupStateColour(state upcloud.KubernetesNodeGroupState) text
 		return text.Colors{text.FgGreen}
 	case upcloud.KubernetesNodeGroupStatePending:
 		return text.Colors{text.FgYellow}
+	case upcloud.KubernetesNodeGroupStateScalingUp:
+		return text.Colors{text.FgYellow}
+	case upcloud.KubernetesNodeGroupStateScalingDown:
+		return text.Colors{text.FgYellow}
 	default:
 		return text.Colors{text.FgHiBlack}
 	}

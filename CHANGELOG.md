@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add `--disable-utility-network-access` for `kubernetes nodegroup create` command
 
+### Fixed
+- Use pending color (yellow) for kubernetes node group `scaling-down` and `scaling-up` states
+
 ## [2.9.1] - 2023-07-06
 ### Changed
 - Release artifacts to follow package naming conventions provided by [nFPM](https://github.com/goreleaser/nfpm).
