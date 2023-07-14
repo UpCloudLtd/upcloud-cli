@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/UpCloudLtd/progress v1.0.1
-	github.com/UpCloudLtd/upcloud-go-api/v6 v6.4.1-0.20230714133016-67c546ea9ccf
+	github.com/UpCloudLtd/upcloud-go-api/v6 v6.5.0
 	github.com/adrg/xdg v0.3.2
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d
 	github.com/gemalto/flume v0.12.0

@@ -3,6 +3,7 @@ package mock
 
 import (
 	"context"
+
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/service"

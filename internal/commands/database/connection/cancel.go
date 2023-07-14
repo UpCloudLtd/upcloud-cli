@@ -50,7 +50,7 @@ func (s *cancelCommand) Execute(exec commands.Executor, uuid string) (output.Out
 	msg := fmt.Sprintf("Cancelling connection %v to database %v", s.pid, uuid)
 	exec.PushProgressStarted(msg)
 
-	if err := svc.CancelManagedDatabaseConnection(exec.Context(), &request.CancelManagedDatabaseConnection{
+	if err := svc.CancelManagedDatabaseConnection(exec.Context(), &request.CancelManagedDatabaseConnection{ //nolint:staticcheck // Deprecated, replace in a feature PR
 		UUID:      uuid,
 		Pid:       s.pid,
 		Terminate: s.terminate.Value(),
