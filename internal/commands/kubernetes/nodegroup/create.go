@@ -40,7 +40,7 @@ func GetCreateNodeGroupFlagSet(p *CreateNodeGroupParams) *pflag.FlagSet {
 	fs.StringArrayVar(&p.SSHKeys, "ssh-key", []string{}, "SSH keys to be configured as authorized keys to the nodes.")
 	fs.StringVar(&p.Storage, "storage", "", "Storage template to use when creating the nodes. Defaults to `UpCloud K8s` public template.")
 	fs.StringArrayVar(&p.Taints, "taint", []string{}, "Taints to be configured to the nodes in `key=value:effect` format")
-	config.AddEnableOrDisableFlag(fs, &p.UtilityNetworkAccess, true, "utility-network-access", "utility network access. Enabled by default")
+	config.AddEnableOrDisableFlag(fs, &p.UtilityNetworkAccess, true, "utility-network-access", "utility network access. If disabled, nodes in this group will not have access to utility network")
 
 	return fs
 }
