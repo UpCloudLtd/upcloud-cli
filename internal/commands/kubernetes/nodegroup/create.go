@@ -113,7 +113,7 @@ func ProcessNodeGroupParams(p CreateNodeGroupParams) (request.KubernetesNodeGrou
 		Storage:              p.Storage,
 		KubeletArgs:          kubeletArgs,
 		Taints:               taints,
-		UtilityNetworkAccess: p.UtilityNetworkAccess.Value(),
+		UtilityNetworkAccess: upcloud.BoolPtr(p.UtilityNetworkAccess.Value()),
 	}
 
 	return ng, nil

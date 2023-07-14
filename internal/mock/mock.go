@@ -3,7 +3,6 @@ package mock
 
 import (
 	"context"
-
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/service"
@@ -584,6 +583,14 @@ func (m *Service) CancelManagedDatabaseConnection(_ context.Context, r *request.
 	return nil
 }
 
+func (m *Service) CancelManagedDatabaseSession(_ context.Context, r *request.CancelManagedDatabaseSession) error {
+	args := m.Called(r)
+	if args[0] != nil {
+		return args.Error(0)
+	}
+	return nil
+}
+
 func (m *Service) CloneManagedDatabase(_ context.Context, r *request.CloneManagedDatabaseRequest) (*upcloud.ManagedDatabase, error) {
 	return nil, nil
 }
@@ -618,6 +625,10 @@ func (m *Service) GetManagedDatabaseAccessControl(_ context.Context, r *request.
 
 func (m *Service) GetManagedDatabaseConnections(_ context.Context, r *request.GetManagedDatabaseConnectionsRequest) ([]upcloud.ManagedDatabaseConnection, error) {
 	return nil, nil
+}
+
+func (m *Service) GetManagedDatabaseSessions(_ context.Context, r *request.GetManagedDatabaseSessionsRequest) (upcloud.ManagedDatabaseSessions, error) {
+	return upcloud.ManagedDatabaseSessions{}, nil
 }
 
 func (m *Service) GetManagedDatabaseIndices(_ context.Context, r *request.GetManagedDatabaseIndicesRequest) ([]upcloud.ManagedDatabaseIndex, error) {

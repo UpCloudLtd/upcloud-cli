@@ -72,7 +72,7 @@ func TestCreateKubernetes(t *testing.T) {
 						Value:  "dev2",
 					},
 				},
-				UtilityNetworkAccess: true,
+				UtilityNetworkAccess: upcloud.BoolPtr(true),
 			},
 			{
 				Count:       1,
@@ -84,7 +84,7 @@ func TestCreateKubernetes(t *testing.T) {
 					"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMWq/xsiYPgA/HLsaWHcjAGnwU+pJy9BUmvIlMBpkdn2 admin@user.com",
 				},
 				Taints:               []upcloud.KubernetesTaint{},
-				UtilityNetworkAccess: false,
+				UtilityNetworkAccess: upcloud.BoolPtr(false),
 			},
 		},
 		Plan: "development",
