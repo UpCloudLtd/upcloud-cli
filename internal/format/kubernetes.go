@@ -33,6 +33,18 @@ func kubernetesNodeGroupStateColour(state upcloud.KubernetesNodeGroupState) text
 	}
 }
 
+// kubernetesNodeStateColour maps kubernetes node states to colours
+func kubernetesNodeStateColour(state upcloud.KubernetesNodeState) text.Colors {
+	switch state {
+	case upcloud.KubernetesNodeStateRunning:
+		return text.Colors{text.FgGreen}
+	case upcloud.KubernetesNodeStatePending:
+		return text.Colors{text.FgYellow}
+	default:
+		return text.Colors{text.FgHiBlack}
+	}
+}
+
 // KubernetesClusterState implements Format function for Kubernetes cluster states
 func KubernetesClusterState(val interface{}) (text.Colors, string, error) {
 	return usingColorFunction(kubernetesClusterStateColour, val)
@@ -41,4 +53,9 @@ func KubernetesClusterState(val interface{}) (text.Colors, string, error) {
 // KubernetesNodeGroupState implements Format function for Kubernetes node-group states
 func KubernetesNodeGroupState(val interface{}) (text.Colors, string, error) {
 	return usingColorFunction(kubernetesNodeGroupStateColour, val)
+}
+
+// KubernetesNodeState implements Format function for Kubernetes node states
+func KubernetesNodeState(val interface{}) (text.Colors, string, error) {
+	return usingColorFunction(kubernetesNodeStateColour, val)
 }
