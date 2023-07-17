@@ -118,7 +118,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 					},
 				},
 			},
-			labels.GetLabelsSection(nodeGroup.Labels),
+			labels.GetLabelsSectionWithResourceType(nodeGroup.Labels, "node group"),
 			output.CombinedSection{
 				Key:   "taints",
 				Title: "Taints:",

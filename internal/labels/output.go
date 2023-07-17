@@ -1,12 +1,14 @@
 package labels
 
 import (
+	"fmt"
+
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
 )
 
-// GetLabelsSection returns labels table as output.CombinedSection
-func GetLabelsSection(labels []upcloud.Label) output.CombinedSection {
+// GetLabelsSectionWithResourceType returns labels table as output.CombinedSection with resource type in the empty message.
+func GetLabelsSectionWithResourceType(labels []upcloud.Label, resourceType string) output.CombinedSection {
 	var rows []output.TableRow
 	for _, i := range labels {
 		rows = append(rows, output.TableRow{i.Key, i.Value})
@@ -21,7 +23,12 @@ func GetLabelsSection(labels []upcloud.Label) output.CombinedSection {
 				{Key: "value", Header: "Value"},
 			},
 			Rows:         rows,
-			EmptyMessage: "No labels defined for this resource.",
+			EmptyMessage: fmt.Sprintf("No labels defined for this %s.", resourceType),
 		},
 	}
+}
+
+// GetLabelsSection returns labels table as output.CombinedSection
+func GetLabelsSection(labels []upcloud.Label) output.CombinedSection {
+	return GetLabelsSectionWithResourceType(labels, "resource")
 }
