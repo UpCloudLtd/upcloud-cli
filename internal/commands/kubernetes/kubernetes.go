@@ -7,7 +7,7 @@ import (
 // BaseKubernetesCommand creates the base "kubernetes" command
 func BaseKubernetesCommand() commands.Command {
 	return &kubernetesCommand{
-		commands.New("kubernetes", "Manage Kubernetes clusters (EXPERIMENTAL)"),
+		commands.New("kubernetes", "Manage Kubernetes clusters"),
 	}
 }
 

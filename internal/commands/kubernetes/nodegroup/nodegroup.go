@@ -7,7 +7,7 @@ import (
 // BaseNodeGroupCommand creates the base "kubernetes nodegroups" command
 func BaseNodeGroupCommand() commands.Command {
 	return &nodegroupCommand{
-		commands.New("nodegroup", "Manage cluster node-groups (EXPERIMENTAL)"),
+		commands.New("nodegroup", "Manage cluster node-groups"),
 	}
 }
 
