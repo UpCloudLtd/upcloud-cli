@@ -40,8 +40,8 @@ func (s *showCommand) InitCommand() {
 	_ = s.Cobra().MarkFlagRequired("name")
 }
 
-// Execute implements commands.MultipleArgumentCommand
-func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
+// ExecuteSingleArgument implements commands.SingleArgumentCommand
+func (s *showCommand) ExecuteSingleArgument(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.All()
 	nodeGroup, err := svc.GetKubernetesNodeGroup(exec.Context(), &request.GetKubernetesNodeGroupRequest{ClusterUUID: uuid, Name: s.name})
 	if err != nil {

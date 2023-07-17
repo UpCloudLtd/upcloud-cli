@@ -38,8 +38,8 @@ func (s *deleteCommand) InitCommand() {
 	_ = s.Cobra().MarkFlagRequired("name")
 }
 
-// Execute implements commands.MultipleArgumentCommand
-func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
+// ExecuteSingleArgument implements commands.SingleArgumentCommand
+func (s *deleteCommand) ExecuteSingleArgument(exec commands.Executor, arg string) (output.Output, error) {
 	msg := fmt.Sprintf("Deleting node group %s from cluster %v", s.name, arg)
 	exec.PushProgressStarted(msg)
 
