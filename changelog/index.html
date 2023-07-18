@@ -1230,6 +1230,20 @@
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_kubernetes/nodegroup/show/" class="md-nav__link">
+        nodegroup show
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -2940,8 +2954,16 @@
 <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>,
 and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <h2 id="unreleased"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.10.0...HEAD">Unreleased</a></h2>
-<h2 id="2100-2023-07-17"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.9.1...v2.10.0">2.10.0</a> - 2023-07-17</h2>
 <h3 id="added">Added</h3>
+<ul>
+<li>Add <code>kubernetes nodegroup show</code> for displaying node-group details. This also adds <em>Nodes</em> table and <em>Anti-affinity</em> field that were not available in previous <code>kubernetes show</code> output.</li>
+</ul>
+<h3 id="changed">Changed</h3>
+<ul>
+<li>In human readable output of <code>kubernetes show</code> command, show node-groups as table. Node-group datails are available with <code>kubernetes nodegroup show</code> command.</li>
+</ul>
+<h2 id="2100-2023-07-17"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.9.1...v2.10.0">2.10.0</a> - 2023-07-17</h2>
+<h3 id="added_1">Added</h3>
 <ul>
 <li>Add <code>--disable-utility-network-access</code> for <code>kubernetes nodegroup create</code> command</li>
 </ul>
@@ -2950,7 +2972,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>Use pending color (yellow) for kubernetes node group <code>scaling-down</code> and <code>scaling-up</code> states</li>
 </ul>
 <h2 id="291-2023-07-06"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.9.0...v2.9.1">2.9.1</a> - 2023-07-06</h2>
-<h3 id="changed">Changed</h3>
+<h3 id="changed_1">Changed</h3>
 <ul>
 <li>
 <p>Release artifacts to follow package naming conventions provided by <a href="https://github.com/goreleaser/nfpm">nFPM</a>.
@@ -2965,12 +2987,12 @@ upcloud-cli-2.9.0_arm64.deb   vs  upcloud-cli_2.9.1_arm64.deb   # <code>cli-</co
 </li>
 </ul>
 <h2 id="290-2023-06-30"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.8.0...v2.9.0">2.9.0</a> - 2023-06-30</h2>
-<h3 id="added_1">Added</h3>
+<h3 id="added_2">Added</h3>
 <ul>
 <li>Add <code>servergroup</code> commands (<code>create</code>, <code>delete</code>, <code>list</code>, <code>modify</code>, <code>show</code>) for server group management</li>
 </ul>
 <h2 id="280-2023-06-21"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.7.1...v2.8.0">2.8.0</a> - 2023-06-21</h2>
-<h3 id="added_2">Added</h3>
+<h3 id="added_3">Added</h3>
 <ul>
 <li>Add support for OpenSearch database type</li>
 <li>Add <code>database index list</code> and <code>database index</code> commands for managing OpenSearch database indices </li>
@@ -2985,7 +3007,7 @@ upcloud-cli-2.9.0_arm64.deb   vs  upcloud-cli_2.9.1_arm64.deb   # <code>cli-</co
 <li>Updated examples of <code>kubernetes create</code> command to use valid plans.</li>
 </ul>
 <h2 id="270-2023-05-02"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.6.0...v2.7.0">2.7.0</a> - 2023-05-02</h2>
-<h3 id="added_3">Added</h3>
+<h3 id="added_4">Added</h3>
 <ul>
 <li>Add <code>ip</code> and <code>net</code> as aliases to <code>ip-address</code> and <code>network</code> commands, respectively.</li>
 <li>Add <em>Labels</em> table to <code>loadbalancer show</code>, <code>network show</code>, <code>router show</code>, <code>server show</code>, and <code>storage show</code> outputs.</li>
@@ -2994,26 +3016,26 @@ upcloud-cli-2.9.0_arm64.deb   vs  upcloud-cli_2.9.1_arm64.deb   # <code>cli-</co
 <li>Add <code>--wait</code> flag to <code>kubernetes create</code> command for waiting created cluster to reach running state.</li>
 </ul>
 <h2 id="260-2023-03-14"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.5.0...v2.6.0">2.6.0</a> - 2023-03-14</h2>
-<h3 id="added_4">Added</h3>
+<h3 id="added_5">Added</h3>
 <ul>
 <li>The <code>upctl</code> container image now includes <a href="https://stedolan.github.io/jq/">jq</a> tool for parsing values from JSON output.</li>
 <li>Add node-group states to <code>kubernetes show</code> output.</li>
 <li>Add completions for <code>--network</code> argument of <code>kubernetes create</code> and <code>server network-interface create</code>.</li>
 <li>Support also network name as input for <code>--network</code> argument of <code>kubernetes create</code> and <code>server network-interface create</code></li>
 </ul>
-<h3 id="changed_1">Changed</h3>
+<h3 id="changed_2">Changed</h3>
 <ul>
 <li>Completions will now only suggest private networks as arguments because names or UUIDs of public or utility networks are often not valid arguments.</li>
 </ul>
 <h2 id="250-2023-02-15"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.4.0...v2.5.0">2.5.0</a> - 2023-02-15</h2>
-<h3 id="added_5">Added</h3>
+<h3 id="added_6">Added</h3>
 <ul>
 <li>Print warning about unknown resource state before exiting when execution is interrupted with SIGINT.</li>
 <li>Add <code>kubernetes nodegroup create</code>, <code>kubernetes nodegroup scale</code>, and <code>kubernetes nodegroup delete</code> commands (EXPERIMENTAL)</li>
 <li>Added support for all shell completions provided by <code>cobra</code>.</li>
 <li>Add <code>database properties &lt;DB type&gt;</code> command to list database properties for given database type and <code>database properties &lt;DB type&gt; show</code> command to show database property details.</li>
 </ul>
-<h3 id="changed_2">Changed</h3>
+<h3 id="changed_3">Changed</h3>
 <ul>
 <li>Remove custom bash completion logic and replace it with <code>completion</code> command provided by <code>cobra</code>. To do this while supporting args with whitespace, whitespace in completions is replaced with non-breaking spaces.</li>
 </ul>
@@ -3022,13 +3044,13 @@ upcloud-cli-2.9.0_arm64.deb   vs  upcloud-cli_2.9.1_arm64.deb   # <code>cli-</co
 <li>In <code>database show</code>: parse database version from metadata instead of properties. This enables displaying redis version instead of <code>&lt;nil&gt;</code>.</li>
 </ul>
 <h2 id="240-2022-12-19"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.3.0...v2.4.0">2.4.0</a> - 2022-12-19</h2>
-<h3 id="added_6">Added</h3>
+<h3 id="added_7">Added</h3>
 <ul>
 <li>Add <code>kubernetes create</code>, <code>kubernetes config</code>, <code>kubernetes delete</code>, <code>kubernetes list</code>, <code>kubernetes show</code>, <code>kubernetes versions</code> commands (EXPERIMENTAL)</li>
 <li>Add <code>loadbalancer plans</code> command for listing available LB plans</li>
 </ul>
 <h2 id="230-2022-11-11"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.2.0...v2.3.0">2.3.0</a> - 2022-11-11</h2>
-<h3 id="added_7">Added</h3>
+<h3 id="added_8">Added</h3>
 <ul>
 <li>Complete available types for <code>database plans</code>.</li>
 <li>Suppress positional argument filename completion for commands without specific completions.</li>
@@ -3042,7 +3064,7 @@ upcloud-cli-2.9.0_arm64.deb   vs  upcloud-cli_2.9.1_arm64.deb   # <code>cli-</co
 <li>Added <code>/v2</code> postfix to module name in <code>go.mod</code>, this enables installing v2 versions of CLI with <code>go install</code>.</li>
 </ul>
 <h2 id="220-2022-10-17"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.1.0...v2.2.0">2.2.0</a> - 2022-10-17</h2>
-<h3 id="added_8">Added</h3>
+<h3 id="added_9">Added</h3>
 <ul>
 <li>Include runtime operating system and architecture in <code>version</code> command output.</li>
 <li>Include instructions for defining credentials and API access in <code>upctl --help</code> output.</li>
@@ -3053,7 +3075,7 @@ upcloud-cli-2.9.0_arm64.deb   vs  upcloud-cli_2.9.1_arm64.deb   # <code>cli-</co
 <li>Tune human output so that normal output is directed to <code>stdout</code>. Progess and error messages are still outputted to <code>stderr</code>.</li>
 </ul>
 <h2 id="210-2022-09-07"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.0.0...v2.1.0">2.1.0</a> - 2022-09-07</h2>
-<h3 id="added_9">Added</h3>
+<h3 id="added_10">Added</h3>
 <ul>
 <li>Add <code>--wait</code> flag to <code>storage import</code> and <code>storage templatise</code> commands to wait until storage is in <code>online</code> state.</li>
 <li>In JSON and YAML output of <code>storage import</code>: information on target storage is now available under <code>storage</code> key.</li>
@@ -3064,14 +3086,14 @@ upcloud-cli-2.9.0_arm64.deb   vs  upcloud-cli_2.9.1_arm64.deb   # <code>cli-</co
 <li>In human output of <code>storage import</code>: output UUID of created storage, instead of storage import operation. No UUID is outputted if existing storage was used.</li>
 </ul>
 <h2 id="200-2022-08-30"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v1.5.1...v2.0.0">2.0.0</a> - 2022-08-30</h2>
-<h3 id="added_10">Added</h3>
+<h3 id="added_11">Added</h3>
 <ul>
 <li>Add <code>database delete</code> command.</li>
 <li>Add <code>loadbalancer delete</code> command.</li>
 <li>Add <code>Access</code> field to <code>storage show</code> output.</li>
 <li>Add fields <code>argument</code> and <code>resource</code> to JSON and YAML error outputs.</li>
 </ul>
-<h3 id="changed_3">Changed</h3>
+<h3 id="changed_4">Changed</h3>
 <ul>
 <li><strong>Breaking</strong>: Human output, including errors, is written to stderr instead of stdout.</li>
 <li>Refactor progress logging. This changes the appearance of progress logs. See <a href="https://github.com/UpCloudLtd/progress">UpCloudLtd / progress</a> for the new implementation.</li>
@@ -3093,12 +3115,12 @@ upcloud-cli-2.9.0_arm64.deb   vs  upcloud-cli_2.9.1_arm64.deb   # <code>cli-</co
 <li>Disable colors if user has set <a href="https://no-color.org/">NO_COLOR</a> environment variable to non-empty value.</li>
 </ul>
 <h2 id="150-2022-07-05"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v1.4.0...v1.5.0">1.5.0</a> - 2022-07-05</h2>
-<h3 id="added_11">Added</h3>
+<h3 id="added_12">Added</h3>
 <ul>
 <li>Add <code>--show-ip-addresses</code> flag to <code>server list</code> command to optionally include IP addresses in command output.</li>
 <li>Add <code>database connection list</code>, <code>database connection cancel</code>, <code>database start</code>, and <code>database stop</code> commands.</li>
 </ul>
-<h3 id="changed_4">Changed</h3>
+<h3 id="changed_5">Changed</h3>
 <ul>
 <li>Make <code>--family</code> parameter of <code>server firewall create</code> command optional to allow editing the default rules.</li>
 <li>Update <code>cobra</code> to <code>v1.5.0</code> and refactor required flag validation code. This affects validation error messages.</li>
@@ -3109,25 +3131,25 @@ upcloud-cli-2.9.0_arm64.deb   vs  upcloud-cli_2.9.1_arm64.deb   # <code>cli-</co
 <li>Display UUID of created template in <code>storage templatise</code> output.</li>
 </ul>
 <h2 id="140-2022-06-15"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v1.3.0...v1.4.0">1.4.0</a> - 2022-06-15</h2>
-<h3 id="added_12">Added</h3>
+<h3 id="added_13">Added</h3>
 <ul>
 <li>Add <code>database list</code>, <code>database show</code>,<code>database plans</code>, and <code>database types</code> commands.</li>
 <li>Add <code>loadbalancer list</code> and <code>loadbalancer show</code> commands.</li>
 <li>Add <code>db</code> and <code>lb</code> aliases to <code>database</code> and <code>loadbalancer</code>, respectively.</li>
 </ul>
-<h3 id="changed_5">Changed</h3>
+<h3 id="changed_6">Changed</h3>
 <ul>
 <li>Color server state in <code>server list</code> output similarly than in <code>server show</code> output.</li>
 <li>Update Go version to 1.18</li>
 <li>Update <code>upcloud-go-api</code> to <code>v4.8.0</code></li>
 </ul>
 <h2 id="130-2022-05-17"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v1.2.0...v1.3.0">1.3.0</a> - 2022-05-17</h2>
-<h3 id="added_13">Added</h3>
+<h3 id="added_14">Added</h3>
 <ul>
 <li>Add <code>zone list</code> command that lists available zones.</li>
 <li>Add <code>--wait</code> flag to <code>server create</code> and <code>server stop</code> commands to wait until server is in <code>started</code> and <code>stopped</code> state, respectively.</li>
 </ul>
-<h3 id="changed_6">Changed</h3>
+<h3 id="changed_7">Changed</h3>
 <ul>
 <li>Update <code>upcloud-go-api</code>to <code>v4.5.2</code></li>
 </ul>
@@ -3137,12 +3159,12 @@ upcloud-cli-2.9.0_arm64.deb   vs  upcloud-cli_2.9.1_arm64.deb   # <code>cli-</co
 <li>Mark error and warning livelogs finished when they will not be updated anymore: this stops the timer in the end of the row and stops livelog from refreshing these lines.</li>
 </ul>
 <h2 id="120-2022-04-29"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v1.1.3...v1.2.0">1.2.0</a> - 2022-04-29</h2>
-<h3 id="added_14">Added</h3>
+<h3 id="added_15">Added</h3>
 <ul>
 <li>Include UUID (or address) of created resource in create command output</li>
 <li><code>storage modify</code> command now accepts <code>enable-filesystem-autoresize</code> flag. When that flag is set upctl will attempt to resize partition and filesystem after storage size has been modified.</li>
 </ul>
-<h3 id="changed_7">Changed</h3>
+<h3 id="changed_8">Changed</h3>
 <ul>
 <li>New go-api version v4.5.0</li>
 </ul>
@@ -3155,7 +3177,7 @@ upcloud-cli-2.9.0_arm64.deb   vs  upcloud-cli_2.9.1_arm64.deb   # <code>cli-</co
 <li>Render livelog messages of commands which execution takes less than render tick interval</li>
 </ul>
 <h2 id="113-2022-02-24"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v1.1.2...v1.1.3">1.1.3</a> - 2022-02-24</h2>
-<h3 id="changed_8">Changed</h3>
+<h3 id="changed_9">Changed</h3>
 <ul>
 <li>Update documentation</li>
 </ul>
@@ -3169,20 +3191,20 @@ upcloud-cli-2.9.0_arm64.deb   vs  upcloud-cli_2.9.1_arm64.deb   # <code>cli-</co
 <li>New release with no changes to fix <a href="https://github.com/goreleaser/goreleaser/pull/2591">the Homebrew deprecation notice</a></li>
 </ul>
 <h2 id="111-2021-09-30"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v1.1.0...v1.1.1">1.1.1</a> - 2021-09-30</h2>
-<h3 id="changed_9">Changed</h3>
+<h3 id="changed_10">Changed</h3>
 <ul>
 <li>Change password creation to be disabled by default in server creation</li>
 <li>Always create a password when password delivery method is chosen</li>
 </ul>
 <h2 id="110-2021-06-03"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v1.0.0...v1.1.0">1.1.0</a> - 2021-06-03</h2>
-<h3 id="added_15">Added</h3>
+<h3 id="added_16">Added</h3>
 <ul>
 <li>Debug mode for finding root causes to problems</li>
 <li>Docker image and upload to Docker Hub</li>
 <li>Autogenerated documentation under /docs</li>
 <li>Terminal width handling</li>
 </ul>
-<h3 id="changed_10">Changed</h3>
+<h3 id="changed_11">Changed</h3>
 <ul>
 <li>Global flags for colors refactored to <code>--force-colour</code> and <code>--no-colour</code></li>
 <li>New go-api version</li>
@@ -3196,7 +3218,7 @@ upcloud-cli-2.9.0_arm64.deb   vs  upcloud-cli_2.9.1_arm64.deb   # <code>cli-</co
 <h2 id="100-2021-04-16"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v0.6.0...v1.0.0">1.0.0</a> - 2021-04-16</h2>
 <p>First non-beta release! Includes all previous changes and fixes.</p>
 <h2 id="060-2021-04-16"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v0.5.0...v0.6.0">0.6.0</a> - 2021-04-16</h2>
-<h3 id="changed_11">Changed</h3>
+<h3 id="changed_12">Changed</h3>
 <ul>
 <li>Use goreleaser for releasing packages</li>
 <li>Move creation of service outside runcommand to facilitate testing</li>
@@ -3208,7 +3230,7 @@ upcloud-cli-2.9.0_arm64.deb   vs  upcloud-cli_2.9.1_arm64.deb   # <code>cli-</co
 </ul>
 <h2 id="050-2021-04-14"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v0.1.1...v0.5.0">0.5.0</a> - 2021-04-14</h2>
 <p>Initial public beta release :tada:</p>
-<h3 id="added_16">Added</h3>
+<h3 id="added_17">Added</h3>
 <ul>
 <li>Added commands for managing server firewall rules</li>
 </ul>
@@ -3216,7 +3238,7 @@ upcloud-cli-2.9.0_arm64.deb   vs  upcloud-cli_2.9.1_arm64.deb   # <code>cli-</co
 <ul>
 <li>Shell auto-completion fixed</li>
 </ul>
-<h3 id="changed_12">Changed</h3>
+<h3 id="changed_13">Changed</h3>
 <ul>
 <li>Input &amp; output handling rewritten</li>
 <li>Several help text fixes &amp; changes</li>
@@ -3230,7 +3252,7 @@ upcloud-cli-2.9.0_arm64.deb   vs  upcloud-cli_2.9.1_arm64.deb   # <code>cli-</co
 <li>Fix storage import failing on readerCounter not implementing io.Reader</li>
 </ul>
 <h2 id="010-2021-03-10"><a href="https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v0.1.0">0.1.0</a> - 2021-03-10</h2>
-<h3 id="added_17">Added</h3>
+<h3 id="added_18">Added</h3>
 <ul>
 <li>Current feature set added! First internal release</li>
 </ul>
