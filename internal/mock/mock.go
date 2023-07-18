@@ -936,7 +936,11 @@ func (m *Service) GetKubernetesNodeGroups(ctx context.Context, r *request.GetKub
 }
 
 func (m *Service) GetKubernetesNodeGroup(ctx context.Context, r *request.GetKubernetesNodeGroupRequest) (*upcloud.KubernetesNodeGroupDetails, error) {
-	return nil, nil
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.KubernetesNodeGroupDetails), args.Error(1)
 }
 
 func (m *Service) CreateKubernetesNodeGroup(ctx context.Context, r *request.CreateKubernetesNodeGroupRequest) (*upcloud.KubernetesNodeGroup, error) {

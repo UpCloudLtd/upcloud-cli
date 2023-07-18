@@ -41,8 +41,8 @@ func (s *scaleCommand) InitCommand() {
 	_ = s.Cobra().MarkFlagRequired("count")
 }
 
-// Execute implements commands.MultipleArgumentCommand
-func (s *scaleCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
+// ExecuteSingleArgument implements commands.SingleArgumentCommand
+func (s *scaleCommand) ExecuteSingleArgument(exec commands.Executor, arg string) (output.Output, error) {
 	msg := fmt.Sprintf("Scaling node group %s of cluster %v", s.name, arg)
 	exec.PushProgressStarted(msg)
 

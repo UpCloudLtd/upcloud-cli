@@ -1,9 +1,6 @@
 package kubernetes
 
 import (
-	"fmt"
-	"strings"
-
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/format"
@@ -47,63 +44,25 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 		networkName = network.Name
 	}
 
-	nodeGroups := output.Combined{}
-
-	for i, nodeGroup := range cluster.NodeGroups {
-		kubeletArgs := strings.Builder{}
-		for _, v := range nodeGroup.KubeletArgs {
-			if kubeletArgs.Len() > 0 {
-				kubeletArgs.WriteString("\n")
-			}
-			_, _ = kubeletArgs.WriteString(fmt.Sprintf("%s=%s", v.Key, v.Value))
-		}
-		labels := strings.Builder{}
-		for _, v := range nodeGroup.Labels {
-			if labels.Len() > 0 {
-				labels.WriteString("\n")
-			}
-			_, _ = labels.WriteString(fmt.Sprintf("%s=%s", v.Key, v.Value))
-		}
-		taints := strings.Builder{}
-		for _, v := range nodeGroup.Taints {
-			if taints.Len() > 0 {
-				taints.WriteString("\n")
-			}
-			_, _ = taints.WriteString(fmt.Sprintf("%s=%s:%s", v.Key, v.Value, v.Effect))
-		}
-
-		var storageName string
-		if storage, err := svc.GetStorageDetails(exec.Context(), &request.GetStorageDetailsRequest{UUID: nodeGroup.Storage}); err != nil {
-			storageName = ""
-		} else {
-			storageName = storage.Title
-		}
-
-		nodeGroups = append(nodeGroups, output.CombinedSection{
-			Contents: output.Combined{
-				output.CombinedSection{
-					Contents: output.Details{
-						Sections: []output.DetailSection{
-							{
-								Title: fmt.Sprintf("Node group %d (%s):", i+1, nodeGroup.Name),
-								Rows: []output.DetailRow{
-									{Title: "Name:", Value: nodeGroup.Name},
-									{Title: "Count:", Value: nodeGroup.Count},
-									{Title: "Plan:", Value: nodeGroup.Plan},
-									{Title: "State:", Value: nodeGroup.State, Format: format.KubernetesNodeGroupState},
-									{Title: "Storage UUID:", Value: nodeGroup.Storage, Colour: ui.DefaultUUUIDColours},
-									{Title: "Storage name:", Value: storageName, Format: format.PossiblyUnknownString},
-									{Title: "Kubelet args:", Value: kubeletArgs.String()},
-									{Title: "Labels:", Value: labels.String()},
-									{Title: "Taints:", Value: taints.String()},
-									{Title: "Utility network access:", Value: nodeGroup.UtilityNetworkAccess, Format: format.Boolean},
-								},
-							},
-						},
-					},
-				},
-			},
+	nodeGroupRows := []output.TableRow{}
+	for _, nodeGroup := range cluster.NodeGroups {
+		nodeGroupRows = append(nodeGroupRows, output.TableRow{
+			nodeGroup.Name,
+			nodeGroup.Count,
+			nodeGroup.Plan,
+			nodeGroup.AntiAffinity,
+			nodeGroup.UtilityNetworkAccess,
+			nodeGroup.State,
 		})
+	}
+
+	nodeGroupColumns := []output.TableColumn{
+		{Key: "name", Header: "Name"},
+		{Key: "count", Header: "Count"},
+		{Key: "plan", Header: "Plan"},
+		{Key: "anti_affinity", Header: "Anti affinity", Format: format.Boolean},
+		{Key: "utility_network_access", Header: "Utility network access", Format: format.Boolean},
+		{Key: "state", Header: "State", Format: format.KubernetesNodeGroupState},
 	}
 
 	// For JSON and YAML output, passthrough API response
@@ -130,7 +89,13 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 				},
 			},
 			output.CombinedSection{
-				Contents: nodeGroups,
+				Key:   "node_groups",
+				Title: "Node groups:",
+				Contents: output.Table{
+					Columns:      nodeGroupColumns,
+					Rows:         nodeGroupRows,
+					EmptyMessage: "No node groups found for this cluster.",
+				},
 			},
 		},
 	}, nil

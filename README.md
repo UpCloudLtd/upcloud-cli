@@ -28,11 +28,12 @@ completion   Generate the autocompletion script for the specified shell
 database     Manage databases
 help         Help about any command
 ip-address   Manage IP addresses
-kubernetes   Manage Kubernetes clusters (EXPERIMENTAL)
+kubernetes   Manage Kubernetes clusters
 loadbalancer Manage load balancers
 network      Manage networks
 router       Manage routers
 server       Manage servers
+servergroup  Manage server groups
 storage      Manage storages
 version      Display software information
 zone         Display zone information
