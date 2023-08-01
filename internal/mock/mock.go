@@ -894,6 +894,14 @@ func (m *Service) CreateKubernetesCluster(_ context.Context, r *request.CreateKu
 	return args[0].(*upcloud.KubernetesCluster), args.Error(1)
 }
 
+func (m *Service) ModifyKubernetesCluster(ctx context.Context, r *request.ModifyKubernetesClusterRequest) (*upcloud.KubernetesCluster, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.KubernetesCluster), args.Error(1)
+}
+
 func (m *Service) DeleteKubernetesCluster(_ context.Context, r *request.DeleteKubernetesClusterRequest) error {
 	args := m.Called(r)
 	return args.Error(0)

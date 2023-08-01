@@ -32,9 +32,10 @@ func TestCreateKubernetes(t *testing.T) {
 		}
 	}
 	nodeGroupRequest := request.CreateKubernetesClusterRequest{
-		Name:        "my-cluster",
-		Network:     "aa39e313-d908-418a-a959-459699bdc83a",
-		NetworkCIDR: "172.16.1.0/24",
+		ControlPlaneIPFilter: []string{},
+		Name:                 "my-cluster",
+		Network:              "aa39e313-d908-418a-a959-459699bdc83a",
+		NetworkCIDR:          "172.16.1.0/24",
 		NodeGroups: []request.KubernetesNodeGroup{
 			{
 				Count: 2,
