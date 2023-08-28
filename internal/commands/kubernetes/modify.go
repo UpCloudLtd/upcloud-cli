@@ -35,9 +35,9 @@ func (c *modifyCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 	fs.StringArrayVar(
 		&c.params.Cluster.ControlPlaneIPFilter,
-		"control-plane-allow-ip",
+		"kubernetes-api-allow-ip",
 		[]string{},
-		"Allow cluster control-plane to be accessed from an IP address or a network CIDR, multiple can be declared..",
+		"Allow cluster's Kubernetes API to be accessed from an IP address or a network CIDR, multiple can be declared.",
 	)
 
 	c.AddFlags(fs)

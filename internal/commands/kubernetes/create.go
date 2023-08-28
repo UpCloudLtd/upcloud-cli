@@ -127,9 +127,9 @@ func (c *createCommand) InitCommand() {
 	)
 	fs.StringArrayVar(
 		&c.params.ControlPlaneIPFilter,
-		"control-plane-allow-ip",
+		"kubernetes-api-allow-ip",
 		[]string{},
-		"Allow cluster control-plane to be accessed from an IP address or a network CIDR, multiple can be declared..",
+		"Allow cluster's Kubernetes API to be accessed from an IP address or a network CIDR, multiple can be declared.",
 	)
 	config.AddToggleFlag(fs, &c.params.privateNodeGroups, "private-node-groups", false, "Do not assign public IPs to worker nodes. If set, the attached network should have a NAT gateway configured to provide internet access to the worker nodes.")
 	fs.StringVar(&c.params.Zone, "zone", "", namedargs.ZoneDescription("cluster"))

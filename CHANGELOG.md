@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Add `kubernetes nodegroup show` for displaying node-group details. This also adds _Nodes_ table and _Anti-affinity_ field that were not available in previous `kubernetes show` output.
-- Add `kubernetes modify` command for modifying cluster control-plane IP filter.
-- Add `--control-plane-allow-ip` argument to `kubernetes create` command.
-- Add `Control-plane IP filter` field to `kubernetes show` output.
+- Add `kubernetes modify` command for modifying IP addresses that are allowed to access cluster's Kubernetes API.
+- Add `--kubernetes-api-allow-ip` argument to `kubernetes create` command.
+- Add `Kubernetes API allowed IPs` field to `kubernetes show` output.
 
 ### Changed
 - In human readable output of `kubernetes show` command, show node-groups as table. Node-group datails are available with `kubernetes nodegroup show` command.

@@ -32,7 +32,7 @@ func TestModifyKubernetesCluster(t *testing.T) {
 			name: "one IP",
 			args: []string{
 				clusterUUID,
-				"--control-plane-allow-ip", "10.144.1.100",
+				"--kubernetes-api-allow-ip", "10.144.1.100",
 			},
 			expected: request.ModifyKubernetesClusterRequest{
 				ClusterUUID: clusterUUID,
@@ -43,8 +43,8 @@ func TestModifyKubernetesCluster(t *testing.T) {
 			name: "IP and CIDR",
 			args: []string{
 				clusterUUID,
-				"--control-plane-allow-ip", "10.144.1.100",
-				"--control-plane-allow-ip", "10.144.2.0/24",
+				"--kubernetes-api-allow-ip", "10.144.1.100",
+				"--kubernetes-api-allow-ip", "10.144.2.0/24",
 			},
 			expected: request.ModifyKubernetesClusterRequest{
 				ClusterUUID: clusterUUID,
