@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `database session cancel` for cancelling an active database session
 
 ### Changed
+- **Breaking**: In JSON and YAML output of `loadbalancer list`: display full API response. This changes `state` field to `operational_state`.
 - In human readable output of `kubernetes show` command, show node-groups as table. Node-group datails are available with `kubernetes nodegroup show` command.
 
 ## Removed
