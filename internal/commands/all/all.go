@@ -4,9 +4,9 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/account"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/database"
-	databaseconnection "github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/database/connection"
 	databaseindex "github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/database/index"
 	databaseproperties "github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/database/properties"
+	databasesession "github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/database/session"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/ipaddress"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/kubernetes"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/kubernetes/nodegroup"
@@ -117,12 +117,12 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	commands.BuildCommand(database.StopCommand(), databaseCommand.Cobra(), conf)
 	commands.BuildCommand(database.DeleteCommand(), databaseCommand.Cobra(), conf)
 
-	// Database connections
-	connectionsCommand := commands.BuildCommand(databaseconnection.BaseConnectionCommand(), databaseCommand.Cobra(), conf)
-	commands.BuildCommand(databaseconnection.CancelCommand(), connectionsCommand.Cobra(), conf)
-	commands.BuildCommand(databaseconnection.ListCommand(), connectionsCommand.Cobra(), conf)
+	// Database sessions
+	sessionsCommand := commands.BuildCommand(databasesession.BaseSessionCommand(), databaseCommand.Cobra(), conf)
+	commands.BuildCommand(databasesession.CancelCommand(), sessionsCommand.Cobra(), conf)
+	commands.BuildCommand(databasesession.ListCommand(), sessionsCommand.Cobra(), conf)
 
-	// Database connections
+	// Database sessions
 	propertiesCommand := commands.BuildCommand(databaseproperties.PropertiesCommand(), databaseCommand.Cobra(), conf)
 	for _, i := range []struct {
 		serviceName string

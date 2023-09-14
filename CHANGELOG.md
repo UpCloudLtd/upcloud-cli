@@ -12,9 +12,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `kubernetes modify` command for modifying IP addresses that are allowed to access cluster's Kubernetes API.
 - Add `--kubernetes-api-allow-ip` argument to `kubernetes create` command.
 - Add `Kubernetes API allowed IPs` field to `kubernetes show` output.
+- Add `database session list` for listing active database sessions
+- Add `database session cancel` for cancelling an active database session
 
 ### Changed
 - In human readable output of `kubernetes show` command, show node-groups as table. Node-group datails are available with `kubernetes nodegroup show` command.
+
+## Removed
+- Remove `database connection list` and `database connection cancel` commands in favor of `database session` counterparts
 
 ## [2.10.0] - 2023-07-17
 ### Added

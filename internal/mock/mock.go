@@ -609,7 +609,11 @@ func (m *Service) DeleteManagedDatabaseIndex(_ context.Context, r *request.Delet
 }
 
 func (m *Service) GetManagedDatabase(_ context.Context, r *request.GetManagedDatabaseRequest) (*upcloud.ManagedDatabase, error) {
-	return nil, nil
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.ManagedDatabase), args.Error(1)
 }
 
 func (m *Service) GetManagedDatabases(_ context.Context, r *request.GetManagedDatabasesRequest) ([]upcloud.ManagedDatabase, error) {
@@ -629,7 +633,11 @@ func (m *Service) GetManagedDatabaseConnections(_ context.Context, r *request.Ge
 }
 
 func (m *Service) GetManagedDatabaseSessions(_ context.Context, r *request.GetManagedDatabaseSessionsRequest) (upcloud.ManagedDatabaseSessions, error) {
-	return upcloud.ManagedDatabaseSessions{}, nil
+	args := m.Called(r)
+	if args[0] == nil {
+		return upcloud.ManagedDatabaseSessions{}, args.Error(1)
+	}
+	return args[0].(upcloud.ManagedDatabaseSessions), args.Error(1)
 }
 
 func (m *Service) GetManagedDatabaseIndices(_ context.Context, r *request.GetManagedDatabaseIndicesRequest) ([]upcloud.ManagedDatabaseIndex, error) {
@@ -921,6 +929,14 @@ func (m *Service) GetKubernetesClusters(_ context.Context, r *request.GetKuberne
 		return nil, args.Error(1)
 	}
 	return args[0].([]upcloud.KubernetesCluster), args.Error(1)
+}
+
+func (m *Service) ModifyKubernetesCluster(_ context.Context, r *request.ModifyKubernetesClusterRequest) (*upcloud.KubernetesCluster, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.KubernetesCluster), args.Error(1)
 }
 
 func (m *Service) GetKubernetesKubeconfig(_ context.Context, r *request.GetKubernetesKubeconfigRequest) (string, error) {
