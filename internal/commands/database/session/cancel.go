@@ -68,7 +68,7 @@ func (s *cancelCommand) Execute(exec commands.Executor, uuid string) (output.Out
 	msg := fmt.Sprintf("Cancelling session %v to database %v", s.pid, uuid)
 	exec.PushProgressStarted(msg)
 
-	if err := svc.CancelManagedDatabaseSession(exec.Context(), &request.CancelManagedDatabaseSession{ //nolint:staticcheck
+	if err := svc.CancelManagedDatabaseSession(exec.Context(), &request.CancelManagedDatabaseSession{
 		UUID:      uuid,
 		Pid:       s.pid,
 		Terminate: s.terminate.Value(),
