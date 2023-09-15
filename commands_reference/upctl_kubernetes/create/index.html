@@ -382,36 +382,22 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../../upctl_database/" class="md-nav__link">
-        database 
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
     
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3_2" type="checkbox" id="__nav_2_3_2" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3_1" type="checkbox" id="__nav_2_3_1" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_2_3_2">
+        <label class="md-nav__link" for="__nav_2_3_1">
           database index
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="database index" data-md-level="3">
-        <label class="md-nav__title" for="__nav_2_3_2">
+        <label class="md-nav__title" for="__nav_2_3_1">
           <span class="md-nav__icon md-icon"></span>
           database index
         </label>
@@ -461,6 +447,20 @@
           
         </ul>
       </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../upctl_database/" class="md-nav__link">
+        database 
+      </a>
     </li>
   
 
@@ -1215,22 +1215,36 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../modify/" class="md-nav__link">
+        kubernetes modify
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
     
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_5_6" type="checkbox" id="__nav_2_5_6" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_5_7" type="checkbox" id="__nav_2_5_7" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_2_5_6">
+        <label class="md-nav__link" for="__nav_2_5_7">
           kubernetes nodegroup
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="kubernetes nodegroup" data-md-level="3">
-        <label class="md-nav__title" for="__nav_2_5_6">
+        <label class="md-nav__title" for="__nav_2_5_7">
           <span class="md-nav__icon md-icon"></span>
           kubernetes nodegroup
         </label>
@@ -2706,6 +2720,10 @@ upctl kubernetes create \
 <tr>
 <td><code>--node-group</code></td>
 <td>Node group(s) for running workloads, multiple can be declared.<br/>Usage: <code>--node-group count=8,kubelet-arg="log-flush-frequency=5s",label="owner=devteam",label="env=dev",name=my-node-group,plan=2xCPU-4GB,ssh-key="ssh-ed25519 AAAAo admin@user.com",ssh-key="/path/to/your/public/ssh/key.pub",storage=01000000-0000-4000-8000-000160010100,taint="env=dev:NoSchedule",taint="env=dev2:NoSchedule"</code><br/>Default: <code>[]</code></td>
+</tr>
+<tr>
+<td><code>--kubernetes-api-allow-ip</code></td>
+<td>Allow cluster's Kubernetes API to be accessed from an IP address or a network CIDR, multiple can be declared.<br/>Default: <code>[]</code></td>
 </tr>
 <tr>
 <td><code>--private-node-groups</code></td>

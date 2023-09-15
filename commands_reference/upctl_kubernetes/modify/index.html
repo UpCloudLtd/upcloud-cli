@@ -10,14 +10,14 @@
       
       
       
-        <link rel="canonical" href="https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_router/show/">
+        <link rel="canonical" href="https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_kubernetes/modify/">
       
       <link rel="icon" href="../../../favicon.png">
       <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-8.5.10">
     
     
       
-        <title>upctl router show - UpCloud command-line client</title>
+        <title>upctl kubernetes modify - UpCloud command-line client</title>
       
     
     
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#upctl-router-show" class="md-skip">
+        <a href="#upctl-kubernetes-modify" class="md-skip">
           Skip to content
         </a>
       
@@ -117,7 +117,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              upctl router show
+              upctl kubernetes modify
             
           </span>
         </div>
@@ -1058,12 +1058,14 @@
               
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_5" type="checkbox" id="__nav_2_5" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_5" type="checkbox" id="__nav_2_5" checked>
       
       
       
@@ -1086,7 +1088,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../upctl_kubernetes/" class="md-nav__link">
+      <a href="../" class="md-nav__link">
         kubernetes 
       </a>
     </li>
@@ -1100,7 +1102,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../upctl_kubernetes/config/" class="md-nav__link">
+      <a href="../config/" class="md-nav__link">
         kubernetes config
       </a>
     </li>
@@ -1114,7 +1116,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../upctl_kubernetes/create/" class="md-nav__link">
+      <a href="../create/" class="md-nav__link">
         kubernetes create
       </a>
     </li>
@@ -1128,7 +1130,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../upctl_kubernetes/delete/" class="md-nav__link">
+      <a href="../delete/" class="md-nav__link">
         kubernetes delete
       </a>
     </li>
@@ -1142,7 +1144,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../upctl_kubernetes/list/" class="md-nav__link">
+      <a href="../list/" class="md-nav__link">
         kubernetes list
       </a>
     </li>
@@ -1154,11 +1156,69 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../upctl_kubernetes/modify/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          kubernetes modify
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         kubernetes modify
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#examples" class="md-nav__link"> Examples </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#options" class="md-nav__link"> Options </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#global-options" class="md-nav__link"> Global options </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#related-commands" class="md-nav__link"> Related commands </a>
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1196,7 +1256,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../upctl_kubernetes/nodegroup/" class="md-nav__link">
+      <a href="../nodegroup/" class="md-nav__link">
         nodegroup 
       </a>
     </li>
@@ -1210,7 +1270,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../upctl_kubernetes/nodegroup/create/" class="md-nav__link">
+      <a href="../nodegroup/create/" class="md-nav__link">
         nodegroup create
       </a>
     </li>
@@ -1224,7 +1284,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../upctl_kubernetes/nodegroup/delete/" class="md-nav__link">
+      <a href="../nodegroup/delete/" class="md-nav__link">
         nodegroup delete
       </a>
     </li>
@@ -1238,7 +1298,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../upctl_kubernetes/nodegroup/scale/" class="md-nav__link">
+      <a href="../nodegroup/scale/" class="md-nav__link">
         nodegroup scale
       </a>
     </li>
@@ -1252,7 +1312,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../upctl_kubernetes/nodegroup/show/" class="md-nav__link">
+      <a href="../nodegroup/show/" class="md-nav__link">
         nodegroup show
       </a>
     </li>
@@ -1273,7 +1333,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../upctl_kubernetes/plans/" class="md-nav__link">
+      <a href="../plans/" class="md-nav__link">
         kubernetes plans
       </a>
     </li>
@@ -1287,7 +1347,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../upctl_kubernetes/show/" class="md-nav__link">
+      <a href="../show/" class="md-nav__link">
         kubernetes show
       </a>
     </li>
@@ -1301,7 +1361,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../upctl_kubernetes/versions/" class="md-nav__link">
+      <a href="../versions/" class="md-nav__link">
         kubernetes versions
       </a>
     </li>
@@ -1540,14 +1600,12 @@
               
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_8" type="checkbox" id="__nav_2_8" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_8" type="checkbox" id="__nav_2_8" >
       
       
       
@@ -1570,7 +1628,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../" class="md-nav__link">
+      <a href="../../upctl_router/" class="md-nav__link">
         router 
       </a>
     </li>
@@ -1584,7 +1642,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../create/" class="md-nav__link">
+      <a href="../../upctl_router/create/" class="md-nav__link">
         router create
       </a>
     </li>
@@ -1598,7 +1656,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../delete/" class="md-nav__link">
+      <a href="../../upctl_router/delete/" class="md-nav__link">
         router delete
       </a>
     </li>
@@ -1612,7 +1670,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../list/" class="md-nav__link">
+      <a href="../../upctl_router/list/" class="md-nav__link">
         router list
       </a>
     </li>
@@ -1626,7 +1684,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../modify/" class="md-nav__link">
+      <a href="../../upctl_router/modify/" class="md-nav__link">
         router modify
       </a>
     </li>
@@ -1638,69 +1696,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          router show
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../upctl_router/show/" class="md-nav__link">
         router show
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <!-- Limit TOC depth to 1 -->
-
-<li class="md-nav__item">
-  <a href="#examples" class="md-nav__link"> Examples </a>
-</li>
-      
-        <!-- Limit TOC depth to 1 -->
-
-<li class="md-nav__item">
-  <a href="#options" class="md-nav__link"> Options </a>
-</li>
-      
-        <!-- Limit TOC depth to 1 -->
-
-<li class="md-nav__item">
-  <a href="#global-options" class="md-nav__link"> Global options </a>
-</li>
-      
-        <!-- Limit TOC depth to 1 -->
-
-<li class="md-nav__item">
-  <a href="#related-commands" class="md-nav__link"> Related commands </a>
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2679,14 +2679,12 @@
                   
 <!-- Hide edit button as command reference and changelog do not exist on main branch -->
 
-<h1 id="upctl-router-show">upctl router show</h1>
-<p>Show current router</p>
-<pre><code>upctl router show &lt;UUID/Name...&gt; [flags]
+<h1 id="upctl-kubernetes-modify">upctl kubernetes modify</h1>
+<p>Modifiy an existing cluster</p>
+<pre><code>upctl kubernetes modify &lt;UUID/Name...&gt; [flags]
 </code></pre>
 <h2 id="examples">Examples</h2>
-<pre><code>upctl router show 04d0a7f6-ee78-42b5-8077-6947f9e67c5a
-upctl router show 04d0a7f6-ee78-42b5-8077-6947f9e67c5a 04d031ab-4b85-4cbc-9f0e-6a2977541327
-upctl router show &quot;My Turbo Router&quot; my_super_router
+<pre><code>upctl cluster modify 00bb4617-c592-4b32-b869-35a60b323b18 --plan 1xCPU-1GB
 </code></pre>
 <h2 id="options">Options</h2>
 <table>
@@ -2698,8 +2696,12 @@ upctl router show &quot;My Turbo Router&quot; my_super_router
 </thead>
 <tbody>
 <tr>
+<td><code>--kubernetes-api-allow-ip</code></td>
+<td>Allow cluster's Kubernetes API to be accessed from an IP address or a network CIDR, multiple can be declared.<br/>Default: <code>[]</code></td>
+</tr>
+<tr>
 <td><code>--help</code>, <code>-h</code></td>
-<td>help for show<br/>Default: <code>false</code></td>
+<td>help for modify<br/>Default: <code>false</code></td>
 </tr>
 </tbody>
 </table>
@@ -2748,8 +2750,8 @@ upctl router show &quot;My Turbo Router&quot; my_super_router
 </thead>
 <tbody>
 <tr>
-<td><a href="../">upctl router</a></td>
-<td>Manage routers</td>
+<td><a href="../">upctl kubernetes</a></td>
+<td>Manage Kubernetes clusters</td>
 </tr>
 </tbody>
 </table>

@@ -380,36 +380,22 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../commands_reference/upctl_database/" class="md-nav__link">
-        database 
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
     
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3_2" type="checkbox" id="__nav_2_3_2" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3_1" type="checkbox" id="__nav_2_3_1" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_2_3_2">
+        <label class="md-nav__link" for="__nav_2_3_1">
           database index
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="database index" data-md-level="3">
-        <label class="md-nav__title" for="__nav_2_3_2">
+        <label class="md-nav__title" for="__nav_2_3_1">
           <span class="md-nav__icon md-icon"></span>
           database index
         </label>
@@ -459,6 +445,20 @@
           
         </ul>
       </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_database/" class="md-nav__link">
+        database 
+      </a>
     </li>
   
 
@@ -1153,22 +1153,36 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_kubernetes/modify/" class="md-nav__link">
+        kubernetes modify
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
     
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_5_6" type="checkbox" id="__nav_2_5_6" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_5_7" type="checkbox" id="__nav_2_5_7" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_2_5_6">
+        <label class="md-nav__link" for="__nav_2_5_7">
           kubernetes nodegroup
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="kubernetes nodegroup" data-md-level="3">
-        <label class="md-nav__title" for="__nav_2_5_6">
+        <label class="md-nav__title" for="__nav_2_5_7">
           <span class="md-nav__icon md-icon"></span>
           kubernetes nodegroup
         </label>
@@ -2957,6 +2971,9 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <h3 id="added">Added</h3>
 <ul>
 <li>Add <code>kubernetes nodegroup show</code> for displaying node-group details. This also adds <em>Nodes</em> table and <em>Anti-affinity</em> field that were not available in previous <code>kubernetes show</code> output.</li>
+<li>Add <code>kubernetes modify</code> command for modifying IP addresses that are allowed to access cluster's Kubernetes API.</li>
+<li>Add <code>--kubernetes-api-allow-ip</code> argument to <code>kubernetes create</code> command.</li>
+<li>Add <code>Kubernetes API allowed IPs</code> field to <code>kubernetes show</code> output.</li>
 </ul>
 <h3 id="changed">Changed</h3>
 <ul>
