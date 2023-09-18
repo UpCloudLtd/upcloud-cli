@@ -931,14 +931,6 @@ func (m *Service) GetKubernetesClusters(_ context.Context, r *request.GetKuberne
 	return args[0].([]upcloud.KubernetesCluster), args.Error(1)
 }
 
-func (m *Service) ModifyKubernetesCluster(_ context.Context, r *request.ModifyKubernetesClusterRequest) (*upcloud.KubernetesCluster, error) {
-	args := m.Called(r)
-	if args[0] == nil {
-		return nil, args.Error(1)
-	}
-	return args[0].(*upcloud.KubernetesCluster), args.Error(1)
-}
-
 func (m *Service) GetKubernetesKubeconfig(_ context.Context, r *request.GetKubernetesKubeconfigRequest) (string, error) {
 	args := m.Called(r)
 	if args[0] == nil {
