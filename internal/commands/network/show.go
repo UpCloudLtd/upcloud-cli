@@ -75,6 +75,7 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 				nip.DHCP.Bool(),
 				nip.DHCPDefaultRoute.Bool(),
 				nip.DHCPDns,
+				nip.DHCPRoutes,
 			})
 		}
 
@@ -88,6 +89,7 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 					{Key: "dhcp", Header: "DHCP", Format: format.Boolean},
 					{Key: "dhcp_default_route", Header: "DHCP Def Router", Format: format.Boolean},
 					{Key: "dhcp_dns", Header: "DHCP DNS", Format: formatShowDHCPDNS},
+					{Key: "dhcp_routes", Header: "DHCP Routes", Format: formatShowDHCPRoutes},
 				},
 				Rows: networkRows,
 			},
@@ -132,6 +134,15 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 }
 
 func formatShowDHCPDNS(val interface{}) (text.Colors, string, error) {
+	addresses, ok := val.([]string)
+	if !ok {
+		return nil, "", fmt.Errorf("cannot parse IP addresses from %T, expected []string", val)
+	}
+
+	return nil, ui.DefaultAddressColours.Sprint(strings.Join(addresses, " ")), nil
+}
+
+func formatShowDHCPRoutes(val interface{}) (text.Colors, string, error) {
 	addresses, ok := val.([]string)
 	if !ok {
 		return nil, "", fmt.Errorf("cannot parse IP addresses from %T, expected []string", val)

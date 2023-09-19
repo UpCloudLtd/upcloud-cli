@@ -49,18 +49,19 @@ func TestCreateCommand(t *testing.T) {
 			args: []string{
 				"--name", n.Name,
 				"--zone", n.Zone,
-				"--ip-network", "address=127.0.0.1,\"dhcp-dns=one,two,three\",gateway=gw,dhcp=true",
+				"--ip-network", "address=127.0.0.1,\"dhcp-dns=one,two,three\",\"dhcp-routes=192.168.0.0/24,192.168.100.100/32\",gateway=gw,dhcp=true",
 			},
 			expected: request.CreateNetworkRequest{
 				Name: n.Name,
 				Zone: n.Zone,
 				IPNetworks: []upcloud.IPNetwork{
 					{
-						Address: "127.0.0.1",
-						Family:  upcloud.IPAddressFamilyIPv4,
-						DHCP:    upcloud.FromBool(true),
-						DHCPDns: []string{"one", "two", "three"},
-						Gateway: "gw",
+						Address:    "127.0.0.1",
+						Family:     upcloud.IPAddressFamilyIPv4,
+						DHCP:       upcloud.FromBool(true),
+						DHCPDns:    []string{"one", "two", "three"},
+						DHCPRoutes: []string{"192.168.0.0/24", "192.168.100.100/32"},
+						Gateway:    "gw",
 					},
 				},
 			},
@@ -70,18 +71,19 @@ func TestCreateCommand(t *testing.T) {
 			args: []string{
 				"--name", n.Name,
 				"--zone", n.Zone,
-				"--ip-network", "\"dhcp-dns=one,two,three\",gateway=gw,dhcp=false,address=127.0.0.1", "--ip-network", "address=2001:0db8:85a3:0000:0000:8a2e:0370:7334/32,dhcp-dns=four",
+				"--ip-network", "\"dhcp-dns=one,two,three\",\"dhcp-routes=192.168.0.0/24,192.168.100.100/32\",gateway=gw,dhcp=false,address=127.0.0.1", "--ip-network", "address=2001:0db8:85a3:0000:0000:8a2e:0370:7334/32,dhcp-dns=four",
 			},
 			expected: request.CreateNetworkRequest{
 				Name: n.Name,
 				Zone: n.Zone,
 				IPNetworks: []upcloud.IPNetwork{
 					{
-						Address: "127.0.0.1",
-						Family:  upcloud.IPAddressFamilyIPv4,
-						DHCP:    upcloud.FromBool(false),
-						DHCPDns: []string{"one", "two", "three"},
-						Gateway: "gw",
+						Address:    "127.0.0.1",
+						Family:     upcloud.IPAddressFamilyIPv4,
+						DHCP:       upcloud.FromBool(false),
+						DHCPDns:    []string{"one", "two", "three"},
+						DHCPRoutes: []string{"192.168.0.0/24", "192.168.100.100/32"},
+						Gateway:    "gw",
 					},
 					{
 						Address: "2001:0db8:85a3:0000:0000:8a2e:0370:7334/32",

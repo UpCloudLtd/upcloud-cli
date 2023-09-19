@@ -40,17 +40,18 @@ func TestModifyCommand(t *testing.T) {
 			name: "with single network",
 			flags: []string{
 				"--name", n.Name,
-				"--ip-network", "family=IPv4,\"dhcp-dns=one,two,three\",gateway=gw,dhcp=true",
+				"--ip-network", "family=IPv4,\"dhcp-dns=one,two,three\",\"dhcp-routes=192.168.0.0/24,192.168.100.100/32\",gateway=gw,dhcp=true",
 			},
 			expected: request.ModifyNetworkRequest{
 				UUID: n.UUID,
 				Name: n.Name,
 				IPNetworks: []upcloud.IPNetwork{
 					{
-						Family:  upcloud.IPAddressFamilyIPv4,
-						DHCP:    upcloud.FromBool(true),
-						DHCPDns: []string{"one", "two", "three"},
-						Gateway: "gw",
+						Family:     upcloud.IPAddressFamilyIPv4,
+						DHCP:       upcloud.FromBool(true),
+						DHCPDns:    []string{"one", "two", "three"},
+						DHCPRoutes: []string{"192.168.0.0/24", "192.168.100.100/32"},
+						Gateway:    "gw",
 					},
 				},
 			},

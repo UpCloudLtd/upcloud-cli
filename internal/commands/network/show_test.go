@@ -67,6 +67,7 @@ func TestShowCommand(t *testing.T) {
 				DHCP:             upcloud.FromBool(true),
 				DHCPDefaultRoute: upcloud.FromBool(false),
 				DHCPDns:          []string{"196.15.0.3", "196.15.0.4"},
+				DHCPRoutes:       []string{"192.168.0.0/24", "192.168.100.100/32"},
 				Family:           upcloud.IPAddressFamilyIPv4,
 				Gateway:          "196.15.0.5",
 			},
@@ -96,10 +97,10 @@ func TestShowCommand(t *testing.T) {
     
   IP Networks:
 
-     Address      Family   DHCP   DHCP Def Router   DHCP DNS              
-    ──────────── ──────── ────── ───────────────── ───────────────────────
-     196.12.0.1   IPv4     yes    yes               196.12.0.3 196.12.0.4 
-     196.15.0.1   IPv4     yes    no                196.15.0.3 196.15.0.4 
+     Address      Family   DHCP   DHCP Def Router   DHCP DNS                DHCP Routes                       
+    ──────────── ──────── ────── ───────────────── ─────────────────────── ───────────────────────────────────
+     196.12.0.1   IPv4     yes    yes               196.12.0.3 196.12.0.4                                     
+     196.15.0.1   IPv4     yes    no                196.15.0.3 196.15.0.4   192.168.0.0/24 192.168.100.100/32 
     
   Servers:
 
@@ -181,10 +182,10 @@ func TestShowCommand_Labels(t *testing.T) {
     
   IP Networks:
 
-     Address      Family   DHCP   DHCP Def Router   DHCP DNS              
-    ──────────── ──────── ────── ───────────────── ───────────────────────
-     196.12.0.1   IPv4     yes    yes               196.12.0.3 196.12.0.4 
-     196.15.0.1   IPv4     yes    no                196.15.0.3 196.15.0.4 
+     Address      Family   DHCP   DHCP Def Router   DHCP DNS                DHCP Routes 
+    ──────────── ──────── ────── ───────────────── ─────────────────────── ─────────────
+     196.12.0.1   IPv4     yes    yes               196.12.0.3 196.12.0.4               
+     196.15.0.1   IPv4     yes    no                196.15.0.3 196.15.0.4               
     
 `
 

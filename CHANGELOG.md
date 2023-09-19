@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `kubernetes modify` command for modifying IP addresses that are allowed to access cluster's Kubernetes API.
 - Add `--kubernetes-api-allow-ip` argument to `kubernetes create` command.
 - Add `Kubernetes API allowed IPs` field to `kubernetes show` output.
+- Add `dhcp-routes` field to `network create` command's `--ip-network` argument.
+- Add `dhcp-routes` field to `network modify` command's `--ip-network` argument.
+- Add `DHCP Routes` field to `network show` output.
 
 ### Changed
 - In human readable output of `kubernetes show` command, show node-groups as table. Node-group datails are available with `kubernetes nodegroup show` command.

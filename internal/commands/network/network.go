@@ -33,6 +33,7 @@ func (n *networkCommand) InitCommand() {
 func handleNetwork(in string) (*upcloud.IPNetwork, error) {
 	result := &upcloud.IPNetwork{}
 	var dhcp string
+	var dhcpRoutes string
 	var dhcpDefRout string
 	var dns string
 
@@ -43,6 +44,7 @@ func handleNetwork(in string) (*upcloud.IPNetwork, error) {
 
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&dns, "dhcp-dns", dns, "Defines if the gateway should be given as default route by DHCP. Defaults to yes on public networks, and no on other ones.")
+	fs.StringVar(&dhcpRoutes, "dhcp-routes", dns, "Defines additional DHCP classless static routes to be delivered if the DHCP is enabled. Nexthop will be IP network gateway address.")
 	fs.StringVar(&result.Address, "address", result.Address, "Sets address space for the network.")
 	fs.StringVar(&result.Family, "family", result.Address, "IP address family. Currently only IPv4 networks are supported.")
 	fs.StringVar(&result.Gateway, "gateway", result.Gateway, "Gateway address given by the DHCP service. Defaults to first address of the network if not given.")
@@ -77,6 +79,10 @@ func handleNetwork(in string) (*upcloud.IPNetwork, error) {
 
 	if dns != "" {
 		result.DHCPDns = strings.Split(dns, ",")
+	}
+
+	if dhcpRoutes != "" {
+		result.DHCPRoutes = strings.Split(dhcpRoutes, ",")
 	}
 
 	return result, nil

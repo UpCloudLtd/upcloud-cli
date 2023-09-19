@@ -50,7 +50,8 @@ func (s *modifyCommand) InitCommand() {
 		"  gateway: string \n"+
 		"  dhcp: true/false \n"+
 		"  dhcp-default-route: true/false \n"+
-		"  dhcp-dns: array of strings")
+		"  dhcp-dns: array of strings \n"+
+		"  dhcp-routes: array of strings")
 	s.AddFlags(fs)
 }
 
