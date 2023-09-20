@@ -52,6 +52,9 @@ func TestShowCommand(t *testing.T) {
 			{NetworkUUID: networks[0].UUID},
 		},
 		Name: "test-router",
+		StaticRoutes: []upcloud.StaticRoute{
+			{Name: "static-route-0", Route: "0.0.0.0/0", Nexthop: "10.0.0.100"},
+		},
 		Type: "normal",
 		UUID: "37f5d657-195c-4b5e-ad61-112945ad184b",
 	}
@@ -70,6 +73,12 @@ func TestShowCommand(t *testing.T) {
      UUID                                   Name           Type      Zone    
     ────────────────────────────────────── ────────────── ───────── ─────────
      ce6a9934-c0c6-4d84-9ad4-0611f5b95e79   test-network   utility   uk-lon1 
+    
+  Static routes:
+
+     Name             Nexthop      Route     
+    ──────────────── ──────────── ───────────
+     static-route-0   10.0.0.100   0.0.0.0/0 
     
 `
 	mService := smock.Service{}

@@ -1,6 +1,7 @@
 package router
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
@@ -16,7 +17,16 @@ import (
 func TestCreateCommand(t *testing.T) {
 	targetMethod := "CreateRouter"
 
-	router := upcloud.Router{Name: "test-router"}
+	router := upcloud.Router{
+		Name: "test-router",
+		StaticRoutes: []upcloud.StaticRoute{
+			{
+				Name:    "test-static-route",
+				Route:   "0.0.0.0/0",
+				Nexthop: "10.0.0.100",
+			},
+		},
+	}
 
 	for _, test := range []struct {
 		name  string
@@ -33,6 +43,27 @@ func TestCreateCommand(t *testing.T) {
 			name:  "name is passed",
 			flags: []string{"--name", router.Name},
 			req:   request.CreateRouterRequest{Name: router.Name},
+		},
+		{
+			name: "name and a static route are passed",
+			flags: []string{
+				"--name", router.Name,
+				"--static-route", fmt.Sprintf("name=%s,nexthop=%s,route=%s",
+					router.StaticRoutes[0].Name,
+					router.StaticRoutes[0].Nexthop,
+					router.StaticRoutes[0].Route,
+				),
+			},
+			req: request.CreateRouterRequest{
+				Name: router.Name,
+				StaticRoutes: []upcloud.StaticRoute{
+					{
+						Name:    "test-static-route",
+						Route:   "0.0.0.0/0",
+						Nexthop: "10.0.0.100",
+					},
+				},
+			},
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {

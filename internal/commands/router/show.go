@@ -41,12 +41,16 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 	if err != nil {
 		return nil, err
 	}
+
 	exec.Debug("got router", "uuid", router.UUID)
+
 	networks, err := getNetworks(exec, router.AttachedNetworks)
 	if err != nil {
 		return nil, err
 	}
+
 	exec.Debug("got router networks", "networks", len(networks))
+
 	networkRows := make([]output.TableRow, len(networks))
 	for i, network := range networks {
 		networkRows[i] = output.TableRow{
@@ -56,6 +60,16 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 			network.Zone,
 		}
 	}
+
+	staticRouteRows := make([]output.TableRow, len(router.StaticRoutes))
+	for i, staticRoute := range router.StaticRoutes {
+		staticRouteRows[i] = output.TableRow{
+			staticRoute.Name,
+			staticRoute.Nexthop,
+			staticRoute.Route,
+		}
+	}
+
 	combined := output.Combined{
 		output.CombinedSection{
 			Key:   "",
@@ -81,7 +95,21 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 					{Key: "type", Header: "Type"},
 					{Key: "zone", Header: "Zone"},
 				},
-				Rows: networkRows,
+				Rows:         networkRows,
+				EmptyMessage: "No networks defined for this router.",
+			},
+		},
+		output.CombinedSection{
+			Key:   "static_routes",
+			Title: "Static routes:",
+			Contents: output.Table{
+				Columns: []output.TableColumn{
+					{Key: "name", Header: "Name"},
+					{Key: "nexthop", Header: "Nexthop"},
+					{Key: "route", Header: "Route"},
+				},
+				Rows:         staticRouteRows,
+				EmptyMessage: "No static routes defined for this router.",
 			},
 		},
 	}
