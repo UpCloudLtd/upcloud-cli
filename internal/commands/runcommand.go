@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/clierrors"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
@@ -92,6 +93,10 @@ func resolveArguments(nc Command, exec Executor, args []string) (out []resolvedA
 func execute(command Command, executor Executor, args []string, parallelRuns int, executeCommand func(exec Executor, arg string) (output.Output, error)) ([]output.Output, error) {
 	resolvedArgs, err := resolveArguments(command, executor, args)
 	if err != nil {
+		// If authentication failed, return helpful message instead of the raw error.
+		if clierrors.CheckAuthenticationFailed(err) {
+			return nil, clierrors.InvalidCredentialsError{}
+		}
 		return nil, fmt.Errorf("cannot resolve command line arguments: %w", err)
 	}
 
