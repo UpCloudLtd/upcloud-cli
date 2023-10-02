@@ -40,8 +40,8 @@ github.com/PuerkitoBio/purell v1.1.1 h1:WEQqlqaGbrPkxLJWfBwQmfEAE1Z7ONdDLqrN38tN
 github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 h1:d+Bc7a5rLufV/sSk/8dngufqelfh6jnri85riMAaF/M=
 github.com/UpCloudLtd/progress v1.0.1 h1:e0ptyD2oOGa3udRcLzgRemIN9enGx4Bc9GQ0sZ/1/EY=
 github.com/UpCloudLtd/progress v1.0.1/go.mod h1:hKsRsvlCffcYt/s0krpWvOFozOjpfUYjSkL6CzZztoI=
-github.com/UpCloudLtd/upcloud-go-api/v6 v6.6.1-0.20230919115605-b91121fe13a1 h1:xZ7/Q4S/Joy245RmDUIGhJbvI859jbGfF0XBMC9pKpc=
-github.com/UpCloudLtd/upcloud-go-api/v6 v6.6.1-0.20230919115605-b91121fe13a1/go.mod h1:I8rWmBBl+OhiY3AGzKbrobiE5TsLCLNYkCQxE4eJcTg=
+github.com/UpCloudLtd/upcloud-go-api/v6 v6.7.1 h1:5LWCVMt59kOKlNA6XafC0qIfDv5aUQ1BIGv40YCL2fM=
+github.com/UpCloudLtd/upcloud-go-api/v6 v6.7.1/go.mod h1:I8rWmBBl+OhiY3AGzKbrobiE5TsLCLNYkCQxE4eJcTg=
 github.com/adrg/xdg v0.3.2 h1:GUSGQ5pHdev83AYhDSS1A/CX+0JIsxbiWtow2DSA+RU=
 github.com/adrg/xdg v0.3.2/go.mod h1:7I2hH/IT30IsupOpKZ5ue7/qNi3CoKzD6tL3HwpaRMQ=
 github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=
