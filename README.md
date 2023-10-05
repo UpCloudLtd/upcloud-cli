@@ -2,7 +2,7 @@
 
 [![upcloud-cli test](https://github.com/UpCloudLtd/upctl/actions/workflows/test.yml/badge.svg)](https://github.com/UpCloudLtd/upctl/actions/workflows/test.yml)
 
-`upctl` provides a command-line interface to UpCloud services. It allows you
+`upctl` provides a command-line interface to [UpCloud](https://upcloud.com/) services. It allows you
 to control your resources from the command line or any compatible interface.
 
 ```txt
