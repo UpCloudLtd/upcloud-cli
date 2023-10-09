@@ -8,10 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Breaking**: Add `Kubernetes API allowed IPs` field to `kubernetes show` output. This changes default behavior from _allow access from any IP_ to _block access from all IPs_. To be able to connect to the cluster, define list of allowed IP addresses and/or CIDR blocks or allow access from any IP.
 - Add `kubernetes nodegroup show` for displaying node-group details. This also adds _Nodes_ table and _Anti-affinity_ field that were not available in previous `kubernetes show` output.
 - Add `kubernetes modify` command for modifying IP addresses that are allowed to access cluster's Kubernetes API.
 - Add `--kubernetes-api-allow-ip` argument to `kubernetes create` command.
-- Add `Kubernetes API allowed IPs` field to `kubernetes show` output.
 
 ### Changed
 - In human readable output of `kubernetes show` command, show node-groups as table. Node-group datails are available with `kubernetes nodegroup show` command.
