@@ -2970,10 +2970,10 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <h2 id="unreleased"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.10.0...HEAD">Unreleased</a></h2>
 <h3 id="added">Added</h3>
 <ul>
+<li><strong>Breaking</strong>: Add <code>Kubernetes API allowed IPs</code> field to <code>kubernetes show</code> output. This changes default behavior from <em>allow access from any IP</em> to <em>block access from all IPs</em>. To be able to connect to the cluster, define list of allowed IP addresses and/or CIDR blocks or allow access from any IP.</li>
 <li>Add <code>kubernetes nodegroup show</code> for displaying node-group details. This also adds <em>Nodes</em> table and <em>Anti-affinity</em> field that were not available in previous <code>kubernetes show</code> output.</li>
 <li>Add <code>kubernetes modify</code> command for modifying IP addresses that are allowed to access cluster's Kubernetes API.</li>
 <li>Add <code>--kubernetes-api-allow-ip</code> argument to <code>kubernetes create</code> command.</li>
-<li>Add <code>Kubernetes API allowed IPs</code> field to <code>kubernetes show</code> output.</li>
 </ul>
 <h3 id="changed">Changed</h3>
 <ul>
