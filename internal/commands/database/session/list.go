@@ -44,7 +44,6 @@ func (s *listCommand) InitCommand() {
 	flagSet.StringVar(&s.order, "order", "query_duration:desc", "Key and direction for sorting.")
 
 	s.AddFlags(flagSet)
-	_ = s.Cobra().MarkFlagRequired("pid")
 }
 
 // Execute implements commands.MultipleArgumentCommand
