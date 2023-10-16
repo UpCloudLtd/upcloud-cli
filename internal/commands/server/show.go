@@ -239,7 +239,10 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 		})
 	}
 
-	return combined, nil
+	return output.MarshaledWithHumanOutput{
+		Value:  server,
+		Output: combined,
+	}, nil
 }
 
 func formatShowIPAddresses(val interface{}) (text.Colors, string, error) {
