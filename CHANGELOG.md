@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - In human readable output of `kubernetes show` command, show node-groups as table. Node-group datails are available with `kubernetes nodegroup show` command.
 
 ## Removed
-- Remove `database connection list` and `database connection cancel` commands in favor of `database session` counterparts
+- **Breaking**: Remove `database connection list` and `database connection cancel` commands in favor of `database session` counterparts
 
 ## [2.10.0] - 2023-07-17
 ### Added
