@@ -113,7 +113,10 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 		})
 	}
 
-	return combined, nil
+	return output.MarshaledWithHumanOutput{
+		Value:  storage,
+		Output: combined,
+	}, nil
 }
 
 func formatShowServers(val interface{}) (text.Colors, string, error) {

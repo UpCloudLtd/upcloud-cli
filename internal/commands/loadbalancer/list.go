@@ -38,14 +38,17 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 		})
 	}
 
-	return output.Table{
-		Columns: []output.TableColumn{
-			{Key: "uuid", Header: "UUID", Colour: ui.DefaultUUUIDColours},
-			{Key: "name", Header: "Name"},
-			{Key: "plan", Header: "Plan"},
-			{Key: "zone", Header: "Zone"},
-			{Key: "state", Header: "State", Format: format.LoadBalancerState},
+	return output.MarshaledWithHumanOutput{
+		Value: loadbalancers,
+		Output: output.Table{
+			Columns: []output.TableColumn{
+				{Key: "uuid", Header: "UUID", Colour: ui.DefaultUUUIDColours},
+				{Key: "name", Header: "Name"},
+				{Key: "plan", Header: "Plan"},
+				{Key: "zone", Header: "Zone"},
+				{Key: "operational_state", Header: "State", Format: format.LoadBalancerState},
+			},
+			Rows: rows,
 		},
-		Rows: rows,
 	}, nil
 }
