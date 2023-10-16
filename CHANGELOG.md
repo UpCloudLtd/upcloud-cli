@@ -17,9 +17,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `database session cancel` for cancelling an active database session
 
 ### Changed
-- **Breaking**: `router list` JSON and YAML outputs to return full API response
-- **Breaking**: `router show` JSON and YAML outputs to return full API response
-- **Breaking**: `server firewall show` JSON and YAML outputs to return full API response
 - In human readable output of `kubernetes show` command, show node-groups as table. Node-group datails are available with `kubernetes nodegroup show` command.
 
 ## Removed
