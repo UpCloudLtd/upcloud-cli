@@ -92,14 +92,18 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 			n.Zone,
 		})
 	}
-	return output.Table{
-		Columns: []output.TableColumn{
-			{Key: "uuid", Header: "UUID", Colour: ui.DefaultUUUIDColours},
-			{Key: "name", Header: "Name"},
-			{Key: "router", Header: "Router", Colour: ui.DefaultUUUIDColours},
-			{Key: "type", Header: "Type"},
-			{Key: "zone", Header: "Zone"},
+
+	return output.MarshaledWithHumanOutput{
+		Value: upcloud.Networks{Networks: filtered},
+		Output: output.Table{
+			Columns: []output.TableColumn{
+				{Key: "uuid", Header: "UUID", Colour: ui.DefaultUUUIDColours},
+				{Key: "name", Header: "Name"},
+				{Key: "router", Header: "Router", Colour: ui.DefaultUUUIDColours},
+				{Key: "type", Header: "Type"},
+				{Key: "zone", Header: "Zone"},
+			},
+			Rows: rows,
 		},
-		Rows: rows,
 	}, nil
 }

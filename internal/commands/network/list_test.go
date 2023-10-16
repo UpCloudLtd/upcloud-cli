@@ -87,12 +87,12 @@ func TestListCommand(t *testing.T) {
 			res, err := c.(commands.NoArgumentCommand).ExecuteWithoutArguments(commands.NewExecutor(cfg, &mService, flume.New("test")))
 
 			assert.Nil(t, err)
-			assert.Equal(t, createTable(test.expected), res)
+			assert.Equal(t, createOutput(test.expected), res)
 		})
 	}
 }
 
-func createTable(networks []upcloud.Network) output.Table {
+func createOutput(networks []upcloud.Network) output.MarshaledWithHumanOutput {
 	rows := []output.TableRow{}
 	for _, network := range networks {
 		rows = append(rows,
@@ -100,15 +100,18 @@ func createTable(networks []upcloud.Network) output.Table {
 		)
 	}
 
-	return output.Table{
-		HideHeader: false,
-		Columns: []output.TableColumn{
-			{Header: "UUID", Key: "uuid", Hidden: false, Colour: ui.DefaultUUUIDColours},
-			{Header: "Name", Key: "name", Hidden: false},
-			{Header: "Router", Key: "router", Hidden: false, Colour: ui.DefaultUUUIDColours},
-			{Header: "Type", Key: "type", Hidden: false},
-			{Header: "Zone", Key: "zone", Hidden: false},
+	return output.MarshaledWithHumanOutput{
+		Value: upcloud.Networks{Networks: networks},
+		Output: output.Table{
+			HideHeader: false,
+			Columns: []output.TableColumn{
+				{Header: "UUID", Key: "uuid", Hidden: false, Colour: ui.DefaultUUUIDColours},
+				{Header: "Name", Key: "name", Hidden: false},
+				{Header: "Router", Key: "router", Hidden: false, Colour: ui.DefaultUUUIDColours},
+				{Header: "Type", Key: "type", Hidden: false},
+				{Header: "Zone", Key: "zone", Hidden: false},
+			},
+			Rows: rows,
 		},
-		Rows: rows,
 	}
 }

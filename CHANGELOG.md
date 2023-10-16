@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Breaking**: In JSON and YAML output of `database list`: display the full API response. Value of `title` is not replaced with value from `name`, if `title` is empty.
 - **Breaking**: In JSON and YAML output of `database types`: display the full API response. This changes the top level datatype from list to object, where keys are the available database type, e.g., `pg` and `mysql`.
 - **Breaking**: In JSON and YAML output of `ip-address list`: display full API response. This changes `partofplan` key to `part_of_plan` and `ptrrecord` key to `ptr_record`.
+- **Breaking**: In JSON and YAML output of `network list` and `network show`: display full API response. Servers list will only contain server UUID and name. `ip_networks` contains subfield `ip_network` which in turn contains the networks.
 - In human readable output of `kubernetes show` command, show node-groups as table. Node-group details are available with `kubernetes nodegroup show` command.
 
 ## Fixed
