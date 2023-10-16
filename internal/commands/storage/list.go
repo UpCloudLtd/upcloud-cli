@@ -59,7 +59,7 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 	}
 
 	CachedStorages = storageList.Storages
-	var filtered []upcloud.Storage
+	filtered := make([]upcloud.Storage, 0)
 	for _, v := range storageList.Storages {
 		if s.all.Value() {
 			filtered = append(filtered, v)
@@ -109,18 +109,21 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 		})
 	}
 
-	return output.Table{
-		Columns: []output.TableColumn{
-			{Key: "uuid", Header: "UUID", Colour: ui.DefaultUUUIDColours},
-			{Key: "title", Header: "Title"},
-			{Key: "type", Header: "Type"},
-			{Key: "size", Header: "Size"},
-			{Key: "state", Header: "State", Format: format.StorageState},
-			{Key: "tier", Header: "Tier"},
-			{Key: "zone", Header: "Zone"},
-			{Key: "access", Header: "Access"},
-			{Key: "created", Header: "Created"},
+	return output.MarshaledWithHumanOutput{
+		Value: filtered,
+		Output: output.Table{
+			Columns: []output.TableColumn{
+				{Key: "uuid", Header: "UUID", Colour: ui.DefaultUUUIDColours},
+				{Key: "title", Header: "Title"},
+				{Key: "type", Header: "Type"},
+				{Key: "size", Header: "Size"},
+				{Key: "state", Header: "State", Format: format.StorageState},
+				{Key: "tier", Header: "Tier"},
+				{Key: "zone", Header: "Zone"},
+				{Key: "access", Header: "Access"},
+				{Key: "created", Header: "Created"},
+			},
+			Rows: rows,
 		},
-		Rows: rows,
 	}, nil
 }
