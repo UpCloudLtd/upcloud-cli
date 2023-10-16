@@ -87,7 +87,7 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 	}
 
 	return output.MarshaledWithHumanOutput{
-		Value:  networks,
+		Value:  router,
 		Output: combined,
 	}, nil
 }
