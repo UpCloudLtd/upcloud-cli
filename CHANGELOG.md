@@ -17,8 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `database session cancel` for cancelling an active database session
 
 ### Changed
-- **Breaking**: `storage list` JSON and YAML outputs to return full API response (after filtering)
-- **Breaking**: `storage show` JSON and YAML outputs to return full API response
+- **Breaking**: `storage list` and `storage show` JSON and YAML outputs to return full API response. This changes `servers` field to contain `server` field, which in turn contains the servers. `labels` field will not be outputted if empty.
 - In human readable output of `kubernetes show` command, show node-groups as table. Node-group datails are available with `kubernetes nodegroup show` command.
 
 ## Removed
