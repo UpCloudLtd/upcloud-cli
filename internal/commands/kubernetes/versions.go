@@ -33,10 +33,13 @@ func (s *versionsCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 		})
 	}
 
-	return output.Table{
-		Columns: []output.TableColumn{
-			{Key: "version", Header: "Version"},
+	return output.MarshaledWithHumanOutput{
+		Value: versions,
+		Output: output.Table{
+			Columns: []output.TableColumn{
+				{Key: "version", Header: "Version"},
+			},
+			Rows: rows,
 		},
-		Rows: rows,
 	}, nil
 }
