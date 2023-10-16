@@ -10,14 +10,14 @@
       
       
       
-        <link rel="canonical" href="https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_database/connection/cancel/">
+        <link rel="canonical" href="https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_database/session/cancel/">
       
       <link rel="icon" href="../../../../favicon.png">
       <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-8.5.10">
     
     
       
-        <title>upctl database connection cancel - UpCloud command-line client</title>
+        <title>upctl database session cancel - UpCloud command-line client</title>
       
     
     
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#upctl-database-connection-cancel" class="md-skip">
+        <a href="#upctl-database-session-cancel" class="md-skip">
           Skip to content
         </a>
       
@@ -117,7 +117,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              upctl database connection cancel
+              upctl database session cancel
             
           </span>
         </div>
@@ -472,6 +472,339 @@
               
   
   
+  
+    <li class="md-nav__item">
+      <a href="../../delete/" class="md-nav__link">
+        database delete
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../list/" class="md-nav__link">
+        database list
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plans/" class="md-nav__link">
+        database plans
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3_6" type="checkbox" id="__nav_2_3_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_3_6">
+          database properties
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="database properties" data-md-level="3">
+        <label class="md-nav__title" for="__nav_2_3_6">
+          <span class="md-nav__icon md-icon"></span>
+          database properties
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../properties/" class="md-nav__link">
+        properties 
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3_6_2" type="checkbox" id="__nav_2_3_6_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_3_6_2">
+          properties mysql
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="properties mysql" data-md-level="4">
+        <label class="md-nav__title" for="__nav_2_3_6_2">
+          <span class="md-nav__icon md-icon"></span>
+          properties mysql
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../properties/mysql/" class="md-nav__link">
+        mysql 
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../properties/mysql/show/" class="md-nav__link">
+        mysql show
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3_6_3" type="checkbox" id="__nav_2_3_6_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_3_6_3">
+          properties opensearch
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="properties opensearch" data-md-level="4">
+        <label class="md-nav__title" for="__nav_2_3_6_3">
+          <span class="md-nav__icon md-icon"></span>
+          properties opensearch
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../properties/opensearch/" class="md-nav__link">
+        opensearch 
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../properties/opensearch/show/" class="md-nav__link">
+        opensearch show
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3_6_4" type="checkbox" id="__nav_2_3_6_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_3_6_4">
+          properties pg
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="properties pg" data-md-level="4">
+        <label class="md-nav__title" for="__nav_2_3_6_4">
+          <span class="md-nav__icon md-icon"></span>
+          properties pg
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../properties/pg/" class="md-nav__link">
+        pg 
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../properties/pg/show/" class="md-nav__link">
+        pg show
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3_6_5" type="checkbox" id="__nav_2_3_6_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_3_6_5">
+          properties redis
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="properties redis" data-md-level="4">
+        <label class="md-nav__title" for="__nav_2_3_6_5">
+          <span class="md-nav__icon md-icon"></span>
+          properties redis
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../properties/redis/" class="md-nav__link">
+        redis 
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../properties/redis/show/" class="md-nav__link">
+        redis show
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
     
   
   
@@ -479,20 +812,20 @@
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3_3" type="checkbox" id="__nav_2_3_3" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3_7" type="checkbox" id="__nav_2_3_7" checked>
       
       
       
       
-        <label class="md-nav__link" for="__nav_2_3_3">
-          database connection
+        <label class="md-nav__link" for="__nav_2_3_7">
+          database session
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="database connection" data-md-level="3">
-        <label class="md-nav__title" for="__nav_2_3_3">
+      <nav class="md-nav" aria-label="database session" data-md-level="3">
+        <label class="md-nav__title" for="__nav_2_3_7">
           <span class="md-nav__icon md-icon"></span>
-          database connection
+          database session
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -503,7 +836,7 @@
   
     <li class="md-nav__item">
       <a href="../" class="md-nav__link">
-        connection 
+        session 
       </a>
     </li>
   
@@ -526,12 +859,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          connection cancel
+          session cancel
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        connection cancel
+        session cancel
       </a>
       
         
@@ -589,341 +922,8 @@
   
     <li class="md-nav__item">
       <a href="../list/" class="md-nav__link">
-        connection list
+        session list
       </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../delete/" class="md-nav__link">
-        database delete
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../list/" class="md-nav__link">
-        database list
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../plans/" class="md-nav__link">
-        database plans
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3_7" type="checkbox" id="__nav_2_3_7" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_2_3_7">
-          database properties
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="database properties" data-md-level="3">
-        <label class="md-nav__title" for="__nav_2_3_7">
-          <span class="md-nav__icon md-icon"></span>
-          database properties
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../properties/" class="md-nav__link">
-        properties 
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3_7_2" type="checkbox" id="__nav_2_3_7_2" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_2_3_7_2">
-          properties mysql
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="properties mysql" data-md-level="4">
-        <label class="md-nav__title" for="__nav_2_3_7_2">
-          <span class="md-nav__icon md-icon"></span>
-          properties mysql
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../properties/mysql/" class="md-nav__link">
-        mysql 
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../properties/mysql/show/" class="md-nav__link">
-        mysql show
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3_7_3" type="checkbox" id="__nav_2_3_7_3" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_2_3_7_3">
-          properties opensearch
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="properties opensearch" data-md-level="4">
-        <label class="md-nav__title" for="__nav_2_3_7_3">
-          <span class="md-nav__icon md-icon"></span>
-          properties opensearch
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../properties/opensearch/" class="md-nav__link">
-        opensearch 
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../properties/opensearch/show/" class="md-nav__link">
-        opensearch show
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3_7_4" type="checkbox" id="__nav_2_3_7_4" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_2_3_7_4">
-          properties pg
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="properties pg" data-md-level="4">
-        <label class="md-nav__title" for="__nav_2_3_7_4">
-          <span class="md-nav__icon md-icon"></span>
-          properties pg
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../properties/pg/" class="md-nav__link">
-        pg 
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../properties/pg/show/" class="md-nav__link">
-        pg show
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3_7_5" type="checkbox" id="__nav_2_3_7_5" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_2_3_7_5">
-          properties redis
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="properties redis" data-md-level="4">
-        <label class="md-nav__title" for="__nav_2_3_7_5">
-          <span class="md-nav__icon md-icon"></span>
-          properties redis
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../properties/redis/" class="md-nav__link">
-        redis 
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../properties/redis/show/" class="md-nav__link">
-        redis show
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
     </li>
   
 
@@ -2681,13 +2681,13 @@
                   
 <!-- Hide edit button as command reference and changelog do not exist on main branch -->
 
-<h1 id="upctl-database-connection-cancel">upctl database connection cancel</h1>
-<p>Terminate client connection or cancel running query for a database</p>
-<pre><code>upctl database connection cancel &lt;UUID/Title...&gt; [flags]
+<h1 id="upctl-database-session-cancel">upctl database session cancel</h1>
+<p>Terminate client session or cancel running query for a database</p>
+<pre><code>upctl database session cancel &lt;UUID/Title...&gt; [flags]
 </code></pre>
 <h2 id="examples">Examples</h2>
-<pre><code>upctl database connection cancel 0fa980c4-0e4f-460b-9869-11b7bd62b833 --pid 2345421
-upctl database connection cancel 0fa980c4-0e4f-460b-9869-11b7bd62b833 --pid 2345421 --terminate
+<pre><code>upctl database session cancel 0fa980c4-0e4f-460b-9869-11b7bd62b832 --pid 2345422
+upctl database session cancel mysql-1 --pid 2345422 --terminate
 </code></pre>
 <h2 id="options">Options</h2>
 <table>
@@ -2700,7 +2700,7 @@ upctl database connection cancel 0fa980c4-0e4f-460b-9869-11b7bd62b833 --pid 2345
 <tbody>
 <tr>
 <td><code>--pid</code></td>
-<td>Process ID of the connection to cancel.<br/>Default: <code>0</code></td>
+<td>Process ID of the session to cancel.<br/>Default: <code>0</code></td>
 </tr>
 <tr>
 <td><code>--terminate</code></td>
@@ -2757,8 +2757,8 @@ upctl database connection cancel 0fa980c4-0e4f-460b-9869-11b7bd62b833 --pid 2345
 </thead>
 <tbody>
 <tr>
-<td><a href="../">upctl database connection</a></td>
-<td>Manage database connections</td>
+<td><a href="../">upctl database session</a></td>
+<td>Manage database sessions</td>
 </tr>
 </tbody>
 </table>
