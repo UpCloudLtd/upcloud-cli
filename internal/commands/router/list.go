@@ -50,7 +50,7 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 	if s.serviceRouters.Value() {
 		s.normalRouters = config.False
 	}
-	var filtered []upcloud.Router
+	filtered := make([]upcloud.Router, 0)
 	if s.allRouters.Value() {
 		filtered = routers.Routers
 	} else {
@@ -67,12 +67,16 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 	for i, router := range filtered {
 		rows[i] = output.TableRow{router.UUID, router.Name, router.Type}
 	}
-	return output.Table{
-		Columns: []output.TableColumn{
-			{Header: "UUID", Key: "uuid", Colour: ui.DefaultUUUIDColours},
-			{Header: "Name", Key: "name"},
-			{Header: "Type", Key: "type"},
+
+	return output.MarshaledWithHumanOutput{
+		Value: filtered,
+		Output: output.Table{
+			Columns: []output.TableColumn{
+				{Header: "UUID", Key: "uuid", Colour: ui.DefaultUUUIDColours},
+				{Header: "Name", Key: "name"},
+				{Header: "Type", Key: "type"},
+			},
+			Rows: rows,
 		},
-		Rows: rows,
 	}, nil
 }

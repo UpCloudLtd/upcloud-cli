@@ -86,7 +86,10 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 		},
 	}
 
-	return combined, nil
+	return output.MarshaledWithHumanOutput{
+		Value:  router,
+		Output: combined,
+	}, nil
 }
 
 func getNetworks(exec commands.Executor, attached upcloud.RouterNetworkSlice) ([]upcloud.Network, error) {
