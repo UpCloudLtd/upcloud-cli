@@ -39,25 +39,31 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 	if err != nil {
 		return nil, err
 	}
-	return output.Details{
+
+	details := output.Details{
 		Sections: []output.DetailSection{
 			{
 				Rows: []output.DetailRow{
 					{Title: "Address:", Key: "address", Value: ipAddress.Address, Colour: ui.DefaultAddressColours},
 					{Title: "Access:", Key: "access", Value: ipAddress.Access},
-					{Title: "Family:", Key: "access", Value: ipAddress.Family},
-					{Title: "Part of Plan:", Key: "access", Value: ipAddress.PartOfPlan, Format: format.Boolean},
-					{Title: "PTR Record:", Key: "access", Value: ipAddress.PTRRecord},
+					{Title: "Family:", Key: "family", Value: ipAddress.Family},
+					{Title: "Part of Plan:", Key: "part_of_plan", Value: ipAddress.PartOfPlan, Format: format.Boolean},
+					{Title: "PTR Record:", Key: "ptr_record", Value: ipAddress.PTRRecord},
 					{
 						Title: "Server UUID:",
-						Key:   "access", Value: ipAddress.ServerUUID,
+						Key:   "server", Value: ipAddress.ServerUUID,
 						Colour: ui.DefaultUUUIDColours,
 					},
-					{Title: "MAC:", Key: "credits", Value: ipAddress.MAC},
-					{Title: "Floating:", Key: "credits", Value: ipAddress.Floating, Format: format.Boolean},
+					{Title: "MAC:", Key: "mac", Value: ipAddress.MAC},
+					{Title: "Floating:", Key: "floating", Value: ipAddress.Floating, Format: format.Boolean},
 					{Title: "Zone:", Key: "zone", Value: ipAddress.Zone},
 				},
 			},
 		},
+	}
+
+	return output.MarshaledWithHumanOutput{
+		Value:  ipAddress,
+		Output: details,
 	}, nil
 }
