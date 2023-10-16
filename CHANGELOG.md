@@ -17,10 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `database session cancel` for cancelling an active database session
 
 ### Changed
-- **Breaking**: `server list` JSON and YAML outputs to return full API response
-- **Breaking**: `server show` JSON and YAML outputs to return full API response
-- **Breaking**: `server firewall show` JSON and YAML outputs to return full API response
-- In human readable output of `kubernetes show` command, show node-groups as table. Node-group datails are available with `kubernetes nodegroup show` command.
+- **Breaking**: `server list` and `server show` JSON and YAML outputs to return full API response. This changes field `host_id` to `host`. `nics` is replaced with `networking` subfield `interfaces`. `storage` is replaced with `storage_devices`. `labels` contain subfield `label` which in turn contains the labels.
+- **Breaking**: `server firewall show` JSON and YAML outputs to return full API response. This removes fields `destination` and `source` fields in favor of `[destination|source]_address_start`, `[destination|source]_address_end`, `[destination|source]_port_start` and `[destination|source]_port_end`
+- In human readable output of `kubernetes show` command, show node-groups as table. Node-group details are available with `kubernetes nodegroup show` command.
 
 ## Removed
 - **Breaking**: Remove `database connection list` and `database connection cancel` commands in favor of `database session` counterparts
