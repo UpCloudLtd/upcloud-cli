@@ -1,6 +1,10 @@
 package format
 
 import (
+	"fmt"
+	"strings"
+
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
 	"github.com/jedib0t/go-pretty/v6/text"
 )
@@ -56,4 +60,30 @@ func databaseIndexStatusColour(status string) text.Colors {
 // DatabaseIndexState implements Format function for database index states
 func DatabaseIndexState(val interface{}) (text.Colors, string, error) {
 	return usingColorFunction(databaseIndexStatusColour, val)
+}
+
+// databaseSessionStatusColour maps database session status to colours
+func databaseSessionStatusColour(status string) text.Colors {
+	switch status {
+	case "active":
+		return text.Colors{text.FgGreen}
+	case "idle":
+		return text.Colors{text.FgYellow}
+	default:
+		return text.Colors{text.FgHiBlack}
+	}
+}
+
+// DatabaseSessionState implements Format function for database session states
+func DatabaseSessionState(val interface{}) (text.Colors, string, error) {
+	return usingColorFunction(databaseSessionStatusColour, val)
+}
+
+// DatabaseSessionPID implements Format function for database session PID
+func DatabaseSessionPID(val interface{}) (text.Colors, string, error) {
+	if s, ok := val.(string); ok {
+		return ui.DefaultUUUIDColours, strings.TrimPrefix(s, "pid_"), nil
+	}
+
+	return nil, "", fmt.Errorf("cannot parse '%v' (%T) as string", val, val)
 }

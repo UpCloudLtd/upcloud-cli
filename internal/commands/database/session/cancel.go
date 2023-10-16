@@ -1,4 +1,4 @@
-package databaseconnection
+package databasesession
 
 import (
 	"fmt"
@@ -9,6 +9,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
 
+	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
 	"github.com/spf13/pflag"
 )
@@ -21,14 +22,14 @@ type cancelCommand struct {
 	terminate config.OptionalBoolean
 }
 
-// CancelCommand creates the "connection cancel" command
+// CancelCommand creates the "session cancel" command
 func CancelCommand() commands.Command {
 	return &cancelCommand{
 		BaseCommand: commands.New(
 			"cancel",
-			"Terminate client connection or cancel running query for a database",
-			`upctl database connection cancel 0fa980c4-0e4f-460b-9869-11b7bd62b833 --pid 2345421`,
-			`upctl database connection cancel 0fa980c4-0e4f-460b-9869-11b7bd62b833 --pid 2345421 --terminate`,
+			"Terminate client session or cancel running query for a database",
+			`upctl database session cancel 0fa980c4-0e4f-460b-9869-11b7bd62b832 --pid 2345422`,
+			`upctl database session cancel mysql-1 --pid 2345422 --terminate`,
 		),
 	}
 }
@@ -36,7 +37,7 @@ func CancelCommand() commands.Command {
 // InitCommand implements Command.InitCommand
 func (s *cancelCommand) InitCommand() {
 	flagSet := &pflag.FlagSet{}
-	flagSet.IntVar(&s.pid, "pid", 0, "Process ID of the connection to cancel.")
+	flagSet.IntVar(&s.pid, "pid", 0, "Process ID of the session to cancel.")
 	config.AddToggleFlag(flagSet, &s.terminate, "terminate", false, "Request immediate termination instead of soft cancel.")
 
 	s.AddFlags(flagSet)
@@ -46,11 +47,28 @@ func (s *cancelCommand) InitCommand() {
 // Execute implements commands.MultipleArgumentCommand
 func (s *cancelCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.All()
+	db, err := svc.GetManagedDatabase(exec.Context(), &request.GetManagedDatabaseRequest{UUID: uuid})
+	if err != nil {
+		return nil, err
+	}
 
-	msg := fmt.Sprintf("Cancelling connection %v to database %v", s.pid, uuid)
+	switch db.Type {
+	case upcloud.ManagedDatabaseServiceTypeMySQL:
+		break
+	case upcloud.ManagedDatabaseServiceTypePostgreSQL:
+		break
+	default:
+		return nil, fmt.Errorf("session cancel not supported for database type %s", db.Type)
+	}
+
+	if db.State != upcloud.ManagedDatabaseStateRunning {
+		return nil, fmt.Errorf("database is not in running state")
+	}
+
+	msg := fmt.Sprintf("Cancelling session %v to database %v", s.pid, uuid)
 	exec.PushProgressStarted(msg)
 
-	if err := svc.CancelManagedDatabaseConnection(exec.Context(), &request.CancelManagedDatabaseConnection{ //nolint:staticcheck // Deprecated, replace in a feature PR
+	if err := svc.CancelManagedDatabaseSession(exec.Context(), &request.CancelManagedDatabaseSession{
 		UUID:      uuid,
 		Pid:       s.pid,
 		Terminate: s.terminate.Value(),
