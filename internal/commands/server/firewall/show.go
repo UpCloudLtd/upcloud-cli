@@ -99,28 +99,32 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 			},
 		})
 	}
-	return output.Combined{
-		output.CombinedSection{
-			Key:   "rules",
-			Title: "Firewall rules",
-			Contents: output.Table{
-				Columns: []output.TableColumn{
-					{Key: "index", Header: "#"},
-					{Key: "action", Header: "Action", Format: actionFormat},
-					{Key: "source", Header: "Source", Format: addressFormat},
-					{Key: "destination", Header: "Destination", Format: addressFormat},
-					{Key: "direction", Header: "Dir"},
-					{Key: "protocol", Header: "Proto", Format: protoFormat},
+
+	return output.MarshaledWithHumanOutput{
+		Value: rules,
+		Output: output.Combined{
+			output.CombinedSection{
+				Key:   "rules",
+				Title: "Firewall rules",
+				Contents: output.Table{
+					Columns: []output.TableColumn{
+						{Key: "index", Header: "#"},
+						{Key: "action", Header: "Action", Format: actionFormat},
+						{Key: "source", Header: "Source", Format: addressFormat},
+						{Key: "destination", Header: "Destination", Format: addressFormat},
+						{Key: "direction", Header: "Dir"},
+						{Key: "protocol", Header: "Proto", Format: protoFormat},
+					},
+					Rows: fwRows,
 				},
-				Rows: fwRows,
 			},
-		},
-		output.CombinedSection{
-			Contents: output.Details{Sections: []output.DetailSection{
-				{Rows: []output.DetailRow{
-					{Key: "enabled", Title: "Enabled", Value: server.Firewall == "on", Format: format.Boolean},
+			output.CombinedSection{
+				Contents: output.Details{Sections: []output.DetailSection{
+					{Rows: []output.DetailRow{
+						{Key: "enabled", Title: "Enabled", Value: server.Firewall == "on", Format: format.Boolean},
+					}},
 				}},
-			}},
+			},
 		},
 	}, nil
 }

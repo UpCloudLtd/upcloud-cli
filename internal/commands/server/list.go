@@ -112,9 +112,12 @@ func (ls *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.O
 		}
 	}
 
-	return output.Table{
-		Columns: columns,
-		Rows:    rows,
+	return output.MarshaledWithHumanOutput{
+		Value: servers,
+		Output: output.Table{
+			Columns: columns,
+			Rows:    rows,
+		},
 	}, nil
 }
 
