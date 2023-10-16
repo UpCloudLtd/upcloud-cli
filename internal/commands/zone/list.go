@@ -34,12 +34,15 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 		})
 	}
 
-	return output.Table{
-		Columns: []output.TableColumn{
-			{Key: "id", Header: "ID"},
-			{Key: "description", Header: "Description"},
-			{Key: "public", Header: "Public", Format: format.Boolean},
+	return output.MarshaledWithHumanOutput{
+		Value: zones,
+		Output: output.Table{
+			Columns: []output.TableColumn{
+				{Key: "id", Header: "ID"},
+				{Key: "description", Header: "Description"},
+				{Key: "public", Header: "Public", Format: format.Boolean},
+			},
+			Rows: rows,
 		},
-		Rows: rows,
 	}, nil
 }
