@@ -2,7 +2,7 @@
 
 [![upcloud-cli test](https://github.com/UpCloudLtd/upctl/actions/workflows/test.yml/badge.svg)](https://github.com/UpCloudLtd/upctl/actions/workflows/test.yml)
 
-`upctl` provides a command-line interface to UpCloud services. It allows you
+`upctl` provides a command-line interface to [UpCloud](https://upcloud.com/) services. It allows you
 to control your resources from the command line or any compatible interface.
 
 ```txt
@@ -63,7 +63,7 @@ Use "upctl [command] --help" for more information about a command.
 Install the latest with Go by running:
 
 ```bash
-go install github.com/UpCloudLtd/upcloud-cli/cmd/upctl/v2@latest
+go install github.com/UpCloudLtd/upcloud-cli/v2/...@latest
 ```
 
 To use upctl as a binary, download it from the

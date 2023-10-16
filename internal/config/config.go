@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/UpCloudLtd/upcloud-cli/v2/internal/clierrors"
 	internal "github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/client"
@@ -188,14 +189,13 @@ func (s *Config) CreateService() (internal.AllServices, error) {
 	password := s.GetString("password")
 
 	if username == "" || password == "" {
-		// nb. this might give silghtly unexpected results on OS X, as xdg.ConfigHome points to ~/Library/Application Support
+		// This might give silghtly unexpected results on OS X, as xdg.ConfigHome points to ~/Library/Application Support
 		// while we really use/prefer/document ~/.config - which does work on osx as well but won't be displayed here.
-		// TODO: fix this?
 		configDetails := fmt.Sprintf("default location %s", filepath.Join(xdg.ConfigHome, "upctl.yaml"))
 		if s.GetString("config") != "" {
 			configDetails = fmt.Sprintf("used %s", s.GetString("config"))
 		}
-		return nil, fmt.Errorf("user credentials not found, these must be set in config file (%s) or via environment variables", configDetails)
+		return nil, clierrors.MissingCredentialsError{ConfigFile: configDetails}
 	}
 
 	client := client.New(username, password, client.WithTimeout(s.ClientTimeout()))
