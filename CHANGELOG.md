@@ -22,10 +22,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Breaking**: `server list` and `server show` JSON and YAML outputs to return full API response. This changes field `host_id` to `host`. `nics` is replaced with `networking` subfield `interfaces`. `storage` is replaced with `storage_devices`. `labels` contain subfield `label` which in turn contains the labels.
 - **Breaking**: `server firewall show` JSON and YAML outputs to return full API response. This removes fields `destination` and `source` fields in favor of `[destination|source]_address_start`, `[destination|source]_address_end`, `[destination|source]_port_start` and `[destination|source]_port_end`
 - In JSON and YAML output of `kubernetes list`: display full API response.
+- **Breaking**: In JSON and YAML output of `database list`: display the full API response. Value of `title` is not replaced with value from `name`, if `title` is empty.
+- **Breaking**: In JSON and YAML output of `database types`: display the full API response. This changes the top level datatype from list to object, where keys are the available database type, e.g., `pg` and `mysql`.
 - In human readable output of `kubernetes show` command, show node-groups as table. Node-group details are available with `kubernetes nodegroup show` command.
 
 ## Removed
 - **Breaking**: Remove `database connection list` and `database connection cancel` commands in favor of `database session` counterparts
+- **Breaking**: In JSON and YAML output of `database properties * show`: pass-through the API response. This removes `key` field from the output.
 
 ## [2.10.0] - 2023-07-17
 ### Added

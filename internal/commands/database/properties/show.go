@@ -52,10 +52,13 @@ func (s *showCommand) Execute(exec commands.Executor, key string) (output.Output
 		{Title: "Min length:", Key: "minLength", Value: details.MinLength},
 	}
 
-	return output.Details{
-		Sections: []output.DetailSection{
-			{
-				Rows: filterOutEmptyRows(rows),
+	return output.MarshaledWithHumanOutput{
+		Value: details,
+		Output: output.Details{
+			Sections: []output.DetailSection{
+				{
+					Rows: filterOutEmptyRows(rows),
+				},
 			},
 		},
 	}, nil
