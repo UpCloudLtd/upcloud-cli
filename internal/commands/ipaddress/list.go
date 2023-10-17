@@ -38,7 +38,7 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 	}
 
 	return output.MarshaledWithHumanOutput{
-		Value: ips.IPAddresses,
+		Value: ips,
 		Output: output.Table{
 			Columns: []output.TableColumn{
 				{
