@@ -40,15 +40,18 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 		})
 	}
 
-	return output.Table{
-		Columns: []output.TableColumn{
-			{Key: "uuid", Header: "UUID", Colour: ui.DefaultUUUIDColours},
-			{Key: "name", Header: "Name"},
-			{Key: "network", Header: "Network UUID", Colour: ui.DefaultUUUIDColours},
-			{Key: "network_cidr", Header: "Network CIDR", Colour: ui.DefaultAddressColours},
-			{Key: "zone", Header: "Zone"},
-			{Key: "state", Header: "Operational state", Format: format.KubernetesClusterState},
+	return output.MarshaledWithHumanOutput{
+		Value: clusters,
+		Output: output.Table{
+			Columns: []output.TableColumn{
+				{Key: "uuid", Header: "UUID", Colour: ui.DefaultUUUIDColours},
+				{Key: "name", Header: "Name"},
+				{Key: "network", Header: "Network UUID", Colour: ui.DefaultUUUIDColours},
+				{Key: "network_cidr", Header: "Network CIDR", Colour: ui.DefaultAddressColours},
+				{Key: "zone", Header: "Zone"},
+				{Key: "state", Header: "Operational state", Format: format.KubernetesClusterState},
+			},
+			Rows: rows,
 		},
-		Rows: rows,
 	}, nil
 }
