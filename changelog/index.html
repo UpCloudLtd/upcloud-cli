@@ -2996,6 +2996,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li><strong>Breaking</strong>: <code>storage list</code> and <code>storage show</code> JSON and YAML outputs to return full API response. This changes <code>servers</code> field to contain <code>server</code> field, which in turn contains the servers. <code>labels</code> field will not be outputted if empty.</li>
 <li><strong>Breaking</strong>: <code>server list</code> and <code>server show</code> JSON and YAML outputs to return full API response. This changes field <code>host_id</code> to <code>host</code>. <code>nics</code> is replaced with <code>networking</code> subfield <code>interfaces</code>. <code>storage</code> is replaced with <code>storage_devices</code>. <code>labels</code> contain subfield <code>label</code> which in turn contains the labels.</li>
 <li><strong>Breaking</strong>: <code>server firewall show</code> JSON and YAML outputs to return full API response. This removes fields <code>destination</code> and <code>source</code> fields in favor of <code>[destination|source]_address_start</code>, <code>[destination|source]_address_end</code>, <code>[destination|source]_port_start</code> and <code>[destination|source]_port_end</code></li>
+<li>In JSON and YAML output of <code>kubernetes list</code>: display full API response.</li>
 <li>In human readable output of <code>kubernetes show</code> command, show node-groups as table. Node-group details are available with <code>kubernetes nodegroup show</code> command.</li>
 </ul>
 <h2 id="removed">Removed</h2>
