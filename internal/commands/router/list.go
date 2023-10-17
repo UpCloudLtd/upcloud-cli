@@ -69,7 +69,7 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 	}
 
 	return output.MarshaledWithHumanOutput{
-		Value: filtered,
+		Value: upcloud.Routers{Routers: filtered},
 		Output: output.Table{
 			Columns: []output.TableColumn{
 				{Header: "UUID", Key: "uuid", Colour: ui.DefaultUUUIDColours},
