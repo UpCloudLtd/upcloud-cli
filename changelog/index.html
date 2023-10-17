@@ -2997,11 +2997,14 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li><strong>Breaking</strong>: <code>server list</code> and <code>server show</code> JSON and YAML outputs to return full API response. This changes field <code>host_id</code> to <code>host</code>. <code>nics</code> is replaced with <code>networking</code> subfield <code>interfaces</code>. <code>storage</code> is replaced with <code>storage_devices</code>. <code>labels</code> contain subfield <code>label</code> which in turn contains the labels.</li>
 <li><strong>Breaking</strong>: <code>server firewall show</code> JSON and YAML outputs to return full API response. This removes fields <code>destination</code> and <code>source</code> fields in favor of <code>[destination|source]_address_start</code>, <code>[destination|source]_address_end</code>, <code>[destination|source]_port_start</code> and <code>[destination|source]_port_end</code></li>
 <li>In JSON and YAML output of <code>kubernetes list</code>: display full API response.</li>
+<li><strong>Breaking</strong>: In JSON and YAML output of <code>database list</code>: display the full API response. Value of <code>title</code> is not replaced with value from <code>name</code>, if <code>title</code> is empty.</li>
+<li><strong>Breaking</strong>: In JSON and YAML output of <code>database types</code>: display the full API response. This changes the top level datatype from list to object, where keys are the available database type, e.g., <code>pg</code> and <code>mysql</code>.</li>
 <li>In human readable output of <code>kubernetes show</code> command, show node-groups as table. Node-group details are available with <code>kubernetes nodegroup show</code> command.</li>
 </ul>
 <h2 id="removed">Removed</h2>
 <ul>
 <li><strong>Breaking</strong>: Remove <code>database connection list</code> and <code>database connection cancel</code> commands in favor of <code>database session</code> counterparts</li>
+<li><strong>Breaking</strong>: In JSON and YAML output of <code>database properties * show</code>: pass-through the API response. This removes <code>key</code> field from the output.</li>
 </ul>
 <h2 id="2100-2023-07-17"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.9.1...v2.10.0">2.10.0</a> - 2023-07-17</h2>
 <h3 id="added_1">Added</h3>
