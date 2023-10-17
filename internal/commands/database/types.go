@@ -34,12 +34,15 @@ func (s *typesCommand) ExecuteWithoutArguments(exec commands.Executor) (output.O
 		})
 	}
 
-	return output.Table{
-		Columns: []output.TableColumn{
-			{Key: "name", Header: "Name"},
-			{Key: "description", Header: "Description"},
-			{Key: "latest_available_version", Header: "Latest Available Version"},
+	return output.MarshaledWithHumanOutput{
+		Value: dbTypes,
+		Output: output.Table{
+			Columns: []output.TableColumn{
+				{Key: "name", Header: "Name"},
+				{Key: "description", Header: "Description"},
+				{Key: "latest_available_version", Header: "Latest Available Version"},
+			},
+			Rows: rows,
 		},
-		Rows: rows,
 	}, nil
 }

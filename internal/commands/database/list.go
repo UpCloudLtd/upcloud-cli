@@ -44,15 +44,18 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 		})
 	}
 
-	return output.Table{
-		Columns: []output.TableColumn{
-			{Key: "uuid", Header: "UUID", Colour: ui.DefaultUUUIDColours},
-			{Key: "title", Header: "Title"},
-			{Key: "type", Header: "Type"},
-			{Key: "plan", Header: "Plan"},
-			{Key: "zone", Header: "Zone"},
-			{Key: "state", Header: "State", Format: format.DatabaseState},
+	return output.MarshaledWithHumanOutput{
+		Value: databases,
+		Output: output.Table{
+			Columns: []output.TableColumn{
+				{Key: "uuid", Header: "UUID", Colour: ui.DefaultUUUIDColours},
+				{Key: "title", Header: "Title"},
+				{Key: "type", Header: "Type"},
+				{Key: "plan", Header: "Plan"},
+				{Key: "zone", Header: "Zone"},
+				{Key: "state", Header: "State", Format: format.DatabaseState},
+			},
+			Rows: rows,
 		},
-		Rows: rows,
 	}, nil
 }
