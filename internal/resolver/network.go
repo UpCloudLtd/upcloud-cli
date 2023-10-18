@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	internal "github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
+	internal "github.com/UpCloudLtd/upcloud-cli/v3/internal/service"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
 )

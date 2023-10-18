@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/config"
-	smock "github.com/UpCloudLtd/upcloud-cli/v2/internal/mock"
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/mockexecute"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
+	smock "github.com/UpCloudLtd/upcloud-cli/v3/internal/mock"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/mockexecute"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
 	"github.com/stretchr/testify/assert"

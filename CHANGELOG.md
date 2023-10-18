@@ -7,25 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0] - 2023-10-18
+
+This release updates output of `show` and `list` commands to return the API response as defined in the UpCloud Go SDK. See below for detailed list of changes.
+
+In addition, `kubernetes create` will now, by default, block all access to the cluster. To be able to connect to the cluster, define list of allowed IP addresses and/or CIDR blocks or allow access from any IP.
+
 ### Added
-- **Breaking**: Add `Kubernetes API allowed IPs` field to `kubernetes show` output. This changes default behavior from _allow access from any IP_ to _block access from all IPs_. To be able to connect to the cluster, define list of allowed IP addresses and/or CIDR blocks or allow access from any IP.
+- **Breaking**: Add `--kubernetes-api-allow-ip` argument to `kubernetes create` command. This changes default behavior from _allow access from any IP_ to _block access from all IPs_. To be able to connect to the cluster, define list of allowed IP addresses and/or CIDR blocks or allow access from any IP.
+- Add `Kubernetes API allowed IPs` field to `kubernetes show` output.
 - Add `kubernetes nodegroup show` for displaying node-group details. This also adds _Nodes_ table and _Anti-affinity_ field that were not available in previous `kubernetes show` output.
 - Add `kubernetes modify` command for modifying IP addresses that are allowed to access cluster's Kubernetes API.
-- Add `--kubernetes-api-allow-ip` argument to `kubernetes create` command.
 - Add `Kubernetes API allowed IPs` field to `kubernetes show` output.
-- Add `database session list` for listing active database sessions
-- Add `database session cancel` for cancelling an active database session
+- Add `database session list` for listing active database sessions.
+- Add `database session cancel` for cancelling an active database session.
 
 ### Changed
-- **Breaking**: In JSON and YAML output of `loadbalancer list`: display full API response. This changes `state` field to `operational_state`.
-- **Breaking**: `storage list` and `storage show` JSON and YAML outputs to return full API response. This changes `servers` field to contain `server` field, which in turn contains the servers. `labels` field will not be outputted if empty.
-- **Breaking**: `server list` and `server show` JSON and YAML outputs to return full API response. This changes field `host_id` to `host`. `nics` is replaced with `networking` subfield `interfaces`. `storage` is replaced with `storage_devices`. `labels` contain subfield `label` which in turn contains the labels.
-- **Breaking**: `server firewall show` JSON and YAML outputs to return full API response. This removes fields `destination` and `source` fields in favor of `[destination|source]_address_start`, `[destination|source]_address_end`, `[destination|source]_port_start` and `[destination|source]_port_end`
-- In JSON and YAML output of `kubernetes list`: display full API response.
-- **Breaking**: In JSON and YAML output of `database list`: display the full API response. Value of `title` is not replaced with value from `name`, if `title` is empty.
-- **Breaking**: In JSON and YAML output of `database types`: display the full API response. This changes the top level datatype from list to object, where keys are the available database type, e.g., `pg` and `mysql`.
-- **Breaking**: In JSON and YAML output of `ip-address list`: display full API response. This changes `partofplan` key to `part_of_plan` and `ptrrecord` key to `ptr_record`.
-- **Breaking**: In JSON and YAML output of `network list` and `network show`: display full API response. Servers list will only contain server UUID and name. `ip_networks` contains subfield `ip_network` which in turn contains the networks.
+- **Breaking**: In JSON and YAML output of `database list`: return the full API response. Value of `title` is not replaced with value from `name`, if `title` is empty.
+- **Breaking**: In JSON and YAML output of `database types`: return the full API response. This changes the top level datatype from list to object, where keys are the available database type, e.g., `pg` and `mysql`.
+- **Breaking**: In JSON and YAML output of `ip-address list`: return the full API response. This changes `partofplan` key to `part_of_plan` and `ptrrecord` key to `ptr_record`. The top level data-type changes from list to object.
+- **Breaking**: In JSON and YAML output of `loadbalancer list`: return the full API response. This changes `state` field to `operational_state`.
+- **Breaking**: In JSON and YAML output of `network list` and `network show`: return the full API response. Servers list will only contain server UUID and name. In `network list` output, the top level data-type changes from list to object.
+- **Breaking**: In JSON and YAML output of `server list` and `server show`: return the full API response. This changes field `host_id` to `host`. `nics` is replaced with `networking` subfield `interfaces`. `storage` is replaced with `storage_devices`. `labels` contain subfield `label` which in turn contains the labels. In `server list` output, the top level data-type changes from list to object.
+- **Breaking**: In JSON and YAML output of `server firewall show`: return the full API response. This removes fields `destination` and `source` fields in favor of `[destination|source]_address_start`, `[destination|source]_address_end`, `[destination|source]_port_start` and `[destination|source]_port_end`.
+- **Breaking**: In JSON and YAML output of `server plans`: return the full API response. The top level data-type changes from list to object.
+- **Breaking**: In JSON and YAML output of `storage list` and `storage show`: return the full API response. This changes `servers` field to contain `server` field, which in turn contains the servers. `labels` field will not be outputted if empty. In `storage list` output, the top level data-type changes from list to object.
+- **Breaking**: In JSON and YAML output of `zone list`: return the full API response. The top level data-type changes from list to object.
+- In JSON and YAML output of `kubernetes list`: return the full API response.
 - In human readable output of `kubernetes show` command, show node-groups as table. Node-group details are available with `kubernetes nodegroup show` command.
 
 ## Fixed
@@ -285,7 +293,8 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.10.0...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.10.0...v3.0.0
 [2.10.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.9.1...v2.10.0
 [2.9.1]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.9.0...v2.9.1
 [2.9.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.8.0...v2.9.0

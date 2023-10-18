@@ -7,7 +7,7 @@ import (
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
 
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
 )
 
 // DetailRow represents a single row in the details view, with a title and a value

@@ -1,8 +1,8 @@
 package networkinterface
 
 import (
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands/ipaddress"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/ipaddress"
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
 )
 

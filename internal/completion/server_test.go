@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
-	smock "github.com/UpCloudLtd/upcloud-cli/v2/internal/mock"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
+	smock "github.com/UpCloudLtd/upcloud-cli/v3/internal/mock"
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"

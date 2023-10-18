@@ -1,8 +1,8 @@
 package namedargs
 
 import (
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
 	"github.com/spf13/cobra"
 )
 

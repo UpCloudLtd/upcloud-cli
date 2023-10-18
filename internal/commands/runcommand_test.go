@@ -8,11 +8,11 @@ import (
 	"os"
 	"testing"
 
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/config"
-	smock "github.com/UpCloudLtd/upcloud-cli/v2/internal/mock"
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
-	internal "github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
+	smock "github.com/UpCloudLtd/upcloud-cli/v3/internal/mock"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
+	internal "github.com/UpCloudLtd/upcloud-cli/v3/internal/service"
 
 	"github.com/gemalto/flume"
 	"github.com/spf13/cobra"

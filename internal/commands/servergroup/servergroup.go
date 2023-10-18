@@ -1,8 +1,8 @@
 package servergroup
 
 import (
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/namedargs"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/namedargs"
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
 )
 

@@ -3,7 +3,7 @@ package output_test
 import (
 	"testing"
 
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 )
 
 func TestCombined(t *testing.T) {

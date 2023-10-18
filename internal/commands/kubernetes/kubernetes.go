@@ -1,7 +1,7 @@
 package kubernetes
 
 import (
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 )
 
 // BaseKubernetesCommand creates the base "kubernetes" command

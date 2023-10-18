@@ -3,7 +3,7 @@ package resolver
 import (
 	"context"
 
-	internal "github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
+	internal "github.com/UpCloudLtd/upcloud-cli/v3/internal/service"
 )
 
 // CachingIPAddress implements resolver for ip addresses that resolve with ptr records, caching the results

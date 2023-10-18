@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 )
 
 func TestTable(t *testing.T) {

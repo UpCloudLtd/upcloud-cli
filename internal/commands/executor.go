@@ -9,10 +9,10 @@ import (
 
 	"github.com/UpCloudLtd/progress"
 	"github.com/UpCloudLtd/progress/messages"
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/clierrors"
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/config"
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
-	internal "github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/clierrors"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
+	internal "github.com/UpCloudLtd/upcloud-cli/v3/internal/service"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/service"
 	"github.com/gemalto/flume"

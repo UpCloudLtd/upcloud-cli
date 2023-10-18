@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 
 	"github.com/stretchr/testify/assert"
 )
