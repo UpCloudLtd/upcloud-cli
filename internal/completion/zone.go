@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/service"
 
 	"github.com/spf13/cobra"
 )

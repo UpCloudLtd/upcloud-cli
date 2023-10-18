@@ -3,7 +3,7 @@ package labels
 import (
 	"fmt"
 
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
 )
 

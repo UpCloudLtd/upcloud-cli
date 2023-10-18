@@ -5,12 +5,12 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/config"
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/labels"
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/labels"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"

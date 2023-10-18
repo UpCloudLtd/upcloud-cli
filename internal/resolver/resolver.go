@@ -3,7 +3,7 @@ package resolver
 import (
 	"context"
 
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/service"
 )
 
 const helpUUIDTitle = "<UUID/Title...>"

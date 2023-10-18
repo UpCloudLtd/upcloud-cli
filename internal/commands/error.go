@@ -2,7 +2,7 @@ package commands
 
 import (
 	"github.com/UpCloudLtd/progress/messages"
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 )
 
 // HandleError updates error details to progress log message identified by given key. Returns (nil, err), where err is the err passed in as input.

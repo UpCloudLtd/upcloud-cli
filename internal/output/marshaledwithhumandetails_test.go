@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 )
 
 func TestMarshaledWithHumanDetails(t *testing.T) {

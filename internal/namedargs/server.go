@@ -3,8 +3,8 @@ package namedargs
 import (
 	"fmt"
 
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 )
 
 // ResolveServer resolves server UUID from values provided to named args (e.g., --server server-name)

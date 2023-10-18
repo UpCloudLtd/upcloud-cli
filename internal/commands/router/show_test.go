@@ -9,11 +9,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/config"
-	smock "github.com/UpCloudLtd/upcloud-cli/v2/internal/mock"
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/mockexecute"
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
+	smock "github.com/UpCloudLtd/upcloud-cli/v3/internal/mock"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/mockexecute"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 )
 
 func TestShowCommand(t *testing.T) {

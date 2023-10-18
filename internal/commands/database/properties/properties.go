@@ -1,7 +1,7 @@
 package databaseproperties
 
 import (
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 )
 
 // PropertiesCommand creates the "database properties" command

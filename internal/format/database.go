@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
 	"github.com/jedib0t/go-pretty/v6/text"
 )

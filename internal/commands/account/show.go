@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 )
 
 // ShowCommand creates the 'account show' command

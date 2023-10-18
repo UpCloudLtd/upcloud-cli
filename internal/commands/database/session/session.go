@@ -1,7 +1,7 @@
 package databasesession
 
 import (
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 )
 
 // BaseSessionCommand creates the base "session" command

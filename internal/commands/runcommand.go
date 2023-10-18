@@ -3,11 +3,11 @@ package commands
 import (
 	"fmt"
 
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/clierrors"
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/config"
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
-	internal "github.com/UpCloudLtd/upcloud-cli/v2/internal/service"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/clierrors"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
+	internal "github.com/UpCloudLtd/upcloud-cli/v3/internal/service"
 
 	"github.com/gemalto/flume"
 )

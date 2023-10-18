@@ -3,8 +3,8 @@ package namedargs
 import (
 	"fmt"
 
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/resolver"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 )
 
 // Resolve initializes given resolution provider and uses it to resolve given argument

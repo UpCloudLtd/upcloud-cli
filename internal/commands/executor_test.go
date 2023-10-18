@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/config"
-	smock "github.com/UpCloudLtd/upcloud-cli/v2/internal/mock"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
+	smock "github.com/UpCloudLtd/upcloud-cli/v3/internal/mock"
 
 	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"

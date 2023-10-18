@@ -3,7 +3,7 @@ package completion_test
 import (
 	"testing"
 
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
 
 	"github.com/stretchr/testify/assert"
 )

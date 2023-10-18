@@ -5,8 +5,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/config"
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 
 	"github.com/stretchr/testify/assert"
 )

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/ui"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
 )
 
 // CombinedSection represents a single section of a combined output

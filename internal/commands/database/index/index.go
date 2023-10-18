@@ -1,7 +1,7 @@
 package databaseindex
 
 import (
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 )
 
 // BaseIndexCommand creates the base "database index" command

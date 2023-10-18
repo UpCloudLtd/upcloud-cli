@@ -1,7 +1,7 @@
 package loadbalancer
 
 import (
-	"github.com/UpCloudLtd/upcloud-cli/v2/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 )
 
 // BaseLoadBalancerCommand creates the base "loadbalancer" command
