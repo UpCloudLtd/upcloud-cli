@@ -35,15 +35,18 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 		})
 	}
 
-	return output.Table{
-		Columns: []output.TableColumn{
-			{Key: "name", Header: "Name"},
-			{Key: "cores", Header: "Cores"},
-			{Key: "memory", Header: "Memory"},
-			{Key: "storage", Header: "Storage size"},
-			{Key: "storage_tier", Header: "Storage tier"},
-			{Key: "egress_transfer", Header: "Transfer out (GiB/month)"},
+	return output.MarshaledWithHumanOutput{
+		Value: plans,
+		Output: output.Table{
+			Columns: []output.TableColumn{
+				{Key: "name", Header: "Name"},
+				{Key: "cores", Header: "Cores"},
+				{Key: "memory", Header: "Memory"},
+				{Key: "storage", Header: "Storage size"},
+				{Key: "storage_tier", Header: "Storage tier"},
+				{Key: "egress_transfer", Header: "Transfer out (GiB/month)"},
+			},
+			Rows: rows,
 		},
-		Rows: rows,
 	}, nil
 }
