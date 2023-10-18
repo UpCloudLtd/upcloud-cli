@@ -128,7 +128,10 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 		})
 	}
 
-	return combined, nil
+	return output.MarshaledWithHumanOutput{
+		Value:  network,
+		Output: combined,
+	}, nil
 }
 
 func formatShowDHCPDNS(val interface{}) (text.Colors, string, error) {
