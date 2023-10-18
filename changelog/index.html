@@ -380,36 +380,22 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../commands_reference/upctl_database/" class="md-nav__link">
-        database 
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
     
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3_2" type="checkbox" id="__nav_2_3_2" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3_1" type="checkbox" id="__nav_2_3_1" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_2_3_2">
+        <label class="md-nav__link" for="__nav_2_3_1">
           database index
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="database index" data-md-level="3">
-        <label class="md-nav__title" for="__nav_2_3_2">
+        <label class="md-nav__title" for="__nav_2_3_1">
           <span class="md-nav__icon md-icon"></span>
           database index
         </label>
@@ -459,6 +445,20 @@
           
         </ul>
       </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_database/" class="md-nav__link">
+        database 
+      </a>
     </li>
   
 
@@ -3012,6 +3012,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li><strong>Breaking</strong>: In JSON and YAML output of <code>database list</code>: display the full API response. Value of <code>title</code> is not replaced with value from <code>name</code>, if <code>title</code> is empty.</li>
 <li><strong>Breaking</strong>: In JSON and YAML output of <code>database types</code>: display the full API response. This changes the top level datatype from list to object, where keys are the available database type, e.g., <code>pg</code> and <code>mysql</code>.</li>
 <li><strong>Breaking</strong>: In JSON and YAML output of <code>ip-address list</code>: display full API response. This changes <code>partofplan</code> key to <code>part_of_plan</code> and <code>ptrrecord</code> key to <code>ptr_record</code>.</li>
+<li><strong>Breaking</strong>: In JSON and YAML output of <code>network list</code> and <code>network show</code>: display full API response. Servers list will only contain server UUID and name. <code>ip_networks</code> contains subfield <code>ip_network</code> which in turn contains the networks.</li>
 <li>In human readable output of <code>kubernetes show</code> command, show node-groups as table. Node-group details are available with <code>kubernetes nodegroup show</code> command.</li>
 </ul>
 <h2 id="fixed">Fixed</h2>
