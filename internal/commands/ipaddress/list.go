@@ -36,45 +36,49 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 	for i, ipAddress := range ips.IPAddresses {
 		rows[i] = output.TableRow{ipAddress.Address, ipAddress.Access, ipAddress.Family, ipAddress.PartOfPlan, ipAddress.PTRRecord, ipAddress.ServerUUID, ipAddress.Floating, ipAddress.Zone}
 	}
-	return output.Table{
-		Columns: []output.TableColumn{
-			{
-				Header: "Address",
-				Key:    "address",
-				Colour: ui.DefaultAddressColours,
+
+	return output.MarshaledWithHumanOutput{
+		Value: ips,
+		Output: output.Table{
+			Columns: []output.TableColumn{
+				{
+					Header: "Address",
+					Key:    "address",
+					Colour: ui.DefaultAddressColours,
+				},
+				{
+					Header: "Access",
+					Key:    "access",
+				},
+				{
+					Header: "Family",
+					Key:    "family",
+				},
+				{
+					Header: "Part of Plan",
+					Key:    "part_of_plan",
+					Format: format.Boolean,
+				},
+				{
+					Header: "PTR Record",
+					Key:    "ptr_record",
+				},
+				{
+					Header: "Server",
+					Key:    "server",
+					Colour: ui.DefaultUUUIDColours,
+				},
+				{
+					Header: "Floating",
+					Key:    "floating",
+					Format: format.Boolean,
+				},
+				{
+					Header: "Zone",
+					Key:    "zone",
+				},
 			},
-			{
-				Header: "Access",
-				Key:    "access",
-			},
-			{
-				Header: "Family",
-				Key:    "family",
-			},
-			{
-				Header: "Part of Plan",
-				Key:    "partofplan",
-				Format: format.Boolean,
-			},
-			{
-				Header: "PTR Record",
-				Key:    "ptrrecord",
-			},
-			{
-				Header: "Server",
-				Key:    "server",
-				Colour: ui.DefaultUUUIDColours,
-			},
-			{
-				Header: "Floating",
-				Key:    "floating",
-				Format: format.Boolean,
-			},
-			{
-				Header: "Zone",
-				Key:    "zone",
-			},
+			Rows: rows,
 		},
-		Rows: rows,
 	}, nil
 }

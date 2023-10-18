@@ -27,7 +27,7 @@ func (s *showCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 		return nil, err
 	}
 
-	details, err := output.Details{
+	details := output.Details{
 		Sections: []output.DetailSection{
 			{
 				Rows: []output.DetailRow{
@@ -80,12 +80,12 @@ func (s *showCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 				},
 			},
 		},
-	}, nil
+	}
 
 	return output.MarshaledWithHumanOutput{
 		Value:  account,
 		Output: details,
-	}, err
+	}, nil
 }
 
 func formatCredits(credits float64) string {
