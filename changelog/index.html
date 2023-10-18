@@ -2587,6 +2587,12 @@
         <!-- Limit TOC depth to 1 -->
 
 <li class="md-nav__item">
+  <a href="#300-2023-10-18" class="md-nav__link"> 3.0.0 - 2023-10-18 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
   <a href="#fixed" class="md-nav__link"> Fixed </a>
 </li>
       
@@ -2801,6 +2807,12 @@
         <!-- Limit TOC depth to 1 -->
 
 <li class="md-nav__item">
+  <a href="#300-2023-10-18" class="md-nav__link"> 3.0.0 - 2023-10-18 </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
   <a href="#fixed" class="md-nav__link"> Fixed </a>
 </li>
       
@@ -2991,28 +3003,33 @@
 <p>All notable changes to this project will be documented in this file.</p>
 <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>,
 and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
-<h2 id="unreleased"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.10.0...HEAD">Unreleased</a></h2>
+<h2 id="unreleased"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v3.0.0...HEAD">Unreleased</a></h2>
+<h2 id="300-2023-10-18"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.10.0...v3.0.0">3.0.0</a> - 2023-10-18</h2>
+<p>This release updates output of <code>show</code> and <code>list</code> commands to return the API response as defined in the UpCloud Go SDK. See below for detailed list of changes.</p>
+<p>In addition, <code>kubernetes create</code> will now, by default, block all access to the cluster. To be able to connect to the cluster, define list of allowed IP addresses and/or CIDR blocks or allow access from any IP.</p>
 <h3 id="added">Added</h3>
 <ul>
-<li><strong>Breaking</strong>: Add <code>Kubernetes API allowed IPs</code> field to <code>kubernetes show</code> output. This changes default behavior from <em>allow access from any IP</em> to <em>block access from all IPs</em>. To be able to connect to the cluster, define list of allowed IP addresses and/or CIDR blocks or allow access from any IP.</li>
+<li><strong>Breaking</strong>: Add <code>--kubernetes-api-allow-ip</code> argument to <code>kubernetes create</code> command. This changes default behavior from <em>allow access from any IP</em> to <em>block access from all IPs</em>. To be able to connect to the cluster, define list of allowed IP addresses and/or CIDR blocks or allow access from any IP.</li>
+<li>Add <code>Kubernetes API allowed IPs</code> field to <code>kubernetes show</code> output.</li>
 <li>Add <code>kubernetes nodegroup show</code> for displaying node-group details. This also adds <em>Nodes</em> table and <em>Anti-affinity</em> field that were not available in previous <code>kubernetes show</code> output.</li>
 <li>Add <code>kubernetes modify</code> command for modifying IP addresses that are allowed to access cluster's Kubernetes API.</li>
-<li>Add <code>--kubernetes-api-allow-ip</code> argument to <code>kubernetes create</code> command.</li>
 <li>Add <code>Kubernetes API allowed IPs</code> field to <code>kubernetes show</code> output.</li>
-<li>Add <code>database session list</code> for listing active database sessions</li>
-<li>Add <code>database session cancel</code> for cancelling an active database session</li>
+<li>Add <code>database session list</code> for listing active database sessions.</li>
+<li>Add <code>database session cancel</code> for cancelling an active database session.</li>
 </ul>
 <h3 id="changed">Changed</h3>
 <ul>
-<li><strong>Breaking</strong>: In JSON and YAML output of <code>loadbalancer list</code>: display full API response. This changes <code>state</code> field to <code>operational_state</code>.</li>
-<li><strong>Breaking</strong>: <code>storage list</code> and <code>storage show</code> JSON and YAML outputs to return full API response. This changes <code>servers</code> field to contain <code>server</code> field, which in turn contains the servers. <code>labels</code> field will not be outputted if empty.</li>
-<li><strong>Breaking</strong>: <code>server list</code> and <code>server show</code> JSON and YAML outputs to return full API response. This changes field <code>host_id</code> to <code>host</code>. <code>nics</code> is replaced with <code>networking</code> subfield <code>interfaces</code>. <code>storage</code> is replaced with <code>storage_devices</code>. <code>labels</code> contain subfield <code>label</code> which in turn contains the labels.</li>
-<li><strong>Breaking</strong>: <code>server firewall show</code> JSON and YAML outputs to return full API response. This removes fields <code>destination</code> and <code>source</code> fields in favor of <code>[destination|source]_address_start</code>, <code>[destination|source]_address_end</code>, <code>[destination|source]_port_start</code> and <code>[destination|source]_port_end</code></li>
-<li>In JSON and YAML output of <code>kubernetes list</code>: display full API response.</li>
-<li><strong>Breaking</strong>: In JSON and YAML output of <code>database list</code>: display the full API response. Value of <code>title</code> is not replaced with value from <code>name</code>, if <code>title</code> is empty.</li>
-<li><strong>Breaking</strong>: In JSON and YAML output of <code>database types</code>: display the full API response. This changes the top level datatype from list to object, where keys are the available database type, e.g., <code>pg</code> and <code>mysql</code>.</li>
-<li><strong>Breaking</strong>: In JSON and YAML output of <code>ip-address list</code>: display full API response. This changes <code>partofplan</code> key to <code>part_of_plan</code> and <code>ptrrecord</code> key to <code>ptr_record</code>.</li>
-<li><strong>Breaking</strong>: In JSON and YAML output of <code>network list</code> and <code>network show</code>: display full API response. Servers list will only contain server UUID and name. <code>ip_networks</code> contains subfield <code>ip_network</code> which in turn contains the networks.</li>
+<li><strong>Breaking</strong>: In JSON and YAML output of <code>database list</code>: return the full API response. Value of <code>title</code> is not replaced with value from <code>name</code>, if <code>title</code> is empty.</li>
+<li><strong>Breaking</strong>: In JSON and YAML output of <code>database types</code>: return the full API response. This changes the top level datatype from list to object, where keys are the available database type, e.g., <code>pg</code> and <code>mysql</code>.</li>
+<li><strong>Breaking</strong>: In JSON and YAML output of <code>ip-address list</code>: return the full API response. This changes <code>partofplan</code> key to <code>part_of_plan</code> and <code>ptrrecord</code> key to <code>ptr_record</code>. The top level data-type changes from list to object.</li>
+<li><strong>Breaking</strong>: In JSON and YAML output of <code>loadbalancer list</code>: return the full API response. This changes <code>state</code> field to <code>operational_state</code>.</li>
+<li><strong>Breaking</strong>: In JSON and YAML output of <code>network list</code> and <code>network show</code>: return the full API response. Servers list will only contain server UUID and name. In <code>network list</code> output, the top level data-type changes from list to object.</li>
+<li><strong>Breaking</strong>: In JSON and YAML output of <code>server list</code> and <code>server show</code>: return the full API response. This changes field <code>host_id</code> to <code>host</code>. <code>nics</code> is replaced with <code>networking</code> subfield <code>interfaces</code>. <code>storage</code> is replaced with <code>storage_devices</code>. <code>labels</code> contain subfield <code>label</code> which in turn contains the labels. In <code>server list</code> output, the top level data-type changes from list to object.</li>
+<li><strong>Breaking</strong>: In JSON and YAML output of <code>server firewall show</code>: return the full API response. This removes fields <code>destination</code> and <code>source</code> fields in favor of <code>[destination|source]_address_start</code>, <code>[destination|source]_address_end</code>, <code>[destination|source]_port_start</code> and <code>[destination|source]_port_end</code>.</li>
+<li><strong>Breaking</strong>: In JSON and YAML output of <code>server plans</code>: return the full API response. The top level data-type changes from list to object.</li>
+<li><strong>Breaking</strong>: In JSON and YAML output of <code>storage list</code> and <code>storage show</code>: return the full API response. This changes <code>servers</code> field to contain <code>server</code> field, which in turn contains the servers. <code>labels</code> field will not be outputted if empty. In <code>storage list</code> output, the top level data-type changes from list to object.</li>
+<li><strong>Breaking</strong>: In JSON and YAML output of <code>zone list</code>: return the full API response. The top level data-type changes from list to object.</li>
+<li>In JSON and YAML output of <code>kubernetes list</code>: return the full API response.</li>
 <li>In human readable output of <code>kubernetes show</code> command, show node-groups as table. Node-group details are available with <code>kubernetes nodegroup show</code> command.</li>
 </ul>
 <h2 id="fixed">Fixed</h2>
