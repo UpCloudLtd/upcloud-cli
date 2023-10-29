@@ -6,6 +6,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
+	"github.com/jedib0t/go-pretty/v6/text"
 )
 
 // ShowCommand creates the 'account show' command
@@ -32,7 +33,7 @@ func (s *showCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 			{
 				Rows: []output.DetailRow{
 					{Title: "Username:", Key: "username", Value: account.UserName},
-					{Title: "Credits:", Key: "credits", Value: formatCredits(account.Credits)},
+					{Title: "Credits:", Key: "credits", Value: account.Credits, Format: formatCredits},
 				},
 			},
 			{
@@ -53,9 +54,19 @@ func (s *showCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 						Value: account.ResourceLimits.Memory,
 					},
 					{
+						Title: "Network peerings:",
+						Key:   "network_peerings",
+						Value: account.ResourceLimits.NetworkPeerings,
+					},
+					{
 						Title: "Networks:",
 						Key:   "networks",
 						Value: account.ResourceLimits.Networks,
+					},
+					{
+						Title: "NTP excess GiB:",
+						Key:   "ntp_excess_gib",
+						Value: account.ResourceLimits.NTPExcessGiB,
 					},
 					{
 						Title: "Public IPv4:",
@@ -73,9 +84,19 @@ func (s *showCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 						Value: account.ResourceLimits.StorageHDD,
 					},
 					{
+						Title: "Storage MaxIOPS:",
+						Key:   "storage_maxiops",
+						Value: account.ResourceLimits.StorageMaxIOPS,
+					},
+					{
 						Title: "Storage SSD:",
 						Key:   "storage_ssd",
 						Value: account.ResourceLimits.StorageSSD,
+					},
+					{
+						Title: "Load balancers:",
+						Key:   "load_balancers",
+						Value: account.ResourceLimits.LoadBalancers,
 					},
 				},
 			},
@@ -88,9 +109,16 @@ func (s *showCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 	}, nil
 }
 
-func formatCredits(credits float64) string {
-	if math.Abs(credits) < 0.001 {
-		return "Denied"
+func formatCredits(val interface{}) (text.Colors, string, error) {
+	credits, ok := val.(float64)
+	if !ok {
+		return nil, "", fmt.Errorf("cannot parse %T, expected float64", val)
 	}
-	return fmt.Sprintf("%.2f$", credits/100)
+
+	if math.Abs(credits) < 0.001 {
+		return nil, "Denied", nil
+	}
+
+	// Format does not follow european standards, but this is in sync with UI
+	return nil, fmt.Sprintf("€%.2f", credits/100), nil
 }
