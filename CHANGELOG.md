@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add `network_peerings`, `ntp_excess_gib`, `storage_maxiops` and `load_balancers` fields to `account show` outputs.
+
+### Fixed
+
+- Use correct currency symbol, `€` instead of `$`, in human output of `account show`.
+
 ## [3.0.0] - 2023-10-18
 
 This release updates output of `show` and `list` commands to return the API response as defined in the UpCloud Go SDK. See below for detailed list of changes.
