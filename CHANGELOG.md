@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add `network_peerings`, `ntp_excess_gib`, `storage_maxiops` and `load_balancers` fields to `account show` outputs.
+- Add `--version` parameter to `kubernetes create` and `version` field to `kubernetes show` output.
+
+### Changed
+
+- **Breaking**: Update return type of `kubernetes versions` from list of strings to list of objects. (No major version bump, because this end-point has not been included in the API docs)
 
 ### Fixed
 
