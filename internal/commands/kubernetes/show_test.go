@@ -95,9 +95,10 @@ var testCluster = upcloud.KubernetesCluster{
 			UtilityNetworkAccess: false,
 		},
 	},
-	State: upcloud.KubernetesClusterStateRunning,
-	UUID:  "0ddab8f4-97c0-4222-91ba-85a4fff7499b",
-	Zone:  "de-fra1",
+	State:   upcloud.KubernetesClusterStateRunning,
+	UUID:    "0ddab8f4-97c0-4222-91ba-85a4fff7499b",
+	Version: "2.54",
+	Zone:    "de-fra1",
 }
 
 func TestShowCommand(t *testing.T) {
@@ -107,6 +108,7 @@ func TestShowCommand(t *testing.T) {
   Overview:
     UUID:                       0ddab8f4-97c0-4222-91ba-85a4fff7499b 
     Name:                       upcloud-upctl-unit-test              
+    Version:                    2.54                                 
     Network UUID:               03a98be3-7daa-443f-bb25-4bc6854b396c 
     Network name:               Test network                         
     Network CIDR:               172.16.1.0/24                        
