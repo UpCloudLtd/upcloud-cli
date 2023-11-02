@@ -146,6 +146,7 @@ func (c *createCommand) InitCommand() {
 func (c *createCommand) InitCommandWithConfig(cfg *config.Config) {
 	_ = c.Cobra().RegisterFlagCompletionFunc("network", namedargs.CompletionFunc(completion.Network{}, cfg))
 	_ = c.Cobra().RegisterFlagCompletionFunc("zone", namedargs.CompletionFunc(completion.Zone{}, cfg))
+	_ = c.Cobra().RegisterFlagCompletionFunc("version", namedargs.CompletionFunc(completion.KubernetesVersion{}, cfg))
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand

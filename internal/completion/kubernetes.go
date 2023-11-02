@@ -28,3 +28,23 @@ func (s Kubernetes) CompleteArgument(ctx context.Context, svc service.AllService
 
 	return MatchStringPrefix(vals, toComplete, true), cobra.ShellCompDirectiveNoFileComp
 }
+
+// KubernetesVersion implements argument completion for Kubernetes versions by version id.
+type KubernetesVersion struct{}
+
+// make sure Kubernetes implements the interface
+var _ Provider = KubernetesVersion{}
+
+// CompleteArgument implements completion.Provider
+func (s KubernetesVersion) CompleteArgument(ctx context.Context, svc service.AllServices, toComplete string) ([]string, cobra.ShellCompDirective) {
+	versions, err := svc.GetKubernetesVersions(ctx, &request.GetKubernetesVersionsRequest{})
+	if err != nil {
+		return None(toComplete)
+	}
+	var vals []string
+	for _, version := range versions {
+		vals = append(vals, version.Id)
+	}
+
+	return MatchStringPrefix(vals, toComplete, true), cobra.ShellCompDirectiveNoFileComp
+}
