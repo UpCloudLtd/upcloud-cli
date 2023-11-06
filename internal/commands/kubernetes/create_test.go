@@ -100,6 +100,10 @@ func TestCreateKubernetes(t *testing.T) {
 	privateNodeGroupsRequest := nodeGroupRequest
 	privateNodeGroupsRequest.PrivateNodeGroups = true
 
+	versionArg := []string{"--version", "0.99"}
+	versionRequest := nodeGroupRequest
+	versionRequest.Version = "0.99"
+
 	for _, test := range []struct {
 		name    string
 		args    []string
@@ -128,6 +132,12 @@ func TestCreateKubernetes(t *testing.T) {
 			name:    "with private node groups",
 			args:    append(nodeGroupArgs(network.Name), privateNodeGroupsArg...),
 			request: privateNodeGroupsRequest,
+			wantErr: false,
+		},
+		{
+			name:    "with non-default version",
+			args:    append(nodeGroupArgs(network.Name), versionArg...),
+			request: versionRequest,
 			wantErr: false,
 		},
 	} {

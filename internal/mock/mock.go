@@ -939,8 +939,12 @@ func (m *Service) GetKubernetesKubeconfig(_ context.Context, r *request.GetKuber
 	return args[0].(string), args.Error(1)
 }
 
-func (m *Service) GetKubernetesVersions(_ context.Context, r *request.GetKubernetesVersionsRequest) ([]string, error) {
-	return nil, nil
+func (m *Service) GetKubernetesVersions(_ context.Context, r *request.GetKubernetesVersionsRequest) ([]upcloud.KubernetesVersion, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].([]upcloud.KubernetesVersion), args.Error(1)
 }
 
 func (m *Service) WaitForKubernetesClusterState(context.Context, *request.WaitForKubernetesClusterStateRequest) (*upcloud.KubernetesCluster, error) {

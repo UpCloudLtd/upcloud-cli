@@ -81,6 +81,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 							Rows: []output.DetailRow{
 								{Title: "UUID:", Value: cluster.UUID, Colour: ui.DefaultUUUIDColours},
 								{Title: "Name:", Value: cluster.Name},
+								{Title: "Version:", Value: cluster.Version},
 								{Title: "Network UUID:", Value: cluster.Network, Colour: ui.DefaultUUUIDColours},
 								{Title: "Network name:", Value: networkName, Format: format.PossiblyUnknownString},
 								{Title: "Network CIDR:", Value: cluster.NetworkCIDR, Colour: ui.DefaultAddressColours},

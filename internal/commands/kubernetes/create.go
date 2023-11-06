@@ -106,6 +106,7 @@ func (c *createCommand) InitCommand() {
 
 	fs.StringVar(&c.params.Name, "name", "", "Kubernetes cluster name.")
 	fs.StringVar(&c.params.Plan, "plan", "development", "Plan to use for the cluster. Run `upctl kubernetes plans` to list all available plans.")
+	fs.StringVar(&c.params.Version, "version", "", "Identifier of the version of Kubernetes to use when creating the cluster. Run `upctl kubernetes versions` to list all available versions.")
 	fs.StringVar(&c.params.networkArg, "network", "", "Network to use. The value should be name or UUID of a private network.")
 	fs.StringArrayVar(
 		&c.params.nodeGroups,
@@ -145,6 +146,7 @@ func (c *createCommand) InitCommand() {
 func (c *createCommand) InitCommandWithConfig(cfg *config.Config) {
 	_ = c.Cobra().RegisterFlagCompletionFunc("network", namedargs.CompletionFunc(completion.Network{}, cfg))
 	_ = c.Cobra().RegisterFlagCompletionFunc("zone", namedargs.CompletionFunc(completion.Zone{}, cfg))
+	_ = c.Cobra().RegisterFlagCompletionFunc("version", namedargs.CompletionFunc(completion.KubernetesVersion{}, cfg))
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand

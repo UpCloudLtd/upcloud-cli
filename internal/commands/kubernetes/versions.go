@@ -29,7 +29,8 @@ func (s *versionsCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 	rows := []output.TableRow{}
 	for _, version := range versions {
 		rows = append(rows, output.TableRow{
-			version,
+			version.Id,
+			version.Version,
 		})
 	}
 
@@ -37,6 +38,7 @@ func (s *versionsCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 		Value: versions,
 		Output: output.Table{
 			Columns: []output.TableColumn{
+				{Key: "id", Header: "ID"},
 				{Key: "version", Header: "Version"},
 			},
 			Rows: rows,
