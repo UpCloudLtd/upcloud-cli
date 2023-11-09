@@ -17,4 +17,5 @@ type AllServices interface {
 	service.LoadBalancer
 	service.Kubernetes
 	service.ServerGroup
+	service.ManagedObjectStorage
 }
