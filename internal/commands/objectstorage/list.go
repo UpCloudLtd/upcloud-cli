@@ -34,8 +34,6 @@ func (c *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 			objectstorage.Region,
 			objectstorage.ConfiguredStatus,
 			objectstorage.OperationalState,
-			objectstorage.CreatedAt,
-			objectstorage.UpdatedAt,
 		})
 	}
 
@@ -47,7 +45,6 @@ func (c *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 				{Key: "region", Header: "Region"},
 				{Key: "configured_status", Header: "Configured status", Format: format.ObjectStorageConfiguredStatus},
 				{Key: "operational_state", Header: "Operational state", Format: format.ObjectStorageOperationalState},
-				{Key: "created_at", Header: "Created"},
 			},
 			Rows: rows,
 		},
