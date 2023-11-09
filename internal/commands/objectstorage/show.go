@@ -25,7 +25,7 @@ type showCommand struct {
 }
 
 // Execute implements commands.MultipleArgumentCommand
-func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
+func (c *showCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.All()
 	objectStorage, err := svc.GetManagedObjectStorage(exec.Context(), &request.GetManagedObjectStorageRequest{UUID: uuid})
 	if err != nil {

@@ -16,6 +16,6 @@ type objectstorageCommand struct {
 }
 
 // InitCommand implements Command.InitCommand
-func (lb *objectstorageCommand) InitCommand() {
-	lb.Cobra().Aliases = []string{"object-storage", "objsto"}
+func (c *objectstorageCommand) InitCommand() {
+	c.Cobra().Aliases = []string{"object-storage", "objsto"}
 }

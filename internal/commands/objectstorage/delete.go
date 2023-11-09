@@ -24,7 +24,7 @@ type deleteCommand struct {
 }
 
 // Execute implements commands.MultipleArgumentCommand
-func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
+func (c *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	svc := exec.All()
 	msg := fmt.Sprintf("Deleting object storage service %v", arg)
 	exec.PushProgressStarted(msg)
@@ -33,7 +33,7 @@ func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Outp
 		UUID: arg,
 	})
 	if err != nil {
-		return commands.HandleError(exec, fmt.Sprintf("%s: failed", msg), err)
+		return commands.HandleError(exec, fmt.Sprintf("%c: failed", msg), err)
 	}
 
 	exec.PushProgressSuccess(msg)
