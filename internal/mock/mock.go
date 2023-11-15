@@ -54,15 +54,17 @@ func (m *Service) GetPlans(context.Context) (*upcloud.Plans, error) {
 
 // make sure Service implements service interfaces
 var (
-	_ service.Server       = &Service{}
-	_ service.Storage      = &Service{}
-	_ service.Firewall     = &Service{}
-	_ service.Network      = &Service{}
-	_ service.IPAddress    = &Service{}
-	_ service.Cloud        = &Service{}
-	_ service.Account      = &Service{}
-	_ service.LoadBalancer = &Service{}
-	_ service.Kubernetes   = &Service{}
+	_ service.Server               = &Service{}
+	_ service.Storage              = &Service{}
+	_ service.Firewall             = &Service{}
+	_ service.Network              = &Service{}
+	_ service.IPAddress            = &Service{}
+	_ service.Cloud                = &Service{}
+	_ service.Account              = &Service{}
+	_ service.LoadBalancer         = &Service{}
+	_ service.Kubernetes           = &Service{}
+	_ service.ServerGroup          = &Service{}
+	_ service.ManagedObjectStorage = &Service{}
 )
 
 // GetServerConfigurations implements service.Server.GetServerConfigurations
@@ -1048,5 +1050,109 @@ func (m *Service) DeleteServerGroup(ctx context.Context, r *request.DeleteServer
 	if args[0] == nil {
 		return args.Error(0)
 	}
+	return nil
+}
+
+func (m *Service) GetManagedObjectStorageRegions(ctx context.Context, r *request.GetManagedObjectStorageRegionsRequest) ([]upcloud.ManagedObjectStorageRegion, error) {
+	return nil, nil
+}
+
+func (m *Service) GetManagedObjectStorageRegion(ctx context.Context, r *request.GetManagedObjectStorageRegionRequest) (*upcloud.ManagedObjectStorageRegion, error) {
+	return nil, nil
+}
+
+func (m *Service) CreateManagedObjectStorage(ctx context.Context, r *request.CreateManagedObjectStorageRequest) (*upcloud.ManagedObjectStorage, error) {
+	return nil, nil
+}
+
+func (m *Service) GetManagedObjectStorages(ctx context.Context, r *request.GetManagedObjectStoragesRequest) ([]upcloud.ManagedObjectStorage, error) {
+	return nil, nil
+}
+
+func (m *Service) GetManagedObjectStorage(ctx context.Context, r *request.GetManagedObjectStorageRequest) (*upcloud.ManagedObjectStorage, error) {
+	return nil, nil
+}
+
+func (m *Service) ReplaceManagedObjectStorage(ctx context.Context, r *request.ReplaceManagedObjectStorageRequest) (*upcloud.ManagedObjectStorage, error) {
+	return nil, nil
+}
+
+func (m *Service) ModifyManagedObjectStorage(ctx context.Context, r *request.ModifyManagedObjectStorageRequest) (*upcloud.ManagedObjectStorage, error) {
+	return nil, nil
+}
+
+func (m *Service) DeleteManagedObjectStorage(ctx context.Context, r *request.DeleteManagedObjectStorageRequest) error {
+	args := m.Called(r)
+	if args[0] == nil {
+		return args.Error(0)
+	}
+	return nil
+}
+
+func (m *Service) GetManagedObjectStorageMetrics(ctx context.Context, r *request.GetManagedObjectStorageMetricsRequest) (*upcloud.ManagedObjectStorageMetrics, error) {
+	return nil, nil
+}
+
+func (m *Service) GetManagedObjectStorageBucketMetrics(ctx context.Context, r *request.GetManagedObjectStorageBucketMetricsRequest) ([]upcloud.ManagedObjectStorageBucketMetrics, error) {
+	return nil, nil
+}
+
+func (m *Service) CreateManagedObjectStorageNetwork(ctx context.Context, r *request.CreateManagedObjectStorageNetworkRequest) (*upcloud.ManagedObjectStorageNetwork, error) {
+	return nil, nil
+}
+
+func (m *Service) GetManagedObjectStorageNetworks(ctx context.Context, r *request.GetManagedObjectStorageNetworksRequest) ([]upcloud.ManagedObjectStorageNetwork, error) {
+	return nil, nil
+}
+
+func (m *Service) GetManagedObjectStorageNetwork(ctx context.Context, r *request.GetManagedObjectStorageNetworkRequest) (*upcloud.ManagedObjectStorageNetwork, error) {
+	return nil, nil
+}
+
+func (m *Service) DeleteManagedObjectStorageNetwork(ctx context.Context, r *request.DeleteManagedObjectStorageNetworkRequest) error {
+	return nil
+}
+
+func (m *Service) CreateManagedObjectStorageUser(ctx context.Context, r *request.CreateManagedObjectStorageUserRequest) (*upcloud.ManagedObjectStorageUser, error) {
+	return nil, nil
+}
+
+func (m *Service) GetManagedObjectStorageUsers(ctx context.Context, r *request.GetManagedObjectStorageUsersRequest) ([]upcloud.ManagedObjectStorageUser, error) {
+	return nil, nil
+}
+
+func (m *Service) GetManagedObjectStorageUser(ctx context.Context, r *request.GetManagedObjectStorageUserRequest) (*upcloud.ManagedObjectStorageUser, error) {
+	return nil, nil
+}
+
+func (m *Service) DeleteManagedObjectStorageUser(ctx context.Context, r *request.DeleteManagedObjectStorageUserRequest) error {
+	return nil
+}
+
+func (m *Service) CreateManagedObjectStorageUserAccessKey(ctx context.Context, r *request.CreateManagedObjectStorageUserAccessKeyRequest) (*upcloud.ManagedObjectStorageUserAccessKey, error) {
+	return nil, nil
+}
+
+func (m *Service) GetManagedObjectStorageUserAccessKeys(ctx context.Context, r *request.GetManagedObjectStorageUserAccessKeysRequest) ([]upcloud.ManagedObjectStorageUserAccessKey, error) {
+	return nil, nil
+}
+
+func (m *Service) GetManagedObjectStorageUserAccessKey(ctx context.Context, r *request.GetManagedObjectStorageUserAccessKeyRequest) (*upcloud.ManagedObjectStorageUserAccessKey, error) {
+	return nil, nil
+}
+
+func (m *Service) ModifyManagedObjectStorageUserAccessKey(ctx context.Context, r *request.ModifyManagedObjectStorageUserAccessKeyRequest) (*upcloud.ManagedObjectStorageUserAccessKey, error) {
+	return nil, nil
+}
+
+func (m *Service) DeleteManagedObjectStorageUserAccessKey(ctx context.Context, r *request.DeleteManagedObjectStorageUserAccessKeyRequest) error {
+	return nil
+}
+
+func (m *Service) WaitForManagedObjectStorageOperationalState(ctx context.Context, r *request.WaitForManagedObjectStorageOperationalStateRequest) (*upcloud.ManagedObjectStorage, error) {
+	return nil, nil
+}
+
+func (m *Service) WaitForManagedObjectStorageDeletion(ctx context.Context, r *request.WaitForManagedObjectStorageDeletionRequest) error {
 	return nil
 }

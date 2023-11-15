@@ -12,6 +12,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/kubernetes/nodegroup"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/loadbalancer"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/network"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/objectstorage"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/root"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/router"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/server"
@@ -174,6 +175,12 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	commands.BuildCommand(servergroup.ListCommand(), serverGroupCommand.Cobra(), conf)
 	commands.BuildCommand(servergroup.ModifyCommand(), serverGroupCommand.Cobra(), conf)
 	commands.BuildCommand(servergroup.ShowCommand(), serverGroupCommand.Cobra(), conf)
+
+	// Managed object storage operations
+	objectStorageCommand := commands.BuildCommand(objectstorage.BaseobjectstorageCommand(), rootCmd, conf)
+	commands.BuildCommand(objectstorage.DeleteCommand(), objectStorageCommand.Cobra(), conf)
+	commands.BuildCommand(objectstorage.ListCommand(), objectStorageCommand.Cobra(), conf)
+	commands.BuildCommand(objectstorage.ShowCommand(), objectStorageCommand.Cobra(), conf)
 
 	// Misc
 	commands.BuildCommand(
