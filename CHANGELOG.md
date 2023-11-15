@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.2.0] - 2023-11-15
+
 ### Added
 - Add `objectstorage` commands (`delete`, `list`, `show`) for Managed object storage management
 
@@ -311,7 +313,8 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.1.0...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.2.0...HEAD
+[3.2.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.1.0...v3.2.0
 [3.1.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.0.0...v3.1.0
 [3.0.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.10.0...v3.0.0
 [2.10.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v2.9.1...v2.10.0
