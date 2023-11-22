@@ -56,10 +56,10 @@ In addition, `kubernetes create` will now, by default, block all access to the c
 - In JSON and YAML output of `kubernetes list`: return the full API response.
 - In human readable output of `kubernetes show` command, show node-groups as table. Node-group details are available with `kubernetes nodegroup show` command.
 
-## Fixed
+### Fixed
 - **Breaking**: In JSON and YAML output of `ip-address show`: use same JSON keys as in API documentation. This removes `credits` key that was used in place of `floating`.
 
-## Removed
+### Removed
 - **Breaking**: Remove `database connection list` and `database connection cancel` commands in favor of `database session` counterparts
 - **Breaking**: In JSON and YAML output of `database properties * show`: pass-through the API response. This removes `key` field from the output.
 
