@@ -178,30 +178,9 @@ Exit code | Description
 
 ## Examples
 
-Every command has a help and examples included and you can find all its options
-by adding `-h` at the end of the command, like `upctl network list -h`. Below,
-you'll find a few common commands that have many other available options as
-well.
+Every command has a `--help` parameter that can be used to print detailed usage instructions and examples on how to use the command. For example, run `upctl network list --help`, to display usage instructions and examples for `upctl network list` command.
 
-* Create a new server
-
-```bash
-upctl server create --hostname test-server.io --zone de-fra1 --ssh-keys ~/.ssh/id_rsa.pub
-```
-
-* Create storage
-
-```bash
-upctl storage create --size 25 --title test-storage --zone es-mad1
-```
-
-> Note: Storage size is in GB.
-
-* Attach storage to server
-
-```bash
-upctl server storage attach <SERVER-UUID> --storage <STORAGE-UUID>
-```
+See [examples](./examples/) directory for examples on more complex use-cases.
 
 ## Documentation
 
