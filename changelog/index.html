@@ -380,22 +380,36 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../commands_reference/upctl_database/" class="md-nav__link">
+        database 
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
     
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3_1" type="checkbox" id="__nav_2_3_1" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3_2" type="checkbox" id="__nav_2_3_2" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_2_3_1">
+        <label class="md-nav__link" for="__nav_2_3_2">
           database index
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="database index" data-md-level="3">
-        <label class="md-nav__title" for="__nav_2_3_1">
+        <label class="md-nav__title" for="__nav_2_3_2">
           <span class="md-nav__icon md-icon"></span>
           database index
         </label>
@@ -445,20 +459,6 @@
           
         </ul>
       </nav>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../commands_reference/upctl_database/" class="md-nav__link">
-        database 
-      </a>
     </li>
   
 
@@ -2694,18 +2694,6 @@
         <!-- Limit TOC depth to 1 -->
 
 <li class="md-nav__item">
-  <a href="#fixed_1" class="md-nav__link"> Fixed </a>
-</li>
-      
-        <!-- Limit TOC depth to 1 -->
-
-<li class="md-nav__item">
-  <a href="#removed" class="md-nav__link"> Removed </a>
-</li>
-      
-        <!-- Limit TOC depth to 1 -->
-
-<li class="md-nav__item">
   <a href="#2100-2023-07-17" class="md-nav__link"> 2.10.0 - 2023-07-17 </a>
 </li>
       
@@ -2921,18 +2909,6 @@
 
 <li class="md-nav__item">
   <a href="#300-2023-10-18" class="md-nav__link"> 3.0.0 - 2023-10-18 </a>
-</li>
-      
-        <!-- Limit TOC depth to 1 -->
-
-<li class="md-nav__item">
-  <a href="#fixed_1" class="md-nav__link"> Fixed </a>
-</li>
-      
-        <!-- Limit TOC depth to 1 -->
-
-<li class="md-nav__item">
-  <a href="#removed" class="md-nav__link"> Removed </a>
 </li>
       
         <!-- Limit TOC depth to 1 -->
@@ -3164,11 +3140,11 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>In JSON and YAML output of <code>kubernetes list</code>: return the full API response.</li>
 <li>In human readable output of <code>kubernetes show</code> command, show node-groups as table. Node-group details are available with <code>kubernetes nodegroup show</code> command.</li>
 </ul>
-<h2 id="fixed_1">Fixed</h2>
+<h3 id="fixed_1">Fixed</h3>
 <ul>
 <li><strong>Breaking</strong>: In JSON and YAML output of <code>ip-address show</code>: use same JSON keys as in API documentation. This removes <code>credits</code> key that was used in place of <code>floating</code>.</li>
 </ul>
-<h2 id="removed">Removed</h2>
+<h3 id="removed">Removed</h3>
 <ul>
 <li><strong>Breaking</strong>: Remove <code>database connection list</code> and <code>database connection cancel</code> commands in favor of <code>database session</code> counterparts</li>
 <li><strong>Breaking</strong>: In JSON and YAML output of <code>database properties * show</code>: pass-through the API response. This removes <code>key</code> field from the output.</li>
