@@ -11,10 +11,13 @@ prefix=example-upctl-custom-template-
 First, we will create server which disk will be used as a source for the custom template.
 
 ```sh
+# Create ssh-key into current working directory
+ssh-keygen -t ed25519 -q -f "./id_ed25519" -N ""
+
 upctl server create \
     --hostname ${prefix}source-server \
     --zone pl-waw1 \
-    --ssh-keys ~/.ssh/*.pub \
+    --ssh-keys ./id_ed25519.pub \
     --network type=public \
     --network type=utility \
     --wait

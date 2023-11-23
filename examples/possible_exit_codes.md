@@ -1,6 +1,6 @@
 # Possible exit codes
 
-As mentioned in the [../README.md](../README.md#exit-codes), upctl sets exit code based on number of failed tasks up to exit code 99. This example demonstrates executions with few different exit codes.
+`upctl` sets exit code based on number of failed tasks up to exit code 99. This example demonstrates executions with few different exit codes.
 
 To keep track of resources created during this example, we will use common prefix in all resource names.
 
@@ -18,8 +18,11 @@ upctl server create
 Let's create two server and stop one of those to later see other failing exit codes. These command should succceed, and thus return zero exit code.
 
 ```sh
-upctl server create --hostname ${prefix}vm-1 --zone pl-waw1 --ssh-keys ~/.ssh/*.pub --wait
-upctl server create --hostname ${prefix}vm-2 --zone pl-waw1 --ssh-keys ~/.ssh/*.pub --wait
+# Create ssh-key into current working directory
+ssh-keygen -t ed25519 -q -f "./id_ed25519" -N ""
+
+upctl server create --hostname ${prefix}vm-1 --zone pl-waw1 --ssh-keys ./id_ed25519.pub --wait
+upctl server create --hostname ${prefix}vm-2 --zone pl-waw1 --ssh-keys ./id_ed25519.pub --wait
 
 upctl server stop ${prefix}vm-1 --wait
 ```
