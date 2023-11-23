@@ -37,6 +37,7 @@ dist/
 
 # Generated docs content
 /docs/commands_reference/
+/docs/examples/
 /docs/CHANGELOG.md
 /mkdocs.yaml
 /site/
