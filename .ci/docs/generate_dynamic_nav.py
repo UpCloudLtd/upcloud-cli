@@ -22,7 +22,7 @@ def generateCommandsReferenceNav(path, base=''):
     return pages
 
 def generateExamplesNav(path):
-    return [i.path for i in sorted(os.scandir(path), key=lambda i: i.name)]
+    return [i.path for i in sorted(os.scandir(path), key=lambda i: i.name) if i.name != 'README.md']
 
 
 if __name__ == '__main__':

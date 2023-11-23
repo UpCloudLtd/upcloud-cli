@@ -15,7 +15,7 @@ In order to be able to connect to the server we are going to create, we will nee
 ssh-keygen -t ed25519 -q -f "./id_ed25519" -N ""
 ```
 
-Create a server using the above created ssh-key.
+Create a server using the above created ssh-key as login method.
 
 ```sh
 upctl server create \
