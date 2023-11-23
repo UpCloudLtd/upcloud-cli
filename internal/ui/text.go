@@ -13,7 +13,7 @@ const truncatedSuffix = "..."
 // TruncateText truncates s to maxLen and adds a suffix ("...") if the string was truncated.
 // nb. maxLen will include the suffix so maxLen is respected in all cases
 func TruncateText(s string, maxLen int) string {
-	if text.RuneCount(s) > maxLen {
+	if text.RuneWidthWithoutEscSequences(s) > maxLen {
 		s = text.Trim(s, maxLen-len(truncatedSuffix))
 		s += truncatedSuffix
 	}
