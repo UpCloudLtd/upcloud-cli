@@ -38,11 +38,13 @@ build: fmt | $(BIN_DIR) ; $(info building executable for the current target…) 
 clean-md-docs:
 	rm -f docs/changelog.md
 	rm -rf docs/commands_reference/
+	rm -rf docs/examples/
 
 .PHONY: md-docs
 md-docs: clean-md-docs ## Generate documentation (markdown)
 	$(GO) run ./.ci/docs/
 	cp CHANGELOG.md docs/changelog.md
+	cp -r examples/ docs/examples/
 
 .PHONY: clean-docs
 clean-docs:
@@ -55,7 +57,8 @@ install-docs-tools:
 
 .PHONY: docs
 docs: clean-docs md-docs install-docs-tools ## Generate documentation (mkdocs site)
-	$(PYTHON) .ci/docs/generate_command_reference_nav.py
+	$(PYTHON) .ci/docs/generate_dynamic_nav.py
+	$(PYTHON) .ci/docs/prepare_info_texts_for_mkdocs.py
 	mkdocs build
 
 .PHONY: build-all
