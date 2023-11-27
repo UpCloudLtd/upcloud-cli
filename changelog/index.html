@@ -2632,6 +2632,82 @@
 
   
   
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Examples
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Examples" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Examples
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/create_a_custom_template/" class="md-nav__link">
+        Create a custom template
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/create_and_ssh_into_a_server/" class="md-nav__link">
+        Create and ssh into a server
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/possible_exit_codes/" class="md-nav__link">
+        Possible exit codes
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
     
   
   
@@ -3165,17 +3241,16 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <h2 id="291-2023-07-06"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.9.0...v2.9.1">2.9.1</a> - 2023-07-06</h2>
 <h3 id="changed_2">Changed</h3>
 <ul>
-<li>
-<p>Release artifacts to follow package naming conventions provided by <a href="https://github.com/goreleaser/nfpm">nFPM</a>.
-    <code>``
-    upcloud-cli-2.9.0_x86_64.rpm  vs  upcloud-cli-2.9.1.x86_64.rpm  # no convention changes
-    upcloud-cli-2.9.0_arm64.rpm   vs  upcloud-cli-2.9.1.aarch64.rpm #</code>arm64<code>-&gt;</code>aarch64`</p>
-<p>upcloud-cli-2.9.0_amd64.apk   vs  upcloud-cli_2.9.1_x86_64.apk  # <code>cli-</code>  -&gt;  <code>cli_</code>  &amp; <code>amd64</code> -&gt; <code>x86_64</code>
-upcloud-cli-2.9.0_arm64.apk   vs  upcloud-cli_2.9.1_aarch64.apk # <code>cli-</code>  -&gt;  <code>cli_</code>  &amp; <code>arm64</code> -&gt; <code>aarch64</code></p>
-<p>upcloud-cli-2.9.0_amd64.deb   vs  upcloud-cli_2.9.1_amd64.deb   # <code>cli-</code>  -&gt;  <code>cli_</code>
-upcloud-cli-2.9.0_arm64.deb   vs  upcloud-cli_2.9.1_arm64.deb   # <code>cli-</code>  -&gt;  <code>cli_</code>
-```</p>
-</li>
+<li>Release artifacts to follow package naming conventions provided by <a href="https://github.com/goreleaser/nfpm">nFPM</a>.
+    <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>upcloud-cli-2.9.0_x86_64.rpm  vs  upcloud-cli-2.9.1.x86_64.rpm  # no convention changes
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>upcloud-cli-2.9.0_arm64.rpm   vs  upcloud-cli-2.9.1.aarch64.rpm # `arm64` -&gt; `aarch64`
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>upcloud-cli-2.9.0_amd64.apk   vs  upcloud-cli_2.9.1_x86_64.apk  # `cli-`  -&gt;  `cli_`  &amp; `amd64` -&gt; `x86_64`
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>upcloud-cli-2.9.0_arm64.apk   vs  upcloud-cli_2.9.1_aarch64.apk # `cli-`  -&gt;  `cli_`  &amp; `arm64` -&gt; `aarch64`
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>upcloud-cli-2.9.0_amd64.deb   vs  upcloud-cli_2.9.1_amd64.deb   # `cli-`  -&gt;  `cli_`
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>upcloud-cli-2.9.0_arm64.deb   vs  upcloud-cli_2.9.1_arm64.deb   # `cli-`  -&gt;  `cli_`
+</span></code></pre></div></li>
 </ul>
 <h2 id="290-2023-06-30"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.8.0...v2.9.0">2.9.0</a> - 2023-06-30</h2>
 <h3 id="added_5">Added</h3>

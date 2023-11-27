@@ -565,4 +565,24 @@
          <lastmod>2023-11-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
+    <url>
+         <loc>https://upcloudltd.github.io/upcloud-cli/examples/</loc>
+         <lastmod>2023-11-27</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://upcloudltd.github.io/upcloud-cli/examples/create_a_custom_template/</loc>
+         <lastmod>2023-11-27</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://upcloudltd.github.io/upcloud-cli/examples/create_and_ssh_into_a_server/</loc>
+         <lastmod>2023-11-27</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://upcloudltd.github.io/upcloud-cli/examples/possible_exit_codes/</loc>
+         <lastmod>2023-11-27</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
 </urlset>
