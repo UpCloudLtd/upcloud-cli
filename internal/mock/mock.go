@@ -784,6 +784,26 @@ func (m *Service) DeleteLoadBalancerBackendMember(_ context.Context, r *request.
 	return nil
 }
 
+func (m *Service) GetLoadBalancerBackendTLSConfigs(_ context.Context, r *request.GetLoadBalancerBackendTLSConfigsRequest) ([]upcloud.LoadBalancerBackendTLSConfig, error) {
+	return nil, nil
+}
+
+func (m *Service) GetLoadBalancerBackendTLSConfig(_ context.Context, r *request.GetLoadBalancerBackendTLSConfigRequest) (*upcloud.LoadBalancerBackendTLSConfig, error) {
+	return nil, nil
+}
+
+func (m *Service) CreateLoadBalancerBackendTLSConfig(_ context.Context, r *request.CreateLoadBalancerBackendTLSConfigRequest) (*upcloud.LoadBalancerBackendTLSConfig, error) {
+	return nil, nil
+}
+
+func (m *Service) ModifyLoadBalancerBackendTLSConfig(_ context.Context, r *request.ModifyLoadBalancerBackendTLSConfigRequest) (*upcloud.LoadBalancerBackendTLSConfig, error) {
+	return nil, nil
+}
+
+func (m *Service) DeleteLoadBalancerBackendTLSConfig(_ context.Context, r *request.DeleteLoadBalancerBackendTLSConfigRequest) error {
+	return nil
+}
+
 func (m *Service) GetLoadBalancerResolvers(_ context.Context, r *request.GetLoadBalancerResolversRequest) ([]upcloud.LoadBalancerResolver, error) {
 	return nil, nil
 }

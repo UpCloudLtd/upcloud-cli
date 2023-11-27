@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Add backend `TLS configs` field to `loadbalancer show` command
+
 ## [3.2.0] - 2023-11-15
 
 ### Added

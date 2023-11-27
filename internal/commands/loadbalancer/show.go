@@ -58,6 +58,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 			backEnd.Name,
 			resolver,
 			len(backEnd.Members),
+			len(backEnd.TLSConfigs),
 		})
 	}
 
@@ -114,6 +115,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 					{Key: "name", Header: "Name"},
 					{Key: "resolver", Header: "Resolver"},
 					{Key: "members", Header: "Members"},
+					{Key: "tls_configs", Header: "TLS configs"},
 				},
 				Rows: backEndRows,
 			},
