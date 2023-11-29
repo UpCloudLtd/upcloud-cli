@@ -1,0 +1,31 @@
+name: Examples
+on:
+  pull_request:
+    paths:
+      - "**.go"
+      - "go.mod"
+      - "go.sum"
+      - "examples/**.md"
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout head
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - name: Setup Go
+        uses: actions/setup-go@fac708d6674e30b6ba41289acaab6d4b75aa0753 # v4.0.1
+        with:
+          go-version-file: "go.mod"
+      - name: Install mdtest and upctl
+        run: |
+          go install github.com/UpCloudLtd/mdtest@latest
+          make build
+          echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
+      - name: Test examples
+        env:
+          UPCLOUD_USERNAME: ${{ secrets.UPCLOUD_USERNAME }}
+          UPCLOUD_PASSWORD: ${{ secrets.UPCLOUD_PASSWORD }}
+        run: |
+          upctl version
+          mdtest examples/

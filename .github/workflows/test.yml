@@ -6,8 +6,8 @@ on:
       - 'go.mod'
       - 'go.sum'
 jobs:
-  platform_tests:
-    name: Run platform tests
+  unit-tests:
+    name: Run unit-tests
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
