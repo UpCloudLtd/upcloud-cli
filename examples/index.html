@@ -2737,6 +2737,20 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#testing" class="md-nav__link"> Testing </a>
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2752,6 +2766,14 @@
 
 <h1 id="examples">Examples</h1>
 <p>This directory contains examples on more complex <code>upctl</code> use-cases. As <code>upctl</code> is often used in scripts the examples also aim to parse values from machine readable outputs. This allows using the examples also as end-to-end test cases and makes them more copy-pasteable.</p>
+<h2 id="testing">Testing</h2>
+<p>The examples in this directory are validated with <a href="https://github.com/UpCloudLtd/mdtest">mdtest</a>. It parses <code>env</code> and <code>sh</code> code-blocks from the markdown files and executes those as scripts.</p>
+<p>The tool can be installed with go install.</p>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>go<span class="w"> </span>install<span class="w"> </span>github.com/UpCloudLtd/mdtest@latest
+</span></code></pre></div>
+<p>To test the examples, run <code>mdtest .</code>.</p>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>mdtest<span class="w"> </span>.
+</span></code></pre></div>
 
 
 
