@@ -11,7 +11,7 @@ UpCloud command-line interface
 `upctl` provides a command-line interface to UpCloud services. It allows you to
 control your resources from the command line or any compatible interface.
 
-To be able to manage your UpCLoud resources, you need to configure credentials
+To be able to manage your UpCloud resources, you need to configure credentials
 for `upctl` and enable API access for these credentials. Define the credentials
 by setting `UPCLOUD_USERNAME` and `UPCLOUD_PASSWORD` environment variables. API
 access can be configured on the Account page of the UpCloud Hub. We recommend
