@@ -2,587 +2,587 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/changelog/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_version/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_account/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_account/show/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_database/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_database/delete/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_database/list/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_database/plans/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_database/show/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_database/start/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_database/stop/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_database/types/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_database/index/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_database/index/delete/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_database/index/list/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_database/properties/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_database/properties/mysql/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_database/properties/mysql/show/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_database/properties/opensearch/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_database/properties/opensearch/show/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_database/properties/pg/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_database/properties/pg/show/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_database/properties/redis/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_database/properties/redis/show/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_database/session/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_database/session/cancel/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_database/session/list/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_ip-address/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_ip-address/assign/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_ip-address/list/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_ip-address/modify/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_ip-address/remove/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_ip-address/show/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_kubernetes/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_kubernetes/config/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_kubernetes/create/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_kubernetes/delete/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_kubernetes/list/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_kubernetes/modify/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_kubernetes/plans/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_kubernetes/show/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_kubernetes/versions/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_kubernetes/nodegroup/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_kubernetes/nodegroup/create/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_kubernetes/nodegroup/delete/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_kubernetes/nodegroup/scale/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_kubernetes/nodegroup/show/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_loadbalancer/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_loadbalancer/delete/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_loadbalancer/list/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_loadbalancer/plans/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_loadbalancer/show/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_network/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_network/create/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_network/delete/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_network/list/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_network/modify/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_network/show/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_objectstorage/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_objectstorage/delete/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_objectstorage/list/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_objectstorage/show/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_router/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_router/create/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_router/delete/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_router/list/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_router/modify/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_router/show/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_server/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_server/create/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_server/delete/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_server/eject/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_server/list/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_server/load/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_server/modify/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_server/plans/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_server/restart/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_server/show/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_server/start/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_server/stop/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_server/firewall/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_server/firewall/create/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_server/firewall/delete/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_server/firewall/show/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_server/network-interface/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_server/network-interface/create/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_server/network-interface/delete/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_server/network-interface/modify/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_server/storage/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_server/storage/attach/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_server/storage/detach/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_servergroup/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_servergroup/create/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_servergroup/delete/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_servergroup/list/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_servergroup/modify/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_servergroup/show/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_storage/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_storage/clone/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_storage/create/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_storage/delete/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_storage/import/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_storage/list/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_storage/modify/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_storage/show/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_storage/templatise/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_storage/backup/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_storage/backup/create/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_storage/backup/restore/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_zone/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_zone/list/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/examples/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/examples/create_a_custom_template/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/examples/create_and_ssh_into_a_server/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/examples/possible_exit_codes/</loc>
-         <lastmod>2023-11-29</lastmod>
+         <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
