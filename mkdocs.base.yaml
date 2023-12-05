@@ -11,10 +11,10 @@ extra_css:
   - extra.css
 
 nav:
-- index.md
-- Commands reference: []
-- Examples: []
-- changelog.md
+  - index.md
+  - Commands reference: []
+  - Examples: []
+  - changelog.md
 
 theme:
   name: material
@@ -29,7 +29,10 @@ theme:
   features: []
 
 plugins:
-- search
+  - search
+  - macros:
+      include_yaml:
+        - vars.yaml
 
 markdown_extensions:
   - pymdownx.highlight:

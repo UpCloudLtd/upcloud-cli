@@ -14,15 +14,15 @@ to control your resources from the command line or any compatible interface.
     On Ubuntu or Debian, use the `.deb` package.
 
     ```sh
-    curl -Lo upcloud-cli_3.2.1_amd64.deb https://github.com/UpCloudLtd/upcloud-cli/releases/download/v3.2.1/upcloud-cli_3.2.1_amd64.deb
-    sudo apt install ./upcloud-cli_3.2.1_amd64.deb
+    curl -Lo upcloud-cli_{{ latest_release }}_amd64.deb https://github.com/UpCloudLtd/upcloud-cli/releases/download/v{{ latest_release }}/upcloud-cli_{{ latest_release }}_amd64.deb
+    sudo apt install ./upcloud-cli_{{ latest_release }}_amd64.deb
     ```
 
     On RHEL based distributions, use the `.rpm` package.
 
     ```sh
-    curl -Lo upcloud-cli-3.2.1-1.x86_64.rpm https://github.com/UpCloudLtd/upcloud-cli/releases/download/v3.2.1/upcloud-cli-3.2.1-1.x86_64.rpm
-    sudo dnf install ./upcloud-cli-3.2.1-1.x86_64.rpm
+    curl -Lo upcloud-cli-{{ latest_release }}-1.x86_64.rpm https://github.com/UpCloudLtd/upcloud-cli/releases/download/v{{ latest_release }}/upcloud-cli-{{ latest_release }}-1.x86_64.rpm
+    sudo dnf install ./upcloud-cli-{{ latest_release }}-1.x86_64.rpm
     ```
 
 === "macOS"
@@ -39,8 +39,8 @@ to control your resources from the command line or any compatible interface.
     First, download the archived binary from GitHub releases to current folder and extract the binary from the archive.
 
     ```pwsh
-    Invoke-WebRequest -Uri "https://github.com/UpCloudLtd/upcloud-cli/releases/download/v3.2.1/upcloud-cli_3.2.1_windows_x86_64.zip" -OutFile "upcloud-cli_3.2.1_windows_x86_64.zip"
-    Expand-Archive -Path "upcloud-cli_3.2.1_windows_x86_64.zip"
+    Invoke-WebRequest -Uri "https://github.com/UpCloudLtd/upcloud-cli/releases/download/v{{ latest_release }}/upcloud-cli_{{ latest_release }}_windows_x86_64.zip" -OutFile "upcloud-cli_{{ latest_release }}_windows_x86_64.zip"
+    Expand-Archive -Path "upcloud-cli_{{ latest_release }}_windows_x86_64.zip"
 
     # Print current location
     Get-Location
@@ -53,7 +53,7 @@ to control your resources from the command line or any compatible interface.
     # Use Set-Location to change into folder that you used in previous step.
 
     New-Item -ItemType Directory $env:ProgramFiles\upcloud-cli\ -Force
-    Move-Item -Path upcloud-cli_3.2.1_windows_x86_64\upctl.exe -Destination $env:ProgramFiles\upcloud-cli\ -Force
+    Move-Item -Path upcloud-cli_{{ latest_release }}_windows_x86_64\upctl.exe -Destination $env:ProgramFiles\upcloud-cli\ -Force
 
     # Setting the Path is required only on first install.
     # Thus, this step can be skipped when updating to a more recent version.

@@ -41,6 +41,7 @@ dist/
 /docs/CHANGELOG.md
 /mkdocs.yaml
 /site/
+/vars.yaml
 
 # Generated release notes
 .release_notes

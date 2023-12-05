@@ -4,6 +4,10 @@ on:
     branches:
       - main
       - test-docs-generator # for testing
+  # Update version in installation instructions when new version is released
+  release:
+    types:
+    - released
 
 jobs:
   generate-and-deploy:
@@ -12,6 +16,8 @@ jobs:
     steps:
       - name: Checkout head
         uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+        with:
+          fetch-depth: 0
       - name: Setup Go
         uses: actions/setup-go@fac708d6674e30b6ba41289acaab6d4b75aa0753 # v4.0.1
         with:
