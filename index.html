@@ -248,9 +248,51 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Getting started
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="." class="md-nav__link md-nav__link--active">
         Getting started
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#install-upctl" class="md-nav__link"> Install upctl </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#configure-credentials" class="md-nav__link"> Configure credentials </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#execute-commands" class="md-nav__link"> Execute commands </a>
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -2747,6 +2789,32 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#install-upctl" class="md-nav__link"> Install upctl </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#configure-credentials" class="md-nav__link"> Configure credentials </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#execute-commands" class="md-nav__link"> Execute commands </a>
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2763,6 +2831,111 @@
 <h1 id="getting-started">Getting started</h1>
 <p><code>upctl</code> provides a command-line interface to <a href="https://upcloud.com/">UpCloud</a> services. It allows you
 to control your resources from the command line or any compatible interface.</p>
+<h2 id="install-upctl">Install upctl</h2>
+<p><code>upctl</code> can be installed from a pre-built package in the repositorys <a href="https://github.com/UpCloudLtd/upcloud-cli/releases">GitHub releases</a> using a package manager or from sources with <code>go install</code>:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:4"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Linux</label><label for="__tabbed_1_2">macOS</label><label for="__tabbed_1_3">Windows</label><label for="__tabbed_1_4"><code>go install</code></label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>Download pre-built package from GitHub releases and install it with your package manager.</p>
+<p>On Ubuntu or Debian, use the <code>.deb</code> package.</p>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>curl<span class="w"> </span>-Lo<span class="w"> </span>upcloud-cli_3.2.1_amd64.deb<span class="w"> </span>https://github.com/UpCloudLtd/upcloud-cli/releases/download/v3.2.1/upcloud-cli_3.2.1_amd64.deb
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>./upcloud-cli_3.2.1_amd64.deb
+</span></code></pre></div>
+<p>On RHEL based distributions, use the <code>.rpm</code> package.</p>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>curl<span class="w"> </span>-Lo<span class="w"> </span>upcloud-cli-3.2.1-1.x86_64.rpm<span class="w"> </span>https://github.com/UpCloudLtd/upcloud-cli/releases/download/v3.2.1/upcloud-cli-3.2.1-1.x86_64.rpm
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>./upcloud-cli-3.2.1-1.x86_64.rpm
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>Use homebrew to install <code>upctl</code> from <a href="https://github.com/UpCloudLtd/homebrew-tap">UpCloudLtd tap</a>.</p>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>brew<span class="w"> </span>tap<span class="w"> </span>UpCloudLtd/tap
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>brew<span class="w"> </span>install<span class="w"> </span>upcloud-cli
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>First, download the archived binary from GitHub releases to current folder and extract the binary from the archive.</p>
+<div class="language-pwsh highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nb">Invoke-WebRequest</span> <span class="n">-Uri</span> <span class="s2">&quot;https://github.com/UpCloudLtd/upcloud-cli/releases/download/v3.2.1/upcloud-cli_3.2.1_windows_x86_64.zip&quot;</span> <span class="n">-OutFile</span> <span class="s2">&quot;upcloud-cli_3.2.1_windows_x86_64.zip&quot;</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nb">Expand-Archive</span> <span class="n">-Path</span> <span class="s2">&quot;upcloud-cli_3.2.1_windows_x86_64.zip&quot;</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c"># Print current location</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="nb">Get-Location</span>
+</span></code></pre></div>
+<p>Then, close the current PowerShell session and open a new session as an administrator. Move the binary to <code>upcloud-cli</code> folder in <em>Program Files</em>, add the <code>upcloud-cli</code> folder in <em>Program Files</em> to <code>Path</code>.</p>
+<div class="language-pwsh highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c"># Open the PowerShell with Run as Administrator option.</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="c"># Use Set-Location to change into folder that you used in previous step.</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nb">New-Item</span> <span class="n">-ItemType</span> <span class="n">Directory</span> <span class="nv">$env:ProgramFiles</span><span class="p">\</span><span class="n">upcloud-cli</span><span class="p">\</span> <span class="n">-Force</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nb">Move-Item</span> <span class="n">-Path</span> <span class="n">upcloud-cli_3</span><span class="p">.</span><span class="n">2</span><span class="p">.</span><span class="n">1_windows_x86_64</span><span class="p">\</span><span class="n">upctl</span><span class="p">.</span><span class="n">exe</span> <span class="n">-Destination</span> <span class="nv">$env:ProgramFiles</span><span class="p">\</span><span class="n">upcloud-cli</span><span class="p">\</span> <span class="n">-Force</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="c"># Setting the Path is required only on first install.</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="c"># Thus, this step can be skipped when updating to a more recent version.</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="no">[Environment]</span><span class="p">::</span><span class="n">SetEnvironmentVariable</span><span class="p">(</span><span class="s2">&quot;Path&quot;</span><span class="p">,</span> <span class="no">[Environment]</span><span class="p">::</span><span class="n">GetEnvironmentVariable</span><span class="p">(</span><span class="s2">&quot;Path&quot;</span><span class="p">,</span> <span class="no">[EnvironmentVariableTarget]</span><span class="p">::</span><span class="n">Machine</span><span class="p">)</span> <span class="p">+</span> <span class="s2">&quot;;$env:ProgramFiles\upcloud-cli\&quot;</span><span class="p">,</span> <span class="no">[EnvironmentVariableTarget]</span><span class="p">::</span><span class="n">Machine</span><span class="p">)</span>
+</span></code></pre></div>
+<p>After running the above commands, close the administrator PowerShell session and open a new PowerShell session to verify installation succeeded.</p>
+</div>
+<div class="tabbed-block">
+<p>Install the latest version of <code>upctl</code> with <code>go install</code>, by running:</p>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>go<span class="w"> </span>install<span class="w"> </span>github.com/UpCloudLtd/upcloud-cli/v3/...@latest
+</span></code></pre></div>
+</div>
+</div>
+</div>
+<hr />
+<p>After installing <code>upctl</code>, you can run <code>upctl version</code> command to verify that the tool was installed successfully.</p>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>upctl<span class="w"> </span>version
+</span></code></pre></div>
+<h3 id="configure-shell-completions">Configure shell completions</h3>
+<p><code>upctl</code> provides shell completions for multiple shells. Run <code>upctl completion --help</code> to list the supported shells.</p>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>upctl<span class="w"> </span>completion<span class="w"> </span>--help
+</span></code></pre></div>
+<p>To configure the shell completions, follow the instructions provided in the help output of the command matching the shell you are using. For example, if you are using zsh, run <code>upctl completion zsh --help</code> to print the configuration instructions.</p>
+<h4 id="bash-completions">Bash completions</h4>
+<p>On bash, the completions depend on <code>bash-completion</code> package. Install and configure the package according to your OS:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Linux</label><label for="__tabbed_2_2">macOS</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>First, install <code>bash-completion</code> package, if it has not been installed already, and add command to source the completions to your <code>.bashrc</code>.</p>
+<p>On Ubuntu or Debian, use <code>apt</code> command to install the package:</p>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>bash-completion
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;[ -f /etc/bash_completion ] &amp;&amp; . /etc/bash_completion&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.bashrc
+</span></code></pre></div>
+<p>On RHEL based distributions, use <code>dnf</code> command to install the package.</p>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>bash-completion
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;[ -f /etc/bash_completion ] &amp;&amp; . /etc/bash_completion&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.bashrc
+</span></code></pre></div>
+<p>Finally, configure the shell completions for <code>upctl</code> by either sourcing <code>upctl completion bash</code> output in your bash <code>.bashrc</code> or by saving the output of that command in <code>upctl</code> file under <code>/etc/bash_completion.d/</code>:</p>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># First alternative</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;source &lt;(upctl completion bash)&#39;</span><span class="w"> </span>&gt;&gt;~/.bashrc
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="c1"># Second alternative</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>upctl<span class="w"> </span>completion<span class="w"> </span>bash<span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/bash_completion.d/upctl<span class="w"> </span>&gt;<span class="w"> </span>/dev/null
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="c1"># Source completions to current shell session</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>.<span class="w"> </span>/etc/bash_completion
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>First, install <code>bash-completion</code> package, if it has not been installed already, and add command to source the completions to your <code>.bash_profile</code>.</p>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>brew<span class="w"> </span>install<span class="w"> </span>bash-completion
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;[ -f &quot;$(brew --prefix)/etc/bash_completion&quot; ] &amp;&amp; . &quot;$(brew --prefix)/etc/bash_completion&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.bash_profile
+</span></code></pre></div>
+<p>Then configure the shell completions for <code>upctl</code> by saving the output of <code>upctl completion bash</code> in <code>upctl</code> file under <code>/etc/bash_completion.d/</code>:</p>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>upctl<span class="w"> </span>completion<span class="w"> </span>bash<span class="w"> </span>&gt;<span class="w"> </span><span class="k">$(</span>brew<span class="w"> </span>--prefix<span class="k">)</span>/etc/bash_completion.d/upctl
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>.<span class="w"> </span><span class="k">$(</span>brew<span class="w"> </span>--prefix<span class="k">)</span>/etc/bash_completion
+</span></code></pre></div>
+</div>
+</div>
+</div>
+<h2 id="configure-credentials">Configure credentials</h2>
+<p>To be able to manage your UpCloud resources, you need to configure credentials for <code>upctl</code> and enable API access for these credentials.</p>
+<p>Define the credentials by setting <code>UPCLOUD_USERNAME</code> and <code>UPCLOUD_PASSWORD</code> environment variables.</p>
+<p>API access can be configured in the UpCloud Hub on <a href="https://hub.upcloud.com/account/overview">Account page</a> for the main-account and on the <a href="https://hub.upcloud.com/people/permissions">Permissions tab</a> of the People page for sub-accounts. We recommend you to set up a sub-account specifically for the API usage with its own username and password, as it allows you to assign specific permissions for increased security.</p>
+<h2 id="execute-commands">Execute commands</h2>
+<p>To verify you are able to access the UpCloud API, you can, for example, run <code>upctl account show</code> command to print your current balance and resource limits.</p>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>upctl<span class="w"> </span>account<span class="w"> </span>show
+</span></code></pre></div>
+<p>For usage examples, see the <em>Examples</em> section of the documentation.</p>
+<p>For reference on how to use each sub-command, see the <em>Commands reference</em> section of the documentation. The same information is also available in <code>--help</code> output of each command.</p>
 
 
 
