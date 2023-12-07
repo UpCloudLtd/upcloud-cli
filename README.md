@@ -5,165 +5,23 @@
 `upctl` provides a command-line interface to [UpCloud](https://upcloud.com/) services. It allows you
 to control your resources from the command line or any compatible interface.
 
-```txt
-UpCloud command-line interface
+## Getting started
 
-`upctl` provides a command-line interface to UpCloud services. It allows you to
-control your resources from the command line or any compatible interface.
+For instructions on how to install `upctl`, configure credentials, and run commands, see [Getting started](https://upcloudltd.github.io/upcloud-cli/) instructions in the documentation.
 
-To be able to manage your UpCloud resources, you need to configure credentials
-for `upctl` and enable API access for these credentials. Define the credentials
-by setting `UPCLOUD_USERNAME` and `UPCLOUD_PASSWORD` environment variables. API
-access can be configured on the Account page of the UpCloud Hub. We recommend
-you to set up a sub-account specifically for the API usage with its own username
-and password, as it allows you to assign specific permissions for increased
-security.
+## Install with go install
 
-Usage:
-upctl [command]
+Install the latest version of `upctl` with `go install` by running:
 
-Available Commands:
-account      Manage accounts
-completion   Generate the autocompletion script for the specified shell
-database     Manage databases
-help         Help about any command
-ip-address   Manage IP addresses
-kubernetes   Manage Kubernetes clusters
-loadbalancer Manage load balancers
-network      Manage networks
-router       Manage routers
-server       Manage servers
-servergroup  Manage server groups
-storage      Manage storages
-version      Display software information
-zone         Display zone information
-
-Options:
-  -t, --client-timeout duration   Client timeout to use in API calls.
-                                  Default: 0s
-
-  --config string                 Configuration file path.
-
-  --debug bool                    Print out more verbose debug logs.
-                                  Default: false
-
-  --force-colours                 Force coloured output despite detected terminal support.
-
-  --no-colours                    Disable coloured output despite detected terminal support. Colours can also be disabled by setting
-                                  NO_COLOR environment variable.
-
-  -o, --output string             Output format (supported: json, yaml and human)
-                                  Default: human
-
-Use "upctl [command] --help" for more information about a command.
-```
-
-## Installation
-
-Install the latest with Go by running:
-
-```bash
+```sh
 go install github.com/UpCloudLtd/upcloud-cli/v3/...@latest
 ```
 
-To use upctl as a binary, download it from the
-[Releases](https://github.com/UpCloudLtd/upcloud-cli/releases) page. After downloading, verify that the client works.
+Run `upctl version` to verify that the tool was installed successfully and `upctl help` to print usage instructions.
 
-### macOS
-
-```bash
-brew tap UpCloudLtd/tap
-brew install upcloud-cli
-upctl -h
-```
-
-Setting up bash completion requires a few commands more.
-
-First, install `bash-completion`, if it is not installed already.
-
-```bash
-brew install bash-completion
-echo '[ -f "$(brew --prefix)/etc/bash_completion" ] && . "$(brew --prefix)/etc/bash_completion"' >> ~/.bash_profile
-```
-
-Then configure the shell completions for `upctl` by saving the output of `upctl completion bash` in `upctl` file under `/etc/bash_completion.d/`:
-
-```bash
-upctl completion bash > $(brew --prefix)/etc/bash_completion.d/upctl
-. $(brew --prefix)/etc/bash_completion
-```
-
-### Linux
-
-#### AUR
-```
-yay -S upcloud-cli
-```
-
-#### Other Linux distros
-
-Use the package corresponding to your distro (deb, rpm, apk) from the [releases page](https://github.com/UpCloudLtd/upcloud-cli/releases), example for Debian like:
-
-```bash
-# Replace <VERSION> with the version you want to install
-curl -Lo upcloud-cli.deb https://github.com/UpCloudLtd/upcloud-cli/releases/download/v<VERSION>/upcloud-cli-<VERSION>_amd64.deb
-sudo dpkg -i upcloud-cli.deb
-upctl -h
-```
-
-Bash completion can also be set up with some extra commands. You should adapt this for your package manager.
-
-First, install `bash-completion`, if it is not installed already.
-
-```bash
-sudo apt install bash-completion
-echo "[ -f /etc/bash_completion ] && . /etc/bash_completion" >> ~/.bashrc
-```
-
-Then configure the shell completions for `upctl` by either sourcing `upctl completion bash` output in your bash `.bashrc` or by saving the output of that command in `upctl` file under `/etc/bash_completion.d/`:
-
-```bash
-# First alternative
-echo 'source <(upctl completion bash)' >>~/.bashrc
-
-# Second alternative
-upctl completion bash | sudo tee /etc/bash_completion.d/upctl > /dev/null
-. /etc/bash_completion
-```
-
-### Windows
-```bash
-Invoke-WebRequest -Uri "https://github.com/UpCloudLtd/upcloud-cli/releases/download/v<VERSION>/upcloud-cli-<VERSION>_windows_x86_64.zip" -OutFile "upcloud-cli.zip"
-Expand-Archive -Path upcloud-cli.zip -Destination 'C:\Program Files\Upcloud CLI'
-[Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Program Files\Upcloud CLI", [System.EnvironmentVariableTarget]::Machine)
-upctl.exe -h
-```
-
-## Quick Start
-
-Create a `upctl.yaml` config file with user credentials into your home
-directory's .config dir ($HOME/.config/upctl.yaml).
-
-```yaml
-username: your_upcloud_username
-password: your_upcloud_password
-```
-
-Credentials can also be stored at environment variables `UPCLOUD_USERNAME` and `UPCLOUD_PASSWORD`. If variables
-are set, matching config file items are ignored.
-
-> NOTE: Make sure your account allows API connections. To do so, log into
-> [UpCloud control panel](https://hub.upcloud.com/login) and go to **Account**
-> -> **Permissions** -> **Allow API connections** checkbox.
-
-Run something to test that the credentials are working.
-
-```bash
-$ upctl server list
- UUID                                   Hostname             Plan        Zone      State
-────────────────────────────────────── ──────────────────── ─────────── ───────── ─────────
- 00229ddf-0e46-45b5-a8f7-cad2c8d11f6a   server1              2xCPU-4GB   de-fra1   stopped
- 003c9d77-0237-4ee7-b3a1-306efba456dc   server2              1xCPU-2GB   sg-sin1   started
+```sh
+upctl version
+upctl help
 ```
 
 ## Exit codes
@@ -214,24 +72,15 @@ If something is missing from there, add an issue or PR in that repository instea
 
 ## Development
 
-* upctl uses [UpCloud Go API SDK](https://github.com/UpCloudLtd/upcloud-go-api)
-* upctl is built on [Cobra](https://cobra.dev)
+* `upctl` uses [UpCloud Go API SDK](https://github.com/UpCloudLtd/upcloud-go-api)
+* `upctl` is built on [Cobra](https://cobra.dev)
 
-You need a Go version 1.18+ installed on your development machine.
-Use `make` to build and test the CLI. Makefile help can be found:
+You need a Go version 1.20+ installed on your development machine.
 
-```
-$ make help
-build                Build program binary for current os/arch
-doc                  Generate documentation (markdown)
-build-all            Build all targets
-build-linux          Build program binary for linux x86_64
-build-darwin         Build program binary for darwin x86_64
-build-windows        Build program binary for windows x86_64
-build-freebsd        Build program binary for freebsd x86_64
-test                 Run tests
-fmt                  Run gofmt on all source files
-clean                Cleanup everything
+Use `make` to build and test the CLI. Makefile help can be found by running `make help`.
+
+```sh
+make help
 ```
 
 ### Debugging

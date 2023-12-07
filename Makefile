@@ -8,6 +8,7 @@ MODULE   = $(shell env GO111MODULE=on $(GO) list -m)
 DATE    ?= $(shell date +%FT%T%z)
 VERSION ?= $(shell git describe --tags --always --dirty --match=v* 2> /dev/null || \
 			cat $(CURDIR)/.version 2> /dev/null || echo v0)
+LATEST_RELEASE ?= $(shell git describe --tags --match=v* --abbrev=0 | grep -o "[0-9]\.[0-9]\.[0-9]")
 PKGS     = $(or $(PKG),$(shell env GO111MODULE=on $(GO) list ./...))
 TESTPKGS = $(shell env GO111MODULE=on $(GO) list -f \
 			'{{ if or .TestGoFiles .XTestGoFiles }}{{ .ImportPath }}{{ end }}' \
@@ -59,6 +60,7 @@ install-docs-tools:
 docs: clean-docs md-docs install-docs-tools ## Generate documentation (mkdocs site)
 	$(PYTHON) .ci/docs/generate_dynamic_nav.py
 	$(PYTHON) .ci/docs/prepare_info_texts_for_mkdocs.py
+	echo "latest_release: $(LATEST_RELEASE)" > vars.yaml
 	mkdocs build
 
 .PHONY: build-all
