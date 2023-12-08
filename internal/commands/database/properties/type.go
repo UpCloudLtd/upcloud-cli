@@ -7,6 +7,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/format"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/utils"
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
 )
 
@@ -33,7 +34,7 @@ func (s *dbTypeCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 
 	properties := dbType.Properties
 	rows := []output.TableRow{}
-	for key, details := range properties {
+	for key, details := range utils.GetFlatDatabaseProperties(properties) {
 		enumOrExample := details.Enum
 		if enumOrExample == nil {
 			enumOrExample = details.Example

@@ -2,11 +2,13 @@ package databaseproperties
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/format"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/utils"
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
 )
 
@@ -33,10 +35,17 @@ func (s *showCommand) Execute(exec commands.Executor, key string) (output.Output
 		return nil, err
 	}
 
-	details, ok := dbType.Properties[key]
+	flatProperties := utils.GetFlatDatabaseProperties(dbType.Properties)
+	details, ok := flatProperties[key]
 	if !ok {
 		return nil, fmt.Errorf(`no property "%s" available for %s database`, key, s.serviceType)
 	}
+
+	childProperties := []string{}
+	for key := range details.Properties {
+		childProperties = append(childProperties, key)
+	}
+	sort.Strings(childProperties)
 
 	rows := []output.DetailRow{
 		{Title: "Key:", Key: "key", Value: key},
@@ -48,8 +57,11 @@ func (s *showCommand) Execute(exec commands.Executor, key string) (output.Output
 		{Title: "Default:", Key: "default", Value: details.Default},
 		{Title: "Possible values:", Key: "enum", Value: details.Enum, Format: formatAlternatives},
 		{Title: "Pattern:", Key: "pattern", Value: details.Pattern},
-		{Title: "Max length:", Key: "maxLength", Value: details.MaxLength},
 		{Title: "Min length:", Key: "minLength", Value: details.MinLength},
+		{Title: "Minimum:", Key: "minimum", Value: details.Minimum, Format: format.Dereference[float64]},
+		{Title: "Max length:", Key: "maxLength", Value: details.MaxLength},
+		{Title: "Maximum:", Key: "maximum", Value: details.Maximum, Format: format.Dereference[float64]},
+		{Title: "Properties:", Key: "properties", Value: childProperties, Format: formatProperties},
 	}
 
 	return output.MarshaledWithHumanOutput{
@@ -76,6 +88,10 @@ func filterOutEmptyRows(rows []output.DetailRow) []output.DetailRow {
 		}
 
 		if val, ok := row.Value.(int); ok && val == 0 {
+			continue
+		}
+
+		if val, ok := row.Value.(*float64); ok && val == nil {
 			continue
 		}
 

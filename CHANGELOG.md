@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Support nested properties in `database properties *` and `database properties * show *` outputs. For example upctl `max_background_workers` sub-property of `timescaledb` PostgreSQL property is listed as `timescaledb.max_background_workers` in human output of `database properties pg` and its details can printed with `upctl database properties pg show timescaledb.max_background_workers` command.
+
 ## [3.2.1] - 2023-11-29
 
 ### Added
