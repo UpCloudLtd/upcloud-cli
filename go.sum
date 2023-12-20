@@ -17,12 +17,8 @@ github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
 github.com/UpCloudLtd/progress v1.0.2 h1:CTr1bBuFuXop9TEhR1PakbUMPTlUVL7Bgae9JgqXwPg=
 github.com/UpCloudLtd/progress v1.0.2/go.mod h1:iGxOnb9HvHW0yrLGUjHr0lxHhn7TehgWwh7a8NqK6iQ=
-github.com/UpCloudLtd/upcloud-go-api/v6 v6.10.0 h1:fs/hpOfuwpEHVxd+SbjNhcm3h+Rcv1S7zXqoVuIXcss=
-github.com/UpCloudLtd/upcloud-go-api/v6 v6.10.0/go.mod h1:I8rWmBBl+OhiY3AGzKbrobiE5TsLCLNYkCQxE4eJcTg=
-github.com/UpCloudLtd/upcloud-go-api/v6 v6.10.1-0.20231208172756-6989308bfe95 h1:4M5GOvmXHNbo8i8bcQllmTLDyNtopcA0riw1jPomFss=
-github.com/UpCloudLtd/upcloud-go-api/v6 v6.10.1-0.20231208172756-6989308bfe95/go.mod h1:I8rWmBBl+OhiY3AGzKbrobiE5TsLCLNYkCQxE4eJcTg=
-github.com/UpCloudLtd/upcloud-go-api/v6 v6.10.1-0.20231208185019-6579bbd5c7c7 h1:P7GGpJ3q0ljE2BUz0VEEhpV7Ba21jhBT4H7YqGmmyzY=
-github.com/UpCloudLtd/upcloud-go-api/v6 v6.10.1-0.20231208185019-6579bbd5c7c7/go.mod h1:I8rWmBBl+OhiY3AGzKbrobiE5TsLCLNYkCQxE4eJcTg=
+github.com/UpCloudLtd/upcloud-go-api/v6 v6.11.0 h1:8KvsimMoPPBx8IVebtHJHavrJPoJfNL5jsyW4TAC5m4=
+github.com/UpCloudLtd/upcloud-go-api/v6 v6.11.0/go.mod h1:I8rWmBBl+OhiY3AGzKbrobiE5TsLCLNYkCQxE4eJcTg=
 github.com/adrg/xdg v0.3.2 h1:GUSGQ5pHdev83AYhDSS1A/CX+0JIsxbiWtow2DSA+RU=
 github.com/adrg/xdg v0.3.2/go.mod h1:7I2hH/IT30IsupOpKZ5ue7/qNi3CoKzD6tL3HwpaRMQ=
 github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=
