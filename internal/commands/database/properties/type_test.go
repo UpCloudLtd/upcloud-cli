@@ -32,7 +32,8 @@ var propertiesTestdata = upcloud.ManagedDatabaseType{
 				},
 			},
 		},
-	}}
+	},
+}
 
 func TestDatabasePropertiesByType(t *testing.T) {
 	text.DisableColors()

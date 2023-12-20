@@ -39,7 +39,6 @@ func TestDatabasePropertiesShow(t *testing.T) {
   Default:     16                                                                                                                                                                                                                                       
   Minimum:     1                                                                                                                                                                                                                                        
   Maximum:     4096                                                                                                                                                                                                                                     
-  Properties:                                                                                                                                                                                                                                           
 
 `
 	assert.Equal(t, expected, output)

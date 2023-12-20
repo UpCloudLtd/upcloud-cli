@@ -87,6 +87,10 @@ func filterOutEmptyRows(rows []output.DetailRow) []output.DetailRow {
 			continue
 		}
 
+		if val, ok := row.Value.([]string); ok && len(val) == 0 {
+			continue
+		}
+
 		if val, ok := row.Value.(int); ok && val == 0 {
 			continue
 		}
