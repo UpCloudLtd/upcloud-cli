@@ -27,6 +27,20 @@ func Boolean(val interface{}) (text.Colors, string, error) {
 	return nil, "", fmt.Errorf("cannot parse '%v' (%T) as boolean", val, val)
 }
 
+// Dereference returns "%v" Sprintf'ed value of a pointer
+func Dereference[T any](val interface{}) (text.Colors, string, error) {
+	ptr, ok := val.(*T)
+	if !ok {
+		return nil, "", fmt.Errorf("cannot parse %T, expected pointer", val)
+	}
+
+	if ptr != nil {
+		return nil, fmt.Sprintf("%v", *ptr), nil
+	}
+
+	return text.Colors{text.FgHiBlack}, "nil", nil
+}
+
 // PossiblyUnknownString outputs "Unknown" in light black if input value is an empty string, otherwise passesthrough the input value.
 func PossiblyUnknownString(val interface{}) (text.Colors, string, error) {
 	str, ok := val.(string)

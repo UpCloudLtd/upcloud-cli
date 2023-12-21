@@ -8,6 +8,14 @@ import (
 )
 
 func formatAlternatives(val interface{}) (text.Colors, string, error) {
+	return formatStringSlice(val, "or")
+}
+
+func formatProperties(val interface{}) (text.Colors, string, error) {
+	return formatStringSlice(val, "and")
+}
+
+func formatStringSlice(val interface{}, andOrOr string) (text.Colors, string, error) {
 	if val == nil {
 		return nil, "", nil
 	}
@@ -17,7 +25,15 @@ func formatAlternatives(val interface{}) (text.Colors, string, error) {
 	}
 
 	if ifaceSliceVal, ok := val.([]interface{}); ok {
-		return nil, alternativesString(ifaceSliceVal), nil
+		return nil, alternativesString(ifaceSliceVal, andOrOr), nil
+	}
+
+	if stringSliceVal, ok := val.([]string); ok {
+		ifaceSliceVal := []interface{}{}
+		for _, i := range stringSliceVal {
+			ifaceSliceVal = append(ifaceSliceVal, i)
+		}
+		return nil, alternativesString(ifaceSliceVal, andOrOr), nil
 	}
 
 	return nil, fmt.Sprintf("%+v", val), nil
@@ -33,7 +49,7 @@ func maxStringLen(strings []string) int {
 	return max
 }
 
-func alternativesString(values []interface{}) string {
+func alternativesString(values []interface{}, andOrOr string) string {
 	if len(values) == 0 {
 		return ""
 	}
@@ -53,5 +69,5 @@ func alternativesString(values []interface{}) string {
 	}
 
 	str := strings.Join(strs[:len(strs)-1], ","+whitespace)
-	return str + fmt.Sprintf(" or%s%s", whitespace, strs[len(values)-1])
+	return str + fmt.Sprintf(" %s%s%s", andOrOr, whitespace, strs[len(values)-1])
 }

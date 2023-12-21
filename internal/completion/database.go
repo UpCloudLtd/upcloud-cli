@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/service"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/utils"
 	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
 	"github.com/spf13/cobra"
 )
@@ -62,7 +63,7 @@ func (s DatabaseProperty) CompleteArgument(ctx context.Context, svc service.AllS
 		return None(toComplete)
 	}
 
-	properties := dbType.Properties
+	properties := utils.GetFlatDatabaseProperties(dbType.Properties)
 	var vals []string
 	for key, details := range properties {
 		description := details.Title
