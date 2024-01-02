@@ -66,6 +66,26 @@ func TestCreateCommand(t *testing.T) {
 			},
 		},
 		{
+			name: "with DHCP parameters",
+			args: []string{
+				"--name", n.Name,
+				"--zone", n.Zone,
+				"--ip-network", "address=127.0.0.1,dhcp=true,dhcp-default-route=true",
+			},
+			expected: request.CreateNetworkRequest{
+				Name: n.Name,
+				Zone: n.Zone,
+				IPNetworks: []upcloud.IPNetwork{
+					{
+						Address:          "127.0.0.1",
+						Family:           upcloud.IPAddressFamilyIPv4,
+						DHCP:             upcloud.FromBool(true),
+						DHCPDefaultRoute: upcloud.FromBool(true),
+					},
+				},
+			},
+		},
+		{
 			name: "with multiple network",
 			args: []string{
 				"--name", n.Name,

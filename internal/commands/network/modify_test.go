@@ -56,6 +56,24 @@ func TestModifyCommand(t *testing.T) {
 			},
 		},
 		{
+			name: "with DHCP parameters",
+			flags: []string{
+				"--name", n.Name,
+				"--ip-network", "family=IPv4,dhcp=false,dhcp-default-route=false",
+			},
+			expected: request.ModifyNetworkRequest{
+				Name: n.Name,
+				UUID: n.UUID,
+				IPNetworks: []upcloud.IPNetwork{
+					{
+						Family:           upcloud.IPAddressFamilyIPv4,
+						DHCP:             upcloud.FromBool(false),
+						DHCPDefaultRoute: upcloud.FromBool(false),
+					},
+				},
+			},
+		},
+		{
 			name: "with multiple network",
 			flags: []string{
 				"--name", n.Name,
