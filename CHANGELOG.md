@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Support nested properties in `database properties *` and `database properties * show *` outputs. For example upctl `max_background_workers` sub-property of `timescaledb` PostgreSQL property is listed as `timescaledb.max_background_workers` in human output of `database properties pg` and its details can printed with `upctl database properties pg show timescaledb.max_background_workers` command.
 
+### Fixed
+- Do not return error on valid `dhcp-default-route` values in `network create` and `network modify` commands.
+
 ## [3.2.1] - 2023-11-29
 
 ### Added

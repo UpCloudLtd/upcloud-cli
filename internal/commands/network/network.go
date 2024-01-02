@@ -33,7 +33,7 @@ func (n *networkCommand) InitCommand() {
 func handleNetwork(in string) (*upcloud.IPNetwork, error) {
 	result := &upcloud.IPNetwork{}
 	var dhcp string
-	var dhcpDefRout string
+	var dhcpDefaultRoute string
 	var dns string
 
 	args, err := commands.Parse(in)
@@ -47,7 +47,7 @@ func handleNetwork(in string) (*upcloud.IPNetwork, error) {
 	fs.StringVar(&result.Family, "family", result.Address, "IP address family. Currently only IPv4 networks are supported.")
 	fs.StringVar(&result.Gateway, "gateway", result.Gateway, "Gateway address given by the DHCP service. Defaults to first address of the network if not given.")
 	fs.StringVar(&dhcp, "dhcp", dhcp, "Toggles DHCP service for the network.")
-	fs.StringVar(&dhcpDefRout, "dhcp-default-route", dhcpDefRout, "Defines if the gateway should be given as default route by DHCP. Defaults to yes on public networks, and no on other ones.")
+	fs.StringVar(&dhcpDefaultRoute, "dhcp-default-route", dhcpDefaultRoute, "Defines if the gateway should be given as default route by DHCP. Defaults to yes on public networks, and no on other ones.")
 
 	err = fs.Parse(args)
 	if err != nil {
@@ -55,24 +55,19 @@ func handleNetwork(in string) (*upcloud.IPNetwork, error) {
 	}
 
 	if dhcp != "" {
-		switch dhcp {
-		case "true":
-			result.DHCP = upcloud.FromBool(true)
-		case "false":
-			result.DHCP = upcloud.FromBool(false)
-		default:
-			return nil, fmt.Errorf("%s is an invalid value for dhcp, it can be true of false", dhcp)
+		val, err := commands.BoolFromString(dhcp)
+		if err != nil {
+			return nil, fmt.Errorf("could not parse dhcp value: %w", err)
 		}
+		result.DHCP = *val
 	}
 
-	if dhcpDefRout != "" {
-		if dhcpDefRout == "false" {
-			result.DHCPDefaultRoute = upcloud.FromBool(false)
+	if dhcpDefaultRoute != "" {
+		val, err := commands.BoolFromString(dhcpDefaultRoute)
+		if err != nil {
+			return nil, fmt.Errorf("could not parse dhcp-default-route value: %w", err)
 		}
-		if dhcpDefRout == "true" {
-			result.DHCPDefaultRoute = upcloud.FromBool(true)
-		}
-		return nil, fmt.Errorf("%s is an invalid value for dhcp default rout, it can be true of false", dhcp)
+		result.DHCPDefaultRoute = *val
 	}
 
 	if dns != "" {
