@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.2.2] - 2024-01-02
+
 ### Added
 - Support nested properties in `database properties *` and `database properties * show *` outputs. For example upctl `max_background_workers` sub-property of `timescaledb` PostgreSQL property is listed as `timescaledb.max_background_workers` in human output of `database properties pg` and its details can printed with `upctl database properties pg show timescaledb.max_background_workers` command.
 
@@ -324,7 +326,8 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.2.1...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.2.2...HEAD
+[3.2.2]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.2.1...v3.2.2
 [3.2.1]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.2.0...v3.2.1
 [3.2.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.1.0...v3.2.0
 [3.1.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.0.0...v3.1.0
