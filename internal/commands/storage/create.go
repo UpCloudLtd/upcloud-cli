@@ -50,6 +50,7 @@ func newCreateParams() createParams {
 type createParams struct {
 	request.CreateStorageRequest
 	backupTime string
+	encrypted  config.OptionalBoolean
 }
 
 func (s *createParams) processParams() error {
@@ -62,6 +63,9 @@ func (s *createParams) processParams() error {
 	} else {
 		s.BackupRule = nil
 	}
+
+	s.Encrypted = s.encrypted.AsUpcloudBoolean()
+
 	return nil
 }
 
@@ -76,6 +80,7 @@ func applyCreateFlags(fs *pflag.FlagSet, dst, def *createParams) {
 	fs.IntVar(&dst.Size, "size", def.Size, "Size of the storage in GiB.")
 	fs.StringVar(&dst.Zone, "zone", def.Zone, namedargs.ZoneDescription("storage"))
 	fs.StringVar(&dst.Tier, "tier", def.Tier, "Storage tier.")
+	config.AddToggleFlag(fs, &dst.encrypted, "encrypted", false, "Encrypt the storage.")
 	fs.StringVar(&dst.backupTime, "backup-time", def.backupTime, "The time when to create a backup in HH:MM. Empty value means no backups.")
 	fs.StringVar(&dst.BackupRule.Interval, "backup-interval", def.BackupRule.Interval, "The interval of the backup.\nAvailable: daily,mon,tue,wed,thu,fri,sat,sun")
 	fs.IntVar(&dst.BackupRule.Retention, "backup-retention", def.BackupRule.Retention, "How long to store the backups in days. The accepted range is 1-1095")

@@ -51,18 +51,19 @@ func TestStorageHumanOutput(t *testing.T) {
 
 	expected := `  
   Storage
-    UUID:    01101f27-196f-47e9-a055-4e2e8bb3b419 
-    Title:   test-1                               
-    Access:  private                              
-    Type:    normal                               
-    State:   online                               
-    Size:    10                                   
-    Tier:    maxiops                              
-    Zone:    fi-hel1                              
-    Server:  0077fa3d-32db-4b09-9f5f-30d9e9afb565 
-    Origin:                                       
-    Created: 0001-01-01 00:00:00 +0000 UTC        
-    Licence: 0                                    
+    UUID:      01101f27-196f-47e9-a055-4e2e8bb3b419 
+    Title:     test-1                               
+    Access:    private                              
+    Type:      normal                               
+    State:     online                               
+    Size:      10                                   
+    Tier:      maxiops                              
+    Encrypted: no                                   
+    Zone:      fi-hel1                              
+    Server:    0077fa3d-32db-4b09-9f5f-30d9e9afb565 
+    Origin:                                         
+    Created:   0001-01-01 00:00:00 +0000 UTC        
+    Licence:   0                                    
 
   Labels:
 
@@ -112,6 +113,7 @@ func TestStorageLabels(t *testing.T) {
 		Size:       10,
 		State:      "online",
 		Tier:       "maxiops",
+		Encrypted:  upcloud.FromBool(true),
 		Title:      "test-1",
 		Type:       "normal",
 		UUID:       "01101f27-196f-47e9-a055-4e2e8bb3b419",
@@ -135,18 +137,19 @@ func TestStorageLabels(t *testing.T) {
 
 	expected := `  
   Storage
-    UUID:    01101f27-196f-47e9-a055-4e2e8bb3b419 
-    Title:   test-1                               
-    Access:  private                              
-    Type:    normal                               
-    State:   online                               
-    Size:    10                                   
-    Tier:    maxiops                              
-    Zone:    fi-hel1                              
-    Server:  0077fa3d-32db-4b09-9f5f-30d9e9afb565 
-    Origin:                                       
-    Created: 0001-01-01 00:00:00 +0000 UTC        
-    Licence: 0                                    
+    UUID:      01101f27-196f-47e9-a055-4e2e8bb3b419 
+    Title:     test-1                               
+    Access:    private                              
+    Type:      normal                               
+    State:     online                               
+    Size:      10                                   
+    Tier:      maxiops                              
+    Encrypted: yes                                  
+    Zone:      fi-hel1                              
+    Server:    0077fa3d-32db-4b09-9f5f-30d9e9afb565 
+    Origin:                                         
+    Created:   0001-01-01 00:00:00 +0000 UTC        
+    Licence:   0                                    
 
   Labels:
 

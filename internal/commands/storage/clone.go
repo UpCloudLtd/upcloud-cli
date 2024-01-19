@@ -24,6 +24,7 @@ type cloneCommand struct {
 
 type cloneParams struct {
 	request.CloneStorageRequest
+	encrypted config.OptionalBoolean
 }
 
 // CloneCommand creates the "storage clone" command
@@ -53,6 +54,7 @@ func (s *cloneCommand) InitCommand() {
 	flagSet.StringVar(&s.params.Tier, "tier", defaultCloneParams.Tier, "The storage tier to use.")
 	flagSet.StringVar(&s.params.Title, "title", defaultCloneParams.Title, "A short, informational description.")
 	flagSet.StringVar(&s.params.Zone, "zone", defaultCloneParams.Zone, namedargs.ZoneDescription("storage"))
+	config.AddToggleFlag(flagSet, &s.params.encrypted, "encrypted", false, "Encrypt the new storage.")
 
 	s.AddFlags(flagSet)
 	_ = s.Cobra().MarkFlagRequired("title")
@@ -68,6 +70,7 @@ func (s *cloneCommand) Execute(exec commands.Executor, uuid string) (output.Outp
 	svc := exec.Storage()
 	req := s.params.CloneStorageRequest
 	req.UUID = uuid
+	req.Encrypted = s.params.encrypted.AsUpcloudBoolean()
 
 	msg := fmt.Sprintf("Cloning storage %v", uuid)
 	exec.PushProgressStarted(msg)

@@ -61,6 +61,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 						{Title: "State:", Key: "state", Value: storage.State, Format: format.StorageState},
 						{Title: "Size:", Key: "size", Value: storage.Size},
 						{Title: "Tier:", Key: "tier", Value: storage.Tier},
+						{Title: "Encrypted:", Key: "encrypted", Value: storage.Encrypted, Format: format.Boolean},
 						{Title: "Zone:", Key: "zone", Value: storage.Zone},
 						{Title: "Server:", Key: "servers", Value: storage.ServerUUIDs, Format: formatShowServers},
 						{Title: "Origin:", Key: "origin", Value: storage.Origin, Colour: ui.DefaultUUUIDColours},
