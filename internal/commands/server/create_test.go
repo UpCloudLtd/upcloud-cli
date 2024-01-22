@@ -266,8 +266,9 @@ func TestCreateServer(t *testing.T) {
 				"--hostname", "example.com",
 				"--title", "test-server",
 				"--zone", "uk-lon1",
+				"--os-storage-encrypt",
 				"--password-delivery", "email",
-				"--storage", "action=create,address=virtio,type=disk,size=20,title=new-storage",
+				"--storage", "action=create,address=virtio,encrypt=true,type=disk,size=20,title=new-storage",
 				"--storage", fmt.Sprintf("action=clone,storage=%s,title=three-clone", Storage3.Title),
 				"--storage", fmt.Sprintf("action=attach,storage=%s,type=cdrom", Storage1.Title),
 			},
@@ -282,20 +283,22 @@ func TestCreateServer(t *testing.T) {
 				LoginUser:        &request.LoginUser{CreatePassword: "yes"},
 				StorageDevices: request.CreateServerStorageDeviceSlice{
 					request.CreateServerStorageDevice{
-						Action:  "clone",
-						Address: "virtio",
-						Storage: StorageDef.UUID,
-						Title:   "example.com-OS",
-						Size:    50,
-						Tier:    upcloud.StorageTierMaxIOPS,
-						Type:    upcloud.StorageTypeDisk,
+						Action:    "clone",
+						Address:   "virtio",
+						Encrypted: upcloud.FromBool(true),
+						Storage:   StorageDef.UUID,
+						Title:     "example.com-OS",
+						Size:      50,
+						Tier:      upcloud.StorageTierMaxIOPS,
+						Type:      upcloud.StorageTypeDisk,
 					},
 					request.CreateServerStorageDevice{
-						Action:  "create",
-						Address: "virtio",
-						Title:   "new-storage",
-						Size:    20,
-						Type:    upcloud.StorageTypeDisk,
+						Action:    "create",
+						Address:   "virtio",
+						Encrypted: upcloud.FromBool(true),
+						Title:     "new-storage",
+						Size:      20,
+						Type:      upcloud.StorageTypeDisk,
 					},
 					request.CreateServerStorageDevice{
 						Action:  "clone",
@@ -470,6 +473,7 @@ func TestCreateServer(t *testing.T) {
 					assert.Equal(t, test.error, err.Error())
 				}
 			} else {
+				assert.NoError(t, err)
 				mService.AssertNumberOfCalls(t, "GetStorages", 1)
 				mService.AssertNumberOfCalls(t, "CreateServer", 1)
 			}
