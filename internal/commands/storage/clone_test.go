@@ -67,6 +67,17 @@ func TestCloneCommand(t *testing.T) {
 			},
 		},
 		{
+			name: "encrypted",
+			args: []string{"--zone", "test-zone", "--title", "test-title", "--encrypt"},
+			expected: request.CloneStorageRequest{
+				Encrypted: upcloud.FromBool(true),
+				UUID:      Storage2.UUID,
+				Zone:      "test-zone",
+				Tier:      "hdd",
+				Title:     "test-title",
+			},
+		},
+		{
 			name: "title is missing",
 			args: []string{
 				"--zone", "zone",

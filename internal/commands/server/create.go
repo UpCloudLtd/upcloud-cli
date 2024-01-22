@@ -57,10 +57,11 @@ var defaultCreateParams = &createParams{
 
 type createParams struct {
 	request.CreateServerRequest
-	firewall      bool
-	metadata      bool
-	os            string
-	osStorageSize int
+	firewall           bool
+	metadata           bool
+	os                 string
+	osStorageSize      int
+	osStorageEncrypted config.OptionalBoolean
 
 	labels   []string
 	storages []string
@@ -110,6 +111,10 @@ func (s *createParams) processParams(exec commands.Executor) error {
 		s.StorageDevices[0].Size = s.osStorageSize
 	}
 
+	if s.osStorageEncrypted.Value() {
+		s.StorageDevices[0].Encrypted = s.osStorageEncrypted.AsUpcloudBoolean()
+	}
+
 	if s.LoginUser == nil {
 		s.LoginUser = &request.LoginUser{}
 	}
@@ -130,6 +135,8 @@ func (s *createParams) processParams(exec commands.Executor) error {
 }
 
 func (s *createParams) handleStorage(in string, exec commands.Executor) (*request.CreateServerStorageDevice, error) {
+	var encryptedRaw string
+
 	sd := &request.CreateServerStorageDevice{}
 	fs := &pflag.FlagSet{}
 	args, err := commands.Parse(in)
@@ -138,6 +145,7 @@ func (s *createParams) handleStorage(in string, exec commands.Executor) (*reques
 	}
 	fs.StringVar(&sd.Action, "action", sd.Action, "")
 	fs.StringVar(&sd.Address, "address", sd.Address, "")
+	fs.StringVar(&encryptedRaw, "encrypt", encryptedRaw, "")
 	fs.StringVar(&sd.Storage, "storage", sd.Storage, "")
 	fs.StringVar(&sd.Type, "type", sd.Type, "")
 	fs.StringVar(&sd.Tier, "tier", sd.Tier, "")
@@ -146,6 +154,10 @@ func (s *createParams) handleStorage(in string, exec commands.Executor) (*reques
 	err = fs.Parse(args)
 	if err != nil {
 		return nil, err
+	}
+
+	if encrypted, err := commands.BoolFromString(encryptedRaw); err == nil {
+		sd.Encrypted = *encrypted
 	}
 
 	if sd.Action != request.CreateServerStorageDeviceActionCreate {
@@ -258,6 +270,7 @@ func (s *createCommand) InitCommand() {
 	fs.StringArrayVar(&s.params.networks, "network", def.networks, "A network interface for the server, multiple can be declared.\nUsage: --network family=IPv4,type=public\n\n--network type=private,network=037a530b-533e-4cef-b6ad-6af8094bb2bc,ip-address=10.0.0.1")
 	fs.StringVar(&s.params.os, "os", def.os, "Server OS to use (will be the first storage device). The value should be title or UUID of an either public or private template. Set to empty to fully customise the storages.")
 	fs.IntVar(&s.params.osStorageSize, "os-storage-size", def.osStorageSize, "OS storage size in GiB. This is only applicable if `os` is also set. Zero value makes the disk equal to the minimum size of the template.")
+	config.AddToggleFlag(fs, &s.params.osStorageEncrypted, "os-storage-encrypt", false, "Encrypt the OS storage. This is only applicable if `os` is also set.")
 	fs.StringVar(&s.params.PasswordDelivery, "password-delivery", def.PasswordDelivery, "Defines how password is delivered. Available: email, sms")
 	fs.StringVar(&s.params.Plan, "plan", def.Plan, "Server plan name. See \"server plans\" command for valid plans. Set to \"custom\" and use `cores` and `memory` options for flexible plan.")
 	fs.StringVar(&s.params.RemoteAccessPassword, "remote-access-password", def.RemoteAccessPassword, "Defines the remote access password.")

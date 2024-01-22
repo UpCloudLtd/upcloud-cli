@@ -68,6 +68,7 @@ func TestCreateCommand(t *testing.T) {
 			args: []string{
 				"--title", "create-storage-test",
 				"--zone", "abc",
+				"--encrypt",
 				"--size", "30",
 				"--tier", "xyz",
 				"--backup-time", "09:00",
@@ -75,10 +76,11 @@ func TestCreateCommand(t *testing.T) {
 				"--backup-interval", "mon",
 			},
 			expected: request.CreateStorageRequest{
-				Size:  30,
-				Tier:  "xyz",
-				Title: "create-storage-test",
-				Zone:  "abc",
+				Encrypted: upcloud.FromBool(true),
+				Size:      30,
+				Tier:      "xyz",
+				Title:     "create-storage-test",
+				Zone:      "abc",
 				BackupRule: &upcloud.BackupRule{
 					Interval:  "mon",
 					Time:      "0900",

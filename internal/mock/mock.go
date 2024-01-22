@@ -1073,6 +1073,14 @@ func (m *Service) DeleteServerGroup(ctx context.Context, r *request.DeleteServer
 	return nil
 }
 
+func (m *Service) AddServerToServerGroup(ctx context.Context, r *request.AddServerToServerGroupRequest) error {
+	return nil
+}
+
+func (m *Service) RemoveServerFromServerGroup(ctx context.Context, r *request.RemoveServerFromServerGroupRequest) error {
+	return nil
+}
+
 func (m *Service) GetManagedObjectStorageRegions(ctx context.Context, r *request.GetManagedObjectStorageRegionsRequest) ([]upcloud.ManagedObjectStorageRegion, error) {
 	return nil, nil
 }

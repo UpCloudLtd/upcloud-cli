@@ -91,6 +91,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 			storage.Type,
 			storage.Address,
 			storage.Size,
+			storage.Encrypted,
 			strings.Join(flags, " "),
 		})
 	}
@@ -152,6 +153,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 					{Key: "type", Header: "Type"},
 					{Key: "address", Header: "Address"},
 					{Key: "size", Header: "Size (GiB)"},
+					{Key: "encrypted", Header: "Encrypted", Format: format.Boolean},
 					{Key: "flags", Header: "Flags"},
 				},
 				Rows: storageRows,

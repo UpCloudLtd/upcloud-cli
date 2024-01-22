@@ -99,6 +99,7 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 		rows = append(rows, output.TableRow{
 			storage.UUID,
 			storage.Title,
+			storage.Encrypted,
 			storage.Type,
 			storage.Size,
 			storage.State,
@@ -115,13 +116,13 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 			Columns: []output.TableColumn{
 				{Key: "uuid", Header: "UUID", Colour: ui.DefaultUUUIDColours},
 				{Key: "title", Header: "Title"},
+				{Key: "encrypted", Header: "Encrypted", Format: format.Boolean},
 				{Key: "type", Header: "Type"},
 				{Key: "size", Header: "Size"},
 				{Key: "state", Header: "State", Format: format.StorageState},
 				{Key: "tier", Header: "Tier"},
 				{Key: "zone", Header: "Zone"},
 				{Key: "access", Header: "Access"},
-				{Key: "created", Header: "Created"},
 			},
 			Rows: rows,
 		},
