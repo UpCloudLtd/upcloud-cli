@@ -172,9 +172,9 @@ func TestServerHumanOutput(t *testing.T) {
     
   Storage: (Flags: B = bootdisk, P = part of plan)
 
-     UUID                                   Title                             Type   Address    Size (GiB)   Flags 
-    ────────────────────────────────────── ───────────────────────────────── ────── ────────── ──────────── ───────
-     012580a1-32a1-466e-a323-689ca16f2d43   Storage for server1.example.com   disk   virtio:0           20   P     
+     UUID                                   Title                             Type   Address    Size (GiB)   Encrypted   Flags 
+    ────────────────────────────────────── ───────────────────────────────── ────── ────────── ──────────── ─────────── ───────
+     012580a1-32a1-466e-a323-689ca16f2d43   Storage for server1.example.com   disk   virtio:0           20   no          P     
     
   NICs: (Flags: S = source IP filtering, B = bootable)
 
