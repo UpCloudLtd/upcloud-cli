@@ -54,7 +54,7 @@ func (s *cloneCommand) InitCommand() {
 	flagSet.StringVar(&s.params.Tier, "tier", defaultCloneParams.Tier, "The storage tier to use.")
 	flagSet.StringVar(&s.params.Title, "title", defaultCloneParams.Title, "A short, informational description.")
 	flagSet.StringVar(&s.params.Zone, "zone", defaultCloneParams.Zone, namedargs.ZoneDescription("storage"))
-	config.AddToggleFlag(flagSet, &s.params.encrypted, "encrypted", false, "Encrypt the new storage.")
+	config.AddToggleFlag(flagSet, &s.params.encrypted, "encrypt", false, "Encrypt the new storage.")
 
 	s.AddFlags(flagSet)
 	_ = s.Cobra().MarkFlagRequired("title")
