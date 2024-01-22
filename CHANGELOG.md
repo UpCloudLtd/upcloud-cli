@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Support for storage encryption to storage `create`, `clone`, `show`, and `list` commands as well as server `create` and `show` commands.
+
+### Removed
+
+- From human output of `storage list`, _Created_ column. This field is still available in the machine readable outputs.
+
 ## [3.2.2] - 2024-01-02
 
 ### Added
