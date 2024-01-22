@@ -25,14 +25,15 @@ func TestListStorages(t *testing.T) {
 		Tier:   "maxiops",
 	}
 	Storage2 := upcloud.Storage{
-		UUID:   UUID2,
-		Title:  Title2,
-		Access: "private",
-		State:  "online",
-		Type:   "normal",
-		Zone:   "fi-hel1",
-		Size:   40,
-		Tier:   "maxiops",
+		UUID:      UUID2,
+		Title:     Title2,
+		Encrypted: upcloud.FromBool(true),
+		Access:    "private",
+		State:     "online",
+		Type:      "normal",
+		Zone:      "fi-hel1",
+		Size:      40,
+		Tier:      "maxiops",
 	}
 	Storage3 := upcloud.Storage{
 		UUID:   UUID3,
