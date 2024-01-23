@@ -1,4 +1,5 @@
 name: Examples
+
 on:
   pull_request:
     paths:
@@ -6,6 +7,11 @@ on:
       - "go.mod"
       - "go.sum"
       - "examples/**.md"
+
+concurrency:
+  group: ${{ github.repository }}-${{ github.workflow }}
+  cancel-in-progress: false
+
 jobs:
   test:
     name: Test
