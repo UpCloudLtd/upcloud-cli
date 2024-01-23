@@ -49,6 +49,16 @@ func (s *showCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 						Value: account.ResourceLimits.DetachedFloatingIps,
 					},
 					{
+						Title: "Load balancers:",
+						Key:   "load_balancers",
+						Value: account.ResourceLimits.LoadBalancers,
+					},
+					{
+						Title: "Managed object storages:",
+						Key:   "managed_object_storages",
+						Value: account.ResourceLimits.ManagedObjectStorages,
+					},
+					{
 						Title: "Memory:",
 						Key:   "memory",
 						Value: account.ResourceLimits.Memory,
@@ -92,11 +102,6 @@ func (s *showCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 						Title: "Storage SSD:",
 						Key:   "storage_ssd",
 						Value: account.ResourceLimits.StorageSSD,
-					},
-					{
-						Title: "Load balancers:",
-						Key:   "load_balancers",
-						Value: account.ResourceLimits.LoadBalancers,
 					},
 				},
 			},

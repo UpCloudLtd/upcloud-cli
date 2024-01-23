@@ -20,18 +20,19 @@ func TestShowCommand(t *testing.T) {
 		Credits:  12345,
 		UserName: "upctl_test",
 		ResourceLimits: upcloud.ResourceLimits{
-			Cores:               100,
-			DetachedFloatingIps: 10,
-			Memory:              307200,
-			NetworkPeerings:     100,
-			Networks:            100,
-			NTPExcessGiB:        20000,
-			PublicIPv4:          0,
-			PublicIPv6:          100,
-			StorageHDD:          10240,
-			StorageMaxIOPS:      10240,
-			StorageSSD:          10240,
-			LoadBalancers:       50,
+			Cores:                 100,
+			DetachedFloatingIps:   10,
+			ManagedObjectStorages: 20,
+			Memory:                307200,
+			NetworkPeerings:       100,
+			Networks:              100,
+			NTPExcessGiB:          20000,
+			PublicIPv4:            0,
+			PublicIPv6:            100,
+			StorageHDD:            10240,
+			StorageMaxIOPS:        10240,
+			StorageSSD:            10240,
+			LoadBalancers:         50,
 		},
 	}
 
@@ -40,18 +41,19 @@ func TestShowCommand(t *testing.T) {
   Credits:  €123.45    
   
   Resource Limits:
-    Cores:                    100 
-    Detached Floating IPs:     10 
-    Memory:                307200 
-    Network peerings:         100 
-    Networks:                 100 
-    NTP excess GiB:         20000 
-    Public IPv4:                0 
-    Public IPv6:              100 
-    Storage HDD:            10240 
-    Storage MaxIOPS:        10240 
-    Storage SSD:            10240 
-    Load balancers:            50 
+    Cores:                      100 
+    Detached Floating IPs:       10 
+    Load balancers:              50 
+    Managed object storages:     20 
+    Memory:                  307200 
+    Network peerings:           100 
+    Networks:                   100 
+    NTP excess GiB:           20000 
+    Public IPv4:                  0 
+    Public IPv6:                100 
+    Storage HDD:              10240 
+    Storage MaxIOPS:          10240 
+    Storage SSD:              10240 
 
 `
 
