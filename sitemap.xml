@@ -26,7 +26,22 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_account/list/</loc>
+         <lastmod>2024-01-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_account/show/</loc>
+         <lastmod>2024-01-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_account/permissions/</loc>
+         <lastmod>2024-01-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_account/permissions/list/</loc>
          <lastmod>2024-01-23</lastmod>
          <changefreq>daily</changefreq>
     </url>
