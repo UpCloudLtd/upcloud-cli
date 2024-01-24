@@ -5,9 +5,12 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/labels"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 
+	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 	"github.com/spf13/pflag"
 )
@@ -27,7 +30,10 @@ type modifyCommand struct {
 	*commands.BaseCommand
 	resolver.CachingKubernetes
 	completion.Kubernetes
+
 	controlPlaneIPFilter []string
+	labels               []string
+	clearLabels          config.OptionalBoolean
 }
 
 // InitCommand implements Command.InitCommand
@@ -39,8 +45,11 @@ func (c *modifyCommand) InitCommand() {
 		[]string{},
 		"Allow cluster's Kubernetes API to be accessed from an IP address or a network CIDR, multiple can be declared.",
 	)
+	fs.StringArrayVar(&c.labels, "label", nil, "Labels to describe the cluster in `key=value` format, multiple can be declared.")
+	config.AddToggleFlag(fs, &c.clearLabels, "clear-labels", false, "Clear all labels from to given cluster.")
 
 	c.AddFlags(fs)
+	c.Cobra().MarkFlagsMutuallyExclusive("label", "clear-labels")
 }
 
 // Execute implements commands.MultipleArgumentCommand
@@ -55,6 +64,19 @@ func (c *modifyCommand) Execute(exec commands.Executor, arg string) (output.Outp
 
 	if len(c.controlPlaneIPFilter) > 0 {
 		req.Cluster.ControlPlaneIPFilter = &c.controlPlaneIPFilter
+	}
+
+	if c.clearLabels.Value() {
+		req.Cluster.Labels = &[]upcloud.Label{}
+	}
+
+	if len(c.labels) > 0 {
+		labelSlice, err := labels.StringsToSliceOfLabels(c.labels)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Cluster.Labels = &labelSlice
 	}
 
 	res, err := exec.All().ModifyKubernetesCluster(exec.Context(), &req)

@@ -36,7 +36,10 @@ func TestModifyKubernetesCluster(t *testing.T) {
 			},
 			expected: request.ModifyKubernetesClusterRequest{
 				ClusterUUID: clusterUUID,
-				Cluster:     request.ModifyKubernetesCluster{ControlPlaneIPFilter: &[]string{"10.144.1.100"}},
+				Cluster: request.ModifyKubernetesCluster{
+					ControlPlaneIPFilter: &[]string{"10.144.1.100"},
+					Labels:               nil,
+				},
 			},
 		},
 		{
@@ -48,8 +51,53 @@ func TestModifyKubernetesCluster(t *testing.T) {
 			},
 			expected: request.ModifyKubernetesClusterRequest{
 				ClusterUUID: clusterUUID,
-				Cluster:     request.ModifyKubernetesCluster{ControlPlaneIPFilter: &[]string{"10.144.1.100", "10.144.2.0/24"}},
+				Cluster: request.ModifyKubernetesCluster{
+					ControlPlaneIPFilter: &[]string{"10.144.1.100", "10.144.2.0/24"},
+					Labels:               nil,
+				},
 			},
+		},
+		{
+			name: "labels",
+			args: []string{
+				clusterUUID,
+				"--label", "tool=upctl",
+				"--label", "test=unittest",
+			},
+			expected: request.ModifyKubernetesClusterRequest{
+				ClusterUUID: clusterUUID,
+				Cluster: request.ModifyKubernetesCluster{
+					ControlPlaneIPFilter: nil,
+					Labels: &[]upcloud.Label{
+						{Key: "tool", Value: "upctl"},
+						{Key: "test", Value: "unittest"},
+					},
+				},
+			},
+		},
+		{
+			name: "clear-labels",
+			args: []string{
+				clusterUUID,
+				"--clear-labels",
+			},
+			expected: request.ModifyKubernetesClusterRequest{
+				ClusterUUID: clusterUUID,
+				Cluster: request.ModifyKubernetesCluster{
+					ControlPlaneIPFilter: nil,
+					Labels:               &[]upcloud.Label{},
+				},
+			},
+		},
+		{
+			name: "labels and clear-labels",
+			args: []string{
+				clusterUUID,
+				"--label", "tool=upctl",
+				"--label", "test=unittest",
+				"--clear-labels",
+			},
+			errorMsg: "if any flags in the group [label clear-labels] are set none of the others can be; [clear-labels label] were all set",
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {

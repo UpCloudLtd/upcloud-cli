@@ -100,6 +100,16 @@ func TestCreateKubernetes(t *testing.T) {
 	privateNodeGroupsRequest := nodeGroupRequest
 	privateNodeGroupsRequest.PrivateNodeGroups = true
 
+	labelsArg := []string{
+		"--label", "tool=upctl",
+		"--label", "test=unittest",
+	}
+	labelsRequest := nodeGroupRequest
+	labelsRequest.Labels = []upcloud.Label{
+		{Key: "tool", Value: "upctl"},
+		{Key: "test", Value: "unittest"},
+	}
+
 	versionArg := []string{"--version", "0.99"}
 	versionRequest := nodeGroupRequest
 	versionRequest.Version = "0.99"
@@ -138,6 +148,12 @@ func TestCreateKubernetes(t *testing.T) {
 			name:    "with non-default version",
 			args:    append(nodeGroupArgs(network.Name), versionArg...),
 			request: versionRequest,
+			wantErr: false,
+		},
+		{
+			name:    "with labels",
+			args:    append(nodeGroupArgs(network.Name), labelsArg...),
+			request: labelsRequest,
 			wantErr: false,
 		},
 	} {
