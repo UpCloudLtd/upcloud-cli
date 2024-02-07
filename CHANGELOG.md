@@ -8,7 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
 - Add `gateway` commands (`delete`, `list`) for Network gateway management.
+- In machine readable outputs of server list, add support for `--show-ip-addresses` parameter.
 
 ## [3.3.0] - 2024-01-23
 

@@ -29,16 +29,20 @@ func ListCommand() commands.Command {
 	}
 }
 
-type listIPAddress struct {
-	Access   string `json:"access"`
-	Address  string `json:"address"`
-	Floating bool   `json:"floating"`
-}
-
 type listServerIpaddresses struct {
 	ServerUUID  string
-	IPAddresses []listIPAddress
+	IPAddresses upcloud.IPAddressSlice
 	Error       error
+}
+
+type serverWithIPAddress struct {
+	upcloud.Server
+
+	IPAddresses upcloud.IPAddressSlice `json:"ip_addresses"`
+}
+
+type serversWithIPAddresses struct {
+	Servers []serverWithIPAddress `json:"servers"`
 }
 
 type listCommand struct {
@@ -88,6 +92,7 @@ func (ls *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.O
 	}
 
 	if ls.showIPAddresses != "none" {
+		serversWithIPs := serversWithIPAddresses{}
 		ipaddressMap, err := getIPAddressesByServerUUID(servers, ls.showIPAddresses, exec)
 		if err != nil {
 			return nil, err
@@ -96,13 +101,20 @@ func (ls *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.O
 		for i, row := range rows {
 			uuid := row[0].(string)
 
-			var listIpaddresses []listIPAddress
+			// Add IPs to the table in human output
+			var listIpaddresses upcloud.IPAddressSlice
 			if serverIpaddresses, ok := ipaddressMap[uuid]; ok {
 				listIpaddresses = append(listIpaddresses, serverIpaddresses.IPAddresses...)
 			}
 			row = append(row[:3], row[2:]...)
 			row[2] = listIpaddresses
 			rows[i] = row
+
+			// Add IPs to machine output
+			serversWithIPs.Servers = append(serversWithIPs.Servers, serverWithIPAddress{
+				Server:      servers.Servers[i],
+				IPAddresses: listIpaddresses,
+			})
 		}
 		columns = append(columns[:3], columns[2:]...)
 		columns[2] = output.TableColumn{
@@ -110,6 +122,14 @@ func (ls *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.O
 			Header: "IP addresses",
 			Format: formatListIPAddresses,
 		}
+
+		return output.MarshaledWithHumanOutput{
+			Value: serversWithIPs,
+			Output: output.Table{
+				Columns: columns,
+				Rows:    rows,
+			},
+		}, nil
 	}
 
 	return output.MarshaledWithHumanOutput{
@@ -152,21 +172,18 @@ func getIPAddressesByServerUUID(servers *upcloud.Servers, accessType string, exe
 	return ipaddressMap, nil
 }
 
-func getServerIPAddresses(uuid, accessType string, exec commands.Executor) ([]listIPAddress, error) {
+func getServerIPAddresses(uuid, accessType string, exec commands.Executor) (upcloud.IPAddressSlice, error) {
 	server, err := exec.All().GetServerNetworks(exec.Context(), &request.GetServerNetworksRequest{ServerUUID: uuid})
 	if err != nil {
 		return nil, err
 	}
 
-	var ipaddresses []listIPAddress
+	var ipaddresses upcloud.IPAddressSlice
 	for _, iface := range server.Interfaces {
 		for _, ipa := range iface.IPAddresses {
 			if accessType == "all" || iface.Type == accessType {
-				ipaddresses = append(ipaddresses, listIPAddress{
-					Access:   iface.Type,
-					Address:  ipa.Address,
-					Floating: ipa.Floating.Bool(),
-				})
+				ipa.Access = iface.Type
+				ipaddresses = append(ipaddresses, ipa)
 			}
 		}
 	}
@@ -186,22 +203,22 @@ func getServerIPAddresses(uuid, accessType string, exec commands.Executor) ([]li
 			return accessMap[ipaddresses[i].Access] > accessMap[ipaddresses[j].Access]
 		}
 
-		return floatingMap[ipaddresses[i].Floating] > floatingMap[ipaddresses[j].Floating]
+		return floatingMap[ipaddresses[i].Floating.Bool()] > floatingMap[ipaddresses[j].Floating.Bool()]
 	})
 
 	return ipaddresses, nil
 }
 
 func formatListIPAddresses(val interface{}) (text.Colors, string, error) {
-	ipaddresses, ok := val.([]listIPAddress)
+	ipaddresses, ok := val.(upcloud.IPAddressSlice)
 	if !ok {
-		return nil, "", fmt.Errorf("cannot parse IP addresses from %T, expected []listIPAddress", val)
+		return nil, "", fmt.Errorf("cannot parse IP addresses from %T, expected upcloud.IPAddressSlice", val)
 	}
 
 	var rows []string
 	for _, ipa := range ipaddresses {
 		var floating string
-		if ipa.Floating {
+		if ipa.Floating.Bool() {
 			floating = " (f)"
 		}
 
