@@ -6,7 +6,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/clierrors"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
-	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/all"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/base"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/namedargs"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/terminal"
@@ -129,7 +129,7 @@ func BuildCLI() cobra.Command {
 	conf := config.New()
 	rootCmd := BuildRootCmd(conf)
 
-	all.BuildCommands(&rootCmd, conf)
+	base.BuildCommands(&rootCmd, conf)
 
 	return rootCmd
 }
