@@ -1,7 +1,10 @@
 package all
 
 import (
+	"bufio"
 	"fmt"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
@@ -33,8 +36,41 @@ func (c *purgeCommand) InitCommand() {
 	c.AddFlags(flags)
 }
 
+func confirm() bool {
+	reader := bufio.NewReader(os.Stdin)
+	for {
+		s, _ := reader.ReadString('\n')
+		s = strings.TrimSuffix(s, "\n")
+		s = strings.ToLower(s)
+		if len(s) > 1 {
+			fmt.Fprintln(os.Stderr, "Please type Y or N")
+			continue
+		}
+
+		if len(s) == 0 {
+			// FIXME: allow specifying Y or N as the default, now always defaults to "N"
+			return false
+		}
+
+		if strings.Compare(s, "n") == 0 {
+			return false
+		} else if strings.Compare(s, "y") == 0 {
+			return true
+		} else {
+			continue
+		}
+	}
+}
+
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (c *purgeCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
+	c.Cobra().Print("This will delete everything! Are you sure? [y/N] ")
+
+	if !confirm() {
+		c.Cobra().Print("Cancelling")
+		return output.None{}, nil
+	}
+
 	msg := "Getting a list of all UpCloud resources"
 	if c.namePrefix != "" {
 		msg = fmt.Sprintf("%s having name prefix \"%s\"", msg, c.namePrefix)
