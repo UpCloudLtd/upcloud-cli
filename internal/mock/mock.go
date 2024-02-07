@@ -572,10 +572,7 @@ func (m *Service) ModifySubaccount(_ context.Context, r *request.ModifySubaccoun
 // DeleteSubaccount implements service.Account.DeleteSubaccount
 func (m *Service) DeleteSubaccount(_ context.Context, r *request.DeleteSubaccountRequest) error {
 	args := m.Called(r)
-	if args[0] == nil {
-		return args.Error(1)
-	}
-	return nil
+	return args.Error(0)
 }
 
 func (m *Service) CancelManagedDatabaseConnection(_ context.Context, r *request.CancelManagedDatabaseConnection) error {
