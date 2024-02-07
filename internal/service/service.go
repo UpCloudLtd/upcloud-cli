@@ -19,4 +19,5 @@ type AllServices interface {
 	service.ServerGroup
 	service.ManagedObjectStorage
 	service.Permission
+	service.Gateway
 }
