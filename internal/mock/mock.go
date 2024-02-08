@@ -65,6 +65,7 @@ var (
 	_ service.Kubernetes           = &Service{}
 	_ service.ServerGroup          = &Service{}
 	_ service.ManagedObjectStorage = &Service{}
+	_ service.Gateway              = &Service{}
 )
 
 // GetServerConfigurations implements service.Server.GetServerConfigurations
@@ -1204,4 +1205,46 @@ func (m *Service) RevokePermission(ctx context.Context, r *request.RevokePermiss
 		return args.Error(0)
 	}
 	return nil
+}
+
+// GetGateways implements service.Gateway.GetGateways
+func (m *Service) GetGateways(_ context.Context, f ...request.QueryFilter) ([]upcloud.Gateway, error) {
+	args := m.Called(f)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].([]upcloud.Gateway), args.Error(1)
+}
+
+// DeleteGateway implements service.Gateway.DeleteGateway
+func (m *Service) DeleteGateway(_ context.Context, r *request.DeleteGatewayRequest) error {
+	args := m.Called(r)
+	return args.Error(0)
+}
+
+// CreateGateway implements service.Gateway.CreateGateway
+func (m *Service) CreateGateway(_ context.Context, r *request.CreateGatewayRequest) (*upcloud.Gateway, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.Gateway), args.Error(1)
+}
+
+// GetGateway implements service.Gateway.GetGateway
+func (m *Service) GetGateway(_ context.Context, r *request.GetGatewayRequest) (*upcloud.Gateway, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.Gateway), args.Error(1)
+}
+
+// ModifyGateway implements service.Gateway.ModifyGateway
+func (m *Service) ModifyGateway(_ context.Context, r *request.ModifyGatewayRequest) (*upcloud.Gateway, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.Gateway), args.Error(1)
 }
