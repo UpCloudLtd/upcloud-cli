@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add `gateway` commands (`delete`, `list`) for Network gateway management.
 - In machine readable outputs of server list, add support for `--show-ip-addresses` parameter.
+- Support for sub-account deletion via `account delete` command
 
 ## [3.3.0] - 2024-01-23
 

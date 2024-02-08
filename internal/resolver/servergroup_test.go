@@ -99,11 +99,11 @@ func TestServerGroupResolution(t *testing.T) {
 		assert.Equal(t, "", resolved)
 
 		// not found
-		resolved, err = argResolver("notfounf")
+		resolved, err = argResolver("notfound")
 		if !assert.Error(t, err) {
 			t.FailNow()
 		}
-		assert.ErrorIs(t, err, resolver.NotFoundError("notfounf"))
+		assert.ErrorIs(t, err, resolver.NotFoundError("notfound"))
 		assert.Equal(t, "", resolved)
 
 		// make sure caching works, eg. we didn't call GetServerGroups more than once
