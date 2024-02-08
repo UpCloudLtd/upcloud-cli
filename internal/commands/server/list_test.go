@@ -14,6 +14,72 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const expectedJSONOutput = `
+{
+  "servers": [
+    {
+      "core_number": "0",
+      "hostname": "server-list-test-server",
+      "license": 0,
+      "memory_amount": "0",
+      "plan": "1xCPU-1GB",
+      "progress": "0",
+      "state": "started",
+      "tags": null,
+      "title": "",
+      "uuid": "server-list-test-server-uuid",
+      "zone": "pl-waw1",
+      "ip_addresses": [
+        {
+          "access": "public",
+          "address": "10.0.97.4",
+          "family": "",
+          "part_of_plan": "no",
+          "ptr_record": "",
+          "server": "",
+          "mac": "",
+          "floating": "yes",
+          "zone": ""
+        },
+        {
+          "access": "public",
+          "address": "10.0.98.3",
+          "family": "",
+          "part_of_plan": "no",
+          "ptr_record": "",
+          "server": "",
+          "mac": "",
+          "floating": "no",
+          "zone": ""
+        },
+        {
+          "access": "private",
+          "address": "10.0.99.2",
+          "family": "",
+          "part_of_plan": "no",
+          "ptr_record": "",
+          "server": "",
+          "mac": "",
+          "floating": "no",
+          "zone": ""
+        },
+        {
+          "access": "utility",
+          "address": "10.0.100.1",
+          "family": "",
+          "part_of_plan": "no",
+          "ptr_record": "",
+          "server": "",
+          "mac": "",
+          "floating": "no",
+          "zone": ""
+        }
+      ]
+    }
+  ]
+}
+`
+
 func TestListServers(t *testing.T) {
 	text.DisableColors()
 
@@ -74,8 +140,10 @@ func TestListServers(t *testing.T) {
 	for _, test := range []struct {
 		name              string
 		args              []string
+		json              bool
 		outputContains    []string
 		outputNotContains []string
+		outputJSONEquals  string
 	}{
 		{
 			name: "No args",
@@ -122,9 +190,18 @@ func TestListServers(t *testing.T) {
 				"utility: 10.0.100.1",
 			},
 		},
+		{
+			name:             "JSON output",
+			args:             []string{"--show-ip-addresses"},
+			json:             true,
+			outputJSONEquals: expectedJSONOutput,
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			conf := config.New()
+			if test.json {
+				conf.Viper().Set(config.KeyOutput, config.ValueOutputJSON)
+			}
 
 			testCmd := ListCommand()
 			mService := new(smock.Service)
@@ -144,6 +221,10 @@ func TestListServers(t *testing.T) {
 
 			for _, notContains := range test.outputNotContains {
 				assert.NotContains(t, output, notContains)
+			}
+
+			if len(test.outputJSONEquals) > 0 {
+				assert.JSONEq(t, test.outputJSONEquals, output)
 			}
 		})
 	}
