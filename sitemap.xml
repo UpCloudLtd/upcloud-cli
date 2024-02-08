@@ -26,6 +26,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_account/delete/</loc>
+         <lastmod>2024-02-08</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_account/list/</loc>
          <lastmod>2024-02-08</lastmod>
          <changefreq>daily</changefreq>
