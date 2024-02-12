@@ -1264,3 +1264,24 @@ func (m *Service) ModifyGateway(_ context.Context, r *request.ModifyGatewayReque
 	}
 	return args[0].(*upcloud.Gateway), args.Error(1)
 }
+
+func (m *Service) GetNetworkPeerings(ctx context.Context, f ...request.QueryFilter) (upcloud.NetworkPeerings, error) {
+	return nil, nil
+}
+
+func (m *Service) GetNetworkPeering(ctx context.Context, r *request.GetNetworkPeeringRequest) (*upcloud.NetworkPeering, error) {
+	return nil, nil
+}
+
+func (m *Service) CreateNetworkPeering(ctx context.Context, r *request.CreateNetworkPeeringRequest) (*upcloud.NetworkPeering, error) {
+	return nil, nil
+}
+
+func (m *Service) ModifyNetworkPeering(ctx context.Context, r *request.ModifyNetworkPeeringRequest) (*upcloud.NetworkPeering, error) {
+	return nil, nil
+}
+
+func (m *Service) DeleteNetworkPeering(ctx context.Context, r *request.DeleteNetworkPeeringRequest) error {
+	args := m.Called(r)
+	return args.Error(0)
+}

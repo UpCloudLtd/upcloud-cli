@@ -14,6 +14,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/kubernetes/nodegroup"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/loadbalancer"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/network"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/networkpeering"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/objectstorage"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/root"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/router"
@@ -93,6 +94,12 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	commands.BuildCommand(network.ShowCommand(), networkCommand.Cobra(), conf)
 	commands.BuildCommand(network.ModifyCommand(), networkCommand.Cobra(), conf)
 	commands.BuildCommand(network.DeleteCommand(), networkCommand.Cobra(), conf)
+
+	// Network peerings
+	networkPeeringCommand := commands.BuildCommand(networkpeering.BaseNetworkPeeringCommand(), rootCmd, conf)
+	commands.BuildCommand(networkpeering.ListCommand(), networkPeeringCommand.Cobra(), conf)
+	commands.BuildCommand(networkpeering.DeleteCommand(), networkPeeringCommand.Cobra(), conf)
+	commands.BuildCommand(networkpeering.DisableCommand(), networkPeeringCommand.Cobra(), conf)
 
 	// Routers
 	routerCommand := commands.BuildCommand(router.BaseRouterCommand(), rootCmd, conf)
@@ -191,7 +198,7 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	commands.BuildCommand(objectstorage.ShowCommand(), objectStorageCommand.Cobra(), conf)
 
 	// Network Gateway operations
-	gatewayCommand := commands.BuildCommand(gateway.BasegatewayCommand(), rootCmd, conf)
+	gatewayCommand := commands.BuildCommand(gateway.BaseGatewayCommand(), rootCmd, conf)
 	commands.BuildCommand(gateway.DeleteCommand(), gatewayCommand.Cobra(), conf)
 	commands.BuildCommand(gateway.ListCommand(), gatewayCommand.Cobra(), conf)
 

@@ -8,6 +8,7 @@ import (
 type AllServices interface {
 	service.Cloud
 	service.Network
+	service.NetworkPeering
 	service.Storage
 	service.Server
 	service.Firewall

@@ -10,7 +10,7 @@ import (
 // Gateway implements argument completion for gateways, by uuid or name.
 type Gateway struct{}
 
-// make sure LoadBalancer implements the interface
+// make sure Gateway implements the interface
 var _ Provider = Gateway{}
 
 // CompleteArgument implements completion.Provider
