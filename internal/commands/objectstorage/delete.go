@@ -2,12 +2,13 @@ package objectstorage
 
 import (
 	"fmt"
-	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
-	"github.com/spf13/pflag"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
+
 	"github.com/UpCloudLtd/upcloud-go-api/v7/upcloud/request"
+	"github.com/spf13/pflag"
 )
 
 // DeleteCommand creates the "objectstorage delete" command
