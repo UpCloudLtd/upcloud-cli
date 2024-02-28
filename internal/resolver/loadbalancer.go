@@ -4,7 +4,7 @@ import (
 	"context"
 
 	internal "github.com/UpCloudLtd/upcloud-cli/v3/internal/service"
-	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v7/upcloud/request"
 )
 
 // CachingLoadBalancer implements resolver for servers, caching the results

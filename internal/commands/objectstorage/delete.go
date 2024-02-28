@@ -2,10 +2,12 @@ package objectstorage
 
 import (
 	"fmt"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
+	"github.com/spf13/pflag"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
-	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v7/upcloud/request"
 )
 
 // DeleteCommand creates the "objectstorage delete" command
@@ -21,6 +23,16 @@ func DeleteCommand() commands.Command {
 
 type deleteCommand struct {
 	*commands.BaseCommand
+	deleteUsers    config.OptionalBoolean
+	deletePolicies config.OptionalBoolean
+}
+
+// InitCommand implements Command.InitCommand
+func (c *deleteCommand) InitCommand() {
+	flags := &pflag.FlagSet{}
+	config.AddToggleFlag(flags, &c.deleteUsers, "delete-users", false, "Delete users from the service.")
+	config.AddToggleFlag(flags, &c.deletePolicies, "delete-policies", false, "Delete policies from the service.")
+	c.AddFlags(flags)
 }
 
 // Execute implements commands.MultipleArgumentCommand
@@ -28,6 +40,44 @@ func (c *deleteCommand) Execute(exec commands.Executor, arg string) (output.Outp
 	svc := exec.All()
 	msg := fmt.Sprintf("Deleting object storage service %v", arg)
 	exec.PushProgressStarted(msg)
+
+	if c.deleteUsers.Value() {
+		exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Deleting users from the service %s", arg))
+
+		users, err := svc.GetManagedObjectStorageUsers(exec.Context(), &request.GetManagedObjectStorageUsersRequest{ServiceUUID: arg})
+		if err != nil {
+			return commands.HandleError(exec, msg, err)
+		}
+
+		for _, user := range users {
+			err = svc.DeleteManagedObjectStorageUser(exec.Context(), &request.DeleteManagedObjectStorageUserRequest{
+				ServiceUUID: arg,
+				Username:    user.Username,
+			})
+			if err != nil {
+				return commands.HandleError(exec, msg, err)
+			}
+		}
+	}
+
+	if c.deletePolicies.Value() {
+		exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Deleting policies from the service %s", arg))
+
+		policies, err := svc.GetManagedObjectStoragePolicies(exec.Context(), &request.GetManagedObjectStoragePoliciesRequest{ServiceUUID: arg})
+		if err != nil {
+			return commands.HandleError(exec, msg, err)
+		}
+
+		for _, policy := range policies {
+			err = svc.DeleteManagedObjectStoragePolicy(exec.Context(), &request.DeleteManagedObjectStoragePolicyRequest{
+				ServiceUUID: arg,
+				Name:        policy.Name,
+			})
+			if err != nil {
+				return commands.HandleError(exec, msg, err)
+			}
+		}
+	}
 
 	err := svc.DeleteManagedObjectStorage(exec.Context(), &request.DeleteManagedObjectStorageRequest{
 		UUID: arg,

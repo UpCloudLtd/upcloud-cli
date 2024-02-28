@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Policies section in `objectstorage show` command
+- Optional parameters `--delete-users` and `--delete-policies` to `objectstorage delete`
+
+### Changed
+
+- Users in `objectstorage show` now contain column `ARN` instead of `Updated`
+
 ## [3.4.0] - 2024-02-08
 
 ### Added

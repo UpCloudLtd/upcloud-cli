@@ -12,7 +12,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
 	"github.com/jedib0t/go-pretty/v6/text"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v7/upcloud/request"
 )
 
 // ShowCommand creates the "kubernetes show" command

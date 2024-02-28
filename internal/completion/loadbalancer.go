@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/service"
-	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v7/upcloud/request"
 	"github.com/spf13/cobra"
 )
 

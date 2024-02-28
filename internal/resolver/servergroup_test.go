@@ -5,12 +5,12 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v7/upcloud/request"
 
 	smock "github.com/UpCloudLtd/upcloud-cli/v3/internal/mock"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v7/upcloud"
 	"github.com/stretchr/testify/assert"
 )
 

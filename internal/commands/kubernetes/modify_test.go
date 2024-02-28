@@ -8,8 +8,8 @@ import (
 	smock "github.com/UpCloudLtd/upcloud-cli/v3/internal/mock"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/mockexecute"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v7/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v7/upcloud/request"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -26,7 +26,7 @@ func TestModifyKubernetesCluster(t *testing.T) {
 		{
 			name:     "no args",
 			args:     []string{clusterUUID},
-			expected: request.ModifyKubernetesClusterRequest{ClusterUUID: clusterUUID, Cluster: request.ModifyKubernetesCluster{ControlPlaneIPFilter: []string{}}},
+			expected: request.ModifyKubernetesClusterRequest{ClusterUUID: clusterUUID, Cluster: request.ModifyKubernetesCluster{}},
 		},
 		{
 			name: "one IP",
@@ -36,7 +36,7 @@ func TestModifyKubernetesCluster(t *testing.T) {
 			},
 			expected: request.ModifyKubernetesClusterRequest{
 				ClusterUUID: clusterUUID,
-				Cluster:     request.ModifyKubernetesCluster{ControlPlaneIPFilter: []string{"10.144.1.100"}},
+				Cluster:     request.ModifyKubernetesCluster{ControlPlaneIPFilter: &[]string{"10.144.1.100"}},
 			},
 		},
 		{
@@ -48,7 +48,7 @@ func TestModifyKubernetesCluster(t *testing.T) {
 			},
 			expected: request.ModifyKubernetesClusterRequest{
 				ClusterUUID: clusterUUID,
-				Cluster:     request.ModifyKubernetesCluster{ControlPlaneIPFilter: []string{"10.144.1.100", "10.144.2.0/24"}},
+				Cluster:     request.ModifyKubernetesCluster{ControlPlaneIPFilter: &[]string{"10.144.1.100", "10.144.2.0/24"}},
 			},
 		},
 	} {

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v7/upcloud"
 )
 
 func StringsToUpCloudLabelSlice(in []string) (*upcloud.LabelSlice, error) {
