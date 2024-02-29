@@ -8,7 +8,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 	"github.com/spf13/pflag"
 )
 
@@ -27,14 +27,14 @@ type modifyCommand struct {
 	*commands.BaseCommand
 	resolver.CachingKubernetes
 	completion.Kubernetes
-	params request.ModifyKubernetesClusterRequest
+	controlPlaneIPFilter []string
 }
 
 // InitCommand implements Command.InitCommand
 func (c *modifyCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 	fs.StringArrayVar(
-		&c.params.Cluster.ControlPlaneIPFilter,
+		&c.controlPlaneIPFilter,
 		"kubernetes-api-allow-ip",
 		[]string{},
 		"Allow cluster's Kubernetes API to be accessed from an IP address or a network CIDR, multiple can be declared.",
@@ -48,8 +48,14 @@ func (c *modifyCommand) Execute(exec commands.Executor, arg string) (output.Outp
 	msg := fmt.Sprintf("Modifying Kubernetes cluster %v", arg)
 	exec.PushProgressStarted(msg)
 
-	req := c.params
-	req.ClusterUUID = arg
+	req := request.ModifyKubernetesClusterRequest{
+		ClusterUUID: arg,
+		Cluster:     request.ModifyKubernetesCluster{},
+	}
+
+	if len(c.controlPlaneIPFilter) > 0 {
+		req.Cluster.ControlPlaneIPFilter = &c.controlPlaneIPFilter
+	}
 
 	res, err := exec.All().ModifyKubernetesCluster(exec.Context(), &req)
 	if err != nil {

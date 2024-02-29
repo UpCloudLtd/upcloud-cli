@@ -10,7 +10,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
 	"github.com/spf13/pflag"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 )
 
 // ShowCommand creates the "kubernetes nodegroup show" command

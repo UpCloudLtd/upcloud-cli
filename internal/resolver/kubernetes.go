@@ -5,7 +5,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/service"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 )
 
 // CachingKubernetes implements resolver for Kubernetes clusters, caching the results

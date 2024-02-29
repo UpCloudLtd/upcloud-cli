@@ -7,8 +7,8 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/v3/internal/mock"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

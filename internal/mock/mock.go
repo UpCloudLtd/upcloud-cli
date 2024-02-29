@@ -4,9 +4,9 @@ package mock
 import (
 	"context"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
-	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/service"
+	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/service"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -576,14 +576,6 @@ func (m *Service) DeleteSubaccount(_ context.Context, r *request.DeleteSubaccoun
 	return args.Error(0)
 }
 
-func (m *Service) CancelManagedDatabaseConnection(_ context.Context, r *request.CancelManagedDatabaseConnection) error {
-	args := m.Called(r)
-	if args[0] != nil {
-		return args.Error(0)
-	}
-	return nil
-}
-
 func (m *Service) CancelManagedDatabaseSession(_ context.Context, r *request.CancelManagedDatabaseSession) error {
 	args := m.Called(r)
 	if args[0] != nil {
@@ -625,10 +617,6 @@ func (m *Service) GetManagedDatabases(_ context.Context, r *request.GetManagedDa
 }
 
 func (m *Service) GetManagedDatabaseAccessControl(_ context.Context, r *request.GetManagedDatabaseAccessControlRequest) (*upcloud.ManagedDatabaseAccessControl, error) {
-	return nil, nil
-}
-
-func (m *Service) GetManagedDatabaseConnections(_ context.Context, r *request.GetManagedDatabaseConnectionsRequest) ([]upcloud.ManagedDatabaseConnection, error) {
 	return nil, nil
 }
 
@@ -1180,6 +1168,34 @@ func (m *Service) WaitForManagedObjectStorageOperationalState(ctx context.Contex
 }
 
 func (m *Service) WaitForManagedObjectStorageDeletion(ctx context.Context, r *request.WaitForManagedObjectStorageDeletionRequest) error {
+	return nil
+}
+
+func (m *Service) CreateManagedObjectStoragePolicy(ctx context.Context, r *request.CreateManagedObjectStoragePolicyRequest) (*upcloud.ManagedObjectStoragePolicy, error) {
+	return nil, nil
+}
+
+func (m *Service) GetManagedObjectStoragePolicies(ctx context.Context, r *request.GetManagedObjectStoragePoliciesRequest) ([]upcloud.ManagedObjectStoragePolicy, error) {
+	return nil, nil
+}
+
+func (m *Service) GetManagedObjectStoragePolicy(ctx context.Context, r *request.GetManagedObjectStoragePolicyRequest) (*upcloud.ManagedObjectStoragePolicy, error) {
+	return nil, nil
+}
+
+func (m *Service) DeleteManagedObjectStoragePolicy(ctx context.Context, r *request.DeleteManagedObjectStoragePolicyRequest) error {
+	return nil
+}
+
+func (m *Service) AttachManagedObjectStorageUserPolicy(ctx context.Context, r *request.AttachManagedObjectStorageUserPolicyRequest) error {
+	return nil
+}
+
+func (m *Service) GetManagedObjectStorageUserPolicies(ctx context.Context, r *request.GetManagedObjectStorageUserPoliciesRequest) ([]upcloud.ManagedObjectStorageUserPolicy, error) {
+	return nil, nil
+}
+
+func (m *Service) DetachManagedObjectStorageUserPolicy(ctx context.Context, r *request.DetachManagedObjectStorageUserPolicyRequest) error {
 	return nil
 }
 

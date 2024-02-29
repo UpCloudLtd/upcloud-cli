@@ -7,8 +7,8 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/v3/internal/mock"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 )
@@ -24,12 +24,31 @@ func TestDeleteCommand(t *testing.T) {
 		name  string
 		arg   string
 		error string
+		flags []string
 		req   request.DeleteManagedObjectStorageRequest
 	}{
 		{
 			name: "delete with UUID",
 			arg:  objectstorage.UUID,
 			req:  request.DeleteManagedObjectStorageRequest{UUID: objectstorage.UUID},
+		},
+		{
+			name:  "delete with UUID including users",
+			arg:   objectstorage.UUID,
+			flags: []string{"--delete-users"},
+			req:   request.DeleteManagedObjectStorageRequest{UUID: objectstorage.UUID},
+		},
+		{
+			name:  "delete with UUID including policies",
+			arg:   objectstorage.UUID,
+			flags: []string{"--delete-policies"},
+			req:   request.DeleteManagedObjectStorageRequest{UUID: objectstorage.UUID},
+		},
+		{
+			name:  "delete with UUID including users and policies",
+			arg:   objectstorage.UUID,
+			flags: []string{"--delete-users", "--delete-policies"},
+			req:   request.DeleteManagedObjectStorageRequest{UUID: objectstorage.UUID},
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
@@ -38,8 +57,10 @@ func TestDeleteCommand(t *testing.T) {
 
 			conf := config.New()
 			c := commands.BuildCommand(DeleteCommand(), nil, conf)
+			err := c.Cobra().Flags().Parse(test.flags)
+			assert.NoError(t, err)
 
-			_, err := c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService, flume.New("test")), test.arg)
+			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService, flume.New("test")), test.arg)
 
 			if test.error != "" {
 				assert.EqualError(t, err, test.error)

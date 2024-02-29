@@ -1,7 +1,7 @@
 package format
 
 import (
-	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/jedib0t/go-pretty/v6/text"
 )
 
@@ -12,13 +12,11 @@ func objectStorageOperationalStateColour(state upcloud.ManagedObjectStorageOpera
 		return text.Colors{text.FgGreen}
 	case upcloud.ManagedObjectStorageOperationalStateDeleteDNS,
 		upcloud.ManagedObjectStorageOperationalStateDeleteNetwork,
-		upcloud.ManagedObjectStorageOperationalStateDeleteUser,
 		upcloud.ManagedObjectStorageOperationalStatePending,
 		upcloud.ManagedObjectStorageOperationalStateSetupCheckup,
 		upcloud.ManagedObjectStorageOperationalStateSetupDNS,
 		upcloud.ManagedObjectStorageOperationalStateSetupNetwork,
-		upcloud.ManagedObjectStorageOperationalStateSetupService,
-		upcloud.ManagedObjectStorageOperationalStateSetupUser:
+		upcloud.ManagedObjectStorageOperationalStateSetupService:
 		return text.Colors{text.FgYellow}
 	default:
 		return text.Colors{text.FgHiBlack}
@@ -43,19 +41,4 @@ func objectStorageConfiguredStatusColour(state upcloud.ManagedObjectStorageConfi
 // ObjectStorageConfiguredStatus implements Format function for managed object storage configured statuses
 func ObjectStorageConfiguredStatus(val interface{}) (text.Colors, string, error) {
 	return usingColorFunction(objectStorageConfiguredStatusColour, val)
-}
-
-// objectStorageUserOperationalStateColour maps managed object storage user operational states to colours
-func objectStorageUserOperationalStateColour(state upcloud.ManagedObjectStorageUserOperationalState) text.Colors {
-	switch state {
-	case upcloud.ManagedObjectStorageUserOperationalStateReady:
-		return text.Colors{text.FgGreen}
-	default:
-		return text.Colors{text.FgHiBlack}
-	}
-}
-
-// ObjectStorageUserOperationalState implements Format function for managed object storage user operational states
-func ObjectStorageUserOperationalState(val interface{}) (text.Colors, string, error) {
-	return usingColorFunction(objectStorageUserOperationalStateColour, val)
 }

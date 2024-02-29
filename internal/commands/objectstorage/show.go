@@ -6,7 +6,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/labels"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 )
 
 // ShowCommand creates the "objectstorage show" command
@@ -28,6 +28,16 @@ type showCommand struct {
 func (c *showCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.All()
 	objectStorage, err := svc.GetManagedObjectStorage(exec.Context(), &request.GetManagedObjectStorageRequest{UUID: uuid})
+	if err != nil {
+		return nil, err
+	}
+
+	users, err := svc.GetManagedObjectStorageUsers(exec.Context(), &request.GetManagedObjectStorageUsersRequest{ServiceUUID: uuid})
+	if err != nil {
+		return nil, err
+	}
+
+	policies, err := svc.GetManagedObjectStoragePolicies(exec.Context(), &request.GetManagedObjectStoragePoliciesRequest{ServiceUUID: uuid})
 	if err != nil {
 		return nil, err
 	}
@@ -67,20 +77,35 @@ func (c *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 	}
 
 	userRows := make([]output.TableRow, 0)
-	for _, user := range objectStorage.Users {
+	for _, user := range users {
 		userRows = append(userRows, output.TableRow{
 			user.Username,
 			user.CreatedAt,
-			user.UpdatedAt,
-			user.OperationalState,
+			user.ARN,
 		})
 	}
 
 	userColumns := []output.TableColumn{
 		{Key: "name", Header: "Username"},
 		{Key: "created_at", Header: "Created"},
-		{Key: "updated_at", Header: "Updated"},
-		{Key: "operational_state", Header: "Updated", Format: format.ObjectStorageUserOperationalState},
+		{Key: "arn", Header: "ARN"},
+	}
+
+	policyRows := make([]output.TableRow, 0)
+	for _, policy := range policies {
+		policyRows = append(policyRows, output.TableRow{
+			policy.Name,
+			policy.CreatedAt,
+			policy.ARN,
+			policy.System,
+		})
+	}
+
+	policyColumns := []output.TableColumn{
+		{Key: "name", Header: "Policyname"},
+		{Key: "created_at", Header: "Created"},
+		{Key: "arn", Header: "ARN"},
+		{Key: "system", Header: "Created by system"},
 	}
 
 	// For JSON and YAML output, passthrough API response
@@ -130,6 +155,15 @@ func (c *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 					Columns:      userColumns,
 					Rows:         userRows,
 					EmptyMessage: "No users found for this Managed object storage service.",
+				},
+			},
+			output.CombinedSection{
+				Key:   "policies",
+				Title: "Policies:",
+				Contents: output.Table{
+					Columns:      policyColumns,
+					Rows:         policyRows,
+					EmptyMessage: "No policies found for this Managed object storage service.",
 				},
 			},
 		},

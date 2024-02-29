@@ -3,7 +3,7 @@ package resolver
 import (
 	"context"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 
 	internal "github.com/UpCloudLtd/upcloud-cli/v3/internal/service"
 )

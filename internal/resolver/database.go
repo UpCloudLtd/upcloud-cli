@@ -4,7 +4,7 @@ import (
 	"context"
 
 	internal "github.com/UpCloudLtd/upcloud-cli/v3/internal/service"
-	"github.com/UpCloudLtd/upcloud-go-api/v6/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 )
 
 // CachingDatabase implements resolver for servers, caching the results
