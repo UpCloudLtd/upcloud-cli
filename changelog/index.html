@@ -4533,15 +4533,24 @@
 <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>,
 and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <h2 id="unreleased"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v3.4.0...HEAD">Unreleased</a></h2>
-<h2 id="340-2024-02-08"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v3.3.0...v3.4.0">3.4.0</a> - 2024-02-08</h2>
 <h3 id="added">Added</h3>
+<ul>
+<li>Policies section in <code>objectstorage show</code> command</li>
+<li>Optional parameters <code>--delete-users</code> and <code>--delete-policies</code> to <code>objectstorage delete</code></li>
+</ul>
+<h3 id="changed">Changed</h3>
+<ul>
+<li>Users in <code>objectstorage show</code> now contain column <code>ARN</code> instead of <code>Updated</code></li>
+</ul>
+<h2 id="340-2024-02-08"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v3.3.0...v3.4.0">3.4.0</a> - 2024-02-08</h2>
+<h3 id="added_1">Added</h3>
 <ul>
 <li>Add <code>gateway</code> commands (<code>delete</code>, <code>list</code>) for Network gateway management.</li>
 <li>In machine readable outputs of server list, add support for <code>--show-ip-addresses</code> parameter.</li>
 <li>Support for sub-account deletion via <code>account delete</code> command</li>
 </ul>
 <h2 id="330-2024-01-23"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v3.2.2...v3.3.0">3.3.0</a> - 2024-01-23</h2>
-<h3 id="added_1">Added</h3>
+<h3 id="added_2">Added</h3>
 <ul>
 <li>Support for storage encryption to storage <code>create</code>, <code>clone</code>, <code>show</code>, and <code>list</code> commands as well as server <code>create</code> and <code>show</code> commands.</li>
 <li><em>Managed object storages</em> field to human readable output of <code>account show</code>.</li>
@@ -4552,7 +4561,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>From human output of <code>storage list</code>, <em>Created</em> column. This field is still available in the machine readable outputs.</li>
 </ul>
 <h2 id="322-2024-01-02"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v3.2.1...v3.2.2">3.2.2</a> - 2024-01-02</h2>
-<h3 id="added_2">Added</h3>
+<h3 id="added_3">Added</h3>
 <ul>
 <li>Support nested properties in <code>database properties *</code> and <code>database properties * show *</code> outputs. For example upctl <code>max_background_workers</code> sub-property of <code>timescaledb</code> PostgreSQL property is listed as <code>timescaledb.max_background_workers</code> in human output of <code>database properties pg</code> and its details can printed with <code>upctl database properties pg show timescaledb.max_background_workers</code> command.</li>
 </ul>
@@ -4561,22 +4570,22 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>Do not return error on valid <code>dhcp-default-route</code> values in <code>network create</code> and <code>network modify</code> commands.</li>
 </ul>
 <h2 id="321-2023-11-29"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v3.2.0...v3.2.1">3.2.1</a> - 2023-11-29</h2>
-<h3 id="added_3">Added</h3>
+<h3 id="added_4">Added</h3>
 <ul>
 <li>Add backend <code>TLS configs</code> field to <code>loadbalancer show</code> command</li>
 </ul>
 <h2 id="320-2023-11-15"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v3.1.0...v3.2.0">3.2.0</a> - 2023-11-15</h2>
-<h3 id="added_4">Added</h3>
+<h3 id="added_5">Added</h3>
 <ul>
 <li>Add <code>objectstorage</code> commands (<code>delete</code>, <code>list</code>, <code>show</code>) for Managed object storage management</li>
 </ul>
 <h2 id="310-2023-11-06"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v3.0.0...v3.1.0">3.1.0</a> - 2023-11-06</h2>
-<h3 id="added_5">Added</h3>
+<h3 id="added_6">Added</h3>
 <ul>
 <li>Add <code>network_peerings</code>, <code>ntp_excess_gib</code>, <code>storage_maxiops</code> and <code>load_balancers</code> fields to <code>account show</code> outputs.</li>
 <li>Add <code>--version</code> parameter to <code>kubernetes create</code> and <code>version</code> field to <code>kubernetes show</code> output.</li>
 </ul>
-<h3 id="changed">Changed</h3>
+<h3 id="changed_1">Changed</h3>
 <ul>
 <li><strong>Breaking</strong>: Update return type of <code>kubernetes versions</code> from list of strings to list of objects. (No major version bump, because this end-point has not been included in the API docs)</li>
 </ul>
@@ -4587,7 +4596,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <h2 id="300-2023-10-18"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.10.0...v3.0.0">3.0.0</a> - 2023-10-18</h2>
 <p>This release updates output of <code>show</code> and <code>list</code> commands to return the API response as defined in the UpCloud Go SDK. See below for detailed list of changes.</p>
 <p>In addition, <code>kubernetes create</code> will now, by default, block all access to the cluster. To be able to connect to the cluster, define list of allowed IP addresses and/or CIDR blocks or allow access from any IP.</p>
-<h3 id="added_6">Added</h3>
+<h3 id="added_7">Added</h3>
 <ul>
 <li><strong>Breaking</strong>: Add <code>--kubernetes-api-allow-ip</code> argument to <code>kubernetes create</code> command. This changes default behavior from <em>allow access from any IP</em> to <em>block access from all IPs</em>. To be able to connect to the cluster, define list of allowed IP addresses and/or CIDR blocks or allow access from any IP.</li>
 <li>Add <code>Kubernetes API allowed IPs</code> field to <code>kubernetes show</code> output.</li>
@@ -4597,7 +4606,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>Add <code>database session list</code> for listing active database sessions.</li>
 <li>Add <code>database session cancel</code> for cancelling an active database session.</li>
 </ul>
-<h3 id="changed_1">Changed</h3>
+<h3 id="changed_2">Changed</h3>
 <ul>
 <li><strong>Breaking</strong>: In JSON and YAML output of <code>database list</code>: return the full API response. Value of <code>title</code> is not replaced with value from <code>name</code>, if <code>title</code> is empty.</li>
 <li><strong>Breaking</strong>: In JSON and YAML output of <code>database types</code>: return the full API response. This changes the top level datatype from list to object, where keys are the available database type, e.g., <code>pg</code> and <code>mysql</code>.</li>
@@ -4622,7 +4631,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li><strong>Breaking</strong>: In JSON and YAML output of <code>database properties * show</code>: pass-through the API response. This removes <code>key</code> field from the output.</li>
 </ul>
 <h2 id="2100-2023-07-17"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.9.1...v2.10.0">2.10.0</a> - 2023-07-17</h2>
-<h3 id="added_7">Added</h3>
+<h3 id="added_8">Added</h3>
 <ul>
 <li>Add <code>--disable-utility-network-access</code> for <code>kubernetes nodegroup create</code> command</li>
 </ul>
@@ -4631,7 +4640,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>Use pending color (yellow) for kubernetes node group <code>scaling-down</code> and <code>scaling-up</code> states</li>
 </ul>
 <h2 id="291-2023-07-06"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.9.0...v2.9.1">2.9.1</a> - 2023-07-06</h2>
-<h3 id="changed_2">Changed</h3>
+<h3 id="changed_3">Changed</h3>
 <ul>
 <li>Release artifacts to follow package naming conventions provided by <a href="https://github.com/goreleaser/nfpm">nFPM</a>.
     <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>upcloud-cli-2.9.0_x86_64.rpm  vs  upcloud-cli-2.9.1.x86_64.rpm  # no convention changes
@@ -4645,12 +4654,12 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 </span></code></pre></div></li>
 </ul>
 <h2 id="290-2023-06-30"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.8.0...v2.9.0">2.9.0</a> - 2023-06-30</h2>
-<h3 id="added_8">Added</h3>
+<h3 id="added_9">Added</h3>
 <ul>
 <li>Add <code>servergroup</code> commands (<code>create</code>, <code>delete</code>, <code>list</code>, <code>modify</code>, <code>show</code>) for server group management</li>
 </ul>
 <h2 id="280-2023-06-21"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.7.1...v2.8.0">2.8.0</a> - 2023-06-21</h2>
-<h3 id="added_9">Added</h3>
+<h3 id="added_10">Added</h3>
 <ul>
 <li>Add support for OpenSearch database type</li>
 <li>Add <code>database index list</code> and <code>database index</code> commands for managing OpenSearch database indices </li>
@@ -4665,7 +4674,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>Updated examples of <code>kubernetes create</code> command to use valid plans.</li>
 </ul>
 <h2 id="270-2023-05-02"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.6.0...v2.7.0">2.7.0</a> - 2023-05-02</h2>
-<h3 id="added_10">Added</h3>
+<h3 id="added_11">Added</h3>
 <ul>
 <li>Add <code>ip</code> and <code>net</code> as aliases to <code>ip-address</code> and <code>network</code> commands, respectively.</li>
 <li>Add <em>Labels</em> table to <code>loadbalancer show</code>, <code>network show</code>, <code>router show</code>, <code>server show</code>, and <code>storage show</code> outputs.</li>
@@ -4674,26 +4683,26 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>Add <code>--wait</code> flag to <code>kubernetes create</code> command for waiting created cluster to reach running state.</li>
 </ul>
 <h2 id="260-2023-03-14"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.5.0...v2.6.0">2.6.0</a> - 2023-03-14</h2>
-<h3 id="added_11">Added</h3>
+<h3 id="added_12">Added</h3>
 <ul>
 <li>The <code>upctl</code> container image now includes <a href="https://stedolan.github.io/jq/">jq</a> tool for parsing values from JSON output.</li>
 <li>Add node-group states to <code>kubernetes show</code> output.</li>
 <li>Add completions for <code>--network</code> argument of <code>kubernetes create</code> and <code>server network-interface create</code>.</li>
 <li>Support also network name as input for <code>--network</code> argument of <code>kubernetes create</code> and <code>server network-interface create</code></li>
 </ul>
-<h3 id="changed_3">Changed</h3>
+<h3 id="changed_4">Changed</h3>
 <ul>
 <li>Completions will now only suggest private networks as arguments because names or UUIDs of public or utility networks are often not valid arguments.</li>
 </ul>
 <h2 id="250-2023-02-15"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.4.0...v2.5.0">2.5.0</a> - 2023-02-15</h2>
-<h3 id="added_12">Added</h3>
+<h3 id="added_13">Added</h3>
 <ul>
 <li>Print warning about unknown resource state before exiting when execution is interrupted with SIGINT.</li>
 <li>Add <code>kubernetes nodegroup create</code>, <code>kubernetes nodegroup scale</code>, and <code>kubernetes nodegroup delete</code> commands (EXPERIMENTAL)</li>
 <li>Added support for all shell completions provided by <code>cobra</code>.</li>
 <li>Add <code>database properties &lt;DB type&gt;</code> command to list database properties for given database type and <code>database properties &lt;DB type&gt; show</code> command to show database property details.</li>
 </ul>
-<h3 id="changed_4">Changed</h3>
+<h3 id="changed_5">Changed</h3>
 <ul>
 <li>Remove custom bash completion logic and replace it with <code>completion</code> command provided by <code>cobra</code>. To do this while supporting args with whitespace, whitespace in completions is replaced with non-breaking spaces.</li>
 </ul>
@@ -4702,13 +4711,13 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>In <code>database show</code>: parse database version from metadata instead of properties. This enables displaying redis version instead of <code>&lt;nil&gt;</code>.</li>
 </ul>
 <h2 id="240-2022-12-19"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.3.0...v2.4.0">2.4.0</a> - 2022-12-19</h2>
-<h3 id="added_13">Added</h3>
+<h3 id="added_14">Added</h3>
 <ul>
 <li>Add <code>kubernetes create</code>, <code>kubernetes config</code>, <code>kubernetes delete</code>, <code>kubernetes list</code>, <code>kubernetes show</code>, <code>kubernetes versions</code> commands (EXPERIMENTAL)</li>
 <li>Add <code>loadbalancer plans</code> command for listing available LB plans</li>
 </ul>
 <h2 id="230-2022-11-11"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.2.0...v2.3.0">2.3.0</a> - 2022-11-11</h2>
-<h3 id="added_14">Added</h3>
+<h3 id="added_15">Added</h3>
 <ul>
 <li>Complete available types for <code>database plans</code>.</li>
 <li>Suppress positional argument filename completion for commands without specific completions.</li>
@@ -4722,7 +4731,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>Added <code>/v2</code> postfix to module name in <code>go.mod</code>, this enables installing v2 versions of CLI with <code>go install</code>.</li>
 </ul>
 <h2 id="220-2022-10-17"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.1.0...v2.2.0">2.2.0</a> - 2022-10-17</h2>
-<h3 id="added_15">Added</h3>
+<h3 id="added_16">Added</h3>
 <ul>
 <li>Include runtime operating system and architecture in <code>version</code> command output.</li>
 <li>Include instructions for defining credentials and API access in <code>upctl --help</code> output.</li>
@@ -4733,7 +4742,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>Tune human output so that normal output is directed to <code>stdout</code>. Progess and error messages are still outputted to <code>stderr</code>.</li>
 </ul>
 <h2 id="210-2022-09-07"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.0.0...v2.1.0">2.1.0</a> - 2022-09-07</h2>
-<h3 id="added_16">Added</h3>
+<h3 id="added_17">Added</h3>
 <ul>
 <li>Add <code>--wait</code> flag to <code>storage import</code> and <code>storage templatise</code> commands to wait until storage is in <code>online</code> state.</li>
 <li>In JSON and YAML output of <code>storage import</code>: information on target storage is now available under <code>storage</code> key.</li>
@@ -4744,14 +4753,14 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>In human output of <code>storage import</code>: output UUID of created storage, instead of storage import operation. No UUID is outputted if existing storage was used.</li>
 </ul>
 <h2 id="200-2022-08-30"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v1.5.1...v2.0.0">2.0.0</a> - 2022-08-30</h2>
-<h3 id="added_17">Added</h3>
+<h3 id="added_18">Added</h3>
 <ul>
 <li>Add <code>database delete</code> command.</li>
 <li>Add <code>loadbalancer delete</code> command.</li>
 <li>Add <code>Access</code> field to <code>storage show</code> output.</li>
 <li>Add fields <code>argument</code> and <code>resource</code> to JSON and YAML error outputs.</li>
 </ul>
-<h3 id="changed_5">Changed</h3>
+<h3 id="changed_6">Changed</h3>
 <ul>
 <li><strong>Breaking</strong>: Human output, including errors, is written to stderr instead of stdout.</li>
 <li>Refactor progress logging. This changes the appearance of progress logs. See <a href="https://github.com/UpCloudLtd/progress">UpCloudLtd / progress</a> for the new implementation.</li>
@@ -4773,12 +4782,12 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>Disable colors if user has set <a href="https://no-color.org/">NO_COLOR</a> environment variable to non-empty value.</li>
 </ul>
 <h2 id="150-2022-07-05"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v1.4.0...v1.5.0">1.5.0</a> - 2022-07-05</h2>
-<h3 id="added_18">Added</h3>
+<h3 id="added_19">Added</h3>
 <ul>
 <li>Add <code>--show-ip-addresses</code> flag to <code>server list</code> command to optionally include IP addresses in command output.</li>
 <li>Add <code>database connection list</code>, <code>database connection cancel</code>, <code>database start</code>, and <code>database stop</code> commands.</li>
 </ul>
-<h3 id="changed_6">Changed</h3>
+<h3 id="changed_7">Changed</h3>
 <ul>
 <li>Make <code>--family</code> parameter of <code>server firewall create</code> command optional to allow editing the default rules.</li>
 <li>Update <code>cobra</code> to <code>v1.5.0</code> and refactor required flag validation code. This affects validation error messages.</li>
@@ -4789,25 +4798,25 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>Display UUID of created template in <code>storage templatise</code> output.</li>
 </ul>
 <h2 id="140-2022-06-15"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v1.3.0...v1.4.0">1.4.0</a> - 2022-06-15</h2>
-<h3 id="added_19">Added</h3>
+<h3 id="added_20">Added</h3>
 <ul>
 <li>Add <code>database list</code>, <code>database show</code>,<code>database plans</code>, and <code>database types</code> commands.</li>
 <li>Add <code>loadbalancer list</code> and <code>loadbalancer show</code> commands.</li>
 <li>Add <code>db</code> and <code>lb</code> aliases to <code>database</code> and <code>loadbalancer</code>, respectively.</li>
 </ul>
-<h3 id="changed_7">Changed</h3>
+<h3 id="changed_8">Changed</h3>
 <ul>
 <li>Color server state in <code>server list</code> output similarly than in <code>server show</code> output.</li>
 <li>Update Go version to 1.18</li>
 <li>Update <code>upcloud-go-api</code> to <code>v4.8.0</code></li>
 </ul>
 <h2 id="130-2022-05-17"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v1.2.0...v1.3.0">1.3.0</a> - 2022-05-17</h2>
-<h3 id="added_20">Added</h3>
+<h3 id="added_21">Added</h3>
 <ul>
 <li>Add <code>zone list</code> command that lists available zones.</li>
 <li>Add <code>--wait</code> flag to <code>server create</code> and <code>server stop</code> commands to wait until server is in <code>started</code> and <code>stopped</code> state, respectively.</li>
 </ul>
-<h3 id="changed_8">Changed</h3>
+<h3 id="changed_9">Changed</h3>
 <ul>
 <li>Update <code>upcloud-go-api</code>to <code>v4.5.2</code></li>
 </ul>
@@ -4817,12 +4826,12 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>Mark error and warning livelogs finished when they will not be updated anymore: this stops the timer in the end of the row and stops livelog from refreshing these lines.</li>
 </ul>
 <h2 id="120-2022-04-29"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v1.1.3...v1.2.0">1.2.0</a> - 2022-04-29</h2>
-<h3 id="added_21">Added</h3>
+<h3 id="added_22">Added</h3>
 <ul>
 <li>Include UUID (or address) of created resource in create command output</li>
 <li><code>storage modify</code> command now accepts <code>enable-filesystem-autoresize</code> flag. When that flag is set upctl will attempt to resize partition and filesystem after storage size has been modified.</li>
 </ul>
-<h3 id="changed_9">Changed</h3>
+<h3 id="changed_10">Changed</h3>
 <ul>
 <li>New go-api version v4.5.0</li>
 </ul>
@@ -4835,7 +4844,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>Render livelog messages of commands which execution takes less than render tick interval</li>
 </ul>
 <h2 id="113-2022-02-24"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v1.1.2...v1.1.3">1.1.3</a> - 2022-02-24</h2>
-<h3 id="changed_10">Changed</h3>
+<h3 id="changed_11">Changed</h3>
 <ul>
 <li>Update documentation</li>
 </ul>
@@ -4849,20 +4858,20 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>New release with no changes to fix <a href="https://github.com/goreleaser/goreleaser/pull/2591">the Homebrew deprecation notice</a></li>
 </ul>
 <h2 id="111-2021-09-30"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v1.1.0...v1.1.1">1.1.1</a> - 2021-09-30</h2>
-<h3 id="changed_11">Changed</h3>
+<h3 id="changed_12">Changed</h3>
 <ul>
 <li>Change password creation to be disabled by default in server creation</li>
 <li>Always create a password when password delivery method is chosen</li>
 </ul>
 <h2 id="110-2021-06-03"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v1.0.0...v1.1.0">1.1.0</a> - 2021-06-03</h2>
-<h3 id="added_22">Added</h3>
+<h3 id="added_23">Added</h3>
 <ul>
 <li>Debug mode for finding root causes to problems</li>
 <li>Docker image and upload to Docker Hub</li>
 <li>Autogenerated documentation under /docs</li>
 <li>Terminal width handling</li>
 </ul>
-<h3 id="changed_12">Changed</h3>
+<h3 id="changed_13">Changed</h3>
 <ul>
 <li>Global flags for colors refactored to <code>--force-colour</code> and <code>--no-colour</code></li>
 <li>New go-api version</li>
@@ -4876,7 +4885,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <h2 id="100-2021-04-16"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v0.6.0...v1.0.0">1.0.0</a> - 2021-04-16</h2>
 <p>First non-beta release! Includes all previous changes and fixes.</p>
 <h2 id="060-2021-04-16"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v0.5.0...v0.6.0">0.6.0</a> - 2021-04-16</h2>
-<h3 id="changed_13">Changed</h3>
+<h3 id="changed_14">Changed</h3>
 <ul>
 <li>Use goreleaser for releasing packages</li>
 <li>Move creation of service outside runcommand to facilitate testing</li>
@@ -4888,7 +4897,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 </ul>
 <h2 id="050-2021-04-14"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v0.1.1...v0.5.0">0.5.0</a> - 2021-04-14</h2>
 <p>Initial public beta release :tada:</p>
-<h3 id="added_23">Added</h3>
+<h3 id="added_24">Added</h3>
 <ul>
 <li>Added commands for managing server firewall rules</li>
 </ul>
@@ -4896,7 +4905,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <ul>
 <li>Shell auto-completion fixed</li>
 </ul>
-<h3 id="changed_14">Changed</h3>
+<h3 id="changed_15">Changed</h3>
 <ul>
 <li>Input &amp; output handling rewritten</li>
 <li>Several help text fixes &amp; changes</li>
@@ -4910,7 +4919,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>Fix storage import failing on readerCounter not implementing io.Reader</li>
 </ul>
 <h2 id="010-2021-03-10"><a href="https://github.com/UpCloudLtd/upcloud-cli/releases/tag/v0.1.0">0.1.0</a> - 2021-03-10</h2>
-<h3 id="added_24">Added</h3>
+<h3 id="added_25">Added</h3>
 <ul>
 <li>Current feature set added! First internal release</li>
 </ul>
