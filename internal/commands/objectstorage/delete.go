@@ -31,7 +31,7 @@ type deleteCommand struct {
 // InitCommand implements Command.InitCommand
 func (c *deleteCommand) InitCommand() {
 	flags := &pflag.FlagSet{}
-	config.AddToggleFlag(flags, &c.deleteUsers, "delete-users", false, "Delete users from the service.")
+	config.AddToggleFlag(flags, &c.deleteUsers, "delete-users", false, "Delete all users from the service before deleting the object storage instance.")
 	config.AddToggleFlag(flags, &c.deletePolicies, "delete-policies", false, "Delete policies from the service.")
 	c.AddFlags(flags)
 }
