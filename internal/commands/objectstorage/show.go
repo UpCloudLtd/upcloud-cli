@@ -6,7 +6,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/labels"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/v7/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 )
 
 // ShowCommand creates the "objectstorage show" command
@@ -81,7 +81,7 @@ func (c *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 		userRows = append(userRows, output.TableRow{
 			user.Username,
 			user.CreatedAt,
-			user.Arn,
+			user.ARN,
 		})
 	}
 

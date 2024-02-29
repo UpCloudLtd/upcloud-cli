@@ -6,8 +6,8 @@ import (
 
 	internal "github.com/UpCloudLtd/upcloud-cli/v3/internal/service"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v7/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v7/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 )
 
 // CachingStorage implements resolver for storages, caching the results

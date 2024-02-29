@@ -10,7 +10,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/testutils"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v7/upcloud"
+	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 )
 
 func TestList_MarshaledOutput(t *testing.T) {
