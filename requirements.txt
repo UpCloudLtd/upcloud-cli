@@ -1,4 +1,4 @@
 # Dependencies for auto-generating and developing docs
-mkdocs~=1.4
-mkdocs-material~=8.5
+mkdocs~=1.5
+mkdocs-material~=9.5
 mkdocs-macros-plugin~=1.0
