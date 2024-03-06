@@ -7,6 +7,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/kubernetes/nodegroup"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/labels"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/namedargs"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
@@ -39,6 +40,7 @@ func CreateCommand() commands.Command {
 
 type createParams struct {
 	request.CreateKubernetesClusterRequest
+	labels            []string
 	networkArg        string
 	nodeGroups        []string
 	privateNodeGroups config.OptionalBoolean
@@ -46,8 +48,16 @@ type createParams struct {
 }
 
 func (p *createParams) processParams(exec commands.Executor) error {
-	ngs := make([]request.KubernetesNodeGroup, 0)
+	if len(p.labels) > 0 {
+		labelSlice, err := labels.StringsToSliceOfLabels(p.labels)
+		if err != nil {
+			return err
+		}
 
+		p.Labels = labelSlice
+	}
+
+	ngs := make([]request.KubernetesNodeGroup, 0)
 	for _, v := range p.nodeGroups {
 		ng, err := processNodeGroup(v)
 		if err != nil {
@@ -105,6 +115,7 @@ func (c *createCommand) InitCommand() {
 	c.params = createParams{CreateKubernetesClusterRequest: request.CreateKubernetesClusterRequest{}}
 
 	fs.StringVar(&c.params.Name, "name", "", "Kubernetes cluster name.")
+	fs.StringArrayVar(&c.params.labels, "label", nil, "Labels to describe the cluster in `key=value` format, multiple can be declared.")
 	fs.StringVar(&c.params.Plan, "plan", "development", "Plan to use for the cluster. Run `upctl kubernetes plans` to list all available plans.")
 	fs.StringVar(&c.params.Version, "version", "", "Identifier of the version of Kubernetes to use when creating the cluster. Run `upctl kubernetes versions` to list all available versions.")
 	fs.StringVar(&c.params.networkArg, "network", "", "Network to use. The value should be name or UUID of a private network.")

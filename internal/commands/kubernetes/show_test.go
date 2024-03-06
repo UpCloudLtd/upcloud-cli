@@ -17,9 +17,12 @@ import (
 
 var testCluster = upcloud.KubernetesCluster{
 	ControlPlaneIPFilter: []string{"10.144.1.100", "10.144.2.0/24"},
-	Name:                 "upcloud-upctl-unit-test",
-	Network:              "03a98be3-7daa-443f-bb25-4bc6854b396c",
-	NetworkCIDR:          "172.16.1.0/24",
+	Labels: []upcloud.Label{
+		{Key: "test", Value: "upctl-unittest"},
+	},
+	Name:        "upcloud-upctl-unit-test",
+	Network:     "03a98be3-7daa-443f-bb25-4bc6854b396c",
+	NetworkCIDR: "172.16.1.0/24",
 	NodeGroups: []upcloud.KubernetesNodeGroup{
 		{
 			Count: 4,
@@ -118,6 +121,12 @@ func TestShowCommand(t *testing.T) {
     Zone:                       de-fra1                              
     Operational state:          running                              
 
+  Labels:
+
+     Key    Value          
+    ────── ────────────────
+     test   upctl-unittest 
+    
   Node groups:
 
      Name                         Count   Plan        Anti affinity   Utility network access   State   
