@@ -1285,3 +1285,7 @@ func (m *Service) DeleteNetworkPeering(ctx context.Context, r *request.DeleteNet
 	args := m.Called(r)
 	return args.Error(0)
 }
+
+func (m *Service) WaitForNetworkPeeringState(ctx context.Context, r *request.WaitForNetworkPeeringStateRequest) (*upcloud.NetworkPeering, error) {
+	return nil, nil
+}

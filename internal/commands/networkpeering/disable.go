@@ -5,8 +5,10 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
+	"github.com/spf13/pflag"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
@@ -28,6 +30,15 @@ type disableCommand struct {
 	*commands.BaseCommand
 	resolver.CachingNetworkPeering
 	completion.NetworkPeering
+
+	wait config.OptionalBoolean
+}
+
+// InitCommand implements Command.InitCommand
+func (c *disableCommand) InitCommand() {
+	flags := &pflag.FlagSet{}
+	config.AddToggleFlag(flags, &c.wait, "wait", false, "Wait for network peering to be in disabled state before returning.")
+	c.AddFlags(flags)
 }
 
 // Execute implements commands.MultipleArgumentCommand
@@ -46,7 +57,11 @@ func (c *disableCommand) Execute(exec commands.Executor, arg string) (output.Out
 		return commands.HandleError(exec, msg, err)
 	}
 
-	exec.PushProgressSuccess(msg)
+	if c.wait.Value() {
+		waitForNetworkPeeringState(arg, upcloud.NetworkPeeringStateDisabled, exec, msg)
+	} else {
+		exec.PushProgressSuccess(msg)
+	}
 
 	return output.OnlyMarshaled{Value: peering}, nil
 }
