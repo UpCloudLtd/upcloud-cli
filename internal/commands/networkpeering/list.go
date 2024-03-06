@@ -2,6 +2,7 @@ package networkpeering
 
 import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/format"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
 )
@@ -50,7 +51,7 @@ func (c *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 				{Key: "name", Header: "Name"},
 				{Key: "network", Header: "Network", Colour: ui.DefaultAddressColours},
 				{Key: "peer_network", Header: "Peer Network", Colour: ui.DefaultAddressColours},
-				{Key: "status", Header: "Status"},
+				{Key: "status", Header: "Status", Format: format.NetworkPeeringState},
 			},
 			Rows: rows,
 		},
