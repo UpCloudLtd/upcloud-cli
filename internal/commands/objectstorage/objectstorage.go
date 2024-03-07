@@ -7,7 +7,7 @@ import (
 // BaseobjectstorageCommand creates the base "objectstorage" command
 func BaseobjectstorageCommand() commands.Command {
 	return &objectstorageCommand{
-		commands.New("objectstorage", "Manage Managed object storage services"),
+		commands.New("objectstorage", "Manage managed object storage services"),
 	}
 }
 

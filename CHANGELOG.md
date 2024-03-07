@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Support Kubernetes cluster labels: list labels with `show` commands and manage them with `create` and `modify` commands
+- Add `networkpeering` commands (`delete`, `disable`, `list`) for network peering management.
 
 ## [3.5.0] - 2024-02-29
 
@@ -26,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add `gateway` commands (`delete`, `list`) for Network gateway management.
+- Add `gateway` commands (`delete`, `list`) for network gateway management.
 - In machine readable outputs of server list, add support for `--show-ip-addresses` parameter.
 - Support for sub-account deletion via `account delete` command
 
@@ -58,7 +59,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.2.0] - 2023-11-15
 
 ### Added
-- Add `objectstorage` commands (`delete`, `list`, `show`) for Managed object storage management
+- Add `objectstorage` commands (`delete`, `list`, `show`) for managed object storage management
 
 ## [3.1.0] - 2023-11-06
 
