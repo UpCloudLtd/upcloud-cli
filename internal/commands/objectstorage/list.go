@@ -4,7 +4,9 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/format"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/paging"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
+	"github.com/spf13/pflag"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 )
@@ -18,12 +20,21 @@ func ListCommand() commands.Command {
 
 type listCommand struct {
 	*commands.BaseCommand
+	paging.PageParameters
+}
+
+func (c *listCommand) InitCommand() {
+	fs := &pflag.FlagSet{}
+	c.ConfigureFlags(fs)
+	c.AddFlags(fs)
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (c *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	svc := exec.All()
-	objectstorages, err := svc.GetManagedObjectStorages(exec.Context(), &request.GetManagedObjectStoragesRequest{})
+	objectstorages, err := svc.GetManagedObjectStorages(exec.Context(), &request.GetManagedObjectStoragesRequest{
+		Page: c.Page(),
+	})
 	if err != nil {
 		return nil, err
 	}

@@ -6,9 +6,11 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/paging"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/jedib0t/go-pretty/v6/text"
+	"github.com/spf13/pflag"
 )
 
 // ListCommand creates the "gateway list" command
@@ -20,12 +22,19 @@ func ListCommand() commands.Command {
 
 type listCommand struct {
 	*commands.BaseCommand
+	paging.PageParameters
+}
+
+func (c *listCommand) InitCommand() {
+	fs := &pflag.FlagSet{}
+	c.PageParameters.ConfigureFlags(fs)
+	c.AddFlags(fs)
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (c *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	svc := exec.All()
-	gateways, err := svc.GetGateways(exec.Context())
+	gateways, err := svc.GetGateways(exec.Context(), c.Page())
 	if err != nil {
 		return nil, err
 	}

@@ -4,8 +4,10 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/format"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/paging"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	"github.com/spf13/pflag"
 )
 
 // ListCommand creates the "database list" command
@@ -17,12 +19,21 @@ func ListCommand() commands.Command {
 
 type listCommand struct {
 	*commands.BaseCommand
+	paging.PageParameters
+}
+
+func (s *listCommand) InitCommand() {
+	fs := &pflag.FlagSet{}
+	s.ConfigureFlags(fs)
+	s.AddFlags(fs)
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	svc := exec.All()
-	databases, err := svc.GetManagedDatabases(exec.Context(), &request.GetManagedDatabasesRequest{})
+	databases, err := svc.GetManagedDatabases(exec.Context(), &request.GetManagedDatabasesRequest{
+		Page: s.Page(),
+	})
 	if err != nil {
 		return nil, err
 	}
