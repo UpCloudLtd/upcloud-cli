@@ -2,9 +2,11 @@ package objectstorage
 
 import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/format"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/labels"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 )
@@ -22,6 +24,8 @@ func ShowCommand() commands.Command {
 
 type showCommand struct {
 	*commands.BaseCommand
+	resolver.CachingObjectStorage
+	completion.ObjectStorage
 }
 
 // Execute implements commands.MultipleArgumentCommand
@@ -119,6 +123,7 @@ func (c *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 							Title: "Overview:",
 							Rows: []output.DetailRow{
 								{Title: "UUID:", Value: objectStorage.UUID, Colour: ui.DefaultUUUIDColours},
+								{Title: "Name:", Value: objectStorage.Name},
 								{Title: "Region:", Value: objectStorage.Region},
 								{Title: "Configured status:", Value: objectStorage.ConfiguredStatus, Format: format.ObjectStorageConfiguredStatus},
 								{Title: "Operational state:", Value: objectStorage.OperationalState, Format: format.ObjectStorageOperationalState},
