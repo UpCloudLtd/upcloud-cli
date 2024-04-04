@@ -35,7 +35,7 @@ jobs:
           path: site
           retention-days: 7
       - name: Deploy to pages
-        if: ${{ github.ref_name == 'main' }}
+        if: ${{ github.ref_name == 'main' || github.event_name == 'release'}}
         uses: JamesIves/github-pages-deploy-action@132898c54c57c7cc6b80eb3a89968de8fc283505 # 3.7.1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
