@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add managed object storage name to `show` and `list` command outputs.
 - Add completions for managed object storages and allow using managed object storage name (in addition to its UUID) as a positional argument.
-- Add paging flags (`--size` and `--page`) to `database`, `gateway`, `loadbalancer`, and `objectstorage` list commands
+- Add paging flags (`--limit` and `--page`) to `database`, `gateway`, `loadbalancer`, and `objectstorage` list commands
 
 ## [3.6.0] - 2024-03-07
 

@@ -31,9 +31,9 @@ func TestDatabaseListTitleFallback(t *testing.T) {
 			page: request.Page{Size: 100, Number: 0},
 		},
 		{
-			name: "size and page args",
+			name: "limit and page args",
 			page: request.Page{Size: 18, Number: 19},
-			args: []string{"--size", "18", "--page", "19"},
+			args: []string{"--limit", "18", "--page", "19"},
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {

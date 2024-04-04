@@ -11,7 +11,7 @@ type PageParameters struct {
 }
 
 func (pp *PageParameters) ConfigureFlags(fs *pflag.FlagSet) {
-	fs.IntVar(&pp.size, "size", 100, "Number of entries to receive at most.")
+	fs.IntVar(&pp.size, "limit", 100, "Number of entries to receive at most.")
 	fs.IntVar(&pp.number, "page", 0, "Page number to calculate first item to receive. Page numbers start from `1`.")
 }
 
