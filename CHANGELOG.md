@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add managed object storage name to `show` and `list` command outputs.
+- Add completions for managed object storages and allow using managed object storage name (in addition to its UUID) as a positional argument.
+
 ## [3.6.0] - 2024-03-07
 
 ### Added

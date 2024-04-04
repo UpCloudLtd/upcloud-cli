@@ -32,6 +32,7 @@ func (c *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 	for _, objectstorage := range objectstorages {
 		rows = append(rows, output.TableRow{
 			objectstorage.UUID,
+			objectstorage.Name,
 			objectstorage.Region,
 			objectstorage.ConfiguredStatus,
 			objectstorage.OperationalState,
@@ -43,6 +44,7 @@ func (c *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 		Output: output.Table{
 			Columns: []output.TableColumn{
 				{Key: "uuid", Header: "UUID", Colour: ui.DefaultUUUIDColours},
+				{Key: "name", Header: "Name"},
 				{Key: "region", Header: "Region"},
 				{Key: "configured_status", Header: "Configured status", Format: format.ObjectStorageConfiguredStatus},
 				{Key: "operational_state", Header: "Operational state", Format: format.ObjectStorageOperationalState},
