@@ -1,6 +1,6 @@
 module github.com/UpCloudLtd/upcloud-cli/v3
 
-go 1.20
+go 1.22
 
 require (
 	github.com/UpCloudLtd/progress v1.0.2
