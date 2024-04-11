@@ -457,7 +457,8 @@ func TestCreateServer(t *testing.T) {
 			mService := new(smock.Service)
 
 			storage.CachedStorages = nil
-			mService.On("CreateServer", &test.createServerReq).Return(&serverDetailsMaint, nil)
+			createServerReq := test.createServerReq
+			mService.On("CreateServer", &createServerReq).Return(&serverDetailsMaint, nil)
 			mService.On("GetPlans", mock.Anything).Return(&Plans, nil)
 			mService.On("GetStorages", mock.Anything).Return(storages, nil)
 

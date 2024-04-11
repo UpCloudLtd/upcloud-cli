@@ -65,7 +65,8 @@ func TestTemplatizeCommand(t *testing.T) {
 			mService := new(smock.Service)
 
 			mService.On("GetStorages", mock.Anything).Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2}}, nil)
-			mService.On(targetMethod, &test.expected).Return(&details, nil)
+			expected := test.expected
+			mService.On(targetMethod, &expected).Return(&details, nil)
 
 			c := commands.BuildCommand(TemplatizeCommand(), nil, conf)
 

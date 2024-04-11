@@ -110,7 +110,8 @@ func TestCreateCommand(t *testing.T) {
 			testCmd := CreateCommand()
 			mService := new(smock.Service)
 
-			mService.On(targetMethod, &test.expected).Return(&details, nil)
+			expected := test.expected
+			mService.On(targetMethod, &expected).Return(&details, nil)
 
 			c := commands.BuildCommand(testCmd, nil, config.New())
 

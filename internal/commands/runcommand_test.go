@@ -244,7 +244,7 @@ func TestExecute_Resolution(t *testing.T) {
 	cfg := config.New()
 	cfg.Viper().Set(config.KeyOutput, config.ValueOutputJSON)
 	executor := NewExecutor(cfg, mService, flume.New("test"))
-	outputs, err := execute(cmd, executor, []string{"a", "b", "failtoresolve", "c"}, 10, func(exec Executor, arg string) (output.Output, error) {
+	outputs, err := execute(cmd, executor, []string{"a", "b", "failtoresolve", "c"}, 10, func(_ Executor, arg string) (output.Output, error) {
 		return output.OnlyMarshaled{Value: arg}, nil
 	})
 	assert.Len(t, outputs, 4)

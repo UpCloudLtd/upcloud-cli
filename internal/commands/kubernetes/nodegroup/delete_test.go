@@ -44,7 +44,8 @@ func TestDeleteKubernetesNodeGroup(t *testing.T) {
 			testCmd := DeleteCommand()
 			mService := new(smock.Service)
 
-			mService.On("DeleteKubernetesNodeGroup", &test.expected).Return(nil)
+			expected := test.expected
+			mService.On("DeleteKubernetesNodeGroup", &expected).Return(nil)
 
 			c := commands.BuildCommand(testCmd, nil, conf)
 

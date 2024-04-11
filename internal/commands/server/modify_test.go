@@ -89,7 +89,8 @@ func TestModifyCommand(t *testing.T) {
 			testCmd := ModifyCommand()
 			mService := new(smock.Service)
 
-			mService.On(targetMethod, &test.modifyCall).Return(&details, nil)
+			modifyCall := test.modifyCall
+			mService.On(targetMethod, &modifyCall).Return(&details, nil)
 			mService.On("GetServerDetails", mock.Anything).Return(&details, nil)
 			c := commands.BuildCommand(testCmd, nil, conf)
 			err := c.Cobra().Flags().Parse(test.args)

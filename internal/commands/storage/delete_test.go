@@ -45,7 +45,8 @@ func TestDeleteStorageCommand(t *testing.T) {
 			testCmd := DeleteCommand()
 			mService := new(smock.Service)
 
-			mService.On(targetMethod, &test.expected).Return(nil, nil)
+			expected := test.expected
+			mService.On(targetMethod, &expected).Return(nil, nil)
 			mService.On("GetStorages", mock.Anything).Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage2}}, nil)
 
 			c := commands.BuildCommand(testCmd, nil, conf)

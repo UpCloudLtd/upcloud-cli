@@ -37,7 +37,8 @@ func TestCreateCommand(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			mService := smock.Service{}
-			mService.On(targetMethod, &test.req).Return(&router, nil)
+			req := test.req
+			mService.On(targetMethod, &req).Return(&router, nil)
 
 			conf := config.New()
 

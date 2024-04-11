@@ -96,7 +96,6 @@ func processNodeGroup(in string) (request.KubernetesNodeGroup, error) {
 	}
 
 	err = fs.Parse(args)
-
 	if err != nil {
 		return ng, err
 	}

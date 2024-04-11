@@ -83,7 +83,8 @@ func TestLoadCDROMCommand(t *testing.T) {
 
 			mService.On("GetServers", mock.Anything).Return(servers, nil)
 			mService.On("GetStorages", mock.Anything).Return(storages, nil)
-			mService.On(targetMethod, &test.loadReq).Return(&details, nil)
+			loadReq := test.loadReq
+			mService.On(targetMethod, &loadReq).Return(&details, nil)
 
 			c := commands.BuildCommand(testCmd, nil, conf)
 

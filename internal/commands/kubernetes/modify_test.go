@@ -105,7 +105,8 @@ func TestModifyKubernetesCluster(t *testing.T) {
 			testCmd := ModifyCommand()
 			mService := new(smock.Service)
 
-			mService.On("ModifyKubernetesCluster", &test.expected).Return(&upcloud.KubernetesCluster{}, nil)
+			expected := test.expected
+			mService.On("ModifyKubernetesCluster", &expected).Return(&upcloud.KubernetesCluster{}, nil)
 
 			c := commands.BuildCommand(testCmd, nil, conf)
 

@@ -100,7 +100,8 @@ func TestModifyCommand(t *testing.T) {
 		targetMethod := "ModifyNetwork"
 		t.Run(test.name, func(t *testing.T) {
 			mService := smock.Service{}
-			mService.On(targetMethod, &test.expected).Return(&upcloud.Network{}, nil)
+			expected := test.expected
+			mService.On(targetMethod, &expected).Return(&upcloud.Network{}, nil)
 			mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{n}}, nil)
 			conf := config.New()
 			c := commands.BuildCommand(ModifyCommand(), nil, conf)
@@ -163,7 +164,8 @@ func TestModifyCommandAttach(t *testing.T) {
 		targetMethod := "AttachNetworkRouter"
 		t.Run(test.name, func(t *testing.T) {
 			mService := smock.Service{}
-			mService.On(targetMethod, &test.expected).Return(nil)
+			expected := test.expected
+			mService.On(targetMethod, &expected).Return(nil)
 			mService.On("GetNetworkDetails", &request.GetNetworkDetailsRequest{UUID: n.UUID}).Return(&n, nil)
 			mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{n}}, nil)
 			mService.On("GetRouters").Return(&upcloud.Routers{Routers: []upcloud.Router{r}}, nil)
@@ -217,7 +219,8 @@ func TestModifyCommandDetach(t *testing.T) {
 		targetMethod := "DetachNetworkRouter"
 		t.Run(test.name, func(t *testing.T) {
 			mService := smock.Service{}
-			mService.On(targetMethod, &test.expected).Return(nil)
+			expected := test.expected
+			mService.On(targetMethod, &expected).Return(nil)
 			mService.On("GetNetworkDetails", &request.GetNetworkDetailsRequest{UUID: n.UUID}).Return(&n, nil)
 			mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{n}}, nil)
 			mService.On("GetRouters").Return(&upcloud.Routers{Routers: []upcloud.Router{r}}, nil)
@@ -292,8 +295,10 @@ func TestModifyCommandModifyAndAttach(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			mService := smock.Service{}
-			mService.On("AttachNetworkRouter", &test.expectedAttach).Return(nil)
-			mService.On("ModifyNetwork", &test.expectedModify).Return(&n, nil)
+			expectedAttach := test.expectedAttach
+			mService.On("AttachNetworkRouter", &expectedAttach).Return(nil)
+			expectedModify := test.expectedModify
+			mService.On("ModifyNetwork", &expectedModify).Return(&n, nil)
 			mService.On("GetNetworkDetails", &request.GetNetworkDetailsRequest{UUID: n.UUID}).Return(&n, nil)
 			mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{n}}, nil)
 			mService.On("GetRouters").Return(&upcloud.Routers{Routers: []upcloud.Router{r}}, nil)
@@ -352,8 +357,10 @@ func TestModifyCommandModifyAndDetach(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			mService := smock.Service{}
-			mService.On("DetachNetworkRouter", &test.expectedDetach).Return(nil)
-			mService.On("ModifyNetwork", &test.expectedModify).Return(&n, nil)
+			expectedDetach := test.expectedDetach
+			mService.On("DetachNetworkRouter", &expectedDetach).Return(nil)
+			expectedModify := test.expectedModify
+			mService.On("ModifyNetwork", &expectedModify).Return(&n, nil)
 			mService.On("GetNetworkDetails", &request.GetNetworkDetailsRequest{UUID: n.UUID}).Return(&n, nil)
 			mService.On("GetNetworks").Return(&upcloud.Networks{Networks: []upcloud.Network{n}}, nil)
 			conf := config.New()

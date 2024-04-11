@@ -65,7 +65,8 @@ func TestDetachCommand(t *testing.T) {
 			mService := new(smock.Service)
 
 			mService.On("GetServers", mock.Anything).Return(servers, nil)
-			mService.On(targetMethod, &test.detachReq).Return(&details, nil)
+			detachReq := test.detachReq
+			mService.On(targetMethod, &detachReq).Return(&details, nil)
 
 			c := commands.BuildCommand(DetachCommand(), nil, conf)
 

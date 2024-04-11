@@ -19,7 +19,7 @@ func TestParseSSHKeys(t *testing.T) {
 		want    []string
 		wantErr assert.ErrorAssertionFunc
 	}{
-		{name: "string", args: struct{ sshKeys []string }{sshKeys: []string{`ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMWq/xsiYPgA/HLsaWHcjAGnwU+pJy9BUmvIlMBpkdn2 noname`}}, want: []string{`ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMWq/xsiYPgA/HLsaWHcjAGnwU+pJy9BUmvIlMBpkdn2 noname`}, wantErr: func(t assert.TestingT, err error, i ...interface{}) bool {
+		{name: "string", args: struct{ sshKeys []string }{sshKeys: []string{`ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMWq/xsiYPgA/HLsaWHcjAGnwU+pJy9BUmvIlMBpkdn2 noname`}}, want: []string{`ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMWq/xsiYPgA/HLsaWHcjAGnwU+pJy9BUmvIlMBpkdn2 noname`}, wantErr: func(_ assert.TestingT, err error, _ ...interface{}) bool {
 			return err == nil
 		}},
 	}

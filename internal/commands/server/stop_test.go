@@ -72,7 +72,8 @@ func TestStopCommand(t *testing.T) {
 
 			mService.On("GetServers", mock.Anything).Return(servers, nil)
 			mService.On("GetServerDetails", &request.GetServerDetailsRequest{UUID: Server1.UUID}).Return(&details2, nil)
-			mService.On(targetMethod, &test.stopReq).Return(&details, nil)
+			stopReq := test.stopReq
+			mService.On(targetMethod, &stopReq).Return(&details, nil)
 
 			c := commands.BuildCommand(testCmd, nil, conf)
 			err := c.Cobra().Flags().Parse(test.args)
