@@ -65,7 +65,8 @@ func TestModifyCommand(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			mService := smock.Service{}
 			mService.On("GetNetworks").Return(&networks, nil)
-			mService.On(targetMethod, &test.req).Return(&upcloud.Interface{}, nil)
+			req := test.req
+			mService.On(targetMethod, &req).Return(&upcloud.Interface{}, nil)
 
 			mService.On("GetServers").Return(&servers, nil)
 			conf := config.New()

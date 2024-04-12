@@ -177,7 +177,8 @@ func TestModifyCommand(t *testing.T) {
 				},
 				nil,
 			)
-			mService.On(targetMethod, &test.req).Return(test.returns, nil)
+			req := test.req
+			mService.On(targetMethod, &req).Return(test.returns, nil)
 			mService.On("GetServerGroups", mock.Anything).Return(upcloud.ServerGroups{serverGroup}, nil)
 
 			conf := config.New()

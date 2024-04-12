@@ -40,7 +40,8 @@ func TestModifyCommand(t *testing.T) {
 		targetMethod := "ModifyRouter"
 		t.Run(test.name, func(t *testing.T) {
 			mService := smock.Service{}
-			mService.On(targetMethod, &test.req).Return(test.returns, nil)
+			req := test.req
+			mService.On(targetMethod, &req).Return(test.returns, nil)
 			mService.On("GetRouters", mock.Anything).Return(&upcloud.Routers{Routers: []upcloud.Router{router}}, nil)
 
 			conf := config.New()

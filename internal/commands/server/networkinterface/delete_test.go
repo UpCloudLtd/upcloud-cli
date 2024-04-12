@@ -40,7 +40,8 @@ func TestDeleteCommand(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			mService := smock.Service{}
-			mService.On(targetMethod, &test.req).Return(nil)
+			req := test.req
+			mService.On(targetMethod, &req).Return(nil)
 
 			mService.On("GetServers").Return(&servers, nil)
 			conf := config.New()

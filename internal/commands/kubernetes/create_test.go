@@ -162,7 +162,8 @@ func TestCreateKubernetes(t *testing.T) {
 			testCmd := CreateCommand()
 			mService := new(smock.Service)
 
-			mService.On("CreateKubernetesCluster", &test.request).Return(&upcloud.KubernetesCluster{}, nil)
+			req := test.request
+			mService.On("CreateKubernetesCluster", &req).Return(&upcloud.KubernetesCluster{}, nil)
 			mService.On("GetNetworks").Return(&networks, nil)
 			mService.On("GetNetworkDetails", mock.Anything).Return(&network, nil)
 

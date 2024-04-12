@@ -90,7 +90,8 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 			mService := new(smock.Service)
 
 			mService.On("GetStorages").Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1}}, nil)
-			mService.On(targetMethod, &test1.expected).Return(&StorageDetails1, nil)
+			expected := test1.expected
+			mService.On(targetMethod, &expected).Return(&StorageDetails1, nil)
 			mService.On("GetStorageDetails", &request.GetStorageDetailsRequest{UUID: Storage1.UUID}).Return(&StorageDetails1, nil)
 
 			c := commands.BuildCommand(testCmd, nil, conf)
@@ -137,9 +138,10 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 			conf := config.New()
 			testCmd := ModifyCommand()
 			mService := new(smock.Service)
-
-			mService.On("GetStorages").Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1}}, nil)
-			mService.On(targetMethod, &test2.expected).Return(&StorageDetails1, nil)
+			storages := upcloud.Storages{Storages: []upcloud.Storage{Storage1}}
+			mService.On("GetStorages").Return(&storages, nil)
+			expected := test2.expected
+			mService.On(targetMethod, &expected).Return(&StorageDetails1, nil)
 			mService.On("GetStorageDetails", &request.GetStorageDetailsRequest{UUID: Storage1.UUID}).Return(&StorageDetails1, nil)
 
 			c := commands.BuildCommand(testCmd, nil, config.New())
@@ -203,9 +205,10 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 			conf := config.New()
 			testCmd := ModifyCommand()
 			mService := new(smock.Service)
-
-			mService.On("GetStorages").Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage2}}, nil)
-			mService.On(targetMethod, &test3.expected).Return(&StorageDetails2, nil)
+			storages := upcloud.Storages{Storages: []upcloud.Storage{Storage2}}
+			mService.On("GetStorages").Return(&storages, nil)
+			expected := test3.expected
+			mService.On(targetMethod, &expected).Return(&StorageDetails2, nil)
 			mService.On("GetStorageDetails", &request.GetStorageDetailsRequest{UUID: Storage2.UUID}).Return(&StorageDetails2, nil)
 
 			c := commands.BuildCommand(testCmd, nil, config.New())

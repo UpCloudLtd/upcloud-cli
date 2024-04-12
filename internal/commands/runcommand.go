@@ -28,8 +28,7 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 		cmdLogger.Debug("executing without arguments", "arguments", args)
 		// need to pass in fake arguments here, to actually trigger execution
 		results, err := execute(typedCommand, executor, []string{""}, 1,
-			// FIXME: this bit panics go-critic unlambda check, figure out why and report upstream
-			func(exec Executor, fake string) (output.Output, error) {
+			func(exec Executor, _ string) (output.Output, error) {
 				return typedCommand.ExecuteWithoutArguments(exec)
 			})
 		if err != nil {

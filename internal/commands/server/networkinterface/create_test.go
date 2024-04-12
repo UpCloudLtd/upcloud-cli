@@ -130,7 +130,8 @@ func TestCreateCommand(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			mService := smock.Service{}
 			mService.On("GetNetworks").Return(&networks, nil)
-			mService.On(targetMethod, &test.req).Return(&upcloud.Interface{}, nil)
+			req := test.req
+			mService.On(targetMethod, &req).Return(&upcloud.Interface{}, nil)
 
 			mService.On("GetNetworkDetails", &request.GetNetworkDetailsRequest{UUID: network.UUID}).Return(&network, nil)
 			conf := config.New()

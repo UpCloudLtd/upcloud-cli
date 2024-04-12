@@ -49,7 +49,8 @@ func TestCreateServerGroup(t *testing.T) {
 			testCmd := CreateCommand()
 			mService := new(smock.Service)
 
-			mService.On("CreateServerGroup", &test.req).Return(&serverGroupDefault, nil)
+			req := test.req
+			mService.On("CreateServerGroup", &req).Return(&serverGroupDefault, nil)
 
 			c := commands.BuildCommand(testCmd, nil, conf)
 

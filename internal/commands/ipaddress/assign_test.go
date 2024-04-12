@@ -64,7 +64,8 @@ func TestAssignCommand(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			mService := smock.Service{}
-			mService.On(targetMethod, &test.expected).Return(&ip, nil)
+			expected := test.expected
+			mService.On(targetMethod, &expected).Return(&ip, nil)
 			mService.On("GetServers").Return(&servers, nil)
 			for _, server := range servers.Servers {
 				mService.On("GetServerDetails",

@@ -114,7 +114,8 @@ func TestCreateCommand(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			mService := smock.Service{}
-			mService.On(targetMethod, &test.expected).Return(&upcloud.Network{}, nil)
+			expected := test.expected
+			mService.On(targetMethod, &expected).Return(&upcloud.Network{}, nil)
 			conf := config.New()
 
 			c := commands.BuildCommand(CreateCommand(), nil, conf)

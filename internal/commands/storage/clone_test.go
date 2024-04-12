@@ -97,7 +97,8 @@ func TestCloneCommand(t *testing.T) {
 			conf := config.New()
 			mService := new(smock.Service)
 
-			mService.On(targetMethod, &test.expected).Return(&details, nil)
+			expected := test.expected
+			mService.On(targetMethod, &expected).Return(&details, nil)
 			mService.On("GetStorages", mock.Anything).Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2}}, nil)
 
 			c := commands.BuildCommand(CloneCommand(), nil, conf)

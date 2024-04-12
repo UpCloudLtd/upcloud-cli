@@ -63,10 +63,10 @@ func TestAttachStorageCommand(t *testing.T) {
 	}
 
 	for _, test := range []struct {
-		name       string
-		args       []string
-		attacheReq request.AttachStorageRequest
-		error      string
+		name      string
+		args      []string
+		attachReq request.AttachStorageRequest
+		error     string
 	}{
 		{
 			name:  "storage is missing",
@@ -76,7 +76,7 @@ func TestAttachStorageCommand(t *testing.T) {
 		{
 			name: "use default values",
 			args: []string{"--storage", Storage1.Title},
-			attacheReq: request.AttachStorageRequest{
+			attachReq: request.AttachStorageRequest{
 				ServerUUID:  Server1.UUID,
 				Type:        upcloud.StorageTypeDisk,
 				Address:     "virtio",
@@ -92,7 +92,7 @@ func TestAttachStorageCommand(t *testing.T) {
 				"--address", "ide",
 				"--boot-disk",
 			},
-			attacheReq: request.AttachStorageRequest{
+			attachReq: request.AttachStorageRequest{
 				ServerUUID:  Server1.UUID,
 				Type:        upcloud.StorageTypeCDROM,
 				Address:     "ide",
@@ -106,7 +106,8 @@ func TestAttachStorageCommand(t *testing.T) {
 			mService := new(smock.Service)
 
 			mService.On("GetServers", mock.Anything).Return(servers, nil)
-			mService.On(targetMethod, &test.attacheReq).Return(&serverDetails, nil)
+			attachReq := test.attachReq
+			mService.On(targetMethod, &attachReq).Return(&serverDetails, nil)
 			mService.On("GetStorages", mock.Anything).Return(storages, nil)
 
 			c := commands.BuildCommand(AttachCommand(), nil, conf)

@@ -58,7 +58,8 @@ func TestCancelCommand(t *testing.T) {
 					UUID:  uuid,
 				}, nil)
 
-			mService.On(targetMethod, &test.expected).Return(nil)
+			expected := test.expected
+			mService.On(targetMethod, &expected).Return(nil)
 
 			c := commands.BuildCommand(testCmd, nil, config.New())
 

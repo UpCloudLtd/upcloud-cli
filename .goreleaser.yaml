@@ -56,7 +56,7 @@ changelog:
   # This may result in an empty release notes on GitHub/GitLab/Gitea.
   #
   # Templates: allowed
-  skip: false
+  disable: false
   sort: asc
   filters:
 

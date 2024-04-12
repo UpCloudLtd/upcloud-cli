@@ -133,7 +133,8 @@ func TestCreateKubernetesNodeGroup(t *testing.T) {
 			testCmd := CreateCommand()
 			mService := new(smock.Service)
 
-			mService.On("CreateKubernetesNodeGroup", &test.expected).Return(&upcloud.KubernetesNodeGroup{}, nil)
+			expected := test.expected
+			mService.On("CreateKubernetesNodeGroup", &expected).Return(&upcloud.KubernetesNodeGroup{}, nil)
 			mService.On("GetNetworkDetails", mock.Anything).Return(&upcloud.Network{IPNetworks: []upcloud.IPNetwork{{Address: "172.16.1.0/24"}}}, nil)
 
 			c := commands.BuildCommand(testCmd, nil, conf)

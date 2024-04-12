@@ -47,7 +47,8 @@ func TestScaleKubernetesNodeGroup(t *testing.T) {
 			testCmd := ScaleCommand()
 			mService := new(smock.Service)
 
-			mService.On("ModifyKubernetesNodeGroup", &test.expected).Return(&upcloud.KubernetesNodeGroup{}, nil)
+			expected := test.expected
+			mService.On("ModifyKubernetesNodeGroup", &expected).Return(&upcloud.KubernetesNodeGroup{}, nil)
 
 			c := commands.BuildCommand(testCmd, nil, conf)
 

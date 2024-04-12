@@ -44,7 +44,8 @@ func TestModifyCommand(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			mService := smock.Service{}
-			mService.On(targetMethod, &test.expected).Return(&ip, nil)
+			expected := test.expected
+			mService.On(targetMethod, &expected).Return(&ip, nil)
 			mService.On("GetIPAddresses").Return(&upcloud.IPAddresses{IPAddresses: []upcloud.IPAddress{ip}}, nil)
 			conf := config.New()
 

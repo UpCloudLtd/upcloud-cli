@@ -44,7 +44,8 @@ func TestDeleteManagedDatabaseIndex(t *testing.T) {
 			testCmd := DeleteCommand()
 			mService := new(smock.Service)
 
-			mService.On("DeleteManagedDatabaseIndex", &test.expected).Return(nil)
+			expected := test.expected
+			mService.On("DeleteManagedDatabaseIndex", &expected).Return(nil)
 
 			c := commands.BuildCommand(testCmd, nil, conf)
 

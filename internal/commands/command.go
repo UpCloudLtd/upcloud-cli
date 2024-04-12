@@ -84,7 +84,7 @@ func BuildCommand(child Command, parent *cobra.Command, config *config.Config) C
 
 	// Set up completion, if necessary
 	if cp, ok := child.(completion.Provider); ok {
-		child.Cobra().ValidArgsFunction = func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		child.Cobra().ValidArgsFunction = func(_ *cobra.Command, _ []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			svc, err := config.CreateService()
 			if err != nil {
 				// TODO: debug log fmt.Sprintf("cannot create service for completion: %v", err)
@@ -105,7 +105,7 @@ func BuildCommand(child Command, parent *cobra.Command, config *config.Config) C
 	}
 
 	// Set run
-	child.Cobra().RunE = func(cmd *cobra.Command, args []string) error {
+	child.Cobra().RunE = func(_ *cobra.Command, args []string) error {
 		// Do not create service for offline commands, e.g. upctl version
 		if _, ok := child.(OfflineCommand); ok {
 			return commandRunE(child, nil, config, args)

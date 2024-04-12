@@ -31,24 +31,24 @@ func flattenSections(m Combined) map[string]interface{} {
 			if _, ok := out[sec.Key]; ok {
 				panic(fmt.Sprintf("duplicate section key '%v' in output", sec.Key))
 			}
-			if rowOut, err := sec.Contents.MarshalRawMap(); err != nil {
+			rowOut, err := sec.Contents.MarshalRawMap()
+			if err != nil {
 				panic(fmt.Sprintf("cannot marshal '%v' to raw output", sec.Key))
-			} else {
-				if len(rowOut) == 1 { // unwrap single ones - related to table; TODO: fix
-					for _, v := range rowOut {
-						out[sec.Key] = v
-					}
-				} else {
-					out[sec.Key] = rowOut
+			}
+			if len(rowOut) == 1 { // unwrap single ones - related to table; TODO: fix
+				for _, v := range rowOut {
+					out[sec.Key] = v
 				}
+			} else {
+				out[sec.Key] = rowOut
 			}
 		} else {
-			if rowOut, err := sec.Contents.MarshalRawMap(); err != nil {
+			rowOut, err := sec.Contents.MarshalRawMap()
+			if err != nil {
 				panic(fmt.Sprintf("cannot marshal '%v' to raw output", sec.Key))
-			} else {
-				for k, v := range rowOut {
-					out[k] = v
-				}
+			}
+			for k, v := range rowOut {
+				out[k] = v
 			}
 		}
 	}

@@ -59,7 +59,8 @@ func TestEjectCDROMCommand(t *testing.T) {
 			mService := new(smock.Service)
 
 			mService.On("GetServers", mock.Anything).Return(servers, nil)
-			mService.On(targetMethod, &test.ejectReq).Return(&details, nil)
+			ejectReq := test.ejectReq
+			mService.On(targetMethod, &ejectReq).Return(&details, nil)
 
 			c := commands.BuildCommand(testCmd, nil, conf)
 			err := c.Cobra().Flags().Parse(test.args)
