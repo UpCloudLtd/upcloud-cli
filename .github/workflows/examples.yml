@@ -3,6 +3,7 @@ name: Examples
 on:
   pull_request:
     paths:
+      - ".github/workflows/examples.yml"
       - "**.go"
       - "go.mod"
       - "go.sum"
@@ -34,4 +35,5 @@ jobs:
           UPCLOUD_PASSWORD: ${{ secrets.UPCLOUD_PASSWORD }}
         run: |
           upctl version
+          upctl account show > /dev/null # Ensure that credentials are valid
           mdtest examples/
