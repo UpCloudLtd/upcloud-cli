@@ -18,6 +18,9 @@ const (
 	defaultRestartTimeout       = time.Duration(120) * time.Second
 	defaultRestartTimeoutAction = request.RestartTimeoutActionIgnore
 	customPlan                  = "custom"
+
+	avoidHostDescription = "Host to avoid when scheduling the server. Use this to make sure VMs do not reside on specific host. Refers to value from `host` attribute. Useful when building HA-environments."
+	hostDescription      = "Schedule the server on a specific host. Refers to value from `host` attribute. Only available in private clouds."
 )
 
 // BaseServerCommand crestes the base "server" command
