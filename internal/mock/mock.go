@@ -1289,3 +1289,15 @@ func (m *Service) DeleteNetworkPeering(ctx context.Context, r *request.DeleteNet
 func (m *Service) WaitForNetworkPeeringState(ctx context.Context, r *request.WaitForNetworkPeeringStateRequest) (*upcloud.NetworkPeering, error) {
 	return nil, nil
 }
+
+func (m *Service) GetHosts(ctx context.Context) (*upcloud.Hosts, error) {
+	return nil, nil
+}
+
+func (m *Service) GetHostDetails(ctx context.Context, r *request.GetHostDetailsRequest) (*upcloud.Host, error) {
+	return nil, nil
+}
+
+func (m *Service) ModifyHost(ctx context.Context, r *request.ModifyHostRequest) (*upcloud.Host, error) {
+	return nil, nil
+}
