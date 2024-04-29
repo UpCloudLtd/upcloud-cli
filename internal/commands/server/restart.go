@@ -32,6 +32,7 @@ type restartCommand struct {
 	completion.Server
 	WaitForServerToStart bool
 	StopType             string
+	Host                 int
 	TimeoutAction        string
 	Timeout              time.Duration
 }
@@ -43,6 +44,7 @@ func (s *restartCommand) InitCommand() {
 	// TODO: reimplement? does not seem to make sense to automagically destroy
 	// servers if restart fails..
 	flags.StringVar(&s.StopType, "stop-type", defaultStopType, "The type of stop operation. Available: soft, hard")
+	flags.IntVar(&s.Host, "host", 0, "Specify host ID to restart the VM on a specific host. Only available for private cloud hosts.")
 	s.AddFlags(flags)
 }
 
@@ -60,6 +62,7 @@ func (s *restartCommand) Execute(exec commands.Executor, uuid string) (output.Ou
 	res, err := svc.RestartServer(exec.Context(), &request.RestartServerRequest{
 		UUID:          uuid,
 		StopType:      s.StopType,
+		Host:          s.Host,
 		Timeout:       defaultRestartTimeout,
 		TimeoutAction: "ignore",
 	})

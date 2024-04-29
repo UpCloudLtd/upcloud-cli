@@ -68,6 +68,19 @@ func TestRestartCommand(t *testing.T) {
 				TimeoutAction: defaultRestartTimeoutAction,
 			},
 		},
+		{
+			name: "specify host",
+			args: []string{
+				"--host", "123456",
+			},
+			restartReq: request.RestartServerRequest{
+				UUID:          Server1.UUID,
+				Host:          123456,
+				StopType:      defaultStopType,
+				Timeout:       defaultRestartTimeout,
+				TimeoutAction: defaultRestartTimeoutAction,
+			},
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			conf := config.New()
