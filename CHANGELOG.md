@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add `host list` command for listing private cloud hosts.
+- Add `--host` argument to `server restart` command.
+- Add `--avoid-host` and `--host` arguments to `server start` command.
+
 ### Changed
 
 - Go version bump to 1.21
