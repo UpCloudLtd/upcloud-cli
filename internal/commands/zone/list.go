@@ -25,24 +25,36 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 		return nil, err
 	}
 
+	hasParentZones := false
 	rows := []output.TableRow{}
 	for _, z := range zones.Zones {
+		if len(z.ParentZone) > 0 {
+			hasParentZones = true
+		}
+
 		rows = append(rows, output.TableRow{
 			z.ID,
 			z.Description,
 			z.Public,
+			z.ParentZone,
 		})
+	}
+
+	columns := []output.TableColumn{
+		{Key: "id", Header: "ID"},
+		{Key: "description", Header: "Description"},
+		{Key: "public", Header: "Public", Format: format.Boolean},
+	}
+
+	if hasParentZones {
+		columns = append(columns, output.TableColumn{Key: "parent_zone", Header: "Parent zone"})
 	}
 
 	return output.MarshaledWithHumanOutput{
 		Value: zones,
 		Output: output.Table{
-			Columns: []output.TableColumn{
-				{Key: "id", Header: "ID"},
-				{Key: "description", Header: "Description"},
-				{Key: "public", Header: "Public", Format: format.Boolean},
-			},
-			Rows: rows,
+			Columns: columns,
+			Rows:    rows,
 		},
 	}, nil
 }

@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `host list` command for listing private cloud hosts.
 - Add `--host` argument to `server restart` command.
 - Add `--avoid-host` and `--host` arguments to `server start` command.
+- Add `Parent zone` column to `zone list` output for users that have access to private zones.
 
 ### Changed
 
