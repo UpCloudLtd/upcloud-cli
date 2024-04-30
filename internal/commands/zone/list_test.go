@@ -15,22 +15,56 @@ import (
 
 func TestZoneListHumanOutput(t *testing.T) {
 	text.DisableColors()
-	zones := upcloud.Zones{
-		Zones: []upcloud.Zone{
-			{ID: "fi-hel1", Description: "Helsinki #1", Public: 1},
-			{ID: "de-fra1", Description: "Frankfurt #1", Public: 1},
+
+	for _, test := range []struct {
+		name     string
+		zones    upcloud.Zones
+		expected string
+	}{
+		{
+			name: "no private zones",
+			zones: upcloud.Zones{
+				Zones: []upcloud.Zone{
+					{ID: "fi-hel1", Description: "Helsinki #1", Public: 1},
+					{ID: "de-fra1", Description: "Frankfurt #1", Public: 1},
+				},
+			},
+			expected: `
+ ID        Description    Public 
+───────── ────────────── ────────
+ fi-hel1   Helsinki #1    yes    
+ de-fra1   Frankfurt #1   yes    
+
+`,
+		}, {
+			name: "with private zones",
+			zones: upcloud.Zones{
+				Zones: []upcloud.Zone{
+					{ID: "de-fra1", Description: "Frankfurt #1", Public: 1},
+					{ID: "de-tst1", Description: "Test #1", Public: 0, ParentZone: "de-fra1"},
+				},
+			},
+			expected: `
+ ID        Description    Public   Parent zone 
+───────── ────────────── ──────── ─────────────
+ de-fra1   Frankfurt #1   yes                  
+ de-tst1   Test #1        no       de-fra1     
+
+`,
 		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			zones := test.zones
+			mService := smock.Service{}
+			mService.On("GetZones").Return(&zones, nil)
+
+			conf := config.New()
+			command := commands.BuildCommand(ListCommand(), nil, conf)
+
+			output, err := mockexecute.MockExecute(command, &mService, conf)
+
+			assert.NoError(t, err)
+			assert.Equal(t, output, test.expected)
+		})
 	}
-
-	mService := smock.Service{}
-	mService.On("GetZones").Return(&zones, nil)
-
-	conf := config.New()
-	command := commands.BuildCommand(ListCommand(), nil, conf)
-
-	output, err := mockexecute.MockExecute(command, &mService, conf)
-
-	assert.NoError(t, err)
-	assert.Regexp(t, "ID\\s+Description\\s+Public", output)
-	assert.Regexp(t, "fi-hel1\\s+Helsinki #1\\s+yes", output)
 }

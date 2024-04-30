@@ -1265,6 +1265,46 @@ func (m *Service) ModifyGateway(_ context.Context, r *request.ModifyGatewayReque
 	return args[0].(*upcloud.Gateway), args.Error(1)
 }
 
+func (m *Service) GetGatewayPlans(ctx context.Context) ([]upcloud.GatewayPlan, error) {
+	return nil, nil
+}
+
+func (m *Service) GetGatewayConnections(ctx context.Context, r *request.GetGatewayConnectionsRequest) ([]upcloud.GatewayConnection, error) {
+	return nil, nil
+}
+
+func (m *Service) GetGatewayConnection(ctx context.Context, r *request.GetGatewayConnectionRequest) (*upcloud.GatewayConnection, error) {
+	return nil, nil
+}
+
+func (m *Service) CreateGatewayConnection(ctx context.Context, r *request.CreateGatewayConnectionRequest) (*upcloud.GatewayConnection, error) {
+	return nil, nil
+}
+
+func (m *Service) ModifyGatewayConnection(ctx context.Context, r *request.ModifyGatewayConnectionRequest) (*upcloud.GatewayConnection, error) {
+	return nil, nil
+}
+
+func (m *Service) DeleteGatewayConnection(ctx context.Context, r *request.DeleteGatewayConnectionRequest) error {
+	return nil
+}
+
+func (m *Service) GetGatewayConnectionTunnels(ctx context.Context, r *request.GetGatewayConnectionTunnelsRequest) ([]upcloud.GatewayTunnel, error) {
+	return nil, nil
+}
+
+func (m *Service) GetGatewayConnectionTunnel(ctx context.Context, r *request.GetGatewayConnectionTunnelRequest) (*upcloud.GatewayTunnel, error) {
+	return nil, nil
+}
+
+func (m *Service) CreateGatewayConnectionTunnel(ctx context.Context, r *request.CreateGatewayConnectionTunnelRequest) (*upcloud.GatewayTunnel, error) {
+	return nil, nil
+}
+
+func (m *Service) DeleteGatewayConnectionTunnel(ctx context.Context, r *request.DeleteGatewayConnectionTunnelRequest) error {
+	return nil
+}
+
 func (m *Service) GetNetworkPeerings(ctx context.Context, f ...request.QueryFilter) (upcloud.NetworkPeerings, error) {
 	return nil, nil
 }
