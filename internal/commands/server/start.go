@@ -7,6 +7,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
+	"github.com/spf13/pflag"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 )
@@ -28,10 +29,18 @@ type startCommand struct {
 	*commands.BaseCommand
 	completion.Server
 	resolver.CachingServer
+	host      int
+	avoidHost int
 }
 
 // InitCommand implements Command.InitCommand
 func (s *startCommand) InitCommand() {
+	fs := &pflag.FlagSet{}
+
+	fs.IntVar(&s.avoidHost, "avoid-host", 0, avoidHostDescription)
+	fs.IntVar(&s.host, "host", 0, hostDescription)
+
+	s.AddFlags(fs)
 }
 
 // Execute implements commands.MultipleArgumentCommand
@@ -41,7 +50,9 @@ func (s *startCommand) Execute(exec commands.Executor, uuid string) (output.Outp
 	exec.PushProgressStarted(msg)
 
 	res, err := svc.StartServer(exec.Context(), &request.StartServerRequest{
-		UUID: uuid,
+		UUID:      uuid,
+		AvoidHost: s.avoidHost,
+		Host:      s.host,
 	})
 	if err != nil {
 		return commands.HandleError(exec, msg, err)

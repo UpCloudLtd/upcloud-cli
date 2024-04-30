@@ -52,6 +52,22 @@ func TestStartCommand(t *testing.T) {
 				UUID: Server1.UUID,
 			},
 		},
+		{
+			name: "host argument",
+			args: []string{"--host", "123456"},
+			startReq: request.StartServerRequest{
+				UUID: Server1.UUID,
+				Host: 123456,
+			},
+		},
+		{
+			name: "avoid-host argument",
+			args: []string{"--avoid-host", "987654"},
+			startReq: request.StartServerRequest{
+				UUID:      Server1.UUID,
+				AvoidHost: 987654,
+			},
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			conf := config.New()

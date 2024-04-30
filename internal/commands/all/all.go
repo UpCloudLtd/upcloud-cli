@@ -9,6 +9,7 @@ import (
 	databaseproperties "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/database/properties"
 	databasesession "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/database/session"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/gateway"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/host"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/ipaddress"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/kubernetes"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/kubernetes/nodegroup"
@@ -201,6 +202,10 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	gatewayCommand := commands.BuildCommand(gateway.BaseGatewayCommand(), rootCmd, conf)
 	commands.BuildCommand(gateway.DeleteCommand(), gatewayCommand.Cobra(), conf)
 	commands.BuildCommand(gateway.ListCommand(), gatewayCommand.Cobra(), conf)
+
+	// Host operations
+	hostCommand := commands.BuildCommand(host.BaseHostCommand(), rootCmd, conf)
+	commands.BuildCommand(host.ListCommand(), hostCommand.Cobra(), conf)
 
 	// Misc
 	commands.BuildCommand(

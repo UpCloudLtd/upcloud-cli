@@ -21,4 +21,5 @@ type AllServices interface {
 	service.ManagedObjectStorage
 	service.Permission
 	service.Gateway
+	service.Host
 }
