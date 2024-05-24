@@ -70,6 +70,14 @@ to control your resources from the command line or any compatible interface.
     go install github.com/UpCloudLtd/upcloud-cli/v3/...@latest
     ```
 
+=== "Docker"
+
+    Pull the latest build from GHCR by running:
+
+    ```sh
+    docker pull ghcr.io/upcloudltd/upctl:latest
+    ```
+
 ---
 
 After installing `upctl`, you can run `upctl version` command to verify that the tool was installed successfully.
