@@ -149,7 +149,6 @@ func (c *createCommand) InitCommand() {
 
 	_ = c.Cobra().MarkFlagRequired("name")
 	_ = c.Cobra().MarkFlagRequired("network")
-	_ = c.Cobra().MarkFlagRequired("node-group")
 	_ = c.Cobra().MarkFlagRequired("zone")
 }
 
