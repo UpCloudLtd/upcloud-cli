@@ -1,6 +1,11 @@
 name: Lint
 on:
   pull_request:
+    paths:
+      - '**.go'
+      - 'go.mod'
+      - 'go.sum'
+      - '.github/workflows/lint.yml'
 jobs:
   golangci-lint:
     name: golangci-lint
