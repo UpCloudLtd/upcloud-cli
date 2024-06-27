@@ -202,6 +202,7 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	gatewayCommand := commands.BuildCommand(gateway.BaseGatewayCommand(), rootCmd, conf)
 	commands.BuildCommand(gateway.DeleteCommand(), gatewayCommand.Cobra(), conf)
 	commands.BuildCommand(gateway.ListCommand(), gatewayCommand.Cobra(), conf)
+	commands.BuildCommand(gateway.PlansCommand(), gatewayCommand.Cobra(), conf)
 
 	// Host operations
 	hostCommand := commands.BuildCommand(host.BaseHostCommand(), rootCmd, conf)

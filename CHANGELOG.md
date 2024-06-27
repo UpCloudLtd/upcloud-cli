@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## Added
+
+- Add `gateway plans` command for listing gateway plans.
+
 ## [3.8.1] - 2024-05-24
 
 ### Changed
