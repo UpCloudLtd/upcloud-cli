@@ -60,8 +60,8 @@ func (s *dbTypeCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 			Columns: []output.TableColumn{
 				{Key: "property", Header: "Property"},
 				{Key: "createOnly", Header: "Create only", Format: format.Boolean},
-				{Key: "type", Header: "Type", Format: formatAlternatives},
-				{Key: "example", Header: "Example", Format: formatAlternatives},
+				{Key: "type", Header: "Type", Format: format.StringSliceOr},
+				{Key: "example", Header: "Example", Format: format.StringSliceOr},
 			},
 			Rows: rows,
 		},

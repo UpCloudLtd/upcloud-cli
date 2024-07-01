@@ -53,15 +53,15 @@ func (s *showCommand) Execute(exec commands.Executor, key string) (output.Output
 		{Title: "Description:", Key: "description", Value: details.Description},
 		{Title: "Help message:", Key: "user_error", Value: details.UserError},
 		{Title: "Create only:", Key: "createOnly", Value: details.CreateOnly, Format: format.Boolean},
-		{Title: "Type:", Key: "type", Value: details.Type, Format: formatAlternatives},
+		{Title: "Type:", Key: "type", Value: details.Type, Format: format.StringSliceOr},
 		{Title: "Default:", Key: "default", Value: details.Default},
-		{Title: "Possible values:", Key: "enum", Value: details.Enum, Format: formatAlternatives},
+		{Title: "Possible values:", Key: "enum", Value: details.Enum, Format: format.StringSliceOr},
 		{Title: "Pattern:", Key: "pattern", Value: details.Pattern},
 		{Title: "Min length:", Key: "minLength", Value: details.MinLength},
 		{Title: "Minimum:", Key: "minimum", Value: details.Minimum, Format: format.Dereference[float64]},
 		{Title: "Max length:", Key: "maxLength", Value: details.MaxLength},
 		{Title: "Maximum:", Key: "maximum", Value: details.Maximum, Format: format.Dereference[float64]},
-		{Title: "Properties:", Key: "properties", Value: childProperties, Format: formatProperties},
+		{Title: "Properties:", Key: "properties", Value: childProperties, Format: format.StringSliceAnd},
 	}
 
 	return output.MarshaledWithHumanOutput{
