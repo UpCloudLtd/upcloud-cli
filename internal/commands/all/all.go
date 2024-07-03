@@ -197,6 +197,7 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	commands.BuildCommand(objectstorage.DeleteCommand(), objectStorageCommand.Cobra(), conf)
 	commands.BuildCommand(objectstorage.ListCommand(), objectStorageCommand.Cobra(), conf)
 	commands.BuildCommand(objectstorage.ShowCommand(), objectStorageCommand.Cobra(), conf)
+	commands.BuildCommand(objectstorage.RegionsCommand(), objectStorageCommand.Cobra(), conf)
 
 	// Network Gateway operations
 	gatewayCommand := commands.BuildCommand(gateway.BaseGatewayCommand(), rootCmd, conf)
