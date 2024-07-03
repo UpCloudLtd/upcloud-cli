@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.9.0] - 2024-07-04
+
 ### Added
 
 - Add `gateway plans` command for listing gateway plans.
@@ -405,7 +407,8 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.8.1...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.9.0...HEAD
+[3.9.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.8.1...v3.9.0
 [3.8.1]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.8.0...v3.8.1
 [3.8.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.7.0...v3.8.0
 [3.7.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.6.0...v3.7.0
