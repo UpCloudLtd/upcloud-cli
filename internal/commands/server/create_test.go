@@ -118,7 +118,6 @@ func TestCreateServer(t *testing.T) {
 					Storage: StorageDef.UUID,
 					Title:   "example.com-OS",
 					Size:    50,
-					Tier:    upcloud.StorageTierMaxIOPS,
 					Type:    upcloud.StorageTypeDisk,
 				}},
 			},
@@ -148,7 +147,6 @@ func TestCreateServer(t *testing.T) {
 					Storage: Storage1.UUID,
 					Title:   "example.com-OS",
 					Size:    100,
-					Tier:    upcloud.StorageTierMaxIOPS,
 					Type:    upcloud.StorageTypeDisk,
 				}},
 			},
@@ -207,7 +205,6 @@ func TestCreateServer(t *testing.T) {
 					Storage: StorageDef.UUID,
 					Title:   "example.com-OS",
 					Size:    10,
-					Tier:    upcloud.StorageTierMaxIOPS,
 					Type:    upcloud.StorageTypeDisk,
 				}},
 				Labels: &upcloud.LabelSlice{upcloud.Label{
@@ -242,7 +239,6 @@ func TestCreateServer(t *testing.T) {
 					Storage: StorageDef.UUID,
 					Title:   "example.com-OS",
 					Size:    50,
-					Tier:    upcloud.StorageTierMaxIOPS,
 					Type:    upcloud.StorageTypeDisk,
 				}},
 				Labels: &upcloud.LabelSlice{
@@ -289,7 +285,6 @@ func TestCreateServer(t *testing.T) {
 						Storage:   StorageDef.UUID,
 						Title:     "example.com-OS",
 						Size:      50,
-						Tier:      upcloud.StorageTierMaxIOPS,
 						Type:      upcloud.StorageTypeDisk,
 					},
 					request.CreateServerStorageDevice{
@@ -346,7 +341,6 @@ func TestCreateServer(t *testing.T) {
 					Storage: StorageDef.UUID,
 					Title:   "example.com-OS",
 					Size:    50,
-					Tier:    upcloud.StorageTierMaxIOPS,
 					Type:    upcloud.StorageTypeDisk,
 				}},
 				Networking: &request.CreateServerNetworking{Interfaces: request.CreateServerInterfaceSlice{

@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - In all outputs of `server plans`, sort plans by CPU count, memory amount, and storage size.
 - In human readable output of `server plans`, group plans by type.
 
+### Fixed
+
+- Omit storage tier from server create payload to use plans default storage tier. This allows creating servers with developer plans that do not allow creating MaxIOPS storages with the server. Other plan types will continue to use MaxIOPS by default.
+
 ## [3.8.1] - 2024-05-24
 
 ### Changed
