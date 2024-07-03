@@ -102,7 +102,6 @@ func (s *createParams) processParams(exec commands.Executor) error {
 			Storage: osStorage.UUID,
 			Title:   fmt.Sprintf("%s-OS", ui.TruncateText(s.Hostname, 64-7)),
 			Size:    size,
-			Tier:    upcloud.StorageTierMaxIOPS,
 			Type:    upcloud.StorageTypeDisk,
 		})
 	}
