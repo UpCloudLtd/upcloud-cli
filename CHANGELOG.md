@@ -7,9 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## Added
+### Added
 
 - Add `gateway plans` command for listing gateway plans.
+
+### Changed
+
+- In all outputs of `server plans`, sort plans by CPU count, memory amount, and storage size.
+- In human readable output of `server plans`, group plans by type.
 
 ## [3.8.1] - 2024-05-24
 
