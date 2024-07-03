@@ -75,13 +75,28 @@ func (m Combined) MarshalHuman() ([]byte, error) {
 			marshaled = prefixLines(marshaled, "    ")
 		}
 		out = append(out, marshaled...)
+
+		// ensure newline before first section
+		if i == 0 && firstNonSpaceChar(out) != '\n' {
+			out = append([]byte("\n"), out...)
+		}
+
+		// dont add newline after the last section
 		if i < len(m)-1 {
-			// dont add newline after the last section
 			out = append(out, []byte("\n")...)
 		}
 	}
 
 	return out, nil
+}
+
+func firstNonSpaceChar(bytes []byte) byte {
+	for _, b := range bytes {
+		if b != ' ' {
+			return b
+		}
+	}
+	return 0
 }
 
 func prefixLines(marshaled []byte, s string) (out []byte) {

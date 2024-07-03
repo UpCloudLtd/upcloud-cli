@@ -69,7 +69,8 @@ func TestCombined(t *testing.T) {
 					},
 				}},
 			},
-			expectedHumanResult: `  MOCK
+			expectedHumanResult: `
+  MOCK
 
      B   D  
     ─── ────

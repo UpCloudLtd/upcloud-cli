@@ -1,8 +1,12 @@
 package server
 
 import (
+	"sort"
+	"strings"
+
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
+	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 )
 
 // PlanListCommand creates the "server plans" command
@@ -18,14 +22,28 @@ type planListCommand struct {
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
-	plans, err := exec.All().GetPlans(exec.Context())
+	plansObj, err := exec.All().GetPlans(exec.Context())
 	if err != nil {
 		return nil, err
 	}
 
-	rows := []output.TableRow{}
-	for _, p := range plans.Plans {
-		rows = append(rows, output.TableRow{
+	plans := plansObj.Plans
+	sort.Slice(plans, func(i, j int) bool {
+		if plans[i].CoreNumber != plans[j].CoreNumber {
+			return plans[i].CoreNumber < plans[j].CoreNumber
+		}
+
+		if plans[i].MemoryAmount != plans[j].MemoryAmount {
+			return plans[i].MemoryAmount < plans[j].MemoryAmount
+		}
+
+		return plans[i].StorageSize < plans[j].StorageSize
+	})
+
+	rows := make(map[string][]output.TableRow)
+	for _, p := range plans {
+		key := planType(p)
+		rows[key] = append(rows[key], output.TableRow{
 			p.Name,
 			p.CoreNumber,
 			p.MemoryAmount,
@@ -37,7 +55,33 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 
 	return output.MarshaledWithHumanOutput{
 		Value: plans,
-		Output: output.Table{
+		Output: output.Combined{
+			planSection("general_purpose", "General purpose", rows["general_purpose"]),
+			planSection("high_cpu", "High CPU", rows["high_cpu"]),
+			planSection("high_memory", "High memory", rows["high_memory"]),
+			planSection("developer", "Developer", rows["developer"]),
+		},
+	}, nil
+}
+
+func planType(p upcloud.Plan) string {
+	if strings.HasPrefix(p.Name, "DEV-") {
+		return "developer"
+	}
+	if strings.HasPrefix(p.Name, "HICPU-") {
+		return "high_cpu"
+	}
+	if strings.HasPrefix(p.Name, "HIMEM-") {
+		return "high_memory"
+	}
+	return "general_purpose"
+}
+
+func planSection(key, title string, rows []output.TableRow) output.CombinedSection {
+	return output.CombinedSection{
+		Key:   key,
+		Title: title,
+		Contents: output.Table{
 			Columns: []output.TableColumn{
 				{Key: "name", Header: "Name"},
 				{Key: "cores", Header: "Cores"},
@@ -48,5 +92,5 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 			},
 			Rows: rows,
 		},
-	}, nil
+	}
 }

@@ -143,7 +143,8 @@ func TestFirewallShowHumanOutput(t *testing.T) {
 		},
 	}
 
-	expected := `  Firewall rules
+	expected := `
+  Firewall rules
 
      #   Action   Source          Destination   Dir   Proto    
     ─── ──────── ─────────────── ───────────── ───── ──────────
