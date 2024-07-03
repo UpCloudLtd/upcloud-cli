@@ -386,6 +386,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_objectstorage/regions/</loc>
+         <lastmod>2024-07-03</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_objectstorage/show/</loc>
          <lastmod>2024-07-03</lastmod>
          <changefreq>daily</changefreq>
