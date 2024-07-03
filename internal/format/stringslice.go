@@ -9,14 +9,18 @@ import (
 )
 
 func StringSliceOr(val interface{}) (text.Colors, string, error) {
-	return formatStringSlice(val, "or")
+	return formatStringSlice(val, "or", false)
 }
 
 func StringSliceAnd(val interface{}) (text.Colors, string, error) {
-	return formatStringSlice(val, "and")
+	return formatStringSlice(val, "and", false)
 }
 
-func formatStringSlice(val interface{}, andOrOr string) (text.Colors, string, error) {
+func StringSliceSingleLineAnd(val interface{}) (text.Colors, string, error) {
+	return formatStringSlice(val, "and", true)
+}
+
+func formatStringSlice(val interface{}, andOrOr string, singleLine bool) (text.Colors, string, error) {
 	if val == nil {
 		return nil, "", nil
 	}
@@ -26,7 +30,7 @@ func formatStringSlice(val interface{}, andOrOr string) (text.Colors, string, er
 	}
 
 	if ifaceSliceVal, ok := toIfaceSlice(val); ok {
-		return nil, stringSliceString(ifaceSliceVal, andOrOr), nil
+		return nil, stringSliceString(ifaceSliceVal, andOrOr, singleLine), nil
 	}
 
 	return nil, fmt.Sprintf("%+v", val), nil
@@ -54,7 +58,7 @@ func maxStringLen(strings []string) int {
 	return max
 }
 
-func stringSliceString(values []interface{}, andOrOr string) string {
+func stringSliceString(values []interface{}, andOrOr string, singleLine bool) string {
 	if len(values) == 0 {
 		return ""
 	}
@@ -69,7 +73,7 @@ func stringSliceString(values []interface{}, andOrOr string) string {
 	}
 
 	whitespace := " "
-	if maxStringLen(strs) > 15 || len(strs) > 3 {
+	if !singleLine && (maxStringLen(strs) > 15 || len(strs) > 3) {
 		whitespace = "\n"
 	}
 
