@@ -1,4 +1,5 @@
 # Make sure to check the documentation at https://goreleaser.com
+version: 2
 before:
   hooks:
     - go mod tidy
@@ -111,7 +112,7 @@ brews:
 
     # Folder inside the repository to put the formula.
     # Default is the root folder.
-    folder: Formula
+    directory: Formula
 
     homepage: "https://upcloud.com/"
     description: "CLI tool for managing UpCloud services."
