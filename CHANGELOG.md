@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- In `server create` command, use `Ubuntu Server 24.04 LTS (Noble Numbat)` as default value for `--os`. The new default template only supports SSH key based authentication. Use `--ssh-keys` option to provide the keys when creating a server with the default template.
+- In `server create` command, enable metadata service by default when the selected (or default) template uses cloud-init (`template_type` is `cloud-init`) and thus requires it.
+
 ## [3.9.0] - 2024-07-04
 
 ### Added

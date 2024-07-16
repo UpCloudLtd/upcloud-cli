@@ -48,7 +48,7 @@ var defaultCreateParams = &createParams{
 	},
 	firewall:       false,
 	metadata:       false,
-	os:             "Ubuntu Server 20.04 LTS (Focal Fossa)",
+	os:             "Ubuntu Server 24.04 LTS (Noble Numbat)",
 	osStorageSize:  0,
 	sshKeys:        nil,
 	username:       "",
@@ -94,6 +94,11 @@ func (s *createParams) processParams(exec commands.Executor) error {
 					size = plan.StorageSize
 				}
 			}
+		}
+
+		// Enable metadata service for cloud-init templates. Leave empty for other templates to use value defined by user.
+		if osStorage.TemplateType == upcloud.StorageTemplateTypeCloudInit {
+			s.CreateServerRequest.Metadata = upcloud.True
 		}
 
 		s.StorageDevices = append(s.StorageDevices, request.CreateServerStorageDevice{
@@ -260,7 +265,7 @@ func (s *createCommand) InitCommand() {
 	fs.IntVar(&s.params.CoreNumber, "cores", def.CoreNumber, "Number of cores. Only allowed if `plan` option is set to \"custom\".")
 	config.AddToggleFlag(fs, &s.createPassword, "create-password", def.createPassword, "Create an admin password.")
 	config.AddEnableOrDisableFlag(fs, &s.firewall, def.firewall, "firewall", "firewall")
-	config.AddEnableOrDisableFlag(fs, &s.metadata, def.metadata, "metadata", "metadata service")
+	config.AddEnableOrDisableFlag(fs, &s.metadata, def.metadata, "metadata", "metadata service. The metadata service will be enabled by default, if the selected OS template uses cloud-init and thus requires metadata service")
 	config.AddEnableOrDisableFlag(fs, &s.remoteAccess, def.remoteAccess, "remote-access", "remote access")
 	fs.IntVar(&s.params.Host, "host", def.Host, hostDescription)
 	fs.StringVar(&s.params.Hostname, "hostname", def.Hostname, "Server hostname.")
@@ -335,7 +340,9 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	if s.firewall.Value() {
 		req.Firewall = "on"
 	}
-	req.Metadata = s.metadata.AsUpcloudBoolean()
+	if req.Metadata.Empty() {
+		req.Metadata = s.metadata.AsUpcloudBoolean()
+	}
 	req.RemoteAccessEnabled = s.remoteAccess.AsUpcloudBoolean()
 	if s.createPassword.Value() {
 		req.LoginUser.CreatePassword = "yes"
