@@ -22,8 +22,9 @@ func CreateCommand() commands.Command {
 		BaseCommand: commands.New(
 			"create",
 			"Create a storage",
-			`upctl storage create --zone pl-waw1 --title "My Storage"`,
-			"upctl storage create --zone pl-waw1 --title my_storage --size 20 --backup-interval wed --backup-retention 4",
+			`upctl storage create --zone pl-waw1 --title "Default Size"`,
+			"upctl storage create --zone pl-waw1 --title with_backups --size 20 --backup-interval wed --backup-retention 4",
+			"upctl storage create --zone pl-waw1 --title standard-tier --size 3 --tier standard",
 		),
 	}
 }
