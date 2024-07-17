@@ -15,7 +15,7 @@ upctl server create
 # Error: required flag(s) "hostname", "zone" not set
 ```
 
-Let's create two server and stop one of those to later see other failing exit codes. These command should succceed, and thus return zero exit code.
+Let's create two servers and stop one of those to later see other failing exit codes. This example uses `--type hard` when stopping the servers as the OS might not be completely up and running when the server reaches running state. These command should succeed, and thus return zero exit code.
 
 ```sh
 # Create ssh-key into current working directory
@@ -24,19 +24,19 @@ ssh-keygen -t ed25519 -q -f "./id_ed25519" -N ""
 upctl server create --hostname ${prefix}vm-1 --zone pl-waw1 --ssh-keys ./id_ed25519.pub --wait
 upctl server create --hostname ${prefix}vm-2 --zone pl-waw1 --ssh-keys ./id_ed25519.pub --wait
 
-upctl server stop ${prefix}vm-1 --wait
+upctl server stop --type hard ${prefix}vm-1 --wait
 ```
 
 Now let's try to stop both both of the created servers. Exit code will be one, as `${prefix}vm-1` is already stopped and thus cannot be stopped again. `${prefix}vm-2`, though, will be stopped as it was online. Thus one of the two operations failed.
 
 ```sh exit_code=1
-upctl server stop ${prefix}vm-1 ${prefix}vm-2 --wait
+upctl server stop --type hard ${prefix}vm-1 ${prefix}vm-2 --wait
 ```
 
 If we now try to run above command again, exit code will be two as both of the servers are already stopped. Thus both stop operations failed.
 
 ```sh exit_code=2
-upctl server stop ${prefix}vm-1 ${prefix}vm-2 --wait
+upctl server stop --type hard ${prefix}vm-1 ${prefix}vm-2 --wait
 ```
 
 Finally, we can cleanup the created resources.
