@@ -27,14 +27,14 @@ func CreateCommand() commands.Command {
 	return &createCommand{
 		BaseCommand: commands.New(
 			"create",
-			"Create a server",
-			"upctl server create --title myapp --zone fi-hel1 --hostname myapp --password-delivery email",
-			"upctl server create --wait --title myapp --zone fi-hel1 --hostname myapp --password-delivery email",
-			"upctl server create --title \"My Server\" --zone fi-hel1 --hostname myapp --password-delivery email",
-			"upctl server create --zone fi-hel1 --hostname myapp --password-delivery email --plan 2xCPU-4GB",
-			"upctl server create --zone fi-hel1 --hostname myapp --password-delivery email --plan custom --cores 2 --memory 4096",
+			"Create a new server",
+			"upctl server create --title myapp --zone fi-hel1 --hostname myapp --ssh-keys ~/.ssh/id_*.pub",
+			"upctl server create --wait --title myapp --zone fi-hel1 --hostname myapp --ssh-keys ~/.ssh/id_*.pub",
+			"upctl server create --title \"My Server\" --zone fi-hel1 --hostname myapp --ssh-keys ~/.ssh/id_*.pub",
+			"upctl server create --zone fi-hel1 --hostname myapp --ssh-keys ~/.ssh/id_*.pub --plan 2xCPU-4GB",
+			"upctl server create --zone fi-hel1 --hostname myapp --ssh-keys ~/.ssh/id_*.pub --plan custom --cores 2 --memory 4096",
 			"upctl server create --zone fi-hel1 --hostname myapp --password-delivery email --os \"Debian GNU/Linux 10 (Buster)\" --server-group a4643646-8342-4324-4134-364138712378",
-			"upctl server create --zone fi-hel1 --hostname myapp --ssh-keys /path/to/publickey --network type=private,network=037a530b-533e-4cef-b6ad-6af8094bb2bc,ip-address=10.0.0.1",
+			"upctl server create --zone fi-hel1 --hostname myapp --ssh-keys ~/.ssh/id_*.pub --network type=private,network=037a530b-533e-4cef-b6ad-6af8094bb2bc,ip-address=10.0.0.1",
 		),
 	}
 }
@@ -257,6 +257,10 @@ type createCommand struct {
 
 // InitCommand implements Command.InitCommand
 func (s *createCommand) InitCommand() {
+	s.Cobra().Long = commands.WrapLongDescription(`Create a new server
+
+	Note that the default template, Ubuntu Server 24.04 LTS (Noble Numbat), only supports SSH key based authentication. Use ` + "`" + `--ssh-keys` + "`" + ` option to provide the keys when creating a server with the default template. The examples below use public key from the ` + "`" + `~/.ssh` + "`" + ` directory. If you want to use different authentication method, use ` + "`" + `--os` + "`" + ` parameter to specify a different template.`)
+
 	fs := &pflag.FlagSet{}
 	s.params = createParams{CreateServerRequest: request.CreateServerRequest{}}
 	def := defaultCreateParams
