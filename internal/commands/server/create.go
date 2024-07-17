@@ -27,14 +27,14 @@ func CreateCommand() commands.Command {
 	return &createCommand{
 		BaseCommand: commands.New(
 			"create",
-			"Create a server",
-			"upctl server create --title myapp --zone fi-hel1 --hostname myapp --password-delivery email",
-			"upctl server create --wait --title myapp --zone fi-hel1 --hostname myapp --password-delivery email",
-			"upctl server create --title \"My Server\" --zone fi-hel1 --hostname myapp --password-delivery email",
-			"upctl server create --zone fi-hel1 --hostname myapp --password-delivery email --plan 2xCPU-4GB",
-			"upctl server create --zone fi-hel1 --hostname myapp --password-delivery email --plan custom --cores 2 --memory 4096",
+			"Create a new server",
+			"upctl server create --title myapp --zone fi-hel1 --hostname myapp --ssh-keys ~/.ssh/id_*.pub",
+			"upctl server create --wait --title myapp --zone fi-hel1 --hostname myapp --ssh-keys ~/.ssh/id_*.pub",
+			"upctl server create --title \"My Server\" --zone fi-hel1 --hostname myapp --ssh-keys ~/.ssh/id_*.pub",
+			"upctl server create --zone fi-hel1 --hostname myapp --ssh-keys ~/.ssh/id_*.pub --plan 2xCPU-4GB",
+			"upctl server create --zone fi-hel1 --hostname myapp --ssh-keys ~/.ssh/id_*.pub --plan custom --cores 2 --memory 4096",
 			"upctl server create --zone fi-hel1 --hostname myapp --password-delivery email --os \"Debian GNU/Linux 10 (Buster)\" --server-group a4643646-8342-4324-4134-364138712378",
-			"upctl server create --zone fi-hel1 --hostname myapp --ssh-keys /path/to/publickey --network type=private,network=037a530b-533e-4cef-b6ad-6af8094bb2bc,ip-address=10.0.0.1",
+			"upctl server create --zone fi-hel1 --hostname myapp --ssh-keys ~/.ssh/id_*.pub --network type=private,network=037a530b-533e-4cef-b6ad-6af8094bb2bc,ip-address=10.0.0.1",
 		),
 	}
 }
@@ -48,7 +48,7 @@ var defaultCreateParams = &createParams{
 	},
 	firewall:       false,
 	metadata:       false,
-	os:             "Ubuntu Server 20.04 LTS (Focal Fossa)",
+	os:             "Ubuntu Server 24.04 LTS (Noble Numbat)",
 	osStorageSize:  0,
 	sshKeys:        nil,
 	username:       "",
@@ -94,6 +94,11 @@ func (s *createParams) processParams(exec commands.Executor) error {
 					size = plan.StorageSize
 				}
 			}
+		}
+
+		// Enable metadata service for cloud-init templates. Leave empty for other templates to use value defined by user.
+		if osStorage.TemplateType == upcloud.StorageTemplateTypeCloudInit {
+			s.CreateServerRequest.Metadata = upcloud.True
 		}
 
 		s.StorageDevices = append(s.StorageDevices, request.CreateServerStorageDevice{
@@ -252,6 +257,10 @@ type createCommand struct {
 
 // InitCommand implements Command.InitCommand
 func (s *createCommand) InitCommand() {
+	s.Cobra().Long = commands.WrapLongDescription(`Create a new server
+
+	Note that the default template, Ubuntu Server 24.04 LTS (Noble Numbat), only supports SSH key based authentication. Use ` + "`" + `--ssh-keys` + "`" + ` option to provide the keys when creating a server with the default template. The examples below use public key from the ` + "`" + `~/.ssh` + "`" + ` directory. If you want to use different authentication method, use ` + "`" + `--os` + "`" + ` parameter to specify a different template.`)
+
 	fs := &pflag.FlagSet{}
 	s.params = createParams{CreateServerRequest: request.CreateServerRequest{}}
 	def := defaultCreateParams
@@ -260,7 +269,7 @@ func (s *createCommand) InitCommand() {
 	fs.IntVar(&s.params.CoreNumber, "cores", def.CoreNumber, "Number of cores. Only allowed if `plan` option is set to \"custom\".")
 	config.AddToggleFlag(fs, &s.createPassword, "create-password", def.createPassword, "Create an admin password.")
 	config.AddEnableOrDisableFlag(fs, &s.firewall, def.firewall, "firewall", "firewall")
-	config.AddEnableOrDisableFlag(fs, &s.metadata, def.metadata, "metadata", "metadata service")
+	config.AddEnableOrDisableFlag(fs, &s.metadata, def.metadata, "metadata", "metadata service. The metadata service will be enabled by default, if the selected OS template uses cloud-init and thus requires metadata service")
 	config.AddEnableOrDisableFlag(fs, &s.remoteAccess, def.remoteAccess, "remote-access", "remote access")
 	fs.IntVar(&s.params.Host, "host", def.Host, hostDescription)
 	fs.StringVar(&s.params.Hostname, "hostname", def.Hostname, "Server hostname.")
@@ -335,7 +344,9 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	if s.firewall.Value() {
 		req.Firewall = "on"
 	}
-	req.Metadata = s.metadata.AsUpcloudBoolean()
+	if req.Metadata.Empty() {
+		req.Metadata = s.metadata.AsUpcloudBoolean()
+	}
 	req.RemoteAccessEnabled = s.remoteAccess.AsUpcloudBoolean()
 	if s.createPassword.Value() {
 		req.LoginUser.CreatePassword = "yes"
