@@ -56,6 +56,15 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 			network.Zone,
 		}
 	}
+	staticRouteRows := make([]output.TableRow, len(router.StaticRoutes))
+	for i, staticRoute := range router.StaticRoutes {
+		staticRouteRows[i] = output.TableRow{
+			staticRoute.Name,
+			staticRoute.Route,
+			staticRoute.Nexthop,
+			staticRoute.Type,
+		}
+	}
 	combined := output.Combined{
 		output.CombinedSection{
 			Key:   "",
@@ -70,7 +79,7 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 				},
 			},
 		},
-		labels.GetLabelsSection(router.Labels),
+		labels.GetLabelsSectionWithResourceType(router.Labels, "router"),
 		output.CombinedSection{
 			Key:   "networks",
 			Title: "Networks:",
@@ -82,6 +91,20 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 					{Key: "zone", Header: "Zone"},
 				},
 				Rows: networkRows,
+			},
+		},
+		output.CombinedSection{
+			Key:   "static_routes",
+			Title: "Static routes:",
+			Contents: output.Table{
+				Columns: []output.TableColumn{
+					{Key: "name", Header: "Name"},
+					{Key: "route", Header: "Route", Colour: ui.DefaultAddressColours},
+					{Key: "nexthop", Header: "Nexthop", Colour: ui.DefaultAddressColours},
+					{Key: "type", Header: "Type"},
+				},
+				Rows:         staticRouteRows,
+				EmptyMessage: "No static routes defined for this router.",
 			},
 		},
 	}
