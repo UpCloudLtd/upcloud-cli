@@ -63,13 +63,17 @@ func TestShowCommand(t *testing.T) {
 
   Labels:
 
-    No labels defined for this resource.
+    No labels defined for this router.
     
   Networks:
 
      UUID                                   Name           Type      Zone    
     ────────────────────────────────────── ────────────── ───────── ─────────
      ce6a9934-c0c6-4d84-9ad4-0611f5b95e79   test-network   utility   uk-lon1 
+    
+  Static routes:
+
+    No static routes defined for this router.
     
 `
 	mService := smock.Service{}
