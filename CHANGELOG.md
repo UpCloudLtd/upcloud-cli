@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- In `storage modify`, avoid segfault if the target storage does not have backup rule in the storage details. This would have happened, for example, when renaming private templates.
+
 ## [3.11.0] - 2024-07-23
 
 ### Added
