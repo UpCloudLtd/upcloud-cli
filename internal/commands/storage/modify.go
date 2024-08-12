@@ -96,7 +96,7 @@ func setBackupFields(storageUUID string, p modifyParams, exec commands.Executor,
 		}
 	}
 
-	if details.BackupRule.Time == "" {
+	if details.BackupRule == nil || details.BackupRule.Time == "" {
 		if newBUR != nil {
 			if newBUR.Time == "" {
 				return fmt.Errorf("backup-time is required")
