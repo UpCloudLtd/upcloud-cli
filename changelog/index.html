@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../favicon.png">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.30">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.31">
     
     
       
@@ -4883,6 +4883,10 @@
 <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>,
 and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <h2 id="unreleased"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v3.11.0...HEAD">Unreleased</a></h2>
+<h3 id="fixed">Fixed</h3>
+<ul>
+<li>In <code>storage modify</code>, avoid segfault if the target storage does not have backup rule in the storage details. This would have happened, for example, when renaming private templates.</li>
+</ul>
 <h2 id="3110-2024-07-23"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v3.10.0...v3.11.0">3.11.0</a> - 2024-07-23</h2>
 <h3 id="added">Added</h3>
 <ul>
@@ -4906,7 +4910,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>In all outputs of <code>server plans</code>, sort plans by CPU count, memory amount, and storage size.</li>
 <li>In human readable output of <code>server plans</code>, group plans by type.</li>
 </ul>
-<h3 id="fixed">Fixed</h3>
+<h3 id="fixed_1">Fixed</h3>
 <ul>
 <li>Omit storage tier from server create payload to use plans default storage tier. This allows creating servers with developer plans that do not allow creating MaxIOPS storages with the server. Other plan types will continue to use MaxIOPS by default.</li>
 </ul>
@@ -4973,7 +4977,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <ul>
 <li>Support nested properties in <code>database properties *</code> and <code>database properties * show *</code> outputs. For example upctl <code>max_background_workers</code> sub-property of <code>timescaledb</code> PostgreSQL property is listed as <code>timescaledb.max_background_workers</code> in human output of <code>database properties pg</code> and its details can printed with <code>upctl database properties pg show timescaledb.max_background_workers</code> command.</li>
 </ul>
-<h3 id="fixed_1">Fixed</h3>
+<h3 id="fixed_2">Fixed</h3>
 <ul>
 <li>Do not return error on valid <code>dhcp-default-route</code> values in <code>network create</code> and <code>network modify</code> commands.</li>
 </ul>
@@ -4997,7 +5001,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <ul>
 <li><strong>Breaking</strong>: Update return type of <code>kubernetes versions</code> from list of strings to list of objects. (No major version bump, because this end-point has not been included in the API docs)</li>
 </ul>
-<h3 id="fixed_2">Fixed</h3>
+<h3 id="fixed_3">Fixed</h3>
 <ul>
 <li>Use correct currency symbol, <code>€</code> instead of <code>$</code>, in human output of <code>account show</code>.</li>
 </ul>
@@ -5029,7 +5033,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>In JSON and YAML output of <code>kubernetes list</code>: return the full API response.</li>
 <li>In human readable output of <code>kubernetes show</code> command, show node-groups as table. Node-group details are available with <code>kubernetes nodegroup show</code> command.</li>
 </ul>
-<h3 id="fixed_3">Fixed</h3>
+<h3 id="fixed_4">Fixed</h3>
 <ul>
 <li><strong>Breaking</strong>: In JSON and YAML output of <code>ip-address show</code>: use same JSON keys as in API documentation. This removes <code>credits</code> key that was used in place of <code>floating</code>.</li>
 </ul>
@@ -5043,7 +5047,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <ul>
 <li>Add <code>--disable-utility-network-access</code> for <code>kubernetes nodegroup create</code> command</li>
 </ul>
-<h3 id="fixed_4">Fixed</h3>
+<h3 id="fixed_5">Fixed</h3>
 <ul>
 <li>Use pending color (yellow) for kubernetes node group <code>scaling-down</code> and <code>scaling-up</code> states</li>
 </ul>
@@ -5077,7 +5081,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>Add <code>--label</code> flag to <code>server create</code> and <code>server modify</code> commands</li>
 </ul>
 <h2 id="271-2023-05-16"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v2.7.0...v2.7.1">2.7.1</a> - 2023-05-16</h2>
-<h3 id="fixed_5">Fixed</h3>
+<h3 id="fixed_6">Fixed</h3>
 <ul>
 <li>Updated examples of <code>kubernetes create</code> command to use valid plans.</li>
 </ul>
@@ -5114,7 +5118,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <ul>
 <li>Remove custom bash completion logic and replace it with <code>completion</code> command provided by <code>cobra</code>. To do this while supporting args with whitespace, whitespace in completions is replaced with non-breaking spaces.</li>
 </ul>
-<h3 id="fixed_6">Fixed</h3>
+<h3 id="fixed_7">Fixed</h3>
 <ul>
 <li>In <code>database show</code>: parse database version from metadata instead of properties. This enables displaying redis version instead of <code>&lt;nil&gt;</code>.</li>
 </ul>
@@ -5133,7 +5137,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>Version information is parsed from <code>BuildInfo</code> when <code>upctl</code> binary was built without specifying <code>-ldflags</code> to define value for <code>.../config.Version</code>.</li>
 <li>Use alpine as base image for <code>upcloud/upctl</code> container image. This adds sh and other OS tools to the image and thus makes it more suitable for usage in CI systems.</li>
 </ul>
-<h3 id="fixed_7">Fixed</h3>
+<h3 id="fixed_8">Fixed</h3>
 <ul>
 <li>Remove debug leftover print from IP address completions.</li>
 <li>Added <code>/v2</code> postfix to module name in <code>go.mod</code>, this enables installing v2 versions of CLI with <code>go install</code>.</li>
@@ -5144,7 +5148,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>Include runtime operating system and architecture in <code>version</code> command output.</li>
 <li>Include instructions for defining credentials and API access in <code>upctl --help</code> output.</li>
 </ul>
-<h3 id="fixed_8">Fixed</h3>
+<h3 id="fixed_9">Fixed</h3>
 <ul>
 <li>Fix commands in <code>server delete</code> usage examples.</li>
 <li>Tune human output so that normal output is directed to <code>stdout</code>. Progess and error messages are still outputted to <code>stderr</code>.</li>
@@ -5155,7 +5159,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>Add <code>--wait</code> flag to <code>storage import</code> and <code>storage templatise</code> commands to wait until storage is in <code>online</code> state.</li>
 <li>In JSON and YAML output of <code>storage import</code>: information on target storage is now available under <code>storage</code> key.</li>
 </ul>
-<h3 id="fixed_9">Fixed</h3>
+<h3 id="fixed_10">Fixed</h3>
 <ul>
 <li>In human output of <code>storage list</code>: capitalize zone column header and color storage state similarly than in <code>storage show</code>.</li>
 <li>In human output of <code>storage import</code>: output UUID of created storage, instead of storage import operation. No UUID is outputted if existing storage was used.</li>
@@ -5173,7 +5177,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li><strong>Breaking</strong>: Human output, including errors, is written to stderr instead of stdout.</li>
 <li>Refactor progress logging. This changes the appearance of progress logs. See <a href="https://github.com/UpCloudLtd/progress">UpCloudLtd / progress</a> for the new implementation.</li>
 </ul>
-<h3 id="fixed_10">Fixed</h3>
+<h3 id="fixed_11">Fixed</h3>
 <ul>
 <li><strong>Breaking</strong>: Set non-zero exit code if command execution fails.</li>
 <li><strong>Breaking</strong>: Render servers IP addresses as array of objects, instead of previous pretty-printed string, in JSON and YAML outputs of <code>server show</code>.</li>
@@ -5184,7 +5188,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>Progress logging to non TTY output uses now 100 as text width instead of 0.</li>
 </ul>
 <h2 id="151-2022-07-15"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v1.5.0...v1.5.1">1.5.1</a> - 2022-07-15</h2>
-<h3 id="fixed_11">Fixed</h3>
+<h3 id="fixed_12">Fixed</h3>
 <ul>
 <li>On <code>server create</code>, mount OS disk by default on <code>virtio</code> bus. Previously default OS storage address was not explicit and varyed depending on template type.</li>
 <li>Disable colors if user has set <a href="https://no-color.org/">NO_COLOR</a> environment variable to non-empty value.</li>
@@ -5200,7 +5204,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>Make <code>--family</code> parameter of <code>server firewall create</code> command optional to allow editing the default rules.</li>
 <li>Update <code>cobra</code> to <code>v1.5.0</code> and refactor required flag validation code. This affects validation error messages.</li>
 </ul>
-<h3 id="fixed_12">Fixed</h3>
+<h3 id="fixed_13">Fixed</h3>
 <ul>
 <li>Complete shell input with uppercase letters (e.g., <code>Cap</code> to <code>CapitalizedName</code> will now work)</li>
 <li>Display UUID of created template in <code>storage templatise</code> output.</li>
@@ -5228,7 +5232,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <ul>
 <li>Update <code>upcloud-go-api</code>to <code>v4.5.2</code></li>
 </ul>
-<h3 id="fixed_13">Fixed</h3>
+<h3 id="fixed_14">Fixed</h3>
 <ul>
 <li>Do not display usage if execution fails because of missing credentials</li>
 <li>Mark error and warning livelogs finished when they will not be updated anymore: this stops the timer in the end of the row and stops livelog from refreshing these lines.</li>
@@ -5243,7 +5247,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <ul>
 <li>New go-api version v4.5.0</li>
 </ul>
-<h3 id="fixed_14">Fixed</h3>
+<h3 id="fixed_15">Fixed</h3>
 <ul>
 <li>Improved errors relating to argument resolver failures</li>
 <li>Print version info, instead of missing credentials error, when runnning <code>upctl version</code> without credentials</li>
@@ -5256,12 +5260,12 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <ul>
 <li>Update documentation</li>
 </ul>
-<h3 id="fixed_15">Fixed</h3>
+<h3 id="fixed_16">Fixed</h3>
 <ul>
 <li>Fix storage command attached-to-server key overrides zone</li>
 </ul>
 <h2 id="112-2022-01-21"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v1.1.1...v1.1.2">1.1.2</a> - 2022-01-21</h2>
-<h3 id="fixed_16">Fixed</h3>
+<h3 id="fixed_17">Fixed</h3>
 <ul>
 <li>New release with no changes to fix <a href="https://github.com/goreleaser/goreleaser/pull/2591">the Homebrew deprecation notice</a></li>
 </ul>
@@ -5309,7 +5313,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <ul>
 <li>Added commands for managing server firewall rules</li>
 </ul>
-<h3 id="fixed_17">Fixed</h3>
+<h3 id="fixed_18">Fixed</h3>
 <ul>
 <li>Shell auto-completion fixed</li>
 </ul>
@@ -5321,7 +5325,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>Defaults for networks / routers in line with storages, so we'll show users' own resources by default</li>
 </ul>
 <h2 id="011-2021-03-12"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v0.1.0...v0.1.1">0.1.1</a> - 2021-03-12</h2>
-<h3 id="fixed_18">Fixed</h3>
+<h3 id="fixed_19">Fixed</h3>
 <ul>
 <li>Load config files from the correct place on Windows</li>
 <li>Fix storage import failing on readerCounter not implementing io.Reader</li>
