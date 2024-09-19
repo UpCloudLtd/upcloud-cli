@@ -27,7 +27,7 @@ func StartCommand() commands.Command {
 
 type startCommand struct {
 	*commands.BaseCommand
-	completion.Server
+	completion.StoppedServer
 	resolver.CachingServer
 	host      int
 	avoidHost int

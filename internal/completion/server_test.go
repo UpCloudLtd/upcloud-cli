@@ -19,9 +19,14 @@ var mockServers = &upcloud.Servers{Servers: []upcloud.Server{
 	{Title: "bock1", UUID: "jklmno", Hostname: "faa"},
 	{Title: "bock2", UUID: "pqrstu", Hostname: "fii"},
 	{Title: "dock1", UUID: "vwxyzä", Hostname: "bfoo"},
+	{Title: "case started", UUID: "started", Hostname: "astarted", State: "started"},
+	{Title: "case stopped", UUID: "stopped", Hostname: "astopped", State: "stopped"},
 }}
 
 func TestServer_CompleteArgument(t *testing.T) {
+	mService := new(smock.Service)
+	mService.On("GetServers", mock.Anything).Return(mockServers, nil)
+
 	for _, test := range []struct {
 		name              string
 		complete          string
@@ -37,13 +42,23 @@ func TestServer_CompleteArgument(t *testing.T) {
 		{name: "hostnames and titles", complete: "b", expectedMatches: []string{"bock1", "bock2", "bfoo"}, expectedDirective: cobra.ShellCompDirectiveNoFileComp},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			mService := new(smock.Service)
-			mService.On("GetServers", mock.Anything).Return(mockServers, nil)
-			ips, directive := completion.Server{}.CompleteArgument(context.TODO(), mService, test.complete)
-			assert.Equal(t, test.expectedMatches, ips)
+			servers, directive := completion.Server{}.CompleteArgument(context.TODO(), mService, test.complete)
+			assert.Equal(t, test.expectedMatches, servers)
 			assert.Equal(t, test.expectedDirective, directive)
 		})
 	}
+
+	t.Run("stopped", func(t *testing.T) {
+		servers, directive := completion.StoppedServer{}.CompleteArgument(context.TODO(), mService, "s")
+		assert.Equal(t, []string{"stopped"}, servers)
+		assert.Equal(t, cobra.ShellCompDirectiveNoFileComp, directive)
+	})
+
+	t.Run("started", func(t *testing.T) {
+		servers, directive := completion.StartedServer{}.CompleteArgument(context.TODO(), mService, "s")
+		assert.Equal(t, []string{"started"}, servers)
+		assert.Equal(t, cobra.ShellCompDirectiveNoFileComp, directive)
+	})
 }
 
 func TestServer_CompleteArgumentServiceFail(t *testing.T) {
