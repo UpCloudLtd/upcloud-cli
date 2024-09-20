@@ -50,7 +50,11 @@ func FormatRange(start, end string) string {
 
 // ConcatStrings like join but handles well the empty strings
 func ConcatStrings(strs ...string) string {
-	ret := fmt.Sprintf(strs[0])
+	if len(strs) == 0 {
+		return ""
+	}
+
+	ret := strs[0]
 
 	if len(strs) <= 1 {
 		return ret
