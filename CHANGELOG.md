@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.11.1] - 2024-08-12
+
+### Fixed
+
+- In `storage modify`, avoid segfault if the target storage does not have backup rule in the storage details. This would have happened, for example, when renaming private templates.
+
+## [3.11.0] - 2024-07-23
+
+### Added
+
+- Add labels to `database show` output.
+- In `router show` command, list static routes in the human readable output and add static route type field to all outputs.
+
+## [3.10.0] - 2024-07-17
+
+### Changed
+
+- In `server create` command, use `Ubuntu Server 24.04 LTS (Noble Numbat)` as default value for `--os`. The new default template only supports SSH key based authentication. Use `--ssh-keys` option to provide the keys when creating a server with the default template.
+- In `server create` command, enable metadata service by default when the selected (or default) template uses cloud-init (`template_type` is `cloud-init`) and thus requires it.
+
 ## [3.9.0] - 2024-07-04
 
 ### Added
@@ -407,7 +427,10 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.9.0...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.11.1...HEAD
+[3.11.1]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.11.0...v3.11.1
+[3.11.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.10.0...v3.11.0
+[3.10.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.9.0...v3.10.0
 [3.9.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.8.1...v3.9.0
 [3.8.1]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.8.0...v3.8.1
 [3.8.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.7.0...v3.8.0

@@ -12,7 +12,7 @@ In order to be able to connect to the server we are going to create, we will nee
 
 ```sh
 # Create ssh-key into current working directory
-ssh-keygen -t ed25519 -q -f "./id_ed25519" -N ""
+ssh-keygen -t ed25519 -q -f "./id_ed25519" -N "" -C "upctl example"
 ```
 
 Create a server using the above created ssh-key as login method.
@@ -34,7 +34,7 @@ Find the IP address of the created server from the JSON output of `upctl server 
 ip=$(upctl server show ${prefix}server -o json | jq -r '.networking.interfaces[] | select(.type == "public") | .ip_addresses[0].address')
 
 # Wait for a moment for the ssh server to become available
-sleep 15
+sleep 30
 
 ssh -i id_ed25519 -o StrictHostKeyChecking=accept-new root@$ip "hostname"
 ```

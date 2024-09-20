@@ -20,7 +20,6 @@ var (
 	Title1             = "mock-storage-title1"
 	Title2             = "mock-storage-title2"
 	UUID1              = "0127dfd6-3884-4079-a948-3a8881df1a7a"
-	UUID2              = "012bde1d-f0e7-4bb2-9f4a-74e1f2b49c07"
 	UUID3              = "012c61a6-b8f0-48c2-a63a-b4bf7d26a655"
 	PrivateNetworkUUID = "03b5b0a0-ad4c-4817-9632-dafdb3ace5d9"
 	MockPrivateIPv4    = "10.0.0.1"
@@ -49,15 +48,24 @@ func TestCreateServer(t *testing.T) {
 		Tier:   "maxiops",
 	}
 
-	StorageDef := upcloud.Storage{
-		UUID:   UUID2,
-		Title:  "Ubuntu Server 20.04 LTS (Focal Fossa)",
-		Access: "private",
-		State:  "online",
-		Type:   "normal",
-		Zone:   "fi-hel1",
-		Size:   40,
-		Tier:   "maxiops",
+	StorageUbuntu2004 := upcloud.Storage{
+		UUID:         "01000000-0000-4000-8000-000030200200",
+		Title:        "Ubuntu Server 20.04 LTS (Focal Fossa)",
+		Access:       "public",
+		State:        "online",
+		Type:         "template",
+		Size:         4,
+		TemplateType: "native",
+	}
+
+	StorageUbuntu2404 := upcloud.Storage{
+		UUID:         "01000000-0000-4000-8000-000030240200",
+		Title:        "Ubuntu Server 24.04 LTS (Noble Numbat)",
+		Access:       "public",
+		State:        "online",
+		Type:         "template",
+		Size:         4,
+		TemplateType: "cloud-init",
 	}
 
 	Storage3 := upcloud.Storage{
@@ -73,7 +81,8 @@ func TestCreateServer(t *testing.T) {
 	storages := &upcloud.Storages{
 		Storages: []upcloud.Storage{
 			Storage1,
-			StorageDef,
+			StorageUbuntu2004,
+			StorageUbuntu2404,
 			Storage3,
 		},
 	}
@@ -88,6 +97,7 @@ func TestCreateServer(t *testing.T) {
 
 	serverDetailsStarted := serverDetailsMaint
 	serverDetailsStarted.State = upcloud.ServerStateStarted
+	sshKey := "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHicO0RGJyOSGeMtrmXK1upkkrL5yOrRdjNFl0FLwV00 Example public key"
 
 	for _, test := range []struct {
 		name            string
@@ -101,7 +111,7 @@ func TestCreateServer(t *testing.T) {
 				"--hostname", "example.com",
 				"--title", "test-server",
 				"--zone", "uk-lon1",
-				"--password-delivery", "email",
+				"--ssh-keys", sshKey,
 			},
 			createServerReq: request.CreateServerRequest{
 				VideoModel:       "vga",
@@ -110,12 +120,47 @@ func TestCreateServer(t *testing.T) {
 				Hostname:         "example.com",
 				Title:            "test-server",
 				Zone:             "uk-lon1",
-				PasswordDelivery: "email",
-				LoginUser:        &request.LoginUser{CreatePassword: "yes"},
+				Metadata:         upcloud.True,
+				PasswordDelivery: "none",
+				LoginUser: &request.LoginUser{
+					CreatePassword: "no",
+					SSHKeys:        []string{sshKey},
+				},
 				StorageDevices: request.CreateServerStorageDeviceSlice{request.CreateServerStorageDevice{
 					Action:  "clone",
 					Address: "virtio",
-					Storage: StorageDef.UUID,
+					Storage: StorageUbuntu2404.UUID,
+					Title:   "example.com-OS",
+					Size:    50,
+					Type:    upcloud.StorageTypeDisk,
+				}},
+			},
+		},
+		{
+			name: "use native template",
+			args: []string{
+				"--hostname", "example.com",
+				"--title", "test-server",
+				"--zone", "uk-lon1",
+				"--os", "Ubuntu Server 20.04 LTS (Focal Fossa)",
+				"--ssh-keys", sshKey,
+			},
+			createServerReq: request.CreateServerRequest{
+				VideoModel:       "vga",
+				TimeZone:         "UTC",
+				Plan:             "1xCPU-2GB",
+				Hostname:         "example.com",
+				Title:            "test-server",
+				Zone:             "uk-lon1",
+				PasswordDelivery: "none",
+				LoginUser: &request.LoginUser{
+					CreatePassword: "no",
+					SSHKeys:        []string{sshKey},
+				},
+				StorageDevices: request.CreateServerStorageDeviceSlice{request.CreateServerStorageDevice{
+					Action:  "clone",
+					Address: "virtio",
+					Storage: StorageUbuntu2004.UUID,
 					Title:   "example.com-OS",
 					Size:    50,
 					Type:    upcloud.StorageTypeDisk,
@@ -202,7 +247,7 @@ func TestCreateServer(t *testing.T) {
 				StorageDevices: request.CreateServerStorageDeviceSlice{request.CreateServerStorageDevice{
 					Action:  "clone",
 					Address: "virtio",
-					Storage: StorageDef.UUID,
+					Storage: StorageUbuntu2404.UUID,
 					Title:   "example.com-OS",
 					Size:    10,
 					Type:    upcloud.StorageTypeDisk,
@@ -231,12 +276,13 @@ func TestCreateServer(t *testing.T) {
 				Hostname:         "example.com",
 				Title:            "test-server",
 				Zone:             "uk-lon1",
+				Metadata:         upcloud.True,
 				PasswordDelivery: "email",
 				LoginUser:        &request.LoginUser{CreatePassword: "yes"},
 				StorageDevices: request.CreateServerStorageDeviceSlice{request.CreateServerStorageDevice{
 					Action:  "clone",
 					Address: "virtio",
-					Storage: StorageDef.UUID,
+					Storage: StorageUbuntu2404.UUID,
 					Title:   "example.com-OS",
 					Size:    50,
 					Type:    upcloud.StorageTypeDisk,
@@ -275,6 +321,7 @@ func TestCreateServer(t *testing.T) {
 				Hostname:         "example.com",
 				Title:            "test-server",
 				Zone:             "uk-lon1",
+				Metadata:         upcloud.True,
 				PasswordDelivery: "email",
 				LoginUser:        &request.LoginUser{CreatePassword: "yes"},
 				StorageDevices: request.CreateServerStorageDeviceSlice{
@@ -282,7 +329,7 @@ func TestCreateServer(t *testing.T) {
 						Action:    "clone",
 						Address:   "virtio",
 						Encrypted: upcloud.FromBool(true),
-						Storage:   StorageDef.UUID,
+						Storage:   StorageUbuntu2404.UUID,
 						Title:     "example.com-OS",
 						Size:      50,
 						Type:      upcloud.StorageTypeDisk,
@@ -333,12 +380,13 @@ func TestCreateServer(t *testing.T) {
 				Hostname:         "example.com",
 				Title:            "test-server",
 				Zone:             "uk-lon1",
+				Metadata:         upcloud.True,
 				PasswordDelivery: "email",
 				LoginUser:        &request.LoginUser{CreatePassword: "yes"},
 				StorageDevices: request.CreateServerStorageDeviceSlice{request.CreateServerStorageDevice{
 					Action:  "clone",
 					Address: "virtio",
-					Storage: StorageDef.UUID,
+					Storage: StorageUbuntu2404.UUID,
 					Title:   "example.com-OS",
 					Size:    50,
 					Type:    upcloud.StorageTypeDisk,
