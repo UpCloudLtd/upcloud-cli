@@ -49,13 +49,13 @@ func toIfaceSlice(val interface{}) ([]interface{}, bool) {
 }
 
 func maxStringLen(strings []string) int {
-	max := 0
+	maxLen := 0
 	for _, str := range strings {
-		if strLen := len(str); strLen > max {
-			max = strLen
+		if strLen := len(str); strLen > maxLen {
+			maxLen = strLen
 		}
 	}
-	return max
+	return maxLen
 }
 
 func stringSliceString(values []interface{}, andOrOr string, singleLine bool) string {
