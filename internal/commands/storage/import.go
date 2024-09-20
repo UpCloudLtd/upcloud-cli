@@ -3,6 +3,7 @@ package storage
 import (
 	"fmt"
 	"io"
+	"math"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -249,12 +250,16 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 				})
 			} else {
 				// we have no knowledge of the remote file size, report bytes uploaded
+				transferred := fmt.Sprintf("%sB", "-1")
+				if statusUpdate.bytesTransferred <= math.MaxUint32 {
+					transferred = ui.AbbrevNumBinaryPrefix(uint(statusUpdate.bytesTransferred)) //nolint:gosec // disable G115: false positive because value is checked
+				}
 				exec.PushProgressUpdate(messages.Update{
 					Key: msg,
 					ProgressMessage: fmt.Sprintf(
 						"- %sed %sB (%sBps)",
 						transferType,
-						ui.AbbrevNumBinaryPrefix(uint(statusUpdate.bytesTransferred)),
+						transferred,
 						ui.AbbrevNumBinaryPrefix(uint(bps)),
 					),
 				})
