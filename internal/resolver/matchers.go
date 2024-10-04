@@ -11,6 +11,9 @@ func MatchArgWithWhitespace(arg, value string) MatchType {
 	if completion.RemoveWordBreaks(value) == arg || value == arg {
 		return MatchTypeExact
 	}
+	if strings.EqualFold(completion.RemoveWordBreaks(value), arg) || strings.EqualFold(value, arg) {
+		return MatchTypeCaseInsensitive
+	}
 	return MatchTypeNone
 }
 
