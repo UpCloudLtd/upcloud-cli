@@ -106,7 +106,7 @@ func (s *ListLayout) appendSection(title, note string, sectionBody []string) {
 		if s.style.NoteSeparator {
 			s.appendLine()
 		}
-		s.l.AppendItem(DefaultNoteColours.Sprintf("%s", note))
+		s.l.AppendItem(DefaultNoteColours.Sprint(note))
 	}
 	if s.style.MarginBottom {
 		s.appendLine()
