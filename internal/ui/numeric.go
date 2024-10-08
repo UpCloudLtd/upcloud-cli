@@ -82,6 +82,10 @@ func AbbrevNumBinaryPrefix(raw uint) string {
 
 // FormatBytes returns a string with the given number interpreted as bytes and abbreviated with binary formatting (eg 1024 = 1KiB)
 func FormatBytes(n int) string {
+	if n < 0 || n > math.MaxUint32 {
+		return fmt.Sprintf("%sB", "-1")
+	}
+
 	return fmt.Sprintf("%sB", AbbrevNumBinaryPrefix(uint(n)))
 }
 

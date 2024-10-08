@@ -8,13 +8,6 @@ type CommandFailedError struct {
 
 var _ ClientError = CommandFailedError{}
 
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
-}
-
 func (err CommandFailedError) ErrorCode() int {
 	return min(err.FailedCount, 99)
 }
