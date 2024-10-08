@@ -29,7 +29,7 @@ func DeleteCommand() commands.Command {
 type deleteCommand struct {
 	*commands.BaseCommand
 	resolver.CachingServer
-	completion.Server
+	completion.StoppedServer
 	deleteStorages config.OptionalBoolean
 }
 

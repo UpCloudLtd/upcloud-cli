@@ -29,7 +29,7 @@ func RestartCommand() commands.Command {
 type restartCommand struct {
 	*commands.BaseCommand
 	resolver.CachingServer
-	completion.Server
+	completion.StartedServer
 	WaitForServerToStart bool
 	StopType             string
 	Host                 int

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Take server state into account in server completions. For example, do not offer started servers as completions for `server start` command.
+
 ## [3.11.1] - 2024-08-12
 
 ### Fixed

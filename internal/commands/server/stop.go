@@ -33,7 +33,7 @@ type stopCommand struct {
 	StopType string
 	wait     config.OptionalBoolean
 	resolver.CachingServer
-	completion.Server
+	completion.StartedServer
 }
 
 // InitCommand implements Command.InitCommand
