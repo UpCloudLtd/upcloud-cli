@@ -58,8 +58,8 @@ To edit the default rule of the firewall, set only ` + "`" + `--direction` + "`"
 
 	flagSet := &pflag.FlagSet{}
 
-	flagSet.StringVar(&s.direction, "direction", "", "Rule direction. Available: in / out")
-	flagSet.StringVar(&s.action, "action", "", "Rule action. Available: accept / drop")
+	flagSet.StringVar(&s.direction, "direction", "", "Rule direction. Available: in, out")
+	flagSet.StringVar(&s.action, "action", "", "Rule action. Available: accept, drop")
 	flagSet.StringVar(&s.family, "family", "", "IP family. Available: IPv4, IPv6")
 	flagSet.IntVar(&s.position, "position", 0, "Position in relation to other rules. Available: 1-1000")
 	flagSet.StringVar(&s.protocol, "protocol", "", "Protocol. Available: tcp, udp, icmp")
