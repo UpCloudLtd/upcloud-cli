@@ -26,7 +26,8 @@ theme:
     code: Source Code Pro
   favicon: favicon.png
   language: en
-  features: []
+  features:
+    - navigation.instant
 
 plugins:
   - search
