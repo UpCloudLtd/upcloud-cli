@@ -64,7 +64,7 @@ func TestConfigCommand(t *testing.T) {
 			args: []string{
 				exampleUUID(),
 			},
-			expectedOutput: string(yamlToJSON(exampleKuberenetesKubeconfig("json-output"))),
+			expectedOutput: string(yamlToJSON(exampleKubernetesKubeconfig("json-output"))),
 		},
 		{
 			name:   "yaml-output",
@@ -129,7 +129,7 @@ Flags:
 				exampleFilename(dir, "write-to-empty-file"),
 			},
 			expectedOutput:       ``,
-			expectedFileContents: exampleKuberenetesKubeconfig("write-to-empty-file"),
+			expectedFileContents: exampleKubernetesKubeconfig("write-to-empty-file"),
 		},
 		{
 			name:   "write-to-non-empty-file",
@@ -139,9 +139,9 @@ Flags:
 				"--write",
 				exampleFilename(dir, "write-to-non-empty-file"),
 			},
-			existingFileContents: exampleKuberenetesKubeconfig("previous-config"),
+			existingFileContents: exampleKubernetesKubeconfig("previous-config"),
 			expectedOutput:       ``,
-			expectedFileContents: exampleKuberenetesKubeconfig("previous-config", "write-to-non-empty-file"),
+			expectedFileContents: exampleKubernetesKubeconfig("previous-config", "write-to-non-empty-file"),
 		},
 		{
 			name:   "write-to-non-empty-file-with-override",
@@ -151,9 +151,9 @@ Flags:
 				"--write",
 				exampleFilename(dir, "write-to-non-empty-file-with-override"),
 			},
-			existingFileContents: exampleKuberenetesKubeconfig("write-to-non-empty-file-with-override"),
+			existingFileContents: exampleKubernetesKubeconfig("write-to-non-empty-file-with-override"),
 			expectedOutput:       ``,
-			expectedFileContents: exampleKuberenetesKubeconfig("write-to-non-empty-file-with-override"),
+			expectedFileContents: exampleKubernetesKubeconfig("write-to-non-empty-file-with-override"),
 		},
 	} {
 		tt := tt
@@ -164,7 +164,7 @@ Flags:
 				Return([]upcloud.KubernetesCluster{exampleKubernetesCluster(tt.name)}, nil)
 
 			mService.On("GetKubernetesKubeconfig", exampleGetKubernetesKubeconfigRequest()).
-				Return(string(exampleKuberenetesKubeconfig(tt.name)), nil)
+				Return(string(exampleKubernetesKubeconfig(tt.name)), nil)
 
 			filename := exampleFilename(dir, tt.name)
 			file, err := os.Create(filename)
@@ -222,7 +222,7 @@ func exampleGetKubernetesKubeconfigRequest() *request.GetKubernetesKubeconfigReq
 	return &request.GetKubernetesKubeconfigRequest{UUID: exampleUUID()}
 }
 
-func exampleKuberenetesKubeconfig(names ...string) []byte {
+func exampleKubernetesKubeconfig(names ...string) []byte {
 	apiConfig := api.NewConfig()
 	for _, v := range names {
 		apiConfig.Clusters[v] = &api.Cluster{

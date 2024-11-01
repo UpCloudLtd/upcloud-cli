@@ -31,7 +31,7 @@ Exit code communicates success or the type and number of failures. Possible exit
 Exit code | Description
 --------- | -----------
 0         | Command(s) executed successfully.
-1 - 99    | Number of failed executions. For example, if stopping four servers and API returs error for one of the request, exit code will be 1.
+1 - 99    | Number of failed executions. For example, if stopping four servers and API returns error for one of the request, exit code will be 1.
 100 -     | Other, non-execution related, errors. For example, required flag missing.
 
 ## Examples
@@ -101,7 +101,7 @@ cd upcloud-cli
 pre-commit install
 ```
 
-Make the changes with your favorite editor. Once you're done, create a new branch and push it back to Github.
+Make the changes with your favorite editor. Once you're done, create a new branch and push it back to GitHub.
 ```bash
 git checkout -b <branch-name>
 <add your changes, "git status" helps>

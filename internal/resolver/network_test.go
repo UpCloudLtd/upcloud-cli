@@ -83,7 +83,7 @@ func TestNetworkResolution(t *testing.T) {
 		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 
-		// ambigous name
+		// ambiguous name
 		resolved, err := argResolver(Network1.Name)
 		if !assert.Error(t, err) {
 			t.FailNow()
@@ -109,7 +109,7 @@ func TestCachingNetwork_GetCached(t *testing.T) {
 	mService.On("GetNetworks").Return(networks, nil)
 	res := resolver.CachingNetwork{}
 
-	// should fail before cahe initialized
+	// should fail before cache initialized
 	cached, err := res.GetCached(Network1.UUID)
 	assert.Error(t, err)
 	assert.Equal(t, upcloud.Network{}, cached)

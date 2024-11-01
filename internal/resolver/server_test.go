@@ -150,7 +150,7 @@ func TestServerResolution(t *testing.T) {
 		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 
-		// ambigous hostname
+		// ambiguous hostname
 		resolved, err := argResolver(Server4.Hostname)
 		if !assert.Error(t, err) {
 			t.FailNow()
@@ -158,7 +158,7 @@ func TestServerResolution(t *testing.T) {
 		assert.ErrorIs(t, err, resolver.AmbiguousResolutionError(Server4.Hostname))
 		assert.Equal(t, "", resolved)
 
-		// ambigous title
+		// ambiguous title
 		resolved, err = argResolver(Server1.Title)
 		if !assert.Error(t, err) {
 			t.FailNow()

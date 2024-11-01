@@ -406,7 +406,7 @@ func formatCreateIPAddresses(val interface{}) (text.Colors, string, error) {
 	// Store addresses in map keys to avoid duplicate addresses
 	addresses := make(map[string]bool)
 
-	// Get public addressses from ip_addresses list
+	// Get public addresses from ip_addresses list
 	// Public and utility interfaces created by default (no --network parameters) are only listed here
 	for _, ipa := range server.IPAddresses {
 		addresses[ipa.Address] = true

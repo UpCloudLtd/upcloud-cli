@@ -274,7 +274,7 @@ In addition, `kubernetes create` will now, by default, block all access to the c
 
 ### Fixed
 - Fix commands in `server delete` usage examples.
-- Tune human output so that normal output is directed to `stdout`. Progess and error messages are still outputted to `stderr`.
+- Tune human output so that normal output is directed to `stdout`. Progress and error messages are still outputted to `stderr`.
 
 ## [2.1.0] - 2022-09-07
 ### Added
@@ -356,7 +356,7 @@ In addition, `kubernetes create` will now, by default, block all access to the c
 
 ### Fixed
 - Improved errors relating to argument resolver failures
-- Print version info, instead of missing credentials error, when runnning `upctl version` without credentials
+- Print version info, instead of missing credentials error, when running `upctl version` without credentials
 - Disable colors when outputting in JSON or YAML format
 - Display both public and private addresses in `server create` output
 - Render livelog messages of commands which execution takes less than render tick interval
@@ -403,7 +403,7 @@ First non-beta release! Includes all previous changes and fixes.
 
 ### Fixes
 - fix(pre-commit): add missing golangci config file
-- fix(root): use default cobra behavious when called
+- fix(root): use default cobra behaviour when called
 
 ## [0.5.0] - 2021-04-14
 Initial public beta release :tada:

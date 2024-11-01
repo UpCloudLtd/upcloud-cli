@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// IPAddress implements argument completion for ip addresses, by ptr record or the adddress itself
+// IPAddress implements argument completion for ip addresses, by ptr record or the address itself
 type IPAddress struct{}
 
 // make sure IPAddress implements the interface

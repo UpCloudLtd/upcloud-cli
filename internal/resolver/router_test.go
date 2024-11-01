@@ -89,7 +89,7 @@ func TestRouterResolution(t *testing.T) {
 		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 
-		// ambigous name
+		// ambiguous name
 		resolved, err := argResolver(Router1.Name)
 		if !assert.Error(t, err) {
 			t.FailNow()
@@ -125,7 +125,7 @@ func TestCachingRouter_GetCached(t *testing.T) {
 	mService.On("GetRouters").Return(allRouters, nil)
 	res := resolver.CachingRouter{}
 
-	// should fail before cahe initialized
+	// should fail before cache initialized
 	cached, err := res.GetCached(Router1.UUID)
 	assert.Error(t, err)
 	assert.Equal(t, upcloud.Router{}, cached)
