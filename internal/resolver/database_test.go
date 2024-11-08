@@ -60,7 +60,7 @@ func TestDatabaseResolution(t *testing.T) {
 		assert.NoError(t, err)
 		var resolved string
 
-		// Ambigous title
+		// Ambiguous title
 		resolved, err = argResolver("asd")
 		if !assert.Error(t, err) {
 			t.FailNow()

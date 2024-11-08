@@ -51,7 +51,7 @@ func (s *assignCommand) InitCommand() {
 	fs.StringVar(&s.family, "family", defaultFamily, "The address family of new IP address.")
 	fs.StringVar(&s.serverUUID, "server", "", "The server the ip address is assigned to.")
 	fs.StringVar(&s.mac, "mac", "", "MAC address of server interface to assign address to. Required for detached floating IP address if zone is not specified.")
-	fs.StringVar(&s.zone, "zone", "", (namedargs.ZoneDescription("IP address") + " Required when creating a detached floating IP address, i.e. when MAC address is not speficied."))
+	fs.StringVar(&s.zone, "zone", "", (namedargs.ZoneDescription("IP address") + " Required when creating a detached floating IP address, i.e. when MAC address is not specified."))
 	config.AddToggleFlag(fs, &s.floating, "floating", false, "Whether the address to be assigned is a floating one.")
 	s.AddFlags(fs)
 }

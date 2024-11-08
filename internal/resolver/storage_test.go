@@ -66,7 +66,7 @@ func TestStorageResolution(t *testing.T) {
 		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 
-		// ambigous uuid
+		// ambiguous uuid
 		resolved, err := argResolver(amb2.UUID)
 		if !assert.Error(t, err) {
 			t.FailNow()
@@ -74,7 +74,7 @@ func TestStorageResolution(t *testing.T) {
 		assert.ErrorIs(t, err, resolver.AmbiguousResolutionError(amb2.UUID))
 		assert.Equal(t, "", resolved)
 
-		// ambigous title
+		// ambiguous title
 		resolved, err = argResolver(amb1.Title)
 		if !assert.Error(t, err) {
 			t.FailNow()

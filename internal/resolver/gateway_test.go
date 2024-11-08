@@ -60,7 +60,7 @@ func TestGatewayResolution(t *testing.T) {
 		assert.NoError(t, err)
 		var resolved string
 
-		// Ambigous Name
+		// Ambiguous Name
 		resolved, err = argResolver("asd")
 		if !assert.Error(t, err) {
 			t.FailNow()

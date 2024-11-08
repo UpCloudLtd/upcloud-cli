@@ -90,7 +90,7 @@ func TestServerGroupResolution(t *testing.T) {
 		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 
-		// ambigous title
+		// ambiguous title
 		resolved, err := argResolver(ServerGroup1.Title)
 		if !assert.Error(t, err) {
 			t.FailNow()

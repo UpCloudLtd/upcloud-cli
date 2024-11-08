@@ -5,7 +5,7 @@ to control your resources from the command line or any compatible interface.
 
 ## Install upctl
 
-`upctl` can be installed from a pre-built package in the repositorys [GitHub releases](https://github.com/UpCloudLtd/upcloud-cli/releases) using a package manager or from sources with `go install`:
+`upctl` can be installed from a pre-built package in the repositories [GitHub releases](https://github.com/UpCloudLtd/upcloud-cli/releases) using a package manager or from sources with `go install`:
 
 === "Linux"
 

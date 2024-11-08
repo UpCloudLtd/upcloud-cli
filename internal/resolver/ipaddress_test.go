@@ -122,7 +122,7 @@ func TestIPAddressResolution(t *testing.T) {
 		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 
-		// ambigous address
+		// ambiguous address
 		resolved, err := argResolver(ipAddress4.Address)
 		if !assert.Error(t, err) {
 			t.FailNow()
@@ -130,7 +130,7 @@ func TestIPAddressResolution(t *testing.T) {
 		assert.ErrorIs(t, err, resolver.AmbiguousResolutionError(ipAddress4.Address))
 		assert.Equal(t, "", resolved)
 
-		// ambigous ptr record
+		// ambiguous ptr record
 		resolved, err = argResolver(ipAddress4.PTRRecord)
 		if !assert.Error(t, err) {
 			t.FailNow()
