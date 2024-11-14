@@ -19,20 +19,13 @@ func (s CachingObjectStorage) Get(ctx context.Context, svc internal.AllServices)
 	if err != nil {
 		return nil, err
 	}
-	return func(arg string) (uuid string, err error) {
-		rv := ""
+	return func(arg string) Resolved {
+		rv := Resolved{Arg: arg}
 		for _, objsto := range objectstorages {
-			if MatchArgWithWhitespace(arg, objsto.Name) || objsto.UUID == arg {
-				if rv != "" {
-					return "", AmbiguousResolutionError(arg)
-				}
-				rv = objsto.UUID
-			}
+			rv.AddMatch(objsto.UUID, MatchArgWithWhitespace(arg, objsto.Name))
+			rv.AddMatch(objsto.UUID, MatchUUID(arg, objsto.UUID))
 		}
-		if rv != "" {
-			return rv, nil
-		}
-		return "", NotFoundError(arg)
+		return rv
 	}, nil
 }
 

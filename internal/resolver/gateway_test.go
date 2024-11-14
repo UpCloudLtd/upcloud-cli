@@ -27,9 +27,10 @@ func TestGatewayResolution(t *testing.T) {
 		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 		for _, db := range mockGateways {
-			resolved, err := argResolver(db.UUID)
+			resolved := argResolver(db.UUID)
+			value, err := resolved.GetOnly()
 			assert.NoError(t, err)
-			assert.Equal(t, db.UUID, resolved)
+			assert.Equal(t, db.UUID, value)
 		}
 
 		// Make sure caching works, eg. we didn't call GetGateways more than once
@@ -44,9 +45,10 @@ func TestGatewayResolution(t *testing.T) {
 		assert.NoError(t, err)
 
 		db := mockGateways[2]
-		resolved, err := argResolver(db.Name)
+		resolved := argResolver(db.Name)
+		value, err := resolved.GetOnly()
 		assert.NoError(t, err)
-		assert.Equal(t, db.UUID, resolved)
+		assert.Equal(t, db.UUID, value)
 		// Make sure caching works, eg. we didn't call GetGateways more than once
 		mService.AssertNumberOfCalls(t, "GetGateways", 1)
 	})
@@ -58,23 +60,24 @@ func TestGatewayResolution(t *testing.T) {
 		res := resolver.CachingGateway{}
 		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
-		var resolved string
 
 		// Ambiguous Name
-		resolved, err = argResolver("asd")
+		resolved := argResolver("asd")
+		value, err := resolved.GetOnly()
 		if !assert.Error(t, err) {
 			t.FailNow()
 		}
 		assert.ErrorIs(t, err, resolver.AmbiguousResolutionError("asd"))
-		assert.Equal(t, "", resolved)
+		assert.Equal(t, "", value)
 
 		// Not found
-		resolved, err = argResolver("not-found")
+		resolved = argResolver("not-found")
+		value, err = resolved.GetOnly()
 		if !assert.Error(t, err) {
 			t.FailNow()
 		}
 		assert.ErrorIs(t, err, resolver.NotFoundError("not-found"))
-		assert.Equal(t, "", resolved)
+		assert.Equal(t, "", value)
 
 		// Make sure caching works, eg. we didn't call GetGateways more than once
 		mService.AssertNumberOfCalls(t, "GetGateways", 1)

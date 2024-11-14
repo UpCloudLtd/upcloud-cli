@@ -43,9 +43,10 @@ func TestAccountResolution(t *testing.T) {
 		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 		for _, account := range allAccounts {
-			resolved, err := argResolver(account.Username)
+			resolved := argResolver(account.Username)
+			value, err := resolved.GetOnly()
 			assert.NoError(t, err)
-			assert.Equal(t, account.Username, resolved)
+			assert.Equal(t, account.Username, value)
 		}
 		// make sure caching works, eg. we didn't call GetAccountList more than once
 		mService.AssertNumberOfCalls(t, "GetAccountList", 1)
@@ -60,12 +61,14 @@ func TestAccountResolution(t *testing.T) {
 		assert.NoError(t, err)
 
 		// not found
-		resolved, err := argResolver("notfound")
+		resolved := argResolver("notfound")
+		value, err := resolved.GetOnly()
+
 		if !assert.Error(t, err) {
 			t.FailNow()
 		}
 		assert.ErrorIs(t, err, resolver.NotFoundError("notfound"))
-		assert.Equal(t, "", resolved)
+		assert.Equal(t, "", value)
 
 		// make sure caching works, eg. we didn't call GetAccountList more than once
 		mService.AssertNumberOfCalls(t, "GetAccountList", 1)

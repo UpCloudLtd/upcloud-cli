@@ -96,7 +96,8 @@ func (s *modifyCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 		if err != nil {
 			return commands.HandleError(exec, msg, fmt.Errorf("cannot get router resolver: %w", err))
 		}
-		routerUUID, err := routerResolver(s.attachRouter)
+		resolved := routerResolver(s.attachRouter)
+		routerUUID, err := resolved.GetOnly()
 		if err != nil {
 			return commands.HandleError(exec, msg, fmt.Errorf("cannot resolve router '%s': %w", s.attachRouter, err))
 		}

@@ -20,20 +20,13 @@ func (s CachingKubernetes) Get(ctx context.Context, svc service.AllServices) (Re
 	if err != nil {
 		return nil, err
 	}
-	return func(arg string) (uuid string, err error) {
-		rv := ""
+	return func(arg string) Resolved {
+		rv := Resolved{Arg: arg}
 		for _, cluster := range clusters {
-			if cluster.Name == arg || cluster.UUID == arg {
-				if rv != "" {
-					return "", AmbiguousResolutionError(arg)
-				}
-				rv = cluster.UUID
-			}
+			rv.AddMatch(cluster.UUID, MatchArgWithWhitespace(arg, cluster.Name))
+			rv.AddMatch(cluster.UUID, MatchUUID(arg, cluster.UUID))
 		}
-		if rv != "" {
-			return rv, nil
-		}
-		return "", NotFoundError(arg)
+		return rv
 	}, nil
 }
 

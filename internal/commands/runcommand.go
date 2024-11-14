@@ -78,8 +78,9 @@ func resolveArguments(nc Command, exec Executor, args []string) (out []resolvedA
 			return nil, fmt.Errorf("cannot get resolver: %w", err)
 		}
 		for _, arg := range args {
-			resolved, err := argumentResolver(arg)
-			out = append(out, resolvedArgument{Resolved: resolved, Error: err, Original: arg})
+			resolved := argumentResolver(arg)
+			value, err := resolved.GetOnly()
+			out = append(out, resolvedArgument{Resolved: value, Error: err, Original: arg})
 		}
 	} else {
 		for _, arg := range args {

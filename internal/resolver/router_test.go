@@ -58,9 +58,10 @@ func TestRouterResolution(t *testing.T) {
 		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 		for _, router := range allRouters.Routers {
-			resolved, err := argResolver(router.UUID)
+			resolved := argResolver(router.UUID)
+			value, err := resolved.GetOnly()
 			assert.NoError(t, err)
-			assert.Equal(t, router.UUID, resolved)
+			assert.Equal(t, router.UUID, value)
 		}
 		// make sure caching works, eg. we didn't call GetRouters more than once
 		mService.AssertNumberOfCalls(t, "GetRouters", 1)
@@ -73,9 +74,10 @@ func TestRouterResolution(t *testing.T) {
 		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 		for _, srv := range unambiguousRouters {
-			resolved, err := argResolver(srv.Name)
+			resolved := argResolver(srv.Name)
+			value, err := resolved.GetOnly()
 			assert.NoError(t, err)
-			assert.Equal(t, srv.UUID, resolved)
+			assert.Equal(t, srv.UUID, value)
 		}
 		// make sure caching works, eg. we didn't call GetRouters more than once
 		mService.AssertNumberOfCalls(t, "GetRouters", 1)
@@ -90,20 +92,22 @@ func TestRouterResolution(t *testing.T) {
 		assert.NoError(t, err)
 
 		// ambiguous name
-		resolved, err := argResolver(Router1.Name)
+		resolved := argResolver(Router1.Name)
+		value, err := resolved.GetOnly()
 		if !assert.Error(t, err) {
 			t.FailNow()
 		}
 		assert.ErrorIs(t, err, resolver.AmbiguousResolutionError(Router1.Name))
-		assert.Equal(t, "", resolved)
+		assert.Equal(t, "", value)
 
 		// not found
-		resolved, err = argResolver("notfound")
+		resolved = argResolver("notfound")
+		value, err = resolved.GetOnly()
 		if !assert.Error(t, err) {
 			t.FailNow()
 		}
 		assert.ErrorIs(t, err, resolver.NotFoundError("notfound"))
-		assert.Equal(t, "", resolved)
+		assert.Equal(t, "", value)
 
 		// make sure caching works, eg. we didn't call GetServers more than once
 		mService.AssertNumberOfCalls(t, "GetRouters", 1)

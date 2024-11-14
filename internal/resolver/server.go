@@ -18,20 +18,14 @@ func (s CachingServer) Get(ctx context.Context, svc internal.AllServices) (Resol
 	if err != nil {
 		return nil, err
 	}
-	return func(arg string) (uuid string, err error) {
-		rv := ""
+	return func(arg string) Resolved {
+		rv := Resolved{Arg: arg}
 		for _, server := range servers.Servers {
-			if MatchArgWithWhitespace(arg, server.Title) || server.Hostname == arg || server.UUID == arg {
-				if rv != "" {
-					return "", AmbiguousResolutionError(arg)
-				}
-				rv = server.UUID
-			}
+			rv.AddMatch(server.UUID, MatchArgWithWhitespace(arg, server.Title))
+			rv.AddMatch(server.UUID, MatchArgWithWhitespace(arg, server.Hostname))
+			rv.AddMatch(server.UUID, MatchUUID(arg, server.UUID))
 		}
-		if rv != "" {
-			return rv, nil
-		}
-		return "", NotFoundError(arg)
+		return rv
 	}, nil
 }
 
