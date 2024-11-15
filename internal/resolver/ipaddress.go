@@ -18,20 +18,13 @@ func (s CachingIPAddress) Get(ctx context.Context, svc internal.AllServices) (Re
 	if err != nil {
 		return nil, err
 	}
-	return func(arg string) (uuid string, err error) {
-		rv := ""
+	return func(arg string) Resolved {
+		rv := Resolved{Arg: arg}
 		for _, ipAddress := range ipaddresses.IPAddresses {
-			if ipAddress.PTRRecord == arg || ipAddress.Address == arg {
-				if rv != "" {
-					return "", AmbiguousResolutionError(arg)
-				}
-				rv = ipAddress.Address
-			}
+			rv.AddMatch(ipAddress.Address, MatchArgWithWhitespace(arg, ipAddress.PTRRecord))
+			rv.AddMatch(ipAddress.Address, MatchArgWithWhitespace(arg, ipAddress.Address))
 		}
-		if rv != "" {
-			return rv, nil
-		}
-		return "", NotFoundError(arg)
+		return rv
 	}, nil
 }
 

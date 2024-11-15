@@ -19,20 +19,13 @@ func (s CachingLoadBalancer) Get(ctx context.Context, svc internal.AllServices) 
 	if err != nil {
 		return nil, err
 	}
-	return func(arg string) (uuid string, err error) {
-		rv := ""
+	return func(arg string) Resolved {
+		rv := Resolved{Arg: arg}
 		for _, lb := range loadbalancers {
-			if lb.Name == arg || lb.UUID == arg {
-				if rv != "" {
-					return "", AmbiguousResolutionError(arg)
-				}
-				rv = lb.UUID
-			}
+			rv.AddMatch(lb.UUID, MatchArgWithWhitespace(arg, lb.Name))
+			rv.AddMatch(lb.UUID, MatchUUID(arg, lb.UUID))
 		}
-		if rv != "" {
-			return rv, nil
-		}
-		return "", NotFoundError(arg)
+		return rv
 	}, nil
 }
 

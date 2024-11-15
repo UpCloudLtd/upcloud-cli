@@ -20,20 +20,13 @@ func (s CachingServerGroup) Get(ctx context.Context, svc internal.AllServices) (
 	if err != nil {
 		return nil, err
 	}
-	return func(arg string) (uuid string, err error) {
-		rv := ""
+	return func(arg string) Resolved {
+		rv := Resolved{Arg: arg}
 		for _, serverGroup := range serverGroups {
-			if MatchArgWithWhitespace(arg, serverGroup.Title) || serverGroup.UUID == arg {
-				if rv != "" {
-					return "", AmbiguousResolutionError(arg)
-				}
-				rv = serverGroup.UUID
-			}
+			rv.AddMatch(serverGroup.UUID, MatchArgWithWhitespace(arg, serverGroup.Title))
+			rv.AddMatch(serverGroup.UUID, MatchUUID(arg, serverGroup.UUID))
 		}
-		if rv != "" {
-			return rv, nil
-		}
-		return "", NotFoundError(arg)
+		return rv
 	}, nil
 }
 

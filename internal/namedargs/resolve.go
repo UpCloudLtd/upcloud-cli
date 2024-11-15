@@ -14,5 +14,6 @@ func Resolve(provider resolver.ResolutionProvider, exec commands.Executor, arg s
 		return "", fmt.Errorf("could not initialize resolver: %w", err)
 	}
 
-	return resolver(arg)
+	resolved := resolver(arg)
+	return resolved.GetOnly()
 }

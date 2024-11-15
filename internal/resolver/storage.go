@@ -18,23 +18,14 @@ type CachingStorage struct {
 // make sure we implement the ResolutionProvider interface
 var _ ResolutionProvider = &CachingStorage{}
 
-func storageMatcher(cached []upcloud.Storage) func(arg string) (uuid string, err error) {
-	return func(arg string) (uuid string, err error) {
-		rv := ""
+func storageMatcher(cached []upcloud.Storage) func(arg string) Resolved {
+	return func(arg string) Resolved {
+		rv := Resolved{Arg: arg}
 		for _, storage := range cached {
-			if MatchArgWithWhitespace(arg, storage.Title) || storage.UUID == arg {
-				if rv != "" {
-					return "", AmbiguousResolutionError(arg)
-				}
-				rv = storage.UUID
-			}
+			rv.AddMatch(storage.UUID, MatchArgWithWhitespace(arg, storage.Title))
+			rv.AddMatch(storage.UUID, MatchUUID(arg, storage.UUID))
 		}
-
-		if rv != "" {
-			return rv, nil
-		}
-
-		return "", NotFoundError(arg)
+		return rv
 	}
 }
 
@@ -59,7 +50,8 @@ func (s *CachingStorage) Resolve(arg string) (resolved string, err error) {
 		return "", errors.New("caching storage does not have a cache initialized")
 	}
 
-	return storageMatcher(s.cachedStorages.Storages)(arg)
+	r := storageMatcher(s.cachedStorages.Storages)(arg)
+	return r.GetOnly()
 }
 
 // GetCached is a helper method for commands to use when they need to get an item from the cached results

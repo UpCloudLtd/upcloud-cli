@@ -19,20 +19,13 @@ func (s CachingDatabase) Get(ctx context.Context, svc internal.AllServices) (Res
 	if err != nil {
 		return nil, err
 	}
-	return func(arg string) (uuid string, err error) {
-		rv := ""
+	return func(arg string) Resolved {
+		rv := Resolved{Arg: arg}
 		for _, db := range databases {
-			if MatchArgWithWhitespace(arg, db.Title) || db.UUID == arg {
-				if rv != "" {
-					return "", AmbiguousResolutionError(arg)
-				}
-				rv = db.UUID
-			}
+			rv.AddMatch(db.UUID, MatchArgWithWhitespace(arg, db.Title))
+			rv.AddMatch(db.UUID, MatchUUID(arg, db.UUID))
 		}
-		if rv != "" {
-			return rv, nil
-		}
-		return "", NotFoundError(arg)
+		return rv
 	}, nil
 }
 

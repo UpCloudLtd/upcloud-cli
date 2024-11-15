@@ -35,9 +35,10 @@ func TestStorageResolution(t *testing.T) {
 		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 		for _, storage := range unambiguousStorages {
-			resolved, err := argResolver(storage.UUID)
+			resolved := argResolver(storage.UUID)
+			value, err := resolved.GetOnly()
 			assert.NoError(t, err)
-			assert.Equal(t, storage.UUID, resolved)
+			assert.Equal(t, storage.UUID, value)
 		}
 		// make sure caching works, eg. we didn't call GetStorages more than once
 		mService.AssertNumberOfCalls(t, "GetStorages", 1)
@@ -50,9 +51,10 @@ func TestStorageResolution(t *testing.T) {
 		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 		for _, storage := range unambiguousStorages {
-			resolved, err := argResolver(storage.Title)
+			resolved := argResolver(storage.Title)
+			value, err := resolved.GetOnly()
 			assert.NoError(t, err)
-			assert.Equal(t, storage.UUID, resolved)
+			assert.Equal(t, storage.UUID, value)
 		}
 		// make sure caching works, eg. we didn't call GetStorages more than once
 		mService.AssertNumberOfCalls(t, "GetStorages", 1)
@@ -66,29 +68,23 @@ func TestStorageResolution(t *testing.T) {
 		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 
-		// ambiguous uuid
-		resolved, err := argResolver(amb2.UUID)
-		if !assert.Error(t, err) {
-			t.FailNow()
-		}
-		assert.ErrorIs(t, err, resolver.AmbiguousResolutionError(amb2.UUID))
-		assert.Equal(t, "", resolved)
-
 		// ambiguous title
-		resolved, err = argResolver(amb1.Title)
+		resolved := argResolver(amb1.Title)
+		value, err := resolved.GetOnly()
 		if !assert.Error(t, err) {
 			t.FailNow()
 		}
 		assert.ErrorIs(t, err, resolver.AmbiguousResolutionError(amb1.Title))
-		assert.Equal(t, "", resolved)
+		assert.Equal(t, "", value)
 
 		// not found
-		resolved, err = argResolver("notfound")
+		resolved = argResolver("notfound")
+		value, err = resolved.GetOnly()
 		if !assert.Error(t, err) {
 			t.FailNow()
 		}
 		assert.ErrorIs(t, err, resolver.NotFoundError("notfound"))
-		assert.Equal(t, "", resolved)
+		assert.Equal(t, "", value)
 
 		// make sure caching works, eg. we didn't call GetServers more than once
 		mService.AssertNumberOfCalls(t, "GetStorages", 1)

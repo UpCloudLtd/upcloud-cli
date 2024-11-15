@@ -18,20 +18,13 @@ func (s CachingNetworkPeering) Get(ctx context.Context, svc internal.AllServices
 	if err != nil {
 		return nil, err
 	}
-	return func(arg string) (uuid string, err error) {
-		rv := ""
+	return func(arg string) Resolved {
+		rv := Resolved{Arg: arg}
 		for _, peering := range gateways {
-			if MatchArgWithWhitespace(arg, peering.Name) || peering.UUID == arg {
-				if rv != "" {
-					return "", AmbiguousResolutionError(arg)
-				}
-				rv = peering.UUID
-			}
+			rv.AddMatch(peering.UUID, MatchArgWithWhitespace(arg, peering.Name))
+			rv.AddMatch(peering.UUID, MatchUUID(arg, peering.UUID))
 		}
-		if rv != "" {
-			return rv, nil
-		}
-		return "", NotFoundError(arg)
+		return rv
 	}, nil
 }
 

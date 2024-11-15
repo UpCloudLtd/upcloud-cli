@@ -104,9 +104,10 @@ func TestServerResolution(t *testing.T) {
 		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 		for _, srv := range allServers.Servers {
-			resolved, err := argResolver(srv.UUID)
+			resolved := argResolver(srv.UUID)
+			value, err := resolved.GetOnly()
 			assert.NoError(t, err)
-			assert.Equal(t, srv.UUID, resolved)
+			assert.Equal(t, srv.UUID, value)
 		}
 		// make sure caching works, eg. we didn't call GetServers more than once
 		mService.AssertNumberOfCalls(t, "GetServers", 1)
@@ -119,9 +120,10 @@ func TestServerResolution(t *testing.T) {
 		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 		for _, srv := range unambiguousServers {
-			resolved, err := argResolver(srv.Hostname)
+			resolved := argResolver(srv.Hostname)
+			value, err := resolved.GetOnly()
 			assert.NoError(t, err)
-			assert.Equal(t, srv.UUID, resolved)
+			assert.Equal(t, srv.UUID, value)
 		}
 		// make sure caching works, eg. we didn't call GetServers more than once
 		mService.AssertNumberOfCalls(t, "GetServers", 1)
@@ -134,9 +136,10 @@ func TestServerResolution(t *testing.T) {
 		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 		for _, srv := range unambiguousServers {
-			resolved, err := argResolver(srv.Title)
+			resolved := argResolver(srv.Title)
+			value, err := resolved.GetOnly()
 			assert.NoError(t, err)
-			assert.Equal(t, srv.UUID, resolved)
+			assert.Equal(t, srv.UUID, value)
 		}
 		// make sure caching works, eg. we didn't call GetServers more than once
 		mService.AssertNumberOfCalls(t, "GetServers", 1)
@@ -151,28 +154,31 @@ func TestServerResolution(t *testing.T) {
 		assert.NoError(t, err)
 
 		// ambiguous hostname
-		resolved, err := argResolver(Server4.Hostname)
+		resolved := argResolver(Server4.Hostname)
+		value, err := resolved.GetOnly()
 		if !assert.Error(t, err) {
 			t.FailNow()
 		}
 		assert.ErrorIs(t, err, resolver.AmbiguousResolutionError(Server4.Hostname))
-		assert.Equal(t, "", resolved)
+		assert.Equal(t, "", value)
 
 		// ambiguous title
-		resolved, err = argResolver(Server1.Title)
+		resolved = argResolver(Server1.Title)
+		value, err = resolved.GetOnly()
 		if !assert.Error(t, err) {
 			t.FailNow()
 		}
 		assert.ErrorIs(t, err, resolver.AmbiguousResolutionError(Server1.Title))
-		assert.Equal(t, "", resolved)
+		assert.Equal(t, "", value)
 
 		// not found
-		resolved, err = argResolver("notfound")
+		resolved = argResolver("notfound")
+		value, err = resolved.GetOnly()
 		if !assert.Error(t, err) {
 			t.FailNow()
 		}
 		assert.ErrorIs(t, err, resolver.NotFoundError("notfound"))
-		assert.Equal(t, "", resolved)
+		assert.Equal(t, "", value)
 
 		// make sure caching works, eg. we didn't call GetServers more than once
 		mService.AssertNumberOfCalls(t, "GetServers", 1)

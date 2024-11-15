@@ -59,9 +59,10 @@ func TestServerGroupResolution(t *testing.T) {
 		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 		for _, srv := range allServerGroups {
-			resolved, err := argResolver(srv.UUID)
+			resolved := argResolver(srv.UUID)
+			value, err := resolved.GetOnly()
 			assert.NoError(t, err)
-			assert.Equal(t, srv.UUID, resolved)
+			assert.Equal(t, srv.UUID, value)
 		}
 		// make sure caching works, eg. we didn't call GetServerGroups more than once
 		mService.AssertNumberOfCalls(t, "GetServerGroups", 1)
@@ -74,9 +75,10 @@ func TestServerGroupResolution(t *testing.T) {
 		argResolver, err := res.Get(context.TODO(), mService)
 		assert.NoError(t, err)
 		for _, srv := range unambiguousServerGroups {
-			resolved, err := argResolver(srv.Title)
+			resolved := argResolver(srv.Title)
+			value, err := resolved.GetOnly()
 			assert.NoError(t, err)
-			assert.Equal(t, srv.UUID, resolved)
+			assert.Equal(t, srv.UUID, value)
 		}
 		// make sure caching works, eg. we didn't call GetServerGroups more than once
 		mService.AssertNumberOfCalls(t, "GetServerGroups", 1)
@@ -91,20 +93,22 @@ func TestServerGroupResolution(t *testing.T) {
 		assert.NoError(t, err)
 
 		// ambiguous title
-		resolved, err := argResolver(ServerGroup1.Title)
+		resolved := argResolver(ServerGroup1.Title)
+		value, err := resolved.GetOnly()
 		if !assert.Error(t, err) {
 			t.FailNow()
 		}
 		assert.ErrorIs(t, err, resolver.AmbiguousResolutionError(ServerGroup1.Title))
-		assert.Equal(t, "", resolved)
+		assert.Equal(t, "", value)
 
 		// not found
-		resolved, err = argResolver("notfound")
+		resolved = argResolver("notfound")
+		value, err = resolved.GetOnly()
 		if !assert.Error(t, err) {
 			t.FailNow()
 		}
 		assert.ErrorIs(t, err, resolver.NotFoundError("notfound"))
-		assert.Equal(t, "", resolved)
+		assert.Equal(t, "", value)
 
 		// make sure caching works, eg. we didn't call GetServerGroups more than once
 		mService.AssertNumberOfCalls(t, "GetServerGroups", 1)

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Take server state into account in server completions. For example, do not offer started servers as completions for `server start` command.
+- Allow using UUID prefix as an argument. For example, if there is only one network available that has an UUID starting with `0316`, details of that network can be listed with `upctl network show 0316` command.
 
 ## [3.11.1] - 2024-08-12
 

@@ -24,20 +24,13 @@ func (s *CachingRouter) Get(ctx context.Context, svc internal.AllServices) (Reso
 		return nil, err
 	}
 	s.cached = routers.Routers
-	return func(arg string) (uuid string, err error) {
-		rv := ""
+	return func(arg string) Resolved {
+		rv := Resolved{Arg: arg}
 		for _, router := range s.cached {
-			if MatchArgWithWhitespace(arg, router.Name) || router.UUID == arg {
-				if rv != "" {
-					return "", AmbiguousResolutionError(arg)
-				}
-				rv = router.UUID
-			}
+			rv.AddMatch(router.UUID, MatchArgWithWhitespace(arg, router.Name))
+			rv.AddMatch(router.UUID, MatchUUID(arg, router.UUID))
 		}
-		if rv != "" {
-			return rv, nil
-		}
-		return "", NotFoundError(arg)
+		return rv
 	}, nil
 }
 

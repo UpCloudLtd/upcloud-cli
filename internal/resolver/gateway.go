@@ -18,20 +18,13 @@ func (s CachingGateway) Get(ctx context.Context, svc internal.AllServices) (Reso
 	if err != nil {
 		return nil, err
 	}
-	return func(arg string) (uuid string, err error) {
-		rv := ""
+	return func(arg string) Resolved {
+		rv := Resolved{Arg: arg}
 		for _, gtw := range gateways {
-			if MatchArgWithWhitespace(arg, gtw.Name) || gtw.UUID == arg {
-				if rv != "" {
-					return "", AmbiguousResolutionError(arg)
-				}
-				rv = gtw.UUID
-			}
+			rv.AddMatch(gtw.UUID, MatchArgWithWhitespace(arg, gtw.Name))
+			rv.AddMatch(gtw.UUID, MatchUUID(arg, gtw.UUID))
 		}
-		if rv != "" {
-			return rv, nil
-		}
-		return "", NotFoundError(arg)
+		return rv
 	}, nil
 }
 

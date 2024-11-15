@@ -99,11 +99,12 @@ type mockMultiResolver struct {
 }
 
 func (m *mockMultiResolver) Get(_ context.Context, _ internal.AllServices) (resolver.Resolver, error) {
-	return func(arg string) (uuid string, err error) {
-		if len(arg) > 5 {
-			return "", fmt.Errorf("MOCKTOOLONG")
+	return func(arg string) resolver.Resolved {
+		rv := resolver.Resolved{Arg: arg}
+		if len(arg) <= 5 {
+			rv.AddMatch("uuid:"+arg, resolver.MatchTypeExact)
 		}
-		return fmt.Sprintf("uuid:%s", arg), nil
+		return rv
 	}, nil
 }
 
@@ -258,7 +259,7 @@ func TestExecute_Resolution(t *testing.T) {
 			values[typedO.Value.(string)] = struct{}{}
 		case output.Error:
 			assert.Empty(t, typedO.Resolved)
-			assert.EqualError(t, typedO.Value, "cannot resolve argument: MOCKTOOLONG")
+			assert.EqualError(t, typedO.Value, "cannot resolve argument: nothing found matching 'failtoresolve'")
 		}
 	}
 	assert.Equal(t, values, map[string]struct{}{

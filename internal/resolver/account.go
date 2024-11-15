@@ -18,20 +18,12 @@ func (s CachingAccount) Get(ctx context.Context, svc internal.AllServices) (Reso
 	if err != nil {
 		return nil, err
 	}
-	return func(arg string) (uuid string, err error) {
-		rv := ""
+	return func(arg string) Resolved {
+		rv := Resolved{Arg: arg}
 		for _, account := range accounts {
-			if MatchArgWithWhitespace(arg, account.Username) {
-				if rv != "" {
-					return "", AmbiguousResolutionError(arg)
-				}
-				rv = account.Username
-			}
+			rv.AddMatch(account.Username, MatchArgWithWhitespace(arg, account.Username))
 		}
-		if rv != "" {
-			return rv, nil
-		}
-		return "", NotFoundError(arg)
+		return rv
 	}, nil
 }
 

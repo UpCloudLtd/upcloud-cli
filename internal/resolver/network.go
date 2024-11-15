@@ -17,21 +17,14 @@ type CachingNetwork struct {
 // make sure we implement the ResolutionProvider interface
 var _ ResolutionProvider = &CachingNetwork{}
 
-func networkMatcher(cached []upcloud.Network) func(arg string) (uuid string, err error) {
-	return func(arg string) (uuid string, err error) {
-		rv := ""
+func networkMatcher(cached []upcloud.Network) func(arg string) Resolved {
+	return func(arg string) Resolved {
+		rv := Resolved{Arg: arg}
 		for _, network := range cached {
-			if MatchArgWithWhitespace(arg, network.Name) || network.UUID == arg {
-				if rv != "" {
-					return "", AmbiguousResolutionError(arg)
-				}
-				rv = network.UUID
-			}
+			rv.AddMatch(network.UUID, MatchArgWithWhitespace(arg, network.Name))
+			rv.AddMatch(network.UUID, MatchUUID(arg, network.UUID))
 		}
-		if rv != "" {
-			return rv, nil
-		}
-		return "", NotFoundError(arg)
+		return rv
 	}
 }
 
@@ -64,7 +57,8 @@ func (s *CachingNetwork) Resolve(arg string) (resolved string, err error) {
 		return "", errors.New("caching network does not have a cache initialized")
 	}
 
-	return networkMatcher(s.cached)(arg)
+	r := networkMatcher(s.cached)(arg)
+	return r.GetOnly()
 }
 
 // PositionalArgumentHelp implements resolver.ResolutionProvider
