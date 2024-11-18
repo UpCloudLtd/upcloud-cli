@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.12.0] - 2024-11-18
+
 ### Changed
 
 - Take server state into account in server completions. For example, do not offer started servers as completions for `server start` command.
@@ -433,7 +435,8 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.11.1...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.12.0...HEAD
+[3.12.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.11.1...v3.12.0
 [3.11.1]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.11.0...v3.11.1
 [3.11.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.10.0...v3.11.0
 [3.10.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.9.0...v3.10.0
