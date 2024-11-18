@@ -4920,6 +4920,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <ul>
 <li>Take server state into account in server completions. For example, do not offer started servers as completions for <code>server start</code> command.</li>
 <li>Allow using UUID prefix as an argument. For example, if there is only one network available that has an UUID starting with <code>0316</code>, details of that network can be listed with <code>upctl network show 0316</code> command.</li>
+<li>Match title and name arguments case-insensitively if the given parameter does not resolve with an exact match.</li>
 </ul>
 <h2 id="3111-2024-08-12"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v3.11.0...v3.11.1">3.11.1</a> - 2024-08-12</h2>
 <h3 id="fixed">Fixed</h3>
