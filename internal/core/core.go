@@ -1,7 +1,9 @@
 package core
 
 import (
+	"context"
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/clierrors"
@@ -35,6 +37,10 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 			if err != nil {
 				return err
 			}
+
+			// Register cleanup function for the config
+			cleanup := registerForCleanup(conf)
+			cobra.OnFinalize(cleanup)
 
 			// detect desired colour output
 			switch {
@@ -129,6 +135,16 @@ func BuildCLI() cobra.Command {
 	return rootCmd
 }
 
+// BuildCLIWithContext generates the CLI tree and returns the rootCmd with the provided context
+func BuildCLIWithContext(ctx context.Context) cobra.Command {
+	conf := config.NewWithContext(ctx)
+	rootCmd := BuildRootCmd(conf)
+
+	all.BuildCommands(&rootCmd, conf)
+
+	return rootCmd
+}
+
 // Execute is the application entrypoint. It returns the exit code that should be forwarded to the shell.
 func Execute() int {
 	rootCmd := BuildCLI()
@@ -142,4 +158,13 @@ func Execute() int {
 	}
 
 	return 0
+}
+
+// registerForCleanup is a helper function to register a cleanup function for the config
+func registerForCleanup(closer io.Closer) func() {
+	return func() {
+		if err := closer.Close(); err != nil {
+			fmt.Printf("failed to cleanup: %v", err)
+		}
+	}
 }

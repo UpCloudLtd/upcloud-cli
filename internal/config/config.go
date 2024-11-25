@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"fmt"
+	"io"
 	"path/filepath"
 	"runtime/debug"
 	"strings"
@@ -50,6 +51,18 @@ func New() *Config {
 	return &Config{viper: viper.New(), context: ctx, cancel: cancel}
 }
 
+// NewWithContext returns a new Config instance with the provided context
+func NewWithContext(ctx context.Context) *Config {
+	ctx, cancel := context.WithCancel(ctx)
+	cfg := &Config{
+		viper:   viper.New(),
+		context: ctx,
+		cancel:  cancel,
+	}
+
+	return cfg
+}
+
 // GlobalFlags holds information on the flags shared among all commands
 type GlobalFlags struct {
 	ConfigFile    string        `valid:"-"`
@@ -60,6 +73,9 @@ type GlobalFlags struct {
 	ForceColours  OptionalBoolean
 }
 
+// Add interface validation
+var _ io.Closer = (*Config)(nil)
+
 // Config holds the configuration for running upctl
 type Config struct {
 	viper       *viper.Viper
@@ -67,6 +83,15 @@ type Config struct {
 	cancel      context.CancelFunc
 	context     context.Context //nolint: containedctx // This is where the top-level context is stored
 	GlobalFlags GlobalFlags
+}
+
+// Add Close method
+func (s *Config) Close() error {
+	if s.cancel != nil {
+		s.cancel()
+		s.cancel = nil
+	}
+	return nil
 }
 
 // Load loads config and sets up service

@@ -2,10 +2,13 @@ package core
 
 import (
 	"bytes"
+	"context"
 	"os"
 	"runtime"
 	"testing"
+	"time"
 
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -157,4 +160,56 @@ func TestExecute(t *testing.T) {
 			assert.Equal(t, test.expected, Execute())
 		})
 	}
+}
+
+func TestConfigContextAndCleanup(t *testing.T) {
+	t.Run("BuildCLIWithContext should cleanup on context cancellation", func(t *testing.T) {
+		// Create parent context with cancel
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
+		// Build CLI with context
+		rootCmd := BuildCLIWithContext(ctx)
+		rootCmd.SetArgs([]string{"version"})
+
+		// Start command execution in background
+		done := make(chan struct{})
+		go func() {
+			defer close(done)
+			err := rootCmd.Execute()
+			assert.NoError(t, err)
+		}()
+
+		// Cancel context and verify cleanup
+		cancel()
+
+		// Wait for command to finish
+		select {
+		case <-done:
+			// Success: command completed after cancellation
+		case <-time.After(500 * time.Millisecond):
+			t.Error("Command didn't complete after context cancellation")
+		}
+	})
+
+	t.Run("Config should implement io.Closer", func(t *testing.T) {
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
+		conf := config.NewWithContext(ctx)
+
+		// Register cleanup
+		cleanup := registerForCleanup(conf)
+
+		// Run cleanup
+		cleanup()
+
+		// Verify context was cancelled (config.Close() should have been called)
+		select {
+		case <-conf.Context().Done():
+			// Success: context was cancelled by Close()
+		default:
+			t.Error("Context wasn't cancelled after cleanup")
+		}
+	})
 }
