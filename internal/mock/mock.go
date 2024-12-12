@@ -902,6 +902,14 @@ func (m *Service) ModifyLoadBalancerNetwork(ctx context.Context, r *request.Modi
 	return nil, nil
 }
 
+func (m *Service) GetLoadBalancerDNSChallengeDomain(ctx context.Context, r *request.GetLoadBalancerDNSChallengeDomainRequest) (*upcloud.LoadBalancerDNSChallengeDomain, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.LoadBalancerDNSChallengeDomain), args.Error(1)
+}
+
 func (m *Service) CreateKubernetesCluster(_ context.Context, r *request.CreateKubernetesClusterRequest) (*upcloud.KubernetesCluster, error) {
 	args := m.Called(r)
 	if args[0] == nil {
@@ -1107,6 +1115,18 @@ func (m *Service) GetManagedObjectStorageMetrics(ctx context.Context, r *request
 	return nil, nil
 }
 
+func (m *Service) CreateManagedObjectStorageBucket(ctx context.Context, r *request.CreateManagedObjectStorageBucketRequest) (upcloud.ManagedObjectStorageBucketMetrics, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return upcloud.ManagedObjectStorageBucketMetrics{}, args.Error(1)
+	}
+	return args[0].(upcloud.ManagedObjectStorageBucketMetrics), args.Error(1)
+}
+
+func (m *Service) DeleteManagedObjectStorageBucket(ctx context.Context, r *request.DeleteManagedObjectStorageBucketRequest) error {
+	return m.Called(r).Error(0)
+}
+
 func (m *Service) GetManagedObjectStorageBucketMetrics(ctx context.Context, r *request.GetManagedObjectStorageBucketMetricsRequest) ([]upcloud.ManagedObjectStorageBucketMetrics, error) {
 	return nil, nil
 }
@@ -1171,6 +1191,10 @@ func (m *Service) WaitForManagedObjectStorageDeletion(ctx context.Context, r *re
 	return nil
 }
 
+func (m *Service) WaitForManagedObjectStorageBucketDeletion(ctx context.Context, r *request.WaitForManagedObjectStorageBucketDeletionRequest) error {
+	return m.Called(r).Error(0)
+}
+
 func (m *Service) CreateManagedObjectStoragePolicy(ctx context.Context, r *request.CreateManagedObjectStoragePolicyRequest) (*upcloud.ManagedObjectStoragePolicy, error) {
 	return nil, nil
 }
@@ -1197,6 +1221,38 @@ func (m *Service) GetManagedObjectStorageUserPolicies(ctx context.Context, r *re
 
 func (m *Service) DetachManagedObjectStorageUserPolicy(ctx context.Context, r *request.DetachManagedObjectStorageUserPolicyRequest) error {
 	return nil
+}
+
+func (m *Service) CreateManagedObjectStorageCustomDomain(ctx context.Context, r *request.CreateManagedObjectStorageCustomDomainRequest) error {
+	return m.Called(r).Error(0)
+}
+
+func (m *Service) GetManagedObjectStorageCustomDomains(ctx context.Context, r *request.GetManagedObjectStorageCustomDomainsRequest) ([]upcloud.ManagedObjectStorageCustomDomain, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].([]upcloud.ManagedObjectStorageCustomDomain), args.Error(1)
+}
+
+func (m *Service) GetManagedObjectStorageCustomDomain(ctx context.Context, r *request.GetManagedObjectStorageCustomDomainRequest) (*upcloud.ManagedObjectStorageCustomDomain, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.ManagedObjectStorageCustomDomain), args.Error(1)
+}
+
+func (m *Service) ModifyManagedObjectStorageCustomDomain(ctx context.Context, r *request.ModifyManagedObjectStorageCustomDomainRequest) (*upcloud.ManagedObjectStorageCustomDomain, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.ManagedObjectStorageCustomDomain), args.Error(1)
+}
+
+func (m *Service) DeleteManagedObjectStorageCustomDomain(ctx context.Context, r *request.DeleteManagedObjectStorageCustomDomainRequest) error {
+	return m.Called(r).Error(0)
 }
 
 func (m *Service) GetPermissions(ctx context.Context, r *request.GetPermissionsRequest) (upcloud.Permissions, error) {
