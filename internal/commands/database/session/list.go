@@ -61,7 +61,7 @@ func (s *listCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 		outputFn = mysql
 	case upcloud.ManagedDatabaseServiceTypePostgreSQL:
 		outputFn = pg
-	case upcloud.ManagedDatabaseServiceTypeRedis:
+	case upcloud.ManagedDatabaseServiceTypeRedis: //nolint:staticcheck // To be removed when Redis support has been removed
 		outputFn = redis
 	default:
 		return nil, fmt.Errorf("session list not supported for database type %s", db.Type)
@@ -155,7 +155,7 @@ func pg(sessions upcloud.ManagedDatabaseSessions) output.Output {
 func redis(sessions upcloud.ManagedDatabaseSessions) output.Output {
 	rows := make([]output.TableRow, 0)
 
-	for _, session := range sessions.Redis {
+	for _, session := range sessions.Redis { //nolint:staticcheck // To be removed when Redis support has been removed
 		rows = append(rows, output.TableRow{
 			session.Id,
 			session.Query,
