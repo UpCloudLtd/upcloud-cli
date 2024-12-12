@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Partner API support
+
+### Changed
+
+- Go version bump to 1.22
+
 ## [3.12.0] - 2024-11-18
 
 ### Changed

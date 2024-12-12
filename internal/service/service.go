@@ -22,4 +22,5 @@ type AllServices interface {
 	service.Permission
 	service.Gateway
 	service.Host
+	service.Partner
 }
