@@ -17,6 +17,8 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/network"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/networkpeering"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/objectstorage"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/partner"
+	partneraccount "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/partner/account"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/root"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/router"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/server"
@@ -208,6 +210,12 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	// Host operations
 	hostCommand := commands.BuildCommand(host.BaseHostCommand(), rootCmd, conf)
 	commands.BuildCommand(host.ListCommand(), hostCommand.Cobra(), conf)
+
+	// Partner API
+	partnerCommand := commands.BuildCommand(partner.BasePartnerCommand(), rootCmd, conf)
+	partnerAccountCommand := commands.BuildCommand(partneraccount.BaseAccountCommand(), partnerCommand.Cobra(), conf)
+	commands.BuildCommand(partneraccount.CreateCommand(), partnerAccountCommand.Cobra(), conf)
+	commands.BuildCommand(partneraccount.ListCommand(), partnerAccountCommand.Cobra(), conf)
 
 	// Misc
 	commands.BuildCommand(

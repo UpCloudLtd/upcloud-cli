@@ -1,10 +1,10 @@
 module github.com/UpCloudLtd/upcloud-cli/v3
 
-go 1.21
+go 1.22
 
 require (
 	github.com/UpCloudLtd/progress v1.0.2
-	github.com/UpCloudLtd/upcloud-go-api/v8 v8.7.0
+	github.com/UpCloudLtd/upcloud-go-api/v8 v8.14.0
 	github.com/adrg/xdg v0.3.2
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d
 	github.com/gemalto/flume v0.12.0
@@ -14,7 +14,7 @@ require (
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.7.1
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	golang.org/x/crypto v0.21.0
 	golang.org/x/term v0.18.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -46,7 +46,7 @@ require (
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/cast v1.3.0 // indirect
 	github.com/spf13/jwalterweatherman v1.0.0 // indirect
-	github.com/stretchr/objx v0.5.0 // indirect
+	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
 	go.uber.org/atomic v1.6.0 // indirect
 	go.uber.org/multierr v1.5.0 // indirect

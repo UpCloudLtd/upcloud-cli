@@ -1397,3 +1397,19 @@ func (m *Service) GetHostDetails(ctx context.Context, r *request.GetHostDetailsR
 func (m *Service) ModifyHost(ctx context.Context, r *request.ModifyHostRequest) (*upcloud.Host, error) {
 	return nil, nil
 }
+
+func (m *Service) CreatePartnerAccount(ctx context.Context, r *request.CreatePartnerAccountRequest) (*upcloud.PartnerAccount, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.PartnerAccount), args.Error(1)
+}
+
+func (m *Service) GetPartnerAccounts(ctx context.Context) ([]upcloud.PartnerAccount, error) {
+	args := m.Called()
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].([]upcloud.PartnerAccount), args.Error(1)
+}
