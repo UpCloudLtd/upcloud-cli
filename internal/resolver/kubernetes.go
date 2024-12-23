@@ -23,7 +23,7 @@ func (s CachingKubernetes) Get(ctx context.Context, svc service.AllServices) (Re
 	return func(arg string) Resolved {
 		rv := Resolved{Arg: arg}
 		for _, cluster := range clusters {
-			rv.AddMatch(cluster.UUID, MatchArgWithWhitespace(arg, cluster.Name))
+			rv.AddMatch(cluster.UUID, MatchTitle(arg, cluster.Name))
 			rv.AddMatch(cluster.UUID, MatchUUID(arg, cluster.UUID))
 		}
 		return rv
