@@ -21,7 +21,7 @@ func (s CachingGateway) Get(ctx context.Context, svc internal.AllServices) (Reso
 	return func(arg string) Resolved {
 		rv := Resolved{Arg: arg}
 		for _, gtw := range gateways {
-			rv.AddMatch(gtw.UUID, MatchArgWithWhitespace(arg, gtw.Name))
+			rv.AddMatch(gtw.UUID, MatchTitle(arg, gtw.Name))
 			rv.AddMatch(gtw.UUID, MatchUUID(arg, gtw.UUID))
 		}
 		return rv

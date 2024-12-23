@@ -20,9 +20,9 @@ type ResolutionProvider interface {
 type MatchType int
 
 const (
-	MatchTypeExact           MatchType = 3
-	MatchTypeCaseInsensitive MatchType = 2
-	MatchTypeWildCard        MatchType = 2
+	MatchTypeExact           MatchType = 4
+	MatchTypeCaseInsensitive MatchType = 3
+	MatchTypeGlobPattern     MatchType = 2
 	MatchTypePrefix          MatchType = 1
 	MatchTypeNone            MatchType = 0
 )
@@ -42,13 +42,12 @@ func (r *Resolved) AddMatch(uuid string, matchType MatchType) {
 	r.matches[uuid] = max(current, matchType)
 }
 
-// GetAll returns all matches with match-type that equals the highest available match-type for the resolved value. I.e., if there is an exact match, only exact matches are returned even if there would be case-insensitive matches.
-func (r *Resolved) GetAll() ([]string, error) {
+func (r *Resolved) getAll() ([]string, MatchType) {
 	var all []string
 	for _, matchType := range []MatchType{
 		MatchTypeExact,
 		MatchTypeCaseInsensitive,
-		MatchTypeWildCard,
+		MatchTypeGlobPattern,
 		MatchTypePrefix,
 	} {
 		for uuid, match := range r.matches {
@@ -58,22 +57,35 @@ func (r *Resolved) GetAll() ([]string, error) {
 		}
 
 		if len(all) > 0 {
-			return all, nil
+			return all, matchType
 		}
 	}
 
-	var err error
+	return all, MatchTypeNone
+}
+
+// GetAll returns matches with match-type that equals the highest available match-type for the resolved value. I.e., if there is an exact match, only exact matches are returned even if there would be case-insensitive matches.
+//
+// If match-type is not a glob pattern match, an error is returned if there are multiple matches.
+func (r *Resolved) GetAll() ([]string, error) {
+	all, matchType := r.getAll()
+
 	if len(all) == 0 {
-		err = NotFoundError(r.Arg)
+		return nil, NotFoundError(r.Arg)
 	}
-	return all, err
+
+	// For backwards compatibility, allow multiple matches only for glob patterns.
+	if len(all) > 1 && matchType != MatchTypeGlobPattern {
+		return nil, NonGlobMultipleMatchesError(r.Arg)
+	}
+	return all, nil
 }
 
 // GetOnly returns the only match if there is only one match. If there are no or multiple matches, an empty value and an error is returned.
 func (r *Resolved) GetOnly() (string, error) {
-	all, err := r.GetAll()
-	if err != nil {
-		return "", err
+	all, _ := r.getAll()
+	if len(all) == 0 {
+		return "", NotFoundError(r.Arg)
 	}
 
 	if len(all) > 1 {

@@ -21,8 +21,7 @@ func (s CachingIPAddress) Get(ctx context.Context, svc internal.AllServices) (Re
 	return func(arg string) Resolved {
 		rv := Resolved{Arg: arg}
 		for _, ipAddress := range ipaddresses.IPAddresses {
-			rv.AddMatch(ipAddress.Address, MatchArgWithWhitespace(arg, ipAddress.PTRRecord))
-			rv.AddMatch(ipAddress.Address, MatchArgWithWhitespace(arg, ipAddress.Address))
+			rv.AddMatch(ipAddress.Address, MatchTitle(arg, ipAddress.PTRRecord, ipAddress.Address))
 		}
 		return rv
 	}, nil
