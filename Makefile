@@ -26,6 +26,8 @@ BIN_FREEBSD          = $(CLI_BIN)-$(VERSION)-freebsd-amd64
 V = 0
 Q = $(if $(filter 1,$V),,@)
 
+TOOLS_DIR:=$(CURDIR)/.ci/bin
+
 export GO111MODULE=on
 
 .PHONY: build
@@ -45,7 +47,7 @@ clean-md-docs:
 md-docs: clean-md-docs ## Generate documentation (markdown)
 	$(GO) run ./.ci/docs/
 	cp CHANGELOG.md docs/changelog.md
-	cp -r examples/ docs/examples/
+	mkdir -p docs/examples/
 
 .PHONY: clean-docs
 clean-docs:
@@ -55,11 +57,12 @@ clean-docs:
 .PHONY: install-docs-tools
 install-docs-tools:
 	$(PIP) install -r requirements.txt
+	cd .ci/tools && GOBIN=$(TOOLS_DIR) go install github.com/UpCloudLtd/mdtest
 
 .PHONY: docs
 docs: clean-docs md-docs install-docs-tools ## Generate documentation (mkdocs site)
+	$(TOOLS_DIR)/mdtest normalise examples/ -o docs/examples/ -t filename=title --quote-values always
 	$(PYTHON) .ci/docs/generate_dynamic_nav.py
-	$(PYTHON) .ci/docs/prepare_info_texts_for_mkdocs.py
 	echo "latest_release: $(LATEST_RELEASE)" > vars.yaml
 	mkdocs build
 
