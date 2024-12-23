@@ -21,7 +21,7 @@ func networkMatcher(cached []upcloud.Network) func(arg string) Resolved {
 	return func(arg string) Resolved {
 		rv := Resolved{Arg: arg}
 		for _, network := range cached {
-			rv.AddMatch(network.UUID, MatchArgWithWhitespace(arg, network.Name))
+			rv.AddMatch(network.UUID, MatchTitle(arg, network.Name))
 			rv.AddMatch(network.UUID, MatchUUID(arg, network.UUID))
 		}
 		return rv

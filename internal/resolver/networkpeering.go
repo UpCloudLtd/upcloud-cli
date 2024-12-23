@@ -21,7 +21,7 @@ func (s CachingNetworkPeering) Get(ctx context.Context, svc internal.AllServices
 	return func(arg string) Resolved {
 		rv := Resolved{Arg: arg}
 		for _, peering := range gateways {
-			rv.AddMatch(peering.UUID, MatchArgWithWhitespace(arg, peering.Name))
+			rv.AddMatch(peering.UUID, MatchTitle(arg, peering.Name))
 			rv.AddMatch(peering.UUID, MatchUUID(arg, peering.UUID))
 		}
 		return rv

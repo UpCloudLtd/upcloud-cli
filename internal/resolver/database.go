@@ -22,7 +22,7 @@ func (s CachingDatabase) Get(ctx context.Context, svc internal.AllServices) (Res
 	return func(arg string) Resolved {
 		rv := Resolved{Arg: arg}
 		for _, db := range databases {
-			rv.AddMatch(db.UUID, MatchArgWithWhitespace(arg, db.Title))
+			rv.AddMatch(db.UUID, MatchTitle(arg, db.Title))
 			rv.AddMatch(db.UUID, MatchUUID(arg, db.UUID))
 		}
 		return rv

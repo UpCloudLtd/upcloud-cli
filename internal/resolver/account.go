@@ -21,7 +21,7 @@ func (s CachingAccount) Get(ctx context.Context, svc internal.AllServices) (Reso
 	return func(arg string) Resolved {
 		rv := Resolved{Arg: arg}
 		for _, account := range accounts {
-			rv.AddMatch(account.Username, MatchArgWithWhitespace(arg, account.Username))
+			rv.AddMatch(account.Username, MatchTitle(arg, account.Username))
 		}
 		return rv
 	}, nil

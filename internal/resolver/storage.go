@@ -22,7 +22,7 @@ func storageMatcher(cached []upcloud.Storage) func(arg string) Resolved {
 	return func(arg string) Resolved {
 		rv := Resolved{Arg: arg}
 		for _, storage := range cached {
-			rv.AddMatch(storage.UUID, MatchArgWithWhitespace(arg, storage.Title))
+			rv.AddMatch(storage.UUID, MatchTitle(arg, storage.Title))
 			rv.AddMatch(storage.UUID, MatchUUID(arg, storage.UUID))
 		}
 		return rv
