@@ -45,6 +45,12 @@ func TestDeleteCommand(t *testing.T) {
 			req:   request.DeleteManagedObjectStorageRequest{UUID: objectstorage.UUID},
 		},
 		{
+			name:  "delete with UUID including buckets",
+			arg:   objectstorage.UUID,
+			flags: []string{"--delete-buckets"},
+			req:   request.DeleteManagedObjectStorageRequest{UUID: objectstorage.UUID},
+		},
+		{
 			name:  "delete with UUID including users and policies",
 			arg:   objectstorage.UUID,
 			flags: []string{"--delete-users", "--delete-policies"},
