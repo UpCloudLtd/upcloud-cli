@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `--delete-buckets` option to `objectstorage delete` command.
+
+### Fixed
+
+- In `objectstorage delete` command, delete only user defined policies when `--delete-policies` flag is enabled as trying to delete system defined policy will cause an error.
+
 ## [3.13.0] - 2024-12-13
 
 ### Added

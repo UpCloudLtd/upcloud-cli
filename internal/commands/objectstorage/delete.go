@@ -2,6 +2,7 @@ package objectstorage
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
@@ -31,6 +32,7 @@ type deleteCommand struct {
 
 	deleteUsers    config.OptionalBoolean
 	deletePolicies config.OptionalBoolean
+	deleteBuckets  config.OptionalBoolean
 }
 
 // InitCommand implements Command.InitCommand
@@ -38,6 +40,7 @@ func (c *deleteCommand) InitCommand() {
 	flags := &pflag.FlagSet{}
 	config.AddToggleFlag(flags, &c.deleteUsers, "delete-users", false, "Delete all users from the service before deleting the object storage instance.")
 	config.AddToggleFlag(flags, &c.deletePolicies, "delete-policies", false, "Delete all policies from the service before deleting the object storage instance.")
+	config.AddToggleFlag(flags, &c.deleteBuckets, "delete-buckets", false, "Delete all buckets from the service before deleting the object storage instance.")
 	c.AddFlags(flags)
 }
 
@@ -75,6 +78,10 @@ func (c *deleteCommand) Execute(exec commands.Executor, arg string) (output.Outp
 		}
 
 		for _, policy := range policies {
+			if policy.System {
+				continue
+			}
+
 			err = svc.DeleteManagedObjectStoragePolicy(exec.Context(), &request.DeleteManagedObjectStoragePolicyRequest{
 				ServiceUUID: arg,
 				Name:        policy.Name,
@@ -85,6 +92,32 @@ func (c *deleteCommand) Execute(exec commands.Executor, arg string) (output.Outp
 		}
 	}
 
+	if c.deleteBuckets.Value() {
+		exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Deleting buckets from the service %s", arg))
+
+		buckets, err := svc.GetManagedObjectStorageBucketMetrics(exec.Context(), &request.GetManagedObjectStorageBucketMetricsRequest{ServiceUUID: arg})
+		if err != nil {
+			return commands.HandleError(exec, msg, err)
+		}
+
+		for _, bucket := range buckets {
+			err = svc.DeleteManagedObjectStorageBucket(exec.Context(), &request.DeleteManagedObjectStorageBucketRequest{
+				ServiceUUID: arg,
+				Name:        bucket.Name,
+			})
+			if err != nil {
+				return commands.HandleError(exec, msg, err)
+			}
+		}
+
+		exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Waiting buckets to be deleted from the service %s", arg))
+		err = waitUntilBucketsHaveBeenDeleted(exec, arg)
+		if err != nil {
+			return commands.HandleError(exec, msg, err)
+		}
+	}
+
+	exec.PushProgressUpdateMessage(msg, msg)
 	err := svc.DeleteManagedObjectStorage(exec.Context(), &request.DeleteManagedObjectStorageRequest{
 		UUID: arg,
 	})
@@ -95,4 +128,30 @@ func (c *deleteCommand) Execute(exec commands.Executor, arg string) (output.Outp
 	exec.PushProgressSuccess(msg)
 
 	return output.None{}, nil
+}
+
+func waitUntilBucketsHaveBeenDeleted(exec commands.Executor, serviceUUID string) error {
+	ticker := time.NewTicker(5 * time.Second)
+	defer ticker.Stop()
+
+	ctx := exec.Context()
+	svc := exec.All()
+
+	for i := 0; ; i++ {
+		select {
+		case <-ticker.C:
+			buckets, err := svc.GetManagedObjectStorageBucketMetrics(exec.Context(), &request.GetManagedObjectStorageBucketMetricsRequest{
+				ServiceUUID: serviceUUID,
+			})
+			if err != nil {
+				return err
+			}
+
+			if len(buckets) == 0 {
+				return nil
+			}
+		case <-ctx.Done():
+			return ctx.Err()
+		}
+	}
 }
