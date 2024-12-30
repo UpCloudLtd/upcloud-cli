@@ -11,6 +11,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/clierrors"
 	internal "github.com/UpCloudLtd/upcloud-cli/v3/internal/service"
+	"github.com/zalando/go-keyring"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/client"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/service"
@@ -93,6 +94,13 @@ func (s *Config) Load() error {
 	if err := v.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
 			return fmt.Errorf("unable to parse config from file '%v': %w", v.ConfigFileUsed(), err)
+		}
+	}
+
+	if v.GetString("username") != "" && v.GetString("password") == "" {
+		password, err := keyring.Get("upctl", v.GetString("username"))
+		if err == nil {
+			v.MergeConfigMap(map[string]interface{}{"password": password})
 		}
 	}
 
