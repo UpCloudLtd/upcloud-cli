@@ -145,6 +145,22 @@ func TestServerResolution(t *testing.T) {
 		mService.AssertNumberOfCalls(t, "GetServers", 1)
 	})
 
+	t.Run("resolve title glob", func(t *testing.T) {
+		mService := &smock.Service{}
+		mService.On("GetServers").Return(allServers, nil)
+		res := resolver.CachingServer{}
+		argResolver, err := res.Get(context.TODO(), mService)
+		assert.NoError(t, err)
+
+		resolved := argResolver("server-*-title")
+		value, err := resolved.GetAll()
+		assert.NoError(t, err)
+		assert.Len(t, value, 5)
+
+		// make sure caching works, eg. we didn't call GetServers more than once
+		mService.AssertNumberOfCalls(t, "GetServers", 1)
+	})
+
 	t.Run("failure situations", func(t *testing.T) {
 		mService := &smock.Service{}
 		mService.On("GetServers").Return(allServers, nil)

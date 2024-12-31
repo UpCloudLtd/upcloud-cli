@@ -27,7 +27,7 @@ func (s *CachingRouter) Get(ctx context.Context, svc internal.AllServices) (Reso
 	return func(arg string) Resolved {
 		rv := Resolved{Arg: arg}
 		for _, router := range s.cached {
-			rv.AddMatch(router.UUID, MatchArgWithWhitespace(arg, router.Name))
+			rv.AddMatch(router.UUID, MatchTitle(arg, router.Name))
 			rv.AddMatch(router.UUID, MatchUUID(arg, router.UUID))
 		}
 		return rv
