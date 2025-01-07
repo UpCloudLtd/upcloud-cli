@@ -22,7 +22,7 @@ func (s CachingObjectStorage) Get(ctx context.Context, svc internal.AllServices)
 	return func(arg string) Resolved {
 		rv := Resolved{Arg: arg}
 		for _, objsto := range objectstorages {
-			rv.AddMatch(objsto.UUID, MatchArgWithWhitespace(arg, objsto.Name))
+			rv.AddMatch(objsto.UUID, MatchTitle(arg, objsto.Name))
 			rv.AddMatch(objsto.UUID, MatchUUID(arg, objsto.UUID))
 		}
 		return rv

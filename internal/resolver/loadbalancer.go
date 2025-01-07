@@ -22,7 +22,7 @@ func (s CachingLoadBalancer) Get(ctx context.Context, svc internal.AllServices) 
 	return func(arg string) Resolved {
 		rv := Resolved{Arg: arg}
 		for _, lb := range loadbalancers {
-			rv.AddMatch(lb.UUID, MatchArgWithWhitespace(arg, lb.Name))
+			rv.AddMatch(lb.UUID, MatchTitle(arg, lb.Name))
 			rv.AddMatch(lb.UUID, MatchUUID(arg, lb.UUID))
 		}
 		return rv

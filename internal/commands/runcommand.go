@@ -26,8 +26,7 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 	switch typedCommand := command.(type) {
 	case NoArgumentCommand:
 		cmdLogger.Debug("executing without arguments", "arguments", args)
-		// need to pass in fake arguments here, to actually trigger execution
-		results, err := execute(typedCommand, executor, []string{""}, 1,
+		results, err := execute(typedCommand, executor, nil, resolveNone, 1,
 			func(exec Executor, _ string) (output.Output, error) {
 				return typedCommand.ExecuteWithoutArguments(exec)
 			})
@@ -41,7 +40,7 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 		if len(args) != 1 || args[0] == "" {
 			return fmt.Errorf("exactly one positional argument is required")
 		}
-		results, err := execute(typedCommand, executor, args, 1, typedCommand.ExecuteSingleArgument)
+		results, err := execute(typedCommand, executor, args, resolveOnly, 1, typedCommand.ExecuteSingleArgument)
 		if err != nil {
 			return err
 		}
@@ -52,7 +51,7 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 		if len(args) < 1 {
 			return fmt.Errorf("at least one positional argument is required")
 		}
-		results, err := execute(typedCommand, executor, args, typedCommand.MaximumExecutions(), typedCommand.Execute)
+		results, err := execute(typedCommand, executor, args, resolveAll, typedCommand.MaximumExecutions(), typedCommand.Execute)
 		if err != nil {
 			return err
 		}
@@ -71,7 +70,19 @@ type resolvedArgument struct {
 	Original string
 }
 
-func resolveArguments(nc Command, exec Executor, args []string) (out []resolvedArgument, err error) {
+type resolveMode string
+
+const (
+	resolveAll  resolveMode = "all"
+	resolveNone resolveMode = "none"
+	resolveOnly resolveMode = "only"
+)
+
+func resolveArguments(nc Command, exec Executor, args []string, mode resolveMode) (out []resolvedArgument, err error) {
+	if mode == resolveNone {
+		return nil, nil
+	}
+
 	if resolve, ok := nc.(resolver.ResolutionProvider); ok {
 		argumentResolver, err := resolve.Get(exec.Context(), exec.All())
 		if err != nil {
@@ -79,19 +90,30 @@ func resolveArguments(nc Command, exec Executor, args []string) (out []resolvedA
 		}
 		for _, arg := range args {
 			resolved := argumentResolver(arg)
-			value, err := resolved.GetOnly()
-			out = append(out, resolvedArgument{Resolved: value, Error: err, Original: arg})
+			if mode == resolveOnly {
+				value, err := resolved.GetOnly()
+				out = append(out, resolvedArgument{Resolved: value, Error: err, Original: arg})
+			}
+			if mode == resolveAll {
+				values, err := resolved.GetAll()
+				if err != nil {
+					out = append(out, resolvedArgument{Resolved: "", Error: err, Original: arg})
+				}
+				for _, value := range values {
+					out = append(out, resolvedArgument{Resolved: value, Error: err, Original: arg})
+				}
+			}
 		}
 	} else {
 		for _, arg := range args {
 			out = append(out, resolvedArgument{Resolved: arg, Original: arg})
 		}
 	}
-	return
+	return out, nil
 }
 
-func execute(command Command, executor Executor, args []string, parallelRuns int, executeCommand func(exec Executor, arg string) (output.Output, error)) ([]output.Output, error) {
-	resolvedArgs, err := resolveArguments(command, executor, args)
+func execute(command Command, executor Executor, args []string, mode resolveMode, parallelRuns int, executeCommand func(exec Executor, arg string) (output.Output, error)) ([]output.Output, error) {
+	resolvedArgs, err := resolveArguments(command, executor, args, mode)
 	if err != nil {
 		// If authentication failed, return helpful message instead of the raw error.
 		if clierrors.CheckAuthenticationFailed(err) {
@@ -111,6 +133,11 @@ func execute(command Command, executor Executor, args []string, parallelRuns int
 
 	// make a copy of the original args to pass into the workers
 	argQueue := resolvedArgs
+
+	// The worker logic below expects at least one argument to be present. Add an empty argument if none are present to execute commands that do not expect arguments.
+	if argQueue == nil {
+		argQueue = []resolvedArgument{{}}
+	}
 
 	outputs := make([]output.Output, 0, len(args))
 	executor.Debug("starting work", "workers", workerCount)
@@ -157,7 +184,7 @@ func execute(command Command, executor Executor, args []string, parallelRuns int
 				outputs = append(outputs, res.Result)
 			}
 
-			if len(outputs) >= len(args) {
+			if len(outputs) >= len(resolvedArgs) {
 				executor.Debug("execute done")
 				// We're done, update ui for the last time and render the results
 				executor.StopProgressLog()

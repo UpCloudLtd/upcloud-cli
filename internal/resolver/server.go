@@ -21,8 +21,7 @@ func (s CachingServer) Get(ctx context.Context, svc internal.AllServices) (Resol
 	return func(arg string) Resolved {
 		rv := Resolved{Arg: arg}
 		for _, server := range servers.Servers {
-			rv.AddMatch(server.UUID, MatchArgWithWhitespace(arg, server.Title))
-			rv.AddMatch(server.UUID, MatchArgWithWhitespace(arg, server.Hostname))
+			rv.AddMatch(server.UUID, MatchTitle(arg, server.Title, server.Hostname))
 			rv.AddMatch(server.UUID, MatchUUID(arg, server.UUID))
 		}
 		return rv

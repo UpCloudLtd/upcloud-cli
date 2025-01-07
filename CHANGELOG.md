@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Allow using unix style glob pattern as an argument. For example, if there are two servers available with titles `server-1` and `server-2`, these servers can be stopped with `upctl server stop server-*` command.
+
 ## [3.13.0] - 2024-12-13
 
 ### Added
