@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Allow using unix style glob pattern as an argument. For example, if there are two servers available with titles `server-1` and `server-2`, these servers can be stopped with `upctl server stop server-*` command.
+- `--delete-buckets` option to `objectstorage delete` command.
+
+### Fixed
+
+- In `objectstorage delete` command, delete only user defined policies when `--delete-policies` flag is enabled as trying to delete system defined policy will cause an error.
 
 ## [3.13.0] - 2024-12-13
 
