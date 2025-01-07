@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.14.0] - 2025-01-07
+
 ### Added
 
 - Allow using unix style glob pattern as an argument. For example, if there are two servers available with titles `server-1` and `server-2`, these servers can be stopped with `upctl server stop server-*` command.
@@ -454,7 +456,8 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.13.0...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.14.0...HEAD
+[3.14.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.13.0...v3.14.0
 [3.13.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.12.0...v3.13.0
 [3.12.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.11.1...v3.12.0
 [3.11.1]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.11.0...v3.11.1
