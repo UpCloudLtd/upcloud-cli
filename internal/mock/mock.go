@@ -36,7 +36,7 @@ func (m *Service) DeleteToken(_ context.Context, r *request.DeleteTokenRequest) 
 	return args.Error(0)
 }
 
-func (m *Service) GetTokens(context.Context) (*upcloud.Tokens, error) {
+func (m *Service) GetTokens(context.Context, *request.GetTokensRequest) (*upcloud.Tokens, error) {
 	args := m.Called()
 	if args[0] == nil {
 		return nil, args.Error(1)
