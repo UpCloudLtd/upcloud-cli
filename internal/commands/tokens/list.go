@@ -3,7 +3,10 @@ package tokens
 import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/paging"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
+	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	
 )
 
 // ListCommand creates the 'tokens list' command
@@ -13,13 +16,22 @@ func ListCommand() commands.Command {
 	}
 }
 
+func (l *listCommand) InitCommand() {
+	fs := &pflag.FlagSet{}
+	l.ConfigureFlags(fs)
+	l.AddFlags(fs)
+}
+
 type listCommand struct {
 	*commands.BaseCommand
+	paging.PageParameters
 }
 
 func (l *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	svc := exec.All()
-	tokens, err := svc.GetTokens(exec.Context())
+	tokens, err := svc.GetTokens(exec.Context(), &request.GetTokensRequest{
+		Page: l.Page(),
+	})
 	if err != nil {
 		return nil, err
 	}
