@@ -6,7 +6,8 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/paging"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
-	
+
+	"github.com/spf13/pflag"
 )
 
 // ListCommand creates the 'tokens list' command
