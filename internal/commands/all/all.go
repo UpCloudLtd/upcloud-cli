@@ -28,6 +28,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/servergroup"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/storage"
 	storagebackup "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/storage/backup"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/tokens"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/zone"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
 
@@ -121,6 +122,13 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	// Account permissions
 	permissionsCommand := commands.BuildCommand(permissions.BasePermissionsCommand(), accountCommand.Cobra(), conf)
 	commands.BuildCommand(permissions.ListCommand(), permissionsCommand.Cobra(), conf)
+
+	// Token
+	tokenCommand := commands.BuildCommand(tokens.BaseTokensCommand(), rootCmd, conf)
+	commands.BuildCommand(tokens.CreateCommand(), tokenCommand.Cobra(), conf)
+	commands.BuildCommand(tokens.ListCommand(), tokenCommand.Cobra(), conf)
+	commands.BuildCommand(tokens.ShowCommand(), tokenCommand.Cobra(), conf)
+	commands.BuildCommand(tokens.DeleteCommand(), tokenCommand.Cobra(), conf)
 
 	// Zone
 	zoneCommand := commands.BuildCommand(zone.BaseZoneCommand(), rootCmd, conf)
