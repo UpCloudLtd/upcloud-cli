@@ -51,16 +51,6 @@ func TestCreateToken(t *testing.T) {
 			errFn: assert.NoError,
 		},
 		{
-			name: "invalid expiry",
-			args: []string{
-				"--name", "test",
-				"--expires_in", "seppo",
-			},
-			errFn: func(t assert.TestingT, err error, i ...interface{}) bool {
-				return assert.ErrorContains(t, err, `time: invalid duration "seppo"`)
-			},
-		},
-		{
 			name: "missing name",
 			args: []string{
 				"--expires_in", "1h",
@@ -70,12 +60,32 @@ func TestCreateToken(t *testing.T) {
 			},
 		},
 		{
+			name: "invalid expires_in",
+			args: []string{
+				"--name", "test",
+				"--expires_in", "seppo",
+			},
+			errFn: func(t assert.TestingT, err error, i ...interface{}) bool {
+				return assert.ErrorContains(t, err, `invalid argument "seppo" for "--expires_in"`)
+			},
+		},
+		{
+			name: "invalid expires_at",
+			args: []string{
+				"--name", "test",
+				"--expires_at", "seppo",
+			},
+			errFn: func(t assert.TestingT, err error, i ...interface{}) bool {
+				return assert.ErrorContains(t, err, `invalid expires_at: `)
+			},
+		},
+		{
 			name: "missing expiry",
 			args: []string{
 				"--name", "test",
 			},
 			errFn: func(t assert.TestingT, err error, i ...interface{}) bool {
-				return assert.ErrorContains(t, err, `required flag(s) "expires_in" not set`)
+				return assert.ErrorContains(t, err, `either expires_in or expires_at must be set`)
 			},
 		},
 	} {
