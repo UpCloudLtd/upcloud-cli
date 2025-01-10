@@ -39,15 +39,26 @@ func newCreateParams() createParams {
 
 type createParams struct {
 	request.CreateTokenRequest
-	name      string
-	expiresIn time.Duration
-	//	expiresAt       time.Time/string // TODO: is it necessary to be able to define exact time for expiry instead of duration?
+	name            string
+	expiresIn       time.Duration
+	expiresAt       string
 	canCreateTokens bool
 	allowedIPRanges []string
 }
 
 func (s *createParams) processParams() error {
-	s.ExpiresAt = time.Now().Add(s.expiresIn)
+	if s.expiresIn == 0 && s.expiresAt == "" {
+		return fmt.Errorf("either expires_in or expires_at must be set")
+	}
+	if s.expiresAt != "" {
+		var err error
+		s.ExpiresAt, err = time.Parse(time.RFC3339, s.expiresAt)
+		if err != nil {
+			return fmt.Errorf("invalid expires_at: %w", err)
+		}
+	} else {
+		s.ExpiresAt = time.Now().Add(s.expiresIn)
+	}
 	s.Name = s.name
 	s.CanCreateSubTokens = s.canCreateTokens
 	s.AllowedIPRanges = s.allowedIPRanges
@@ -62,7 +73,8 @@ type createCommand struct {
 
 func applyCreateFlags(fs *pflag.FlagSet, dst, def *createParams) {
 	fs.StringVar(&dst.name, "name", def.name, "Name for the token.")
-	fs.DurationVar(&dst.expiresIn, "expires_in", def.expiresIn, "Duration until the token expires.")
+	fs.StringVar(&dst.expiresAt, "expires_at", def.expiresAt, "Exact time when the token expires in RFC3339 format. e.g. 2025-01-01T00:00:00Z")
+	fs.DurationVar(&dst.expiresIn, "expires_in", def.expiresIn, "Duration until the token expires. e.g. 24h")
 	fs.BoolVar(&dst.canCreateTokens, "can-create-tokens", def.canCreateTokens, "Allow token to be used to create further tokens.")
 	fs.StringArrayVar(&dst.allowedIPRanges, "allowed-ip-ranges", def.allowedIPRanges, "Allowed IP ranges for the token.")
 }
@@ -75,7 +87,6 @@ func (s *createCommand) InitCommand() {
 
 	s.AddFlags(s.flagSet)
 	_ = s.Cobra().MarkFlagRequired("name")
-	_ = s.Cobra().MarkFlagRequired("expires_in")
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
