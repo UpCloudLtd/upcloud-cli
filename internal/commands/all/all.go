@@ -151,6 +151,7 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 		{serviceName: "OpenSearch", serviceType: "opensearch"},
 		{serviceName: "PostgreSQL", serviceType: "pg"},
 		{serviceName: "Redis", serviceType: "redis"},
+		{serviceName: "Valkey", serviceType: "valkey"},
 	} {
 		typeCommand := commands.BuildCommand(databaseproperties.DBTypeCommand(i.serviceType, i.serviceName), propertiesCommand.Cobra(), conf)
 		commands.BuildCommand(databaseproperties.ShowCommand(i.serviceType, i.serviceName), typeCommand.Cobra(), conf)
