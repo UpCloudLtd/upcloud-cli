@@ -71,6 +71,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 				{Title: "Plan:", Value: db.Plan},
 				{Title: "Zone:", Value: db.Zone},
 				{Title: "State:", Value: db.State, Format: format.DatabaseState},
+				{Title: "Termination protection:", Value: db.TerminationProtection, Format: format.Boolean},
 			},
 		},
 		{
