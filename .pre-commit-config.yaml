@@ -4,7 +4,7 @@ repos:
     hooks:
       - id: go-fmt
       # - id: go-vet
-      - id: go-lint
+      # - id: go-lint   # go-lint is deprecated https://github.com/golang/go/issues/38968
       - id: golangci-lint # implies go-vet, https://golangci-lint.run/usage/linters
       # - id: go-critic # run by golangci-lint, in order to configure
       - id: go-unit-tests
