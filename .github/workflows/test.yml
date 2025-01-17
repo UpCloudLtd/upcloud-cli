@@ -21,8 +21,8 @@ jobs:
           go-version-file: 'go.mod'
       - name: Install keyring test dependencies on Ubuntu
         run: |
-          apt-get update
-          apt-get install -y gnome-keyring build-essential ca-certificates
+          sudo apt-get update
+          sudo apt-get install -y gnome-keyring build-essential ca-certificates
         if: matrix.os == 'ubuntu-latest'
       - name: Run tests on Ubuntu with keyring
         run: | 
