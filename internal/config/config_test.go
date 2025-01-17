@@ -79,7 +79,7 @@ func TestConfig_LoadKeyring(t *testing.T) {
 	assert.NotEmpty(t, cfg.GetString("username"))
 	assert.Equal(t, "unittest_password", cfg.GetString("password"))
 	t.Cleanup(func() {
-		// remove everything related to upctl from keyring
-		assert.NoError(t, keyring.DeleteAll("upctl"))
+		// remove test user from keyring
+		assert.NoError(t, keyring.Delete("upctl", "unittest"))
 	})
 }
