@@ -103,7 +103,9 @@ func (s *Config) Load() error {
 	if v.GetString("username") != "" && v.GetString("password") == "" {
 		password, err := keyring.Get(serviceName, v.GetString("username"))
 		if err == nil {
-			v.MergeConfigMap(map[string]interface{}{"password": password})
+			if err := v.MergeConfigMap(map[string]interface{}{"password": password}); err != nil {
+				return fmt.Errorf("unable to merge password from keyring: %w", err)
+			}
 		}
 	}
 

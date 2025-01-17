@@ -67,15 +67,19 @@ func TestConfig_LoadKeyring(t *testing.T) {
 	cfg := New()
 	tmpFile, err := os.CreateTemp(os.TempDir(), "")
 	assert.NoError(t, err)
-	_, err = tmpFile.WriteString("username: sdkfo")
+	_, err = tmpFile.WriteString("username: unittest")
 	assert.NoError(t, err)
 
-	err = keyring.Set("upctl", "sdkfo", "foo")
+	err = keyring.Set("upctl", "unittest", "unittest_password")
 	assert.NoError(t, err)
 
 	cfg.GlobalFlags.ConfigFile = tmpFile.Name()
 	err = cfg.Load()
 	assert.NoError(t, err)
 	assert.NotEmpty(t, cfg.GetString("username"))
-	assert.Equal(t, "foo", cfg.GetString("password"))
+	assert.Equal(t, "unittest_password", cfg.GetString("password"))
+	t.Cleanup(func() {
+		// remove everything related to upctl from keyring
+		assert.NoError(t, keyring.DeleteAll("upctl"))
+	})
 }
