@@ -7,13 +7,13 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 )
 
-// ShowCommand creates the "tokens show" command
+// ShowCommand creates the "token show" command
 func ShowCommand() commands.Command {
 	return &showCommand{
 		BaseCommand: commands.New(
 			"show",
 			"Show API token details",
-			"upctl tokens show 0cdabbf9-090b-4fc5-a6ae-3f76801ed171",
+			"upctl token show 0cdabbf9-090b-4fc5-a6ae-3f76801ed171",
 		),
 	}
 }

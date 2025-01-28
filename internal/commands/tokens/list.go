@@ -10,10 +10,10 @@ import (
 	"github.com/spf13/pflag"
 )
 
-// ListCommand creates the 'tokens list' command
+// ListCommand creates the 'token list' command
 func ListCommand() commands.Command {
 	return &listCommand{
-		BaseCommand: commands.New("list", "List API tokens", "upctl tokens list"),
+		BaseCommand: commands.New("list", "List API tokens", "upctl token list"),
 	}
 }
 
