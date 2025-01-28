@@ -11,14 +11,14 @@ import (
 	"github.com/spf13/pflag"
 )
 
-// CreateCommand creates the "tokens create" command
+// CreateCommand creates the "token create" command
 func CreateCommand() commands.Command {
 	return &createCommand{
 		BaseCommand: commands.New(
 			"create",
 			"Create an API token",
-			`upctl tokens create --name test --expires_in 1h`,
-			`upctl tokens create --name test --expires_in 1h --allowed-ip-ranges "0.0.0.0/0" --allowed-ip-ranges "::/0"`,
+			`upctl token create --name test --expires_in 1h`,
+			`upctl token create --name test --expires_in 1h --allowed-ip-ranges "0.0.0.0/0" --allowed-ip-ranges "::/0"`,
 		),
 	}
 }

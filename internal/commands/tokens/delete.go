@@ -8,13 +8,13 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 )
 
-// DeleteCommand creates the "tokens delete" command
+// DeleteCommand creates the "token delete" command
 func DeleteCommand() commands.Command {
 	return &deleteCommand{
 		BaseCommand: commands.New(
 			"delete",
 			"Delete an API token",
-			"upctl tokens delete 0c0e2abf-cd89-490b-abdb-d06db6e8d816",
+			"upctl token delete 0c0e2abf-cd89-490b-abdb-d06db6e8d816",
 		),
 	}
 }
