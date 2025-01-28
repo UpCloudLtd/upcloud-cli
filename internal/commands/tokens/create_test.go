@@ -29,7 +29,7 @@ func TestCreateToken(t *testing.T) {
 			name: "defaults",
 			args: []string{
 				"--name", "test",
-				"--expires_in", "1h",
+				"--expires-in", "1h",
 			},
 			req: request.CreateTokenRequest{
 				Name:               "test",
@@ -53,30 +53,30 @@ func TestCreateToken(t *testing.T) {
 		{
 			name: "missing name",
 			args: []string{
-				"--expires_in", "1h",
+				"--expires-in", "1h",
 			},
 			errFn: func(t assert.TestingT, err error, i ...interface{}) bool {
 				return assert.ErrorContains(t, err, `required flag(s) "name" not set`)
 			},
 		},
 		{
-			name: "invalid expires_in",
+			name: "invalid expires-in",
 			args: []string{
 				"--name", "test",
-				"--expires_in", "seppo",
+				"--expires-in", "seppo",
 			},
 			errFn: func(t assert.TestingT, err error, i ...interface{}) bool {
-				return assert.ErrorContains(t, err, `invalid argument "seppo" for "--expires_in"`)
+				return assert.ErrorContains(t, err, `invalid argument "seppo" for "--expires-in"`)
 			},
 		},
 		{
-			name: "invalid expires_at",
+			name: "invalid expires-at",
 			args: []string{
 				"--name", "test",
-				"--expires_at", "seppo",
+				"--expires-at", "seppo",
 			},
 			errFn: func(t assert.TestingT, err error, i ...interface{}) bool {
-				return assert.ErrorContains(t, err, `invalid expires_at: `)
+				return assert.ErrorContains(t, err, `invalid expires-at: `)
 			},
 		},
 		{
@@ -85,7 +85,7 @@ func TestCreateToken(t *testing.T) {
 				"--name", "test",
 			},
 			errFn: func(t assert.TestingT, err error, i ...interface{}) bool {
-				return assert.ErrorContains(t, err, `either expires_in or expires_at must be set`)
+				return assert.ErrorContains(t, err, `either expires-in or expires-at must be set`)
 			},
 		},
 	} {
@@ -96,7 +96,7 @@ func TestCreateToken(t *testing.T) {
 
 			if test.resp != nil {
 				mService.On("CreateToken", mock.MatchedBy(func(req *request.CreateTokenRequest) bool {
-					// service uses time.Now() with "expires_in" added to it to set ExpiresAt, so we can't set a mock to any
+					// service uses time.Now() with "expires-in" added to it to set ExpiresAt, so we can't set a mock to any
 					// static value. Instead, we'll just check that the request has the correct name and that the ExpiresAt
 					// is within 1 second of "now".
 					return assert.Equal(t, test.req.Name, req.Name) && assert.InDelta(t, test.req.ExpiresAt.UnixMilli(), req.ExpiresAt.UnixMilli(), 1000)
