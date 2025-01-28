@@ -17,8 +17,8 @@ func CreateCommand() commands.Command {
 		BaseCommand: commands.New(
 			"create",
 			"Create an API token",
-			`upctl token create --name test --expires_in 1h`,
-			`upctl token create --name test --expires_in 1h --allowed-ip-ranges "0.0.0.0/0" --allowed-ip-ranges "::/0"`,
+			`upctl token create --name test --expires-in 1h`,
+			`upctl token create --name test --expires-in 1h --allowed-ip-ranges "0.0.0.0/0" --allowed-ip-ranges "::/0"`,
 		),
 	}
 }
@@ -48,13 +48,13 @@ type createParams struct {
 
 func (s *createParams) processParams() error {
 	if s.expiresIn == 0 && s.expiresAt == "" {
-		return fmt.Errorf("either expires_in or expires_at must be set")
+		return fmt.Errorf("either expires-in or expires-at must be set")
 	}
 	if s.expiresAt != "" {
 		var err error
 		s.ExpiresAt, err = time.Parse(time.RFC3339, s.expiresAt)
 		if err != nil {
-			return fmt.Errorf("invalid expires_at: %w", err)
+			return fmt.Errorf("invalid expires-at: %w", err)
 		}
 	} else {
 		s.ExpiresAt = time.Now().Add(s.expiresIn)
@@ -73,8 +73,8 @@ type createCommand struct {
 
 func applyCreateFlags(fs *pflag.FlagSet, dst, def *createParams) {
 	fs.StringVar(&dst.name, "name", def.name, "Name for the token.")
-	fs.StringVar(&dst.expiresAt, "expires_at", def.expiresAt, "Exact time when the token expires in RFC3339 format. e.g. 2025-01-01T00:00:00Z")
-	fs.DurationVar(&dst.expiresIn, "expires_in", def.expiresIn, "Duration until the token expires. e.g. 24h")
+	fs.StringVar(&dst.expiresAt, "expires-at", def.expiresAt, "Exact time when the token expires in RFC3339 format. e.g. 2025-01-01T00:00:00Z")
+	fs.DurationVar(&dst.expiresIn, "expires-in", def.expiresIn, "Duration until the token expires. e.g. 24h")
 	fs.BoolVar(&dst.canCreateTokens, "can-create-tokens", def.canCreateTokens, "Allow token to be used to create further tokens.")
 	fs.StringArrayVar(&dst.allowedIPRanges, "allowed-ip-ranges", def.allowedIPRanges, "Allowed IP ranges for the token.")
 }
