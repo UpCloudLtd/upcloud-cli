@@ -57,7 +57,7 @@ func (s *assignCommand) InitCommand() {
 }
 
 func (s *assignCommand) InitCommandWithConfig(cfg *config.Config) {
-	_ = s.Cobra().RegisterFlagCompletionFunc("zone", namedargs.CompletionFunc(completion.Zone{}, cfg))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("zone", namedargs.CompletionFunc(completion.Zone{}, cfg)))
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand

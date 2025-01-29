@@ -54,7 +54,7 @@ func (s *templatizeCommand) InitCommand() {
 	config.AddToggleFlag(flagSet, &s.wait, "wait", false, "Wait for storage to be in online state before returning.")
 
 	s.AddFlags(flagSet)
-	_ = s.Cobra().MarkFlagRequired("title")
+	commands.Must(s.Cobra().MarkFlagRequired("title"))
 }
 
 // Execute implements commands.MultipleArgumentCommand

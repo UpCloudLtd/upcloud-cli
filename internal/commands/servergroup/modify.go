@@ -88,6 +88,10 @@ func (c *modifyCommand) InitCommand() {
 	c.AddFlags(fs)
 }
 
+func (c *modifyCommand) InitCommandWithConfig(cfg *config.Config) {
+	commands.Must(c.Cobra().RegisterFlagCompletionFunc("server", namedargs.CompletionFunc(completion.Server{}, cfg)))
+}
+
 // Execute implements commands.MultipleArgumentCommand
 func (c *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.All()
@@ -108,8 +112,4 @@ func (c *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Out
 	exec.PushProgressSuccess(msg)
 
 	return output.OnlyMarshaled{Value: res}, nil
-}
-
-func (c *modifyCommand) InitCommandWithConfig(cfg *config.Config) {
-	_ = c.Cobra().RegisterFlagCompletionFunc("server", namedargs.CompletionFunc(completion.Server{}, cfg))
 }

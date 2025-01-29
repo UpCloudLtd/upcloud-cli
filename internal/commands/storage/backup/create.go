@@ -48,7 +48,7 @@ func (s *createBackupCommand) InitCommand() {
 	flagSet.StringVar(&s.params.Title, "title", defaultCreateBackupParams.Title, "A short, informational description.")
 
 	s.AddFlags(flagSet)
-	_ = s.Cobra().MarkFlagRequired("title")
+	commands.Must(s.Cobra().MarkFlagRequired("title"))
 }
 
 // Execute implements commands.MultipleArgumentCommand

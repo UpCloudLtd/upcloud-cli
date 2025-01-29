@@ -55,13 +55,13 @@ func (s *createCommand) InitCommand() {
 		"  dhcp-dns: array of strings")
 
 	s.AddFlags(fs)
-	_ = s.Cobra().MarkFlagRequired("name")
-	_ = s.Cobra().MarkFlagRequired("zone")
-	_ = s.Cobra().MarkFlagRequired("ip-network")
+	commands.Must(s.Cobra().MarkFlagRequired("name"))
+	commands.Must(s.Cobra().MarkFlagRequired("zone"))
+	commands.Must(s.Cobra().MarkFlagRequired("ip-network"))
 }
 
 func (s *createCommand) InitCommandWithConfig(cfg *config.Config) {
-	_ = s.Cobra().RegisterFlagCompletionFunc("zone", namedargs.CompletionFunc(completion.Zone{}, cfg))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("zone", namedargs.CompletionFunc(completion.Zone{}, cfg)))
 }
 
 // MaximumExecutions implements Command.MaximumExecutions

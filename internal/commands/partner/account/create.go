@@ -45,8 +45,8 @@ func (s *createCommand) InitCommand() {
 	fs.StringVar(&s.params.ContactDetails.VATNumber, "vat-number", "", "Contact VAT number.")
 
 	s.AddFlags(fs)
-	_ = s.Cobra().MarkFlagRequired("username")
-	_ = s.Cobra().MarkFlagRequired("password")
+	commands.Must(s.Cobra().MarkFlagRequired("username"))
+	commands.Must(s.Cobra().MarkFlagRequired("password"))
 }
 
 func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {

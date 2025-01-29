@@ -142,9 +142,9 @@ func (s *createCommand) InitCommand() {
 	fs := GetCreateNodeGroupFlagSet(&s.p)
 	s.AddFlags(fs)
 
-	_ = s.Cobra().MarkFlagRequired("name")
-	_ = s.Cobra().MarkFlagRequired("count")
-	_ = s.Cobra().MarkFlagRequired("plan")
+	commands.Must(s.Cobra().MarkFlagRequired("name"))
+	commands.Must(s.Cobra().MarkFlagRequired("count"))
+	commands.Must(s.Cobra().MarkFlagRequired("plan"))
 }
 
 // ExecuteSingleArgument implements commands.SingleArgumentCommand

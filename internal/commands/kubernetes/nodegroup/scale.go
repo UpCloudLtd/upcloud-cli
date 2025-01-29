@@ -37,8 +37,8 @@ func (s *scaleCommand) InitCommand() {
 	flagSet.IntVar(&s.count, "count", 0, "Node count")
 	s.AddFlags(flagSet)
 
-	_ = s.Cobra().MarkFlagRequired("name")
-	_ = s.Cobra().MarkFlagRequired("count")
+	commands.Must(s.Cobra().MarkFlagRequired("name"))
+	commands.Must(s.Cobra().MarkFlagRequired("count"))
 }
 
 // ExecuteSingleArgument implements commands.SingleArgumentCommand
