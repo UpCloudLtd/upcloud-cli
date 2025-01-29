@@ -19,7 +19,7 @@ import (
 // ListCommand creates the 'permissions list' command
 func ListCommand() commands.Command {
 	return &listCommand{
-		BaseCommand: commands.New("list", "List permissions", "upctl account show"),
+		BaseCommand: commands.New("list", "List permissions", "upctl account permissions list"),
 	}
 }
 
