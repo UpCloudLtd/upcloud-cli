@@ -34,6 +34,11 @@ type serverCommand struct {
 	*commands.BaseCommand
 }
 
+// InitCommand implements Command.InitCommand
+func (srv *serverCommand) InitCommand() {
+	srv.Cobra().Aliases = []string{"srv"}
+}
+
 // waitForServerState waits for server to reach given state and updates progress message with key matching given msg. Finally, progress message is updated back to given msg and either done state or timeout warning.
 func waitForServerState(uuid, state string, exec commands.Executor, msg string) {
 	exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Waiting for server %s to be in %s state", uuid, state))
