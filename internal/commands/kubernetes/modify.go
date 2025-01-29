@@ -21,7 +21,7 @@ func ModifyCommand() commands.Command {
 		BaseCommand: commands.New(
 			"modify",
 			"Modify an existing cluster",
-			"upctl cluster modify 00bb4617-c592-4b32-b869-35a60b323b18 --plan 1xCPU-1GB",
+			"upctl kubernetes modify 00bb4617-c592-4b32-b869-35a60b323b18 --plan 1xCPU-1GB",
 		),
 	}
 }
