@@ -18,7 +18,7 @@ func MatchArgWithWhitespace(arg, value string) MatchType {
 	return MatchTypeNone
 }
 
-// MatchStringWithWhitespace checks if arg matches given value as an unix style glob pattern.
+// MatchStringWithWhitespace checks if arg matches given value as a unix style glob pattern.
 func MatchArgWithGlobPattern(arg, value string) MatchType {
 	if matched, _ := filepath.Match(arg, value); matched {
 		return MatchTypeGlobPattern

@@ -132,7 +132,7 @@ func (s OptionalBoolean) IsSet() bool {
 	return s == True || s == False
 }
 
-// OverrideNotSet returns a OptionalBoolean set to b if the original OptionalBoolean was not set
+// OverrideNotSet returns an OptionalBoolean set to b if the original OptionalBoolean was not set
 func (s OptionalBoolean) OverrideNotSet(b bool) OptionalBoolean {
 	if s.IsSet() {
 		return s
