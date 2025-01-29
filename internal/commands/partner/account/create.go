@@ -31,7 +31,7 @@ func (s *createCommand) InitCommand() {
 	cReqDesc := " Required when other contact details are given."
 
 	fs.StringVar(&s.params.Username, "username", "", "Account username.")
-	fs.StringVar(&s.params.Password, "password", "", "Account pasword.")
+	fs.StringVar(&s.params.Password, "password", "", "Account password.")
 	fs.StringVar(&s.params.ContactDetails.FirstName, "first-name", "", "Contact first name."+cReqDesc)
 	fs.StringVar(&s.params.ContactDetails.LastName, "last-name", "", "Contact last name."+cReqDesc)
 	fs.StringVar(&s.params.ContactDetails.Company, "company", "", "Contact company name.")
