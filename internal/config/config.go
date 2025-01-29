@@ -10,6 +10,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/clierrors"
 	internal "github.com/UpCloudLtd/upcloud-cli/v3/internal/service"
+	"github.com/zalando/go-keyring"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/client"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/service"
@@ -33,6 +34,9 @@ const (
 
 	// env vars custom prefix
 	envPrefix = "UPCLOUD"
+
+	// serviceName is the name of the service
+	serviceName = "upctl"
 )
 
 var (
@@ -76,7 +80,7 @@ func (s *Config) Load() error {
 	v.SetEnvPrefix(envPrefix)
 	v.SetEnvKeyReplacer(strings.NewReplacer("-", "_", ".", "_"))
 	v.AutomaticEnv()
-	v.SetConfigName("upctl")
+	v.SetConfigName(serviceName)
 	v.SetConfigType("yaml")
 
 	configFile := s.GlobalFlags.ConfigFile
@@ -92,6 +96,15 @@ func (s *Config) Load() error {
 	if err := v.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
 			return fmt.Errorf("unable to parse config from file '%v': %w", v.ConfigFileUsed(), err)
+		}
+	}
+
+	if v.GetString("username") != "" && v.GetString("password") == "" {
+		password, err := keyring.Get(serviceName, v.GetString("username"))
+		if err == nil {
+			if err := v.MergeConfigMap(map[string]interface{}{"password": password}); err != nil {
+				return fmt.Errorf("unable to merge password from keyring: %w", err)
+			}
 		}
 	}
 
@@ -195,11 +208,11 @@ func (s *Config) CreateService() (internal.AllServices, error) {
 		if s.GetString("config") != "" {
 			configDetails = fmt.Sprintf("used %s", s.GetString("config"))
 		}
-		return nil, clierrors.MissingCredentialsError{ConfigFile: configDetails}
+		return nil, clierrors.MissingCredentialsError{ConfigFile: configDetails, ServiceName: serviceName}
 	}
 
 	client := client.New(username, password, client.WithTimeout(s.ClientTimeout()))
-	client.UserAgent = fmt.Sprintf("upctl/%s", GetVersion())
+	client.UserAgent = fmt.Sprintf("%s/%s", serviceName, GetVersion())
 
 	svc := service.New(client)
 	return svc, nil
