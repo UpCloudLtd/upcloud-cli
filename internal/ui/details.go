@@ -64,7 +64,7 @@ type DetailsView struct {
 	headerWidth    int
 }
 
-// Render renders a ata container for details as a table
+// Render renders a data container for details as a table
 func (s *DetailsView) Render() string {
 	if len(s.rows) < 1 {
 		return ""

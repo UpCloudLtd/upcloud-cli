@@ -55,7 +55,7 @@ type ListLayout struct {
 	style listLayoutConfig
 }
 
-// NewListLayout returns a a new list data renderer
+// NewListLayout returns a new list data renderer
 func NewListLayout(style listLayoutConfig) *ListLayout {
 	l := list.NewWriter()
 	l.SetStyle(defaultListStyle)

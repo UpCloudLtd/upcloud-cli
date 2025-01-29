@@ -89,12 +89,12 @@ func FormatBytes(n int) string {
 	return fmt.Sprintf("%sB", AbbrevNumBinaryPrefix(uint(n)))
 }
 
-// ParseAbbrevNum parses a string formatted to an uint in SI unit style. (eg. "1k" = 1000)
+// ParseAbbrevNum parses a string formatted to a uint in SI unit style. (eg. "1k" = 1000)
 func ParseAbbrevNum(s string) (uint, error) {
 	return parseAbbrevInt(s, siMultiples)
 }
 
-// ParseAbbrevNumBinaryPrefix parses a string formatted to an uint in binary units. (eg. "1Ki" = 1000)
+// ParseAbbrevNumBinaryPrefix parses a string formatted to a uint in binary units. (eg. "1Ki" = 1000)
 func ParseAbbrevNumBinaryPrefix(s string) (uint, error) {
 	return parseAbbrevInt(s, binaryMultiples)
 }
