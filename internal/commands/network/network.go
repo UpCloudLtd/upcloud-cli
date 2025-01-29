@@ -44,7 +44,7 @@ func handleNetwork(in string) (*upcloud.IPNetwork, error) {
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&dns, "dhcp-dns", dns, "Defines if the gateway should be given as default route by DHCP. Defaults to yes on public networks, and no on other ones.")
 	fs.StringVar(&result.Address, "address", result.Address, "Sets address space for the network.")
-	fs.StringVar(&result.Family, "family", result.Address, "IP address family. Currently only IPv4 networks are supported.")
+	fs.StringVar(&result.Family, "family", result.Family, "IP address family. Currently only IPv4 networks are supported.")
 	fs.StringVar(&result.Gateway, "gateway", result.Gateway, "Gateway address given by the DHCP service. Defaults to first address of the network if not given.")
 	fs.StringVar(&dhcp, "dhcp", dhcp, "Toggles DHCP service for the network.")
 	fs.StringVar(&dhcpDefaultRoute, "dhcp-default-route", dhcpDefaultRoute, "Defines if the gateway should be given as default route by DHCP. Defaults to yes on public networks, and no on other ones.")
