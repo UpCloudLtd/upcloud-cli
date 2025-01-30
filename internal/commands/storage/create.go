@@ -94,12 +94,12 @@ func (s *createCommand) InitCommand() {
 	applyCreateFlags(s.flagSet, &s.params, defaultCreateParams)
 
 	s.AddFlags(s.flagSet)
-	_ = s.Cobra().MarkFlagRequired("title")
-	_ = s.Cobra().MarkFlagRequired("zone")
+	commands.Must(s.Cobra().MarkFlagRequired("title"))
+	commands.Must(s.Cobra().MarkFlagRequired("zone"))
 }
 
 func (s *createCommand) InitCommandWithConfig(cfg *config.Config) {
-	_ = s.Cobra().RegisterFlagCompletionFunc("zone", namedargs.CompletionFunc(completion.Zone{}, cfg))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("zone", namedargs.CompletionFunc(completion.Zone{}, cfg)))
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand

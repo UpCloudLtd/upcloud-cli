@@ -135,3 +135,10 @@ func ParseSSHKeys(sshKeys []string) ([]string, error) {
 
 	return allSSHKeys, nil
 }
+
+// Must panics if the error is not nil.
+func Must(err error) {
+	if err != nil {
+		panic(err)
+	}
+}

@@ -93,11 +93,11 @@ func (c *createCommand) InitCommand() {
 
 	c.AddFlags(fs)
 
-	_ = c.Cobra().MarkFlagRequired("title")
+	commands.Must(c.Cobra().MarkFlagRequired("title"))
 }
 
 func (c *createCommand) InitCommandWithConfig(cfg *config.Config) {
-	_ = c.Cobra().RegisterFlagCompletionFunc("server", namedargs.CompletionFunc(completion.Server{}, cfg))
+	commands.Must(c.Cobra().RegisterFlagCompletionFunc("server", namedargs.CompletionFunc(completion.Server{}, cfg)))
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand

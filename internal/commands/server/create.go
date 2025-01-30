@@ -299,12 +299,12 @@ func (s *createCommand) InitCommand() {
 	// fs.BoolVar(&s.params.remoteAccess, "remote-access-enabled", def.remoteAccess, "Enables or disables the remote access.")
 	s.AddFlags(fs)
 
-	_ = s.Cobra().MarkFlagRequired("hostname")
-	_ = s.Cobra().MarkFlagRequired("zone")
+	commands.Must(s.Cobra().MarkFlagRequired("hostname"))
+	commands.Must(s.Cobra().MarkFlagRequired("zone"))
 }
 
 func (s *createCommand) InitCommandWithConfig(cfg *config.Config) {
-	_ = s.Cobra().RegisterFlagCompletionFunc("zone", namedargs.CompletionFunc(completion.Zone{}, cfg))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("zone", namedargs.CompletionFunc(completion.Zone{}, cfg)))
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand

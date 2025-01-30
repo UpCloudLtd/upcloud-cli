@@ -36,7 +36,7 @@ func (s *modifyCommand) InitCommand() {
 	fs.StringVar(&s.name, "name", "", "New router name.")
 
 	s.AddFlags(fs)
-	_ = s.Cobra().MarkFlagRequired("name")
+	commands.Must(s.Cobra().MarkFlagRequired("name"))
 }
 
 // ExecuteSingleArgument implements commands.SingleArgumentCommand

@@ -74,7 +74,7 @@ func (s *importCommand) InitCommand() {
 	applyCreateFlags(flagSet, &s.createParams, defaultCreateParams)
 
 	s.AddFlags(flagSet)
-	_ = s.Cobra().MarkFlagRequired("source-location")
+	commands.Must(s.Cobra().MarkFlagRequired("source-location"))
 }
 
 type storageImportStatus struct {

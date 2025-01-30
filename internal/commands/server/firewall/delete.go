@@ -35,7 +35,7 @@ func (s *deleteCommand) InitCommand() {
 	flagSet.IntVar(&s.rulePosition, "position", 0, "Rule position. Available: 1-1000")
 	s.AddFlags(flagSet)
 
-	_ = s.Cobra().MarkFlagRequired("position")
+	commands.Must(s.Cobra().MarkFlagRequired("position"))
 }
 
 // Execute implements commands.MultipleArgumentCommand

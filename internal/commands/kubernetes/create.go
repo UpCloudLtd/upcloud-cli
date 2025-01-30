@@ -147,15 +147,15 @@ func (c *createCommand) InitCommand() {
 	config.AddToggleFlag(fs, &c.params.wait, "wait", false, "Wait for cluster to be in running state before returning.")
 	c.AddFlags(fs)
 
-	_ = c.Cobra().MarkFlagRequired("name")
-	_ = c.Cobra().MarkFlagRequired("network")
-	_ = c.Cobra().MarkFlagRequired("zone")
+	commands.Must(c.Cobra().MarkFlagRequired("name"))
+	commands.Must(c.Cobra().MarkFlagRequired("network"))
+	commands.Must(c.Cobra().MarkFlagRequired("zone"))
 }
 
 func (c *createCommand) InitCommandWithConfig(cfg *config.Config) {
-	_ = c.Cobra().RegisterFlagCompletionFunc("network", namedargs.CompletionFunc(completion.Network{}, cfg))
-	_ = c.Cobra().RegisterFlagCompletionFunc("zone", namedargs.CompletionFunc(completion.Zone{}, cfg))
-	_ = c.Cobra().RegisterFlagCompletionFunc("version", namedargs.CompletionFunc(completion.KubernetesVersion{}, cfg))
+	commands.Must(c.Cobra().RegisterFlagCompletionFunc("network", namedargs.CompletionFunc(completion.Network{}, cfg)))
+	commands.Must(c.Cobra().RegisterFlagCompletionFunc("zone", namedargs.CompletionFunc(completion.Zone{}, cfg)))
+	commands.Must(c.Cobra().RegisterFlagCompletionFunc("version", namedargs.CompletionFunc(completion.KubernetesVersion{}, cfg)))
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand

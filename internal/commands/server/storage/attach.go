@@ -58,7 +58,7 @@ func (s *attachCommand) InitCommand() {
 	config.AddToggleFlag(flagSet, &s.params.bootable, "boot-disk", false, "Set attached device as the server's boot disk.")
 
 	s.AddFlags(flagSet)
-	_ = s.Cobra().MarkFlagRequired("storage")
+	commands.Must(s.Cobra().MarkFlagRequired("storage"))
 }
 
 // MaximumExecutions implements command.Command

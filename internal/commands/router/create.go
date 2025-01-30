@@ -33,7 +33,7 @@ func (s *createCommand) InitCommand() {
 	fs.StringVar(&s.name, "name", s.name, "Router name.")
 
 	s.AddFlags(fs)
-	_ = s.Cobra().MarkFlagRequired("name")
+	commands.Must(s.Cobra().MarkFlagRequired("name"))
 }
 
 // MaximumExecutions implements Command.MaximumExecutions
