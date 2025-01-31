@@ -2,6 +2,8 @@ package tokens
 
 import (
 	"fmt"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
@@ -21,6 +23,8 @@ func DeleteCommand() commands.Command {
 
 type deleteCommand struct {
 	*commands.BaseCommand
+	resolver.CachingToken
+	completion.Token
 }
 
 // Execute implements commands.MultipleArgumentCommand
