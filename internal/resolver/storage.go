@@ -57,7 +57,7 @@ func (s *CachingStorage) Resolve(arg string) (resolved string, err error) {
 // GetCached is a helper method for commands to use when they need to get an item from the cached results
 func (s *CachingStorage) GetCached(uuid string) (upcloud.Storage, error) {
 	if s.cachedStorages == nil {
-		return upcloud.Storage{}, errors.New("caching storages does not have a cache initialized")
+		return upcloud.Storage{}, errors.New("caching storage does not have a cache initialized")
 	}
 	for _, storage := range s.cachedStorages.Storages {
 		if storage.UUID == uuid {
