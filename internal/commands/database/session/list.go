@@ -12,6 +12,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -44,6 +45,9 @@ func (s *listCommand) InitCommand() {
 	flagSet.StringVar(&s.order, "order", "query_duration:desc", "Key and direction for sorting.")
 
 	s.AddFlags(flagSet)
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("limit", cobra.NoFileCompletions))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("offset", cobra.NoFileCompletions))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("order", cobra.NoFileCompletions))
 }
 
 // Execute implements commands.MultipleArgumentCommand

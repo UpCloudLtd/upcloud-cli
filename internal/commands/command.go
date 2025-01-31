@@ -141,6 +141,9 @@ func (s *BaseCommand) AddFlags(flags *pflag.FlagSet) {
 
 	flags.VisitAll(func(flag *pflag.Flag) {
 		s.Cobra().Flags().AddFlag(flag)
+		if _, ok := flag.Annotations[FlagAnnotationNoFileCompletions]; ok {
+			Must(s.Cobra().RegisterFlagCompletionFunc(flag.Name, cobra.NoFileCompletions))
+		}
 	})
 }
 
