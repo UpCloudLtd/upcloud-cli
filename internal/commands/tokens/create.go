@@ -86,7 +86,7 @@ func (s *createCommand) InitCommand() {
 	applyCreateFlags(s.flagSet, &s.params, defaultCreateParams)
 
 	s.AddFlags(s.flagSet)
-	_ = s.Cobra().MarkFlagRequired("name")
+	commands.Must(s.Cobra().MarkFlagRequired("name"))
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
