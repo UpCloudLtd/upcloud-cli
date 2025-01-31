@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/validation"
+	"github.com/spf13/cobra"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/jedib0t/go-pretty/v6/text"
@@ -134,4 +135,64 @@ func ParseSSHKeys(sshKeys []string) ([]string, error) {
 	}
 
 	return allSSHKeys, nil
+}
+
+// SetHiddenAlias modifies the help output to hide secondary aliases. Help will show only the first alias
+// Used when changing the name of a command so we can add the old name as a hidden alias.
+func HideSecondaryAliases(cmd *cobra.Command) {
+	cmd.SetHelpFunc(func(cmd *cobra.Command, args []string) {
+		originalTemplate := cmd.UsageTemplate()
+		modifiedTemplate := strings.Replace(originalTemplate, "{{.NameAndAliases}}{{end}}", "{{index .Aliases 0}}{{end}}", -1)
+
+		// Apply modified template
+		cmd.SetUsageTemplate(modifiedTemplate)
+
+		// Print the help message with the new template
+		fmt.Println(cmd.UsageString())
+	})
+}
+
+// SetDeprecationHelp hides a specific alias in the help output and prints a deprecation warning when used.
+func SetDeprecationHelp(cmd *cobra.Command, alias string) {
+	// Construct new alias list, excluding the deprecated alias
+	var filteredAliases []string
+	for _, a := range cmd.Aliases {
+		if a != alias {
+			filteredAliases = append(filteredAliases, a)
+		}
+	}
+
+	// Update the alias list in the usage template **before** help is triggered
+	originalTemplate := cmd.UsageTemplate()
+	var modifiedTemplate string
+
+	if len(filteredAliases) > 0 {
+		modifiedTemplate = strings.Replace(originalTemplate, "{{.NameAndAliases}}{{end}}", "{{.Use}}, "+strings.Join(filteredAliases, ", ")+"{{end}}", -1)
+	} else {
+		modifiedTemplate = strings.Replace(originalTemplate, "{{.NameAndAliases}}{{end}}", "{{.Use}}{{end}}", -1)
+	}
+
+	// Apply the updated usage template **before help is called**
+	cmd.SetUsageTemplate(modifiedTemplate)
+
+	// Custom Help Function to Show Deprecation Warning
+	cmd.SetHelpFunc(func(cmd *cobra.Command, args []string) {
+		if cmd.CalledAs() == alias {
+			fmt.Printf("⚠️  Deprecation Warning: The alias '%s' is deprecated and will be removed in a future release.\n", alias)
+			fmt.Printf("   Please use '%s' instead.\n\n", cmd.Use)
+		}
+
+		// Print the help output with the modified alias list
+		fmt.Println(cmd.UsageString())
+	})
+
+	// Override the built-in "help" subcommand so it also respects hidden aliases
+	cmd.SetHelpCommand(&cobra.Command{
+		Use:   "help",
+		Short: "Show help for the command",
+		Run: func(cmd *cobra.Command, args []string) {
+			// Ensure it calls the original command's help function
+			cmd.Help()
+		},
+	})
 }

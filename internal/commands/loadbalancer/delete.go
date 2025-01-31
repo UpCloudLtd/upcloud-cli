@@ -16,8 +16,8 @@ func DeleteCommand() commands.Command {
 		BaseCommand: commands.New(
 			"delete",
 			"Delete a load balancer",
-			"upctl loadbalancer delete 55199a44-4751-4e27-9394-7c7661910be3",
-			"upctl loadbalancer delete my-load-balancer",
+			"upctl load-balancer delete 55199a44-4751-4e27-9394-7c7661910be3",
+			"upctl load-balancer delete my-load-balancer",
 		),
 	}
 }

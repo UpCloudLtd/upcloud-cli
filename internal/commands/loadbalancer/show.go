@@ -20,8 +20,8 @@ func ShowCommand() commands.Command {
 		BaseCommand: commands.New(
 			"show",
 			"Show load balancer details",
-			"upctl loadbalancer show 55199a44-4751-4e27-9394-7c7661910be3",
-			"upctl loadbalancer show my-load-balancer",
+			"upctl load-balancer show 55199a44-4751-4e27-9394-7c7661910be3",
+			"upctl load-balancer show my-load-balancer",
 		),
 	}
 }

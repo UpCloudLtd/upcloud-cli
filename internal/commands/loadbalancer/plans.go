@@ -9,7 +9,7 @@ import (
 // PlansCommand creates the "loadbalancer plans" command
 func PlansCommand() commands.Command {
 	return &plansCommand{
-		BaseCommand: commands.New("plans", "List available load balancer plans", "upctl loadbalancer plans"),
+		BaseCommand: commands.New("plans", "List available load balancer plans", "upctl load-balancer plans"),
 	}
 }
 

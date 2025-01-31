@@ -13,7 +13,7 @@ import (
 // ListCommand creates the "loadbalancer list" command
 func ListCommand() commands.Command {
 	return &listCommand{
-		BaseCommand: commands.New("list", "List current load balancers", "upctl loadbalancer list"),
+		BaseCommand: commands.New("list", "List current load balancers", "upctl load-balancer list"),
 	}
 }
 
