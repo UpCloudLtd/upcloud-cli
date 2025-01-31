@@ -5,7 +5,8 @@ to control your resources from the command line or any compatible interface.
 
 ## Install upctl
 
-`upctl` can be installed from a pre-built package in the repositories [GitHub releases](https://github.com/UpCloudLtd/upcloud-cli/releases) using a package manager or from sources with `go install`:
+`upctl` can be installed from a pre-built package in the repositories [GitHub releases](https://github.com/UpCloudLtd/upcloud-cli/releases),
+using a package manager, Docker image, or from sources with `go install`:
 
 === "Linux"
 
@@ -77,6 +78,25 @@ to control your resources from the command line or any compatible interface.
     ```sh
     docker pull ghcr.io/upcloudltd/upctl:latest
     ```
+
+=== "mise"
+
+    Install with [mise](https://mise.jdx.dev):
+
+    ```sh
+    mise use upctl  # or with -g for global
+    ´´´
+
+=== "aqua"
+
+    Install with [aqua](https://aquaproj.github.io), `aqua.yaml` example:
+
+    ```yaml
+    registries:
+    - type: standard
+    packages:
+    - name: UpCloudLtd/upcloud-cli@v3.14.0
+    ´´´
 
 ---
 
