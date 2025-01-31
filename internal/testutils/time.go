@@ -1,10 +1,10 @@
 package testutils
 
 import (
-	"github.com/stretchr/testify/require"
 	"testing"
-
 	"time"
+
+	"github.com/stretchr/testify/require"
 )
 
 func MustParseRFC3339(t *testing.T, timeStr string) *time.Time {

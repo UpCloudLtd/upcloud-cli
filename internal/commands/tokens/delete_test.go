@@ -12,17 +12,14 @@ import (
 )
 
 func TestDeleteCommand(t *testing.T) {
-	tokenID := "0cdabbf9-090b-4fc5-a6ae-3f76801ed171"
-
 	svc := &smock.Service{}
 	conf := config.New()
+	dr := &request.DeleteTokenRequest{ID: "0cdabbf9-090b-4fc5-a6ae-3f76801ed171"}
 
-	svc.On("DeleteToken",
-		&request.DeleteTokenRequest{ID: tokenID},
-	).Once().Return(nil)
+	svc.On("DeleteToken", dr).Once().Return(nil)
 
 	command := commands.BuildCommand(DeleteCommand(), nil, conf)
-	_, err := command.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, svc, flume.New("test")), tokenID)
+	_, err := command.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, svc, flume.New("test")), dr.ID)
 	assert.NoError(t, err)
 
 	svc.AssertExpectations(t)
