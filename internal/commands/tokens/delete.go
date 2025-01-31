@@ -2,6 +2,7 @@ package tokens
 
 import (
 	"fmt"
+
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 
