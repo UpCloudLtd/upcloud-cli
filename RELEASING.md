@@ -8,6 +8,6 @@
       - sets the version based on the tag
       - creates a draft release to GitHub
       - populates the release notes from `CHANGELOG.md` with `make release-notes`
-      - builds and uploads binaries & SHA sum for given release
+      - builds, uploads, and signs assets for given release
 5. Verify that [release notes](https://github.com/UpCloudLtd/upcloud-cli/releases) are in line with `CHANGELOG.MD`
 6. Publish the drafted release

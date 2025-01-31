@@ -86,6 +86,45 @@ After installing `upctl`, you can run `upctl version` command to verify that the
 upctl version
 ```
 
+### Verify assets
+
+Project release packages' SHA-256 checksums are available in the project releases,
+files `checksums.txt`. They can be checked for example with:
+
+```sh
+# make sure at least one downloaded package and checksums.txt are in the current directory
+sha256sum -c --ignore-missing checksums.txt
+```
+
+Project release checksum files and Docker images are signed using the
+[Sigstore framework](https://www.sigstore.dev), and can be verified with
+[cosign](https://docs.sigstore.dev/cosign/).
+
+For example, to verify package checksums file for a release:
+
+```sh
+project_url=https://github.com/UpCloudLtd/upcloud-cli
+release=vX.Y.Z
+cosign verify-blob \
+    --certificate-identity ${project_url}/.github/workflows/publish.yml@refs/tags/${release} \
+    --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+    --certificate ${project_url}/releases/download/${release}/checksums.txt-keyless.pem \
+    --signature ${project_url}/releases/download/${release}/checksums.txt-keyless.sig \
+    ${project_url}/releases/download/${release}/checksums.txt
+```
+
+And to verify the Docker image for a release:
+
+```sh
+project=UpCloudLtd/upcloud-cli
+release=vX.Y.Z
+cosign verify \
+   ghcr.io/${project}:${release} \
+   --certificate-identity https://github.com/${project}/.github/workflows/publish.yml@refs/tags/${release} \
+   --certificate-oidc-issuer https://token.actions.githubusercontent.com |
+   jq .
+```
+
 ### Configure shell completions
 
 `upctl` provides shell completions for multiple shells. Run `upctl completion --help` to list the supported shells.
