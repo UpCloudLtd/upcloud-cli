@@ -6,6 +6,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -47,6 +48,19 @@ func (s *createCommand) InitCommand() {
 	s.AddFlags(fs)
 	commands.Must(s.Cobra().MarkFlagRequired("username"))
 	commands.Must(s.Cobra().MarkFlagRequired("password"))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("username", cobra.NoFileCompletions))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("password", cobra.NoFileCompletions))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("first-name", cobra.NoFileCompletions))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("last-name", cobra.NoFileCompletions))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("company", cobra.NoFileCompletions))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("address", cobra.NoFileCompletions))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("postal-code", cobra.NoFileCompletions))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("city", cobra.NoFileCompletions))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("state", cobra.NoFileCompletions))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("country", cobra.NoFileCompletions))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("phone", cobra.NoFileCompletions))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("email", cobra.NoFileCompletions))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("vat-number", cobra.NoFileCompletions))
 }
 
 func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {

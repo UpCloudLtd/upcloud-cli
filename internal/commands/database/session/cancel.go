@@ -42,6 +42,7 @@ func (s *cancelCommand) InitCommand() {
 
 	s.AddFlags(flagSet)
 	commands.Must(s.Cobra().MarkFlagRequired("pid"))
+	commands.Must(flagSet.SetAnnotation("pid", commands.FlagAnnotationNoFileCompletions, nil))
 }
 
 // Execute implements commands.MultipleArgumentCommand

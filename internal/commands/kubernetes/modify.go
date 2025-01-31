@@ -12,6 +12,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -50,6 +51,7 @@ func (c *modifyCommand) InitCommand() {
 
 	c.AddFlags(fs)
 	c.Cobra().MarkFlagsMutuallyExclusive("label", "clear-labels")
+	commands.Must(c.Cobra().RegisterFlagCompletionFunc("label", cobra.NoFileCompletions))
 }
 
 // Execute implements commands.MultipleArgumentCommand
