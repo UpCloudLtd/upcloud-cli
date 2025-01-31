@@ -2,6 +2,7 @@ package tokens
 
 import (
 	"testing"
+	"time"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
@@ -12,7 +13,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"time"
 )
 
 func TestCreateToken(t *testing.T) {
@@ -55,7 +55,7 @@ func TestCreateToken(t *testing.T) {
 			args: []string{
 				"--expires-in", "1h",
 			},
-			errFn: func(t assert.TestingT, err error, i ...interface{}) bool {
+			errFn: func(t assert.TestingT, err error, _ ...interface{}) bool {
 				return assert.ErrorContains(t, err, `required flag(s) "name" not set`)
 			},
 		},
@@ -65,7 +65,7 @@ func TestCreateToken(t *testing.T) {
 				"--name", "test",
 				"--expires-in", "seppo",
 			},
-			errFn: func(t assert.TestingT, err error, i ...interface{}) bool {
+			errFn: func(t assert.TestingT, err error, _ ...interface{}) bool {
 				return assert.ErrorContains(t, err, `invalid argument "seppo" for "--expires-in"`)
 			},
 		},
@@ -75,7 +75,7 @@ func TestCreateToken(t *testing.T) {
 				"--name", "test",
 				"--expires-at", "seppo",
 			},
-			errFn: func(t assert.TestingT, err error, i ...interface{}) bool {
+			errFn: func(t assert.TestingT, err error, _ ...interface{}) bool {
 				return assert.ErrorContains(t, err, `invalid expires-at: `)
 			},
 		},
@@ -84,7 +84,7 @@ func TestCreateToken(t *testing.T) {
 			args: []string{
 				"--name", "test",
 			},
-			errFn: func(t assert.TestingT, err error, i ...interface{}) bool {
+			errFn: func(t assert.TestingT, err error, _ ...interface{}) bool {
 				return assert.ErrorContains(t, err, `either expires-in or expires-at must be set`)
 			},
 		},

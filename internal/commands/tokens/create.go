@@ -1,9 +1,9 @@
 package tokens
 
 import (
+	"fmt"
 	"time"
 
-	"fmt"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
