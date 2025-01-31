@@ -16,6 +16,11 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
+const (
+	// FlagAnnotationNoFileCompletions is the annotation name to use for our flags that have no filename completions.
+	FlagAnnotationNoFileCompletions = "upctl_flag_no_file_completions"
+)
+
 // ParseN parses a complex, querystring-type argument from `in` and splits values to `n` amount of substrings
 // e.g. with `n` 2: `--foo bar=baz,flop=flip=1` returns `[]string{"bar","baz","flop","flip=1"}`
 func ParseN(in string, n int) ([]string, error) {
