@@ -12,3 +12,8 @@ func BaseAccountCommand() commands.Command {
 type accountCommand struct {
 	*commands.BaseCommand
 }
+
+// InitCommand implements Command.InitCommand
+func (acc *accountCommand) InitCommand() {
+	acc.Cobra().Aliases = []string{"acc"}
+}

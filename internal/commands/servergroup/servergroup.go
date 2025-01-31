@@ -23,6 +23,11 @@ type servergroupCommand struct {
 	*commands.BaseCommand
 }
 
+// InitCommand implements Command.InitCommand
+func (sg *servergroupCommand) InitCommand() {
+	sg.Cobra().Aliases = []string{"sg"}
+}
+
 func stringsToServerUUIDSlice(exec commands.Executor, servers []string) (upcloud.ServerUUIDSlice, error) {
 	slice := make(upcloud.ServerUUIDSlice, 0)
 	for _, v := range servers {
