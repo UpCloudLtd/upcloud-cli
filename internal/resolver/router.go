@@ -37,7 +37,7 @@ func (s *CachingRouter) Get(ctx context.Context, svc internal.AllServices) (Reso
 // GetCached is a helper method for commands to use when they need to get an item from the cached results
 func (s *CachingRouter) GetCached(uuid string) (upcloud.Router, error) {
 	if s.cached == nil {
-		return upcloud.Router{}, errors.New("caching network does not have a cache initialized")
+		return upcloud.Router{}, errors.New("caching router does not have a cache initialized")
 	}
 	for _, router := range s.cached {
 		if router.UUID == uuid {
