@@ -57,6 +57,7 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 		Value: plans,
 		Output: output.Combined{
 			planSection("general_purpose", "General purpose", rows["general_purpose"]),
+			planSection("cloud_native", "Cloud native", rows["cloud_native"]),
 			planSection("high_cpu", "High CPU", rows["high_cpu"]),
 			planSection("high_memory", "High memory", rows["high_memory"]),
 			planSection("developer", "Developer", rows["developer"]),
@@ -73,6 +74,9 @@ func planType(p upcloud.Plan) string {
 	}
 	if strings.HasPrefix(p.Name, "HIMEM-") {
 		return "high_memory"
+	}
+	if strings.HasPrefix(p.Name, "CLOUDNATIVE-") {
+		return "cloud_native"
 	}
 	return "general_purpose"
 }
