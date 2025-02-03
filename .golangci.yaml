@@ -40,12 +40,10 @@ linters:
     - wastedassign
     - whitespace
 
-output:
-  uniq-by-line: false
-
 issues:
   max-issues-per-linter: 0
   max-same-issues: 0
+  uniq-by-line: false
   exclude-rules:
     - path: _test\.go
       linters:
