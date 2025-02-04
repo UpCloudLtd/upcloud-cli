@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added support for Valkey properties
 - Add termination_protection to upctl database show output
 
+### Changed
+
+- List cloud native plans in their own section in human readable `server plans` output.
+
 ## [3.14.0] - 2025-01-08
 
 ### Added
