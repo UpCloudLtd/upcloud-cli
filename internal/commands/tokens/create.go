@@ -77,6 +77,11 @@ func applyCreateFlags(fs *pflag.FlagSet, dst, def *createParams) {
 	fs.DurationVar(&dst.expiresIn, "expires-in", def.expiresIn, "Duration until the token expires. e.g. 24h")
 	fs.BoolVar(&dst.canCreateTokens, "can-create-tokens", def.canCreateTokens, "Allow token to be used to create further tokens.")
 	fs.StringArrayVar(&dst.allowedIPRanges, "allowed-ip-ranges", def.allowedIPRanges, "Allowed IP ranges for the token.")
+
+	commands.Must(fs.SetAnnotation("name", commands.FlagAnnotationNoFileCompletions, nil))
+	commands.Must(fs.SetAnnotation("expires-at", commands.FlagAnnotationNoFileCompletions, nil))
+	commands.Must(fs.SetAnnotation("expires-in", commands.FlagAnnotationNoFileCompletions, nil))
+	commands.Must(fs.SetAnnotation("allowed-ip-ranges", commands.FlagAnnotationNoFileCompletions, nil))
 }
 
 // InitCommand implements Command.InitCommand
