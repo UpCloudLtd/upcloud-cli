@@ -15,6 +15,35 @@ type Service struct {
 	mock.Mock
 }
 
+func (m *Service) CreateToken(_ context.Context, r *request.CreateTokenRequest) (*upcloud.Token, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.Token), args.Error(1)
+}
+
+func (m *Service) GetTokenDetails(_ context.Context, r *request.GetTokenDetailsRequest) (*upcloud.Token, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.Token), args.Error(1)
+}
+
+func (m *Service) DeleteToken(_ context.Context, r *request.DeleteTokenRequest) error {
+	args := m.Called(r)
+	return args.Error(0)
+}
+
+func (m *Service) GetTokens(context.Context, *request.GetTokensRequest) (*upcloud.Tokens, error) {
+	args := m.Called()
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.Tokens), args.Error(1)
+}
+
 // GetAccount implements service.Account.GetAccount
 func (m *Service) GetAccount(context.Context) (*upcloud.Account, error) {
 	args := m.Called()
@@ -66,6 +95,7 @@ var (
 	_ service.ServerGroup          = &Service{}
 	_ service.ManagedObjectStorage = &Service{}
 	_ service.Gateway              = &Service{}
+	_ service.Token                = &Service{}
 )
 
 // GetServerConfigurations implements service.Server.GetServerConfigurations

@@ -23,4 +23,5 @@ type AllServices interface {
 	service.Gateway
 	service.Host
 	service.Partner
+	service.Token
 }
