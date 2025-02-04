@@ -8,6 +8,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
@@ -38,6 +39,7 @@ func (s *showCommand) InitCommand() {
 	s.AddFlags(flagSet)
 
 	commands.Must(s.Cobra().MarkFlagRequired("name"))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("name", cobra.NoFileCompletions))
 }
 
 // ExecuteSingleArgument implements commands.SingleArgumentCommand

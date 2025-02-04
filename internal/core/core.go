@@ -116,6 +116,8 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 	rootCmd.SetUsageTemplate(ui.CommandUsageTemplate())
 	rootCmd.SetUsageFunc(ui.UsageFunc)
 
+	commands.Must(rootCmd.RegisterFlagCompletionFunc("client-timeout", cobra.NoFileCompletions))
+
 	return rootCmd
 }
 

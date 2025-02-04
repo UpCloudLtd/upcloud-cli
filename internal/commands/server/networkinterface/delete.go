@@ -8,6 +8,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -37,6 +38,7 @@ func (s *deleteCommand) InitCommand() {
 
 	s.AddFlags(fs)
 	commands.Must(s.Cobra().MarkFlagRequired("index"))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("index", cobra.NoFileCompletions))
 }
 
 // MaximumExecutions implements Command.MaximumExecutions

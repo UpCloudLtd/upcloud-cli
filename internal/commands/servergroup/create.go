@@ -13,6 +13,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -94,6 +95,8 @@ func (c *createCommand) InitCommand() {
 	c.AddFlags(fs)
 
 	commands.Must(c.Cobra().MarkFlagRequired("title"))
+	commands.Must(c.Cobra().RegisterFlagCompletionFunc("title", cobra.NoFileCompletions))
+	commands.Must(c.Cobra().RegisterFlagCompletionFunc("label", cobra.NoFileCompletions))
 }
 
 func (c *createCommand) InitCommandWithConfig(cfg *config.Config) {
