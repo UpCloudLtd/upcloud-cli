@@ -16,3 +16,8 @@ func BaseRouterCommand() commands.Command {
 type routerCommand struct {
 	*commands.BaseCommand
 }
+
+// InitCommand implements Command.InitCommand
+func (rt *routerCommand) InitCommand() {
+	rt.Cobra().Aliases = []string{"rt"}
+}

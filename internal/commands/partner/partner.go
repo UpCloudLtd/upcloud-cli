@@ -14,3 +14,8 @@ func BasePartnerCommand() commands.Command {
 type partnerCommand struct {
 	*commands.BaseCommand
 }
+
+// InitCommand implements Command.InitCommand
+func (pr *partnerCommand) InitCommand() {
+	pr.Cobra().Aliases = []string{"pr"}
+}
