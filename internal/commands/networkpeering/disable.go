@@ -20,8 +20,8 @@ func DisableCommand() commands.Command {
 		BaseCommand: commands.New(
 			"disable",
 			"Disable a network peering",
-			"upctl networkpeering disable 8abc8009-4325-4b23-4321-b1232cd81231",
-			"upctl networkpeering disable my-network-peering",
+			"upctl network-peering disable 8abc8009-4325-4b23-4321-b1232cd81231",
+			"upctl network-peering disable my-network-peering",
 		),
 	}
 }
@@ -39,10 +39,17 @@ func (c *disableCommand) InitCommand() {
 	flags := &pflag.FlagSet{}
 	config.AddToggleFlag(flags, &c.wait, "wait", false, "Wait for network peering to be in disabled state before returning.")
 	c.AddFlags(flags)
+	// Deprecating networkpeering in favour of network-peering
+	// TODO: Remove this in the future
+	commands.SetSubcommandDeprecationHelp(c, []string{"networkpeering"})
 }
 
 // Execute implements commands.MultipleArgumentCommand
 func (c *disableCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
+	// Deprecating networkpeering in favour of network-peering
+	// TODO: Remove this in the future
+	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"networkpeering"}, "network-peering")
+
 	svc := exec.All()
 	msg := fmt.Sprintf("Disabling network peering %v", arg)
 	exec.PushProgressStarted(msg)

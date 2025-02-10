@@ -14,7 +14,7 @@ import (
 // BaseNetworkPeeringCommand creates the base "networkpeering" command
 func BaseNetworkPeeringCommand() commands.Command {
 	return &networkpeeringCommand{
-		commands.New("networkpeering", "Manage network peerings"),
+		commands.New("network-peering", "Manage network peerings"),
 	}
 }
 
@@ -24,7 +24,10 @@ type networkpeeringCommand struct {
 
 // InitCommand implements Command.InitCommand
 func (np *networkpeeringCommand) InitCommand() {
-	np.Cobra().Aliases = []string{"np"}
+	np.Cobra().Aliases = []string{"np", "networkpeering"}
+	// Deprecating networkpeering in favour of network-peering
+	// TODO: Remove this in the future
+	commands.SetDeprecationHelp(np.Cobra(), []string{"networkpeering"})
 }
 
 // waitForNetworkPeeringState waits for network peering to reach given state and updates progress message with key matching given msg. Finally, progress message is updated back to given msg and either done state or timeout warning.

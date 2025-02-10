@@ -10,7 +10,7 @@ import (
 // ListCommand creates the "networkpeering list" command
 func ListCommand() commands.Command {
 	return &listCommand{
-		BaseCommand: commands.New("list", "List network peerings", "upctl networkpeering list"),
+		BaseCommand: commands.New("list", "List network peerings", "upctl network-peering list"),
 	}
 }
 
@@ -18,8 +18,18 @@ type listCommand struct {
 	*commands.BaseCommand
 }
 
+func (c *listCommand) InitCommand() {
+	// Deprecating networkpeering in favour of network-peering
+	// TODO: Remove this in the future
+	commands.SetSubcommandDeprecationHelp(c, []string{"networkpeering"})
+}
+
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (c *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
+	// Deprecating networkpeering in favour of network-peering
+	// TODO: Remove this in the future
+	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"networkpeering"}, "network-peering")
+
 	svc := exec.All()
 	peerings, err := svc.GetNetworkPeerings(exec.Context())
 	if err != nil {

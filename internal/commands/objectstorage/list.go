@@ -14,7 +14,7 @@ import (
 // ListCommand creates the "objectstorage list" command
 func ListCommand() commands.Command {
 	return &listCommand{
-		BaseCommand: commands.New("list", "List current Managed object storage services", "upctl objectstorage list"),
+		BaseCommand: commands.New("list", "List current Managed object storage services", "upctl object-storage list"),
 	}
 }
 
@@ -27,10 +27,18 @@ func (c *listCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 	c.ConfigureFlags(fs)
 	c.AddFlags(fs)
+
+	// Deprecating objectstorage and objsto in favour of object-storage
+	// TODO: Remove this in the future
+	commands.SetSubcommandDeprecationHelp(c, []string{"objectstorage", "objsto"})
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (c *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
+	// Deprecating objectstorage and objsto in favour of object-storage
+	// TODO: Remove this in the future
+	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"objectstorage", "objsto"}, "object-storage")
+
 	svc := exec.All()
 	objectstorages, err := svc.GetManagedObjectStorages(exec.Context(), &request.GetManagedObjectStoragesRequest{
 		Page: c.Page(),

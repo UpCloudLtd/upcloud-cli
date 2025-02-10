@@ -12,9 +12,11 @@ import (
 
 // ListCommand creates the "loadbalancer list" command
 func ListCommand() commands.Command {
-	return &listCommand{
+	cmd := &listCommand{
 		BaseCommand: commands.New("list", "List current load balancers", "upctl load-balancer list"),
 	}
+
+	return cmd
 }
 
 type listCommand struct {
@@ -26,10 +28,16 @@ func (s *listCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 	s.ConfigureFlags(fs)
 	s.AddFlags(fs)
+	// Deprecating loadbalancer in favour of load-balancer
+	// TODO: Remove this in the future
+	commands.SetSubcommandDeprecationHelp(s, []string{"loadbalancer"})
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
+	// Deprecating loadbalancer in favour of load-balancer
+	// TODO: Remove this in the future
+	commands.SetSubcommandExecutionDeprecationMessage(s, []string{"loadbalancer"}, "load-balancer")
 	svc := exec.All()
 	loadbalancers, err := svc.GetLoadBalancers(exec.Context(), &request.GetLoadBalancersRequest{
 		Page: s.Page(),

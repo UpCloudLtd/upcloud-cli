@@ -13,7 +13,7 @@ import (
 // ListCommand creates the "servergroup list" command
 func ListCommand() commands.Command {
 	return &listCommand{
-		BaseCommand: commands.New("list", "List current server groups", "upctl servergroup list"),
+		BaseCommand: commands.New("list", "List current server groups", "upctl server-group list"),
 	}
 }
 
@@ -21,8 +21,19 @@ type listCommand struct {
 	*commands.BaseCommand
 }
 
+// InitCommand implements Command.InitCommand
+func (c *listCommand) InitCommand() {
+	// Deprecating servergroup in favour of server-group
+	// TODO: Remove this in the future
+	commands.SetSubcommandDeprecationHelp(c, []string{"servergroup"})
+}
+
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (c *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
+	// Deprecating servergroup in favour of server-group
+	// TODO: Remove this in the future
+	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"servergroup"}, "server-group")
+
 	svc := exec.All()
 	serverGroups, err := svc.GetServerGroups(exec.Context(), &request.GetServerGroupsRequest{})
 	if err != nil {

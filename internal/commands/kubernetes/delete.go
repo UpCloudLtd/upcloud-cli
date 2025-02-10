@@ -29,8 +29,19 @@ type deleteCommand struct {
 	completion.Kubernetes
 }
 
+// InitCommand implements Command.InitCommand
+func (s *deleteCommand) InitCommand() {
+	// Deprecating k8s
+	// TODO: Remove this in the future
+	commands.SetSubcommandDeprecationHelp(s, []string{"k8s"})
+}
+
 // Execute implements commands.MultipleArgumentCommand
 func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
+	// Deprecating k8s
+	// TODO: Remove this in the future
+	commands.SetSubcommandExecutionDeprecationMessage(s, []string{"k8s"}, "uks")
+
 	svc := exec.All()
 	msg := fmt.Sprintf("Deleting Kubernetes cluster %v", arg)
 	exec.PushProgressStarted(msg)

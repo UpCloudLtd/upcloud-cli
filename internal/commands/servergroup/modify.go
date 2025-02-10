@@ -29,11 +29,11 @@ func ModifyCommand() commands.Command {
 		BaseCommand: commands.New(
 			"modify",
 			"Modify a server group",
-			"upctl servergroup modify 8abc8009-4325-4b23-4321-b1232cd81231 --title your-server-group",
-			"upctl servergroup modify my-server-group --anti-affinity-policy strict",
-			`upctl servergroup modify my-server-group --server my-server-1 --server my-server-2 --server my-server-3-`,
-			`upctl servergroup modify 8abc8009-4325-4b23-4321-b1232cd81231 --server 0bab98e5-b327-4ab8-ba16-738d4af7578b --server my-server-2`,
-			`upctl servergroup modify my-server-group --label env=dev`,
+			"upctl server-group modify 8abc8009-4325-4b23-4321-b1232cd81231 --title your-server-group",
+			"upctl server-group modify my-server-group --anti-affinity-policy strict",
+			`upctl server-group modify my-server-group --server my-server-1 --server my-server-2 --server my-server-3-`,
+			`upctl server-group modify 8abc8009-4325-4b23-4321-b1232cd81231 --server 0bab98e5-b327-4ab8-ba16-738d4af7578b --server my-server-2`,
+			`upctl server-group modify my-server-group --label env=dev`,
 		),
 	}
 }
@@ -86,10 +86,18 @@ func (c *modifyCommand) InitCommand() {
 	fs.StringArrayVar(&c.params.servers, "server", defaultModifyParams.servers, "Servers that belong to the server group, multiple can be declared. If set, all the existing server entries will be replaced with provided ones.\nUsage: --server my-server\n\n--server 00333d1b-3a4a-4b75-820a-4a56d70395dd")
 
 	c.AddFlags(fs)
+
+	// Deprecating servergroup in favour of server-group
+	// TODO: Remove this in the future
+	commands.SetSubcommandDeprecationHelp(c, []string{"servergroup"})
 }
 
 // Execute implements commands.MultipleArgumentCommand
 func (c *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
+	// Deprecating servergroup in favour of server-group
+	// TODO: Remove this in the future
+	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"servergroup"}, "server-group")
+
 	svc := exec.All()
 
 	err := c.params.processParams(exec, uuid)

@@ -15,7 +15,7 @@ const (
 // BaseServergroupCommand creates the base "servergroup" command
 func BaseServergroupCommand() commands.Command {
 	return &servergroupCommand{
-		commands.New("servergroup", "Manage server groups"),
+		commands.New("server-group", "Manage server groups"),
 	}
 }
 
@@ -25,7 +25,10 @@ type servergroupCommand struct {
 
 // InitCommand implements Command.InitCommand
 func (sg *servergroupCommand) InitCommand() {
-	sg.Cobra().Aliases = []string{"sg"}
+	sg.Cobra().Aliases = []string{"sg", "servergroup"}
+	// Deprecating servergroup in favour of server-group
+	// TODO: Remove this in the future
+	commands.SetDeprecationHelp(sg.Cobra(), []string{"servergroup"})
 }
 
 func stringsToServerUUIDSlice(exec commands.Executor, servers []string) (upcloud.ServerUUIDSlice, error) {

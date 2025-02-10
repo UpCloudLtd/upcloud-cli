@@ -19,7 +19,7 @@ type loadbalancerCommand struct {
 func (lb *loadbalancerCommand) InitCommand() {
 	lb.Cobra().Aliases = []string{"lb", "loadbalancer"}
 
-	//commands.HideSecondaryAliases(lb.Cobra())
-	commands.SetDeprecationHelp(lb.Cobra(), "loadbalancer")
-
+	// Deprecating loadbalancer in favour of load-balancer
+	// TODO: Remove this in the future
+	commands.SetDeprecationHelp(lb.Cobra(), []string{"loadbalancer"})
 }

@@ -7,6 +7,7 @@ import (
 	"os"
 	"reflect"
 	"regexp"
+	"slices"
 	"strings"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/validation"
@@ -137,28 +138,14 @@ func ParseSSHKeys(sshKeys []string) ([]string, error) {
 	return allSSHKeys, nil
 }
 
-// SetHiddenAlias modifies the help output to hide secondary aliases. Help will show only the first alias
-// Used when changing the name of a command so we can add the old name as a hidden alias.
-func HideSecondaryAliases(cmd *cobra.Command) {
-	cmd.SetHelpFunc(func(cmd *cobra.Command, args []string) {
-		originalTemplate := cmd.UsageTemplate()
-		modifiedTemplate := strings.Replace(originalTemplate, "{{.NameAndAliases}}{{end}}", "{{index .Aliases 0}}{{end}}", -1)
-
-		// Apply modified template
-		cmd.SetUsageTemplate(modifiedTemplate)
-
-		// Print the help message with the new template
-		fmt.Println(cmd.UsageString())
-	})
-}
-
 // SetDeprecationHelp hides a specific alias in the help output and prints a deprecation warning when used.
-func SetDeprecationHelp(cmd *cobra.Command, alias string) {
-	// Construct new alias list, excluding the deprecated alias
+// Only works for primary commands, not subcommands.
+func SetDeprecationHelp(cmd *cobra.Command, deprecatedAliases []string) {
+	// Construct new alias list, excluding the deprecated aliases
 	var filteredAliases []string
-	for _, a := range cmd.Aliases {
-		if a != alias {
-			filteredAliases = append(filteredAliases, a)
+	for _, alias := range cmd.Aliases {
+		if !slices.Contains(deprecatedAliases, alias) { // ✅ Using slices.Contains
+			filteredAliases = append(filteredAliases, alias)
 		}
 	}
 
@@ -167,32 +154,95 @@ func SetDeprecationHelp(cmd *cobra.Command, alias string) {
 	var modifiedTemplate string
 
 	if len(filteredAliases) > 0 {
-		modifiedTemplate = strings.Replace(originalTemplate, "{{.NameAndAliases}}{{end}}", "{{.Use}}, "+strings.Join(filteredAliases, ", ")+"{{end}}", -1)
+		modifiedTemplate = strings.ReplaceAll(originalTemplate, "{{.NameAndAliases}}{{end}}", "{{.Use}}, "+strings.Join(filteredAliases, ", ")+"{{end}}")
 	} else {
-		modifiedTemplate = strings.Replace(originalTemplate, "{{.NameAndAliases}}{{end}}", "{{.Use}}{{end}}", -1)
+		modifiedTemplate = strings.ReplaceAll(originalTemplate, "{{.NameAndAliases}}{{end}}", "{{.Use}}{{end}}")
 	}
 
 	// Apply the updated usage template **before help is called**
 	cmd.SetUsageTemplate(modifiedTemplate)
 
 	// Custom Help Function to Show Deprecation Warning
-	cmd.SetHelpFunc(func(cmd *cobra.Command, args []string) {
-		if cmd.CalledAs() == alias {
-			fmt.Printf("⚠️  Deprecation Warning: The alias '%s' is deprecated and will be removed in a future release.\n", alias)
-			fmt.Printf("   Please use '%s' instead.\n\n", cmd.Use)
+	cmd.SetHelpFunc(func(cmd *cobra.Command, _ []string) {
+		if slices.Contains(deprecatedAliases, cmd.CalledAs()) {
+			PrintDeprecationWarning(cmd.CalledAs(), cmd.Use)
 		}
 
 		// Print the help output with the modified alias list
 		fmt.Println(cmd.UsageString())
 	})
 
-	// Override the built-in "help" subcommand so it also respects hidden aliases
-	cmd.SetHelpCommand(&cobra.Command{
-		Use:   "help",
-		Short: "Show help for the command",
-		Run: func(cmd *cobra.Command, args []string) {
-			// Ensure it calls the original command's help function
-			cmd.Help()
-		},
+	// Intercept help execution using PersistentPreRunE
+	originalPreRunE := cmd.PersistentPreRunE
+
+	// Show deprecation message when upctl <command> help is called
+	cmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
+		// Call the parent command's PersistentPreRunE first
+		if cmd.Parent() != nil && cmd.Parent().PersistentPreRunE != nil {
+			if err := cmd.Parent().PersistentPreRunE(cmd.Parent(), args); err != nil {
+				return err
+			}
+		}
+
+		// Show deprecation warning if the alias was used
+		if slices.Contains(deprecatedAliases, cmd.CalledAs()) {
+			PrintDeprecationWarning(cmd.CalledAs(), cmd.Use)
+		}
+
+		// Call the original PersistentPreRunE (if defined)
+		if originalPreRunE != nil {
+			return originalPreRunE(cmd, args)
+		}
+
+		return nil
+	}
+}
+
+// SetSubcommandDeprecationHelp detects the correct interface implementation and wraps the relevant execution function.
+func SetSubcommandDeprecationHelp(cmd Command, aliases []string) {
+	// Set a custom help function to display the warning for `-h` or `--help`
+	cobraCmd := cmd.Cobra()
+	originalHelpFunc := cobraCmd.HelpFunc()
+	cobraCmd.SetHelpFunc(func(cmd *cobra.Command, args []string) {
+		for _, alias := range aliases {
+			if IsDeprecatedAliasUsed(alias) {
+				PrintDeprecationWarning(alias, cmd.Parent().Use)
+				break
+			}
+		}
+		originalHelpFunc(cmd, args)
 	})
+}
+
+// isDeprecatedAliasUsed checks if the deprecated alias was used in the command invocation
+func IsDeprecatedAliasUsed(deprecatedAlias string) bool {
+	if len(os.Args) < 2 {
+		return false
+	}
+
+	for _, arg := range os.Args[1:] {
+		if arg == deprecatedAlias {
+			return true
+		}
+	}
+	return false
+}
+
+// printDeprecationWarning prints a deprecation message
+func PrintDeprecationWarning(deprecatedAlias, newCommand string) {
+	fmt.Printf("⚠️  Deprecation Warning: The alias '%s' is deprecated and will be removed in a future release.\n", deprecatedAlias)
+	fmt.Printf("   Please use '%s' instead.\n\n", newCommand)
+}
+
+func SetSubcommandExecutionDeprecationMessage(cmd Command, deprecatedParentAliases []string, mainParentAlias string) {
+	parentCmd := cmd.Cobra().Parent()
+	if parentCmd != nil {
+		for _, deprecatedParentAlias := range deprecatedParentAliases {
+			// Check if the parent was called using the deprecated alias
+			if IsDeprecatedAliasUsed(deprecatedParentAlias) {
+				PrintDeprecationWarning(deprecatedParentAlias, mainParentAlias)
+				break
+			}
+		}
+	}
 }
