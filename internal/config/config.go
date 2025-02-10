@@ -187,8 +187,9 @@ func (s *Config) Context() context.Context {
 func (s *Config) CreateService() (internal.AllServices, error) {
 	username := s.GetString("username")
 	password := s.GetString("password")
+	token := s.GetString("token")
 
-	if username == "" || password == "" {
+	if token == "" && (username == "" || password == "") {
 		// This might give silghtly unexpected results on OS X, as xdg.ConfigHome points to ~/Library/Application Support
 		// while we really use/prefer/document ~/.config - which does work on osx as well but won't be displayed here.
 		configDetails := fmt.Sprintf("default location %s", filepath.Join(xdg.ConfigHome, "upctl.yaml"))
@@ -198,7 +199,16 @@ func (s *Config) CreateService() (internal.AllServices, error) {
 		return nil, clierrors.MissingCredentialsError{ConfigFile: configDetails}
 	}
 
-	client := client.New(username, password, client.WithTimeout(s.ClientTimeout()))
+	configs := []client.ConfigFn{
+		client.WithTimeout(s.ClientTimeout()),
+	}
+	if token != "" {
+		configs = append(configs, client.WithBearerAuth(token))
+	} else {
+		configs = append(configs, client.WithBasicAuth(username, password))
+	}
+
+	client := client.New("", "", configs...)
 	client.UserAgent = fmt.Sprintf("upctl/%s", GetVersion())
 
 	svc := service.New(client)
