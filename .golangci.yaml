@@ -40,10 +40,8 @@ linters:
     - wastedassign
     - whitespace
 
-output:
-  uniq-by-line: false
-
 issues:
+  uniq-by-line: false
   max-issues-per-linter: 0
   max-same-issues: 0
   exclude-rules:
