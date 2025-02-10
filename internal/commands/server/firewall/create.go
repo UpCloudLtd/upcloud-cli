@@ -73,8 +73,8 @@ To edit the default rule of the firewall, set only ` + "`" + `--direction` + "`"
 	flagSet.StringVar(&s.comment, "comment", "", "Freeform comment that can include 0-250 characters.")
 
 	s.AddFlags(flagSet)
-	_ = s.Cobra().MarkFlagRequired("direction")
-	_ = s.Cobra().MarkFlagRequired("action")
+	commands.Must(s.Cobra().MarkFlagRequired("direction"))
+	commands.Must(s.Cobra().MarkFlagRequired("action"))
 	s.Cobra().MarkFlagsRequiredTogether("destination-port-start", "destination-port-end")
 	s.Cobra().MarkFlagsRequiredTogether("source-port-start", "source-port-end")
 }

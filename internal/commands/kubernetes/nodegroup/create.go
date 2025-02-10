@@ -42,6 +42,14 @@ func GetCreateNodeGroupFlagSet(p *CreateNodeGroupParams) *pflag.FlagSet {
 	fs.StringArrayVar(&p.Taints, "taint", []string{}, "Taints to be configured to the nodes in `key=value:effect` format")
 	config.AddEnableOrDisableFlag(fs, &p.UtilityNetworkAccess, true, "utility-network-access", "utility network access. If disabled, nodes in this group will not have access to utility network")
 
+	commands.Must(fs.SetAnnotation("count", commands.FlagAnnotationNoFileCompletions, nil))
+	commands.Must(fs.SetAnnotation("kubelet-arg", commands.FlagAnnotationNoFileCompletions, nil))
+	commands.Must(fs.SetAnnotation("label", commands.FlagAnnotationNoFileCompletions, nil))
+	commands.Must(fs.SetAnnotation("name", commands.FlagAnnotationNoFileCompletions, nil))
+	commands.Must(fs.SetAnnotation("plan", commands.FlagAnnotationNoFileCompletions, nil))
+	commands.Must(fs.SetAnnotation("storage", commands.FlagAnnotationNoFileCompletions, nil))
+	commands.Must(fs.SetAnnotation("taint", commands.FlagAnnotationNoFileCompletions, nil))
+
 	return fs
 }
 
@@ -142,9 +150,9 @@ func (s *createCommand) InitCommand() {
 	fs := GetCreateNodeGroupFlagSet(&s.p)
 	s.AddFlags(fs)
 
-	_ = s.Cobra().MarkFlagRequired("name")
-	_ = s.Cobra().MarkFlagRequired("count")
-	_ = s.Cobra().MarkFlagRequired("plan")
+	commands.Must(s.Cobra().MarkFlagRequired("name"))
+	commands.Must(s.Cobra().MarkFlagRequired("count"))
+	commands.Must(s.Cobra().MarkFlagRequired("plan"))
 }
 
 // ExecuteSingleArgument implements commands.SingleArgumentCommand

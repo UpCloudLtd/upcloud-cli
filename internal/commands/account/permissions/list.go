@@ -37,7 +37,7 @@ func (l *listCommand) InitCommand() {
 }
 
 func (l *listCommand) InitCommandWithConfig(cfg *config.Config) {
-	_ = l.Cobra().RegisterFlagCompletionFunc("username", namedargs.CompletionFunc(completion.Username{}, cfg))
+	commands.Must(l.Cobra().RegisterFlagCompletionFunc("username", namedargs.CompletionFunc(completion.Username{}, cfg)))
 }
 
 func (l *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {

@@ -13,6 +13,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -93,7 +94,9 @@ func (c *createCommand) InitCommand() {
 
 	c.AddFlags(fs)
 
-	_ = c.Cobra().MarkFlagRequired("title")
+	commands.Must(c.Cobra().MarkFlagRequired("title"))
+	commands.Must(c.Cobra().RegisterFlagCompletionFunc("title", cobra.NoFileCompletions))
+	commands.Must(c.Cobra().RegisterFlagCompletionFunc("label", cobra.NoFileCompletions))
 
 	// Deprecating servergroup in favour of server-group
 	// TODO: Remove this in the future
@@ -101,7 +104,7 @@ func (c *createCommand) InitCommand() {
 }
 
 func (c *createCommand) InitCommandWithConfig(cfg *config.Config) {
-	_ = c.Cobra().RegisterFlagCompletionFunc("server", namedargs.CompletionFunc(completion.Server{}, cfg))
+	commands.Must(c.Cobra().RegisterFlagCompletionFunc("server", namedargs.CompletionFunc(completion.Server{}, cfg)))
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand

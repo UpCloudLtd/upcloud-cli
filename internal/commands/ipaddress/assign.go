@@ -12,6 +12,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -53,11 +54,13 @@ func (s *assignCommand) InitCommand() {
 	fs.StringVar(&s.mac, "mac", "", "MAC address of server interface to assign address to. Required for detached floating IP address if zone is not specified.")
 	fs.StringVar(&s.zone, "zone", "", (namedargs.ZoneDescription("IP address") + " Required when creating a detached floating IP address, i.e. when MAC address is not specified."))
 	config.AddToggleFlag(fs, &s.floating, "floating", false, "Whether the address to be assigned is a floating one.")
+
 	s.AddFlags(fs)
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("mac", cobra.NoFileCompletions))
 }
 
 func (s *assignCommand) InitCommandWithConfig(cfg *config.Config) {
-	_ = s.Cobra().RegisterFlagCompletionFunc("zone", namedargs.CompletionFunc(completion.Zone{}, cfg))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("zone", namedargs.CompletionFunc(completion.Zone{}, cfg)))
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand

@@ -44,6 +44,7 @@ issues:
   uniq-by-line: false
   max-issues-per-linter: 0
   max-same-issues: 0
+  uniq-by-line: false
   exclude-rules:
     - path: _test\.go
       linters:

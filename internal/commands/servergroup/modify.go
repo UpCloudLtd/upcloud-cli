@@ -13,6 +13,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -86,10 +87,16 @@ func (c *modifyCommand) InitCommand() {
 	fs.StringArrayVar(&c.params.servers, "server", defaultModifyParams.servers, "Servers that belong to the server group, multiple can be declared. If set, all the existing server entries will be replaced with provided ones.\nUsage: --server my-server\n\n--server 00333d1b-3a4a-4b75-820a-4a56d70395dd")
 
 	c.AddFlags(fs)
+	commands.Must(c.Cobra().RegisterFlagCompletionFunc("title", cobra.NoFileCompletions))
+	commands.Must(c.Cobra().RegisterFlagCompletionFunc("label", cobra.NoFileCompletions))
 
 	// Deprecating servergroup in favour of server-group
 	// TODO: Remove this in the future
 	commands.SetSubcommandDeprecationHelp(c, []string{"servergroup"})
+}
+
+func (c *modifyCommand) InitCommandWithConfig(cfg *config.Config) {
+	commands.Must(c.Cobra().RegisterFlagCompletionFunc("server", namedargs.CompletionFunc(completion.Server{}, cfg)))
 }
 
 // Execute implements commands.MultipleArgumentCommand
@@ -116,8 +123,4 @@ func (c *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Out
 	exec.PushProgressSuccess(msg)
 
 	return output.OnlyMarshaled{Value: res}, nil
-}
-
-func (c *modifyCommand) InitCommandWithConfig(cfg *config.Config) {
-	_ = c.Cobra().RegisterFlagCompletionFunc("server", namedargs.CompletionFunc(completion.Server{}, cfg))
 }

@@ -57,12 +57,12 @@ func (s *cloneCommand) InitCommand() {
 	config.AddToggleFlag(flagSet, &s.params.encrypted, "encrypt", false, "Encrypt the new storage.")
 
 	s.AddFlags(flagSet)
-	_ = s.Cobra().MarkFlagRequired("title")
-	_ = s.Cobra().MarkFlagRequired("zone")
+	commands.Must(s.Cobra().MarkFlagRequired("title"))
+	commands.Must(s.Cobra().MarkFlagRequired("zone"))
 }
 
 func (s *cloneCommand) InitCommandWithConfig(cfg *config.Config) {
-	_ = s.Cobra().RegisterFlagCompletionFunc("zone", namedargs.CompletionFunc(completion.Zone{}, cfg))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("zone", namedargs.CompletionFunc(completion.Zone{}, cfg)))
 }
 
 // Execute implements commands.MultipleArgumentCommand

@@ -54,6 +54,8 @@ func handleNetwork(in string) (*upcloud.IPNetwork, error) {
 		return nil, err
 	}
 
+	commands.Must(fs.SetAnnotation("address", commands.FlagAnnotationNoFileCompletions, nil))
+
 	if dhcp != "" {
 		val, err := commands.BoolFromString(dhcp)
 		if err != nil {

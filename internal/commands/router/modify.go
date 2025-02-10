@@ -8,6 +8,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -36,7 +37,8 @@ func (s *modifyCommand) InitCommand() {
 	fs.StringVar(&s.name, "name", "", "New router name.")
 
 	s.AddFlags(fs)
-	_ = s.Cobra().MarkFlagRequired("name")
+	commands.Must(s.Cobra().MarkFlagRequired("name"))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("name", cobra.NoFileCompletions))
 }
 
 // ExecuteSingleArgument implements commands.SingleArgumentCommand

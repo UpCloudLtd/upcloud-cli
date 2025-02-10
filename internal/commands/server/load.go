@@ -48,7 +48,7 @@ func (s *loadCommand) InitCommand() {
 
 	s.AddFlags(flagSet)
 
-	_ = s.Cobra().MarkFlagRequired("storage")
+	commands.Must(s.Cobra().MarkFlagRequired("storage"))
 }
 
 // Execute implements commands.MultipleArgumentCommand
