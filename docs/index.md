@@ -122,33 +122,38 @@ On bash, the completions depend on `bash-completion` package. Install and config
 
 === "Linux"
 
-    First, install `bash-completion` package, if it has not been installed already, and add command to source the completions to your `.bashrc`.
+    First, install `bash-completion` package, if it has not been installed already.
 
     On Ubuntu or Debian, use `apt` command to install the package:
 
     ```sh
     sudo apt install bash-completion
-    echo "[ -f /etc/bash_completion ] && . /etc/bash_completion" >> ~/.bashrc
     ```
 
-    On RHEL based distributions, use `dnf` command to install the package.
+    On RHEL and Fedora based distributions, use `dnf` command to install the package.
 
     ```sh
     sudo dnf install bash-completion
-    echo "[ -f /etc/bash_completion ] && . /etc/bash_completion" >> ~/.bashrc
     ```
 
-    Finally, configure the shell completions for `upctl` by either sourcing `upctl completion bash` output in your bash `.bashrc` or by saving the output of that command in `upctl` file under `/etc/bash_completion.d/`:
+    Most distributions' packages enable bash-completion automatically.
+    If not, something like this can be done to accomplish that:
 
     ```sh
-    # First alternative
-    echo 'source <(upctl completion bash)' >>~/.bashrc
+    printf "%s\n" "[[ -f /usr/share/bash-completion/bash-completion ]] && . /usr/share/bash-completion/bash-completion" >> ~/.bashrc
+    ```
 
-    # Second alternative
-    upctl completion bash | sudo tee /etc/bash_completion.d/upctl > /dev/null
+    If your bash-completion version is 2.12 or newer, no further steps are needed,
+    upctl completion will load automatically on demand. With older bash-completion versions,
+    the autoloading needs to be set up. Something like this will accomplish that:
 
-    # Source completions to current shell session
-    . /etc/bash_completion
+    ```sh
+    # Either system wide:
+    printf "%s\n" 'eval -- "$("$1" completion bash 2>/dev/null)"' > /usr/share/bash-completion/completions/upctl
+
+    # ...or per user:
+    mkdir -p ~/.local/share/bash-completion/completions
+    printf "%s\n" 'eval -- "$("$1" completion bash 2>/dev/null)"' > ~/.local/share/bash-completion/completions/upctl
     ```
 
 === "macOS"
