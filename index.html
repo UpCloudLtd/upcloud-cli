@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.2">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.4">
     
     
       
@@ -26,7 +26,7 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.d7758b05.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.8608ea7d.min.css">
       
         
         <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
@@ -644,28 +644,6 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="commands_reference/upctl_database/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    database 
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
     
     
     
@@ -674,10 +652,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3_1" >
         
           
-          <label class="md-nav__link" for="__nav_2_3_2" id="__nav_2_3_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2_3_1" id="__nav_2_3_1_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -689,8 +667,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_3_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2_3_2">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3_1">
             <span class="md-nav__icon md-icon"></span>
             database index
           </label>
@@ -765,6 +743,28 @@
           </ul>
         </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="commands_reference/upctl_database/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    database 
+    
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -4934,34 +4934,36 @@ packages:
 <div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Linux</label><label for="__tabbed_2_2">macOS</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<p>First, install <code>bash-completion</code> package, if it has not been installed already, and add command to source the completions to your <code>.bashrc</code>.</p>
+<p>First, install <code>bash-completion</code> package, if it has not been installed already.</p>
 <p>On Ubuntu or Debian, use <code>apt</code> command to install the package:</p>
 <div class="language-sh highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>bash-completion
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;[ -f /etc/bash_completion ] &amp;&amp; . /etc/bash_completion&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.bashrc
 </span></code></pre></div>
-<p>On RHEL based distributions, use <code>dnf</code> command to install the package.</p>
+<p>On RHEL and Fedora based distributions, use <code>dnf</code> command to install the package.</p>
 <div class="language-sh highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>bash-completion
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;[ -f /etc/bash_completion ] &amp;&amp; . /etc/bash_completion&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.bashrc
 </span></code></pre></div>
-<p>Finally, configure the shell completions for <code>upctl</code> by either sourcing <code>upctl completion bash</code> output in your bash <code>.bashrc</code> or by saving the output of that command in <code>upctl</code> file under <code>/etc/bash_completion.d/</code>:</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># First alternative</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;source &lt;(upctl completion bash)&#39;</span><span class="w"> </span>&gt;&gt;~/.bashrc
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
-</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="c1"># Second alternative</span>
-</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>upctl<span class="w"> </span>completion<span class="w"> </span>bash<span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/bash_completion.d/upctl<span class="w"> </span>&gt;<span class="w"> </span>/dev/null
-</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>
-</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="c1"># Source completions to current shell session</span>
-</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>.<span class="w"> </span>/etc/bash_completion
+<p>Most distributions' packages enable bash-completion automatically.
+If not, something like this can be done to accomplish that:</p>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nb">printf</span><span class="w"> </span><span class="s2">&quot;%s\n&quot;</span><span class="w"> </span><span class="s2">&quot;[[ -f /usr/share/bash-completion/bash-completion ]] &amp;&amp; . /usr/share/bash-completion/bash-completion&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.bashrc
+</span></code></pre></div>
+<p>If your bash-completion version is 2.12 or newer, no further steps are needed,
+upctl completion will load automatically on demand. With older bash-completion versions,
+the autoloading needs to be set up. Something like this will accomplish that:</p>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># Either system wide:</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="nb">printf</span><span class="w"> </span><span class="s2">&quot;%s\n&quot;</span><span class="w"> </span><span class="s1">&#39;eval -- &quot;$(&quot;$1&quot; completion bash 2&gt;/dev/null)&quot;&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>/usr/share/bash-completion/completions/upctl
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="c1"># ...or per user:</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>~/.local/share/bash-completion/completions
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="nb">printf</span><span class="w"> </span><span class="s2">&quot;%s\n&quot;</span><span class="w"> </span><span class="s1">&#39;eval -- &quot;$(&quot;$1&quot; completion bash 2&gt;/dev/null)&quot;&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>~/.local/share/bash-completion/completions/upctl
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
 <p>First, install <code>bash-completion</code> package, if it has not been installed already, and add command to source the completions to your <code>.bash_profile</code>.</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>brew<span class="w"> </span>install<span class="w"> </span>bash-completion
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;[ -f &quot;$(brew --prefix)/etc/bash_completion&quot; ] &amp;&amp; . &quot;$(brew --prefix)/etc/bash_completion&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.bash_profile
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>brew<span class="w"> </span>install<span class="w"> </span>bash-completion
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;[ -f &quot;$(brew --prefix)/etc/bash_completion&quot; ] &amp;&amp; . &quot;$(brew --prefix)/etc/bash_completion&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.bash_profile
 </span></code></pre></div>
 <p>Then configure the shell completions for <code>upctl</code> by saving the output of <code>upctl completion bash</code> in <code>upctl</code> file under <code>/etc/bash_completion.d/</code>:</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>upctl<span class="w"> </span>completion<span class="w"> </span>bash<span class="w"> </span>&gt;<span class="w"> </span><span class="k">$(</span>brew<span class="w"> </span>--prefix<span class="k">)</span>/etc/bash_completion.d/upctl
-</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>.<span class="w"> </span><span class="k">$(</span>brew<span class="w"> </span>--prefix<span class="k">)</span>/etc/bash_completion
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>upctl<span class="w"> </span>completion<span class="w"> </span>bash<span class="w"> </span>&gt;<span class="w"> </span><span class="k">$(</span>brew<span class="w"> </span>--prefix<span class="k">)</span>/etc/bash_completion.d/upctl
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>.<span class="w"> </span><span class="k">$(</span>brew<span class="w"> </span>--prefix<span class="k">)</span>/etc/bash_completion
 </span></code></pre></div>
 </div>
 </div>
@@ -4972,7 +4974,7 @@ packages:
 <p>API access can be configured in the UpCloud Hub on <a href="https://hub.upcloud.com/account/overview">Account page</a> for the main-account and on the <a href="https://hub.upcloud.com/people/permissions">Permissions tab</a> of the People page for sub-accounts. We recommend you to set up a sub-account specifically for the API usage with its own username and password, as it allows you to assign specific permissions for increased security.</p>
 <h2 id="execute-commands">Execute commands</h2>
 <p>To verify you are able to access the UpCloud API, you can, for example, run <code>upctl account show</code> command to print your current balance and resource limits.</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>upctl<span class="w"> </span>account<span class="w"> </span>show
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>upctl<span class="w"> </span>account<span class="w"> </span>show
 </span></code></pre></div>
 <p>For usage examples, see the <em>Examples</em> section of the documentation.</p>
 <p>For reference on how to use each sub-command, see the <em>Commands reference</em> section of the documentation. The same information is also available in <code>--help</code> output of each command.</p>
@@ -5033,7 +5035,7 @@ packages:
     <script id="__config" type="application/json">{"base": ".", "features": ["navigation.instant"], "search": "assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="assets/javascripts/bundle.f13b1293.min.js"></script>
+      <script src="assets/javascripts/bundle.f1b6f286.min.js"></script>
       
     
   </body>
