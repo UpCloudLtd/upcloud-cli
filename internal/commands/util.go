@@ -233,10 +233,10 @@ func IsDeprecatedAliasUsed(deprecatedAlias string) bool {
 	return false
 }
 
-// printDeprecationWarning prints a deprecation message
+// PrintDeprecationWarning prints a deprecation message
 func PrintDeprecationWarning(deprecatedAlias, newCommand string) {
-	fmt.Printf("⚠️  Deprecation Warning: The alias '%s' is deprecated and will be removed in a future release.\n", deprecatedAlias)
-	fmt.Printf("   Please use '%s' instead.\n\n", newCommand)
+	fmt.Fprintf(os.Stderr, "⚠️  Deprecation Warning: The alias '%s' is deprecated and will be removed in a future release.\n", deprecatedAlias)
+	fmt.Fprintf(os.Stderr, "   Please use '%s' instead.\n", newCommand)
 }
 
 func SetSubcommandExecutionDeprecationMessage(cmd Command, deprecatedParentAliases []string, mainParentAlias string) {
