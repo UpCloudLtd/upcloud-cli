@@ -19,8 +19,20 @@ jobs:
         uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
         with:
           go-version-file: 'go.mod'
+      - name: Install keyring test dependencies on Ubuntu
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gnome-keyring build-essential ca-certificates
+        if: matrix.os == 'ubuntu-latest'
+      - name: Run tests on Ubuntu with keyring
+        run: | 
+          echo 'somecredstorepass' | gnome-keyring-daemon --unlock
+          make test
+        shell: dbus-run-session -- bash --noprofile --norc -eo pipefail {0}
+        if: matrix.os == 'ubuntu-latest'
       - name: Run tests
         run: make test
+        if: matrix.os != 'ubuntu-latest'
       - name: Test build
         run: make build
       - name: Test Runtime
