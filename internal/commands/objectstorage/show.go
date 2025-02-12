@@ -28,8 +28,18 @@ type showCommand struct {
 	completion.ObjectStorage
 }
 
+func (c *showCommand) InitCommand() {
+	// Deprecating objectstorage and objsto in favour of object-storage
+	// TODO: Remove this in the future
+	commands.SetSubcommandDeprecationHelp(c, []string{"objectstorage", "objsto"})
+}
+
 // Execute implements commands.MultipleArgumentCommand
 func (c *showCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
+	// Deprecating objectstorage and objsto in favour of object-storage
+	// TODO: Remove this in the future
+	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"objectstorage", "objsto"}, "object-storage")
+
 	svc := exec.All()
 	objectStorage, err := svc.GetManagedObjectStorage(exec.Context(), &request.GetManagedObjectStorageRequest{UUID: uuid})
 	if err != nil {

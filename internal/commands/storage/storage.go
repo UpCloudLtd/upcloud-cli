@@ -30,6 +30,11 @@ type storageCommand struct {
 	*commands.BaseCommand
 }
 
+// InitCommand implements Command.InitCommand
+func (st *storageCommand) InitCommand() {
+	st.Cobra().Aliases = []string{"st"}
+}
+
 func matchStorages(storages []upcloud.Storage, searchVal string) []*upcloud.Storage {
 	var r []*upcloud.Storage
 	for _, storage := range storages {

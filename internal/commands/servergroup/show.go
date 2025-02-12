@@ -21,8 +21,8 @@ func ShowCommand() commands.Command {
 		BaseCommand: commands.New(
 			"show",
 			"Show server group details",
-			"upctl servergroup show 8abc8009-4325-4b23-4321-b1232cd81231",
-			"upctl servergroup show my-server-group",
+			"upctl server-group show 8abc8009-4325-4b23-4321-b1232cd81231",
+			"upctl server-group show my-server-group",
 		),
 	}
 }
@@ -33,8 +33,19 @@ type showCommand struct {
 	completion.ServerGroup
 }
 
+// InitCommand implements Command.InitCommand
+func (c *showCommand) InitCommand() {
+	// Deprecating servergroup in favour of server-group
+	// TODO: Remove this in the future
+	commands.SetSubcommandDeprecationHelp(c, []string{"servergroup"})
+}
+
 // Execute implements commands.MultipleArgumentCommand
 func (c *showCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
+	// Deprecating servergroup in favour of server-group
+	// TODO: Remove this in the future
+	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"servergroup"}, "server-group")
+
 	svc := exec.All()
 	serverGroup, err := svc.GetServerGroup(exec.Context(), &request.GetServerGroupRequest{UUID: uuid})
 	if err != nil {

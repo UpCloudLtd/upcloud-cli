@@ -14,3 +14,8 @@ func BaseGatewayCommand() commands.Command {
 type gatewayCommand struct {
 	*commands.BaseCommand
 }
+
+// InitCommand implements Command.InitCommand
+func (gw *gatewayCommand) InitCommand() {
+	gw.Cobra().Aliases = []string{"gw"}
+}
