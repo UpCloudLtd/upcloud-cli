@@ -56,6 +56,8 @@ func (s *assignCommand) InitCommand() {
 	config.AddToggleFlag(fs, &s.floating, "floating", false, "Whether the address to be assigned is a floating one.")
 
 	s.AddFlags(fs)
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("access", cobra.FixedCompletions([]string{"public", "utility"}, cobra.ShellCompDirectiveNoFileComp)))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("family", cobra.FixedCompletions([]string{"IPv4", "IPv6"}, cobra.ShellCompDirectiveNoFileComp)))
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("mac", cobra.NoFileCompletions))
 }
 
