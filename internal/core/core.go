@@ -3,6 +3,7 @@ package core
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/clierrors"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
@@ -90,9 +91,10 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 	flags.StringVarP(
 		&conf.GlobalFlags.ConfigFile, "config", "", "", "Configuration file path.",
 	)
+	outputFormats := []string{config.ValueOutputHuman, config.ValueOutputJSON, config.ValueOutputYAML}
 	flags.StringVarP(
 		&conf.GlobalFlags.OutputFormat, "output", "o", "human",
-		"Output format (supported: json, yaml and human)",
+		"Output format (supported: "+strings.Join(outputFormats, ", ")+")",
 	)
 	config.AddToggleFlag(flags, &conf.GlobalFlags.ForceColours, "force-colours", false, "Force coloured output despite detected terminal support.")
 	config.AddToggleFlag(flags, &conf.GlobalFlags.NoColours, "no-colours", false, "Disable coloured output despite detected terminal support. Colours can also be disabled by setting NO_COLOR environment variable.")
@@ -116,6 +118,7 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 	rootCmd.SetUsageTemplate(ui.CommandUsageTemplate())
 	rootCmd.SetUsageFunc(ui.UsageFunc)
 
+	commands.Must(rootCmd.RegisterFlagCompletionFunc("output", cobra.FixedCompletions(outputFormats, cobra.ShellCompDirectiveNoFileComp)))
 	commands.Must(rootCmd.RegisterFlagCompletionFunc("client-timeout", cobra.NoFileCompletions))
 
 	return rootCmd
