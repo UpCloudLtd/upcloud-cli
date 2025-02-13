@@ -54,6 +54,7 @@ func handleNetwork(in string) (*upcloud.IPNetwork, error) {
 		return nil, err
 	}
 
+	commands.Must(fs.SetAnnotation("dhcp-dns", commands.FlagAnnotationFixedCompletions, []string{"true", "false"}))
 	commands.Must(fs.SetAnnotation("address", commands.FlagAnnotationNoFileCompletions, nil))
 
 	if dhcp != "" {
