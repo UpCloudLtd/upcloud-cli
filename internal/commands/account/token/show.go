@@ -1,4 +1,4 @@
-package tokens
+package token
 
 import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
@@ -15,7 +15,7 @@ func ShowCommand() commands.Command {
 		BaseCommand: commands.New(
 			"show",
 			"Show API token details",
-			"upctl token show 0cdabbf9-090b-4fc5-a6ae-3f76801ed171",
+			"upctl account token show 0cdabbf9-090b-4fc5-a6ae-3f76801ed171",
 		),
 	}
 }

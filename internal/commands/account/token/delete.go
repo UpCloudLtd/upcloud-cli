@@ -1,4 +1,4 @@
-package tokens
+package token
 
 import (
 	"fmt"
@@ -17,7 +17,7 @@ func DeleteCommand() commands.Command {
 		BaseCommand: commands.New(
 			"delete",
 			"Delete an API token",
-			"upctl token delete 0c0e2abf-cd89-490b-abdb-d06db6e8d816",
+			"upctl account token delete 0c0e2abf-cd89-490b-abdb-d06db6e8d816",
 		),
 	}
 }

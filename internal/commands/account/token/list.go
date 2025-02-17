@@ -1,4 +1,4 @@
-package tokens
+package token
 
 import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
@@ -13,7 +13,7 @@ import (
 // ListCommand creates the 'token list' command
 func ListCommand() commands.Command {
 	return &listCommand{
-		BaseCommand: commands.New("list", "List API tokens", "upctl token list"),
+		BaseCommand: commands.New("list", "List API tokens", "upctl account token list"),
 	}
 }
 

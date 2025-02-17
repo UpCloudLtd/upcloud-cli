@@ -1,4 +1,4 @@
-package tokens
+package token
 
 import (
 	"fmt"
@@ -17,8 +17,8 @@ func CreateCommand() commands.Command {
 		BaseCommand: commands.New(
 			"create",
 			"Create an API token",
-			`upctl token create --name test --expires-in 1h`,
-			`upctl token create --name test --expires-in 1h --allowed-ip-ranges "0.0.0.0/0" --allowed-ip-ranges "::/0"`,
+			`upctl account token create --name test --expires-in 1h`,
+			`upctl account token create --name test --expires-in 1h --allowed-ip-ranges "0.0.0.0/0" --allowed-ip-ranges "::/0"`,
 		),
 	}
 }

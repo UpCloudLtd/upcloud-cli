@@ -4,6 +4,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/account"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/account/permissions"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/account/token"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/database"
 	databaseindex "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/database/index"
 	databaseproperties "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/database/properties"
@@ -28,7 +29,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/servergroup"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/storage"
 	storagebackup "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/storage/backup"
-	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/tokens"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/zone"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
 
@@ -123,12 +123,12 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	permissionsCommand := commands.BuildCommand(permissions.BasePermissionsCommand(), accountCommand.Cobra(), conf)
 	commands.BuildCommand(permissions.ListCommand(), permissionsCommand.Cobra(), conf)
 
-	// Token
-	tokenCommand := commands.BuildCommand(tokens.BaseTokensCommand(), rootCmd, conf)
-	commands.BuildCommand(tokens.CreateCommand(), tokenCommand.Cobra(), conf)
-	commands.BuildCommand(tokens.ListCommand(), tokenCommand.Cobra(), conf)
-	commands.BuildCommand(tokens.ShowCommand(), tokenCommand.Cobra(), conf)
-	commands.BuildCommand(tokens.DeleteCommand(), tokenCommand.Cobra(), conf)
+	// Account token
+	tokenCommand := commands.BuildCommand(token.BaseTokenCommand(), accountCommand.Cobra(), conf)
+	commands.BuildCommand(token.CreateCommand(), tokenCommand.Cobra(), conf)
+	commands.BuildCommand(token.ListCommand(), tokenCommand.Cobra(), conf)
+	commands.BuildCommand(token.ShowCommand(), tokenCommand.Cobra(), conf)
+	commands.BuildCommand(token.DeleteCommand(), tokenCommand.Cobra(), conf)
 
 	// Zone
 	zoneCommand := commands.BuildCommand(zone.BaseZoneCommand(), rootCmd, conf)
