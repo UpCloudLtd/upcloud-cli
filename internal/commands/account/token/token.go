@@ -6,7 +6,7 @@ import (
 
 // BaseTokenCommand creates the base 'token' command
 func BaseTokenCommand() commands.Command {
-	return &tokensCommand{commands.New("token", "Manage tokens")}
+	return &tokensCommand{commands.New("token", "Manage tokens (EXPERIMENTAL)")}
 }
 
 type tokensCommand struct {
