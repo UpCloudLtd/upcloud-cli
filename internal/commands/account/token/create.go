@@ -76,7 +76,7 @@ func applyCreateFlags(fs *pflag.FlagSet, dst, def *createParams) {
 	fs.StringVar(&dst.expiresAt, "expires-at", def.expiresAt, "Exact time when the token expires in RFC3339 format. e.g. 2025-01-01T00:00:00Z")
 	fs.DurationVar(&dst.expiresIn, "expires-in", def.expiresIn, "Duration until the token expires. e.g. 24h")
 	fs.BoolVar(&dst.canCreateTokens, "can-create-tokens", def.canCreateTokens, "Allow token to be used to create further tokens.")
-	fs.StringArrayVar(&dst.allowedIPRanges, "allowed-ip-ranges", def.allowedIPRanges, "Allowed IP ranges for the token.")
+	fs.StringArrayVar(&dst.allowedIPRanges, "allowed-ip-ranges", def.allowedIPRanges, "Allowed IP ranges for the token. If not defined, the token can not be used from any IP. To allow access from all IPs, use `0.0.0.0/0` as the value.")
 
 	commands.Must(fs.SetAnnotation("name", commands.FlagAnnotationNoFileCompletions, nil))
 	commands.Must(fs.SetAnnotation("expires-at", commands.FlagAnnotationNoFileCompletions, nil))
