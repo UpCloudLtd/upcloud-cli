@@ -32,14 +32,14 @@ func TestShowCommand(t *testing.T) {
 	}
 
 	expected := `  
-  Name:                 test                                 
-  Token ID              0cdabbf9-090b-4fc5-a6ae-3f76801ed171 
+  Name                  test                                 
+  UUID                  0cdabbf9-090b-4fc5-a6ae-3f76801ed171 
   Type                  workspace                            
   Created At            2021-10-01 12:00:00 +0000 UTC        
   Last Used             2021-11-01 12:00:00 +0000 UTC        
   Expires At            2022-10-01 12:00:00 +0000 UTC        
-  Allowed IP Ranges     [0.0.0.0/0 ::/0]                     
-  Can Create Sub Tokens false                                
+  Allowed IP Ranges     all                                  
+  Can Create Sub Tokens no                                   
 
 `
 

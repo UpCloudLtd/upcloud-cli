@@ -43,10 +43,10 @@ func TestListCommand(t *testing.T) {
 	}
 
 	expected := `
- Name   Token ID                               Type        Created At                      Last Used                       Expires At                      Allowed IP Ranges   Can Create Sub Tokens 
-────── ────────────────────────────────────── ─────────── ─────────────────────────────── ─────────────────────────────── ─────────────────────────────── ─────────────────── ───────────────────────
- test   0cdabbf9-090b-4fc5-a6ae-3f76801ed171   workspace   2021-10-01 12:00:00 +0000 UTC   2021-11-01 12:00:00 +0000 UTC   2022-10-01 12:00:00 +0000 UTC   [0.0.0.0/0 ::/0]    false                 
- foo    0cdabbf9-090b-4fc5-a6ae-3f76801ed172   workspace   2021-10-01 12:00:00 +0000 UTC   <nil>                           2022-10-01 12:00:00 +0000 UTC   [0.0.0.0/0 ::/0]    true                  
+ UUID   Name                                   Type        Last Used                       Expires At                    
+────── ────────────────────────────────────── ─────────── ─────────────────────────────── ───────────────────────────────
+ test   0cdabbf9-090b-4fc5-a6ae-3f76801ed171   workspace   2021-11-01 12:00:00 +0000 UTC   2022-10-01 12:00:00 +0000 UTC 
+ foo    0cdabbf9-090b-4fc5-a6ae-3f76801ed172   workspace   <nil>                           2022-10-01 12:00:00 +0000 UTC 
 
 `
 

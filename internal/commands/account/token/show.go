@@ -39,7 +39,7 @@ func (c *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 		Sections: []output.DetailSection{
 			{
 				Rows: []output.DetailRow{
-					{Title: "Name:", Key: "name", Value: token.Name},
+					{Title: "Name", Key: "name", Value: token.Name},
 					{Title: "UUID", Key: "id", Colour: ui.DefaultUUUIDColours, Value: token.ID},
 					{Title: "Type", Key: "type", Value: token.Type},
 					{Title: "Created At", Key: "created_at", Value: token.CreatedAt},
