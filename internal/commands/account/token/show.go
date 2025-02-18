@@ -3,6 +3,7 @@ package token
 import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/format"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
@@ -39,13 +40,13 @@ func (c *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 			{
 				Rows: []output.DetailRow{
 					{Title: "Name:", Key: "name", Value: token.Name},
-					{Title: "Token ID", Key: "id", Colour: ui.DefaultUUUIDColours, Value: token.ID},
+					{Title: "UUID", Key: "id", Colour: ui.DefaultUUUIDColours, Value: token.ID},
 					{Title: "Type", Key: "type", Value: token.Type},
 					{Title: "Created At", Key: "created_at", Value: token.CreatedAt},
 					{Title: "Last Used", Key: "last_used", Value: token.LastUsed},
 					{Title: "Expires At", Key: "expires_at", Value: token.ExpiresAt},
-					{Title: "Allowed IP Ranges", Key: "allowed_ip_ranges", Value: token.AllowedIPRanges},
-					{Title: "Can Create Sub Tokens", Key: "can_create_sub_tokens", Value: token.CanCreateSubTokens},
+					{Title: "Allowed IP Ranges", Key: "allowed_ip_ranges", Value: token.AllowedIPRanges, Format: format.IPFilter},
+					{Title: "Can Create Sub Tokens", Key: "can_create_sub_tokens", Value: token.CanCreateSubTokens, Format: format.Boolean},
 				},
 			},
 		},
