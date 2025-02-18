@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added support for Valkey properties
 - Add termination_protection to upctl database show output
 - Experimental support for token authentication by defining token in `UPCLOUD_TOKEN` environment variable.
+- Experimental support for managing tokens with `account token` commands.
 
 ### Changed
 
