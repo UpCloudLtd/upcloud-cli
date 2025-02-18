@@ -23,7 +23,7 @@ func (s Token) CompleteArgument(ctx context.Context, svc service.AllServices, to
 	}
 	var vals []string
 	for _, t := range *tokens {
-		vals = append(vals, t.ID)
+		vals = append(vals, t.ID, t.Name)
 	}
 	return MatchStringPrefix(vals, toComplete, true), cobra.ShellCompDirectiveNoFileComp
 }

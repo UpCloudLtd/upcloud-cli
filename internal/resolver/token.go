@@ -22,7 +22,8 @@ func (s CachingToken) Get(ctx context.Context, svc internal.AllServices) (Resolv
 	return func(arg string) Resolved {
 		rv := Resolved{Arg: arg}
 		for _, token := range *tokens {
-			rv.AddMatch(token.ID, MatchArgWithWhitespace(arg, token.ID))
+			rv.AddMatch(token.ID, MatchTitle(arg, token.Name))
+			rv.AddMatch(token.ID, MatchUUID(arg, token.ID))
 		}
 		return rv
 	}, nil
