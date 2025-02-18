@@ -18,7 +18,7 @@ func CreateCommand() commands.Command {
 			"create",
 			"Create an API token",
 			`upctl account token create --name test --expires-in 1h`,
-			`upctl account token create --name test --expires-in 1h --allowed-ip-ranges "0.0.0.0/0" --allowed-ip-ranges "::/0"`,
+			`upctl account token create --name test --expires-in 1h --allow-ip-range "0.0.0.0/0" --allow-ip-range "::/0"`,
 		),
 	}
 }
@@ -76,12 +76,12 @@ func applyCreateFlags(fs *pflag.FlagSet, dst, def *createParams) {
 	fs.StringVar(&dst.expiresAt, "expires-at", def.expiresAt, "Exact time when the token expires in RFC3339 format. e.g. 2025-01-01T00:00:00Z")
 	fs.DurationVar(&dst.expiresIn, "expires-in", def.expiresIn, "Duration until the token expires. e.g. 24h")
 	fs.BoolVar(&dst.canCreateTokens, "can-create-tokens", def.canCreateTokens, "Allow token to be used to create further tokens.")
-	fs.StringArrayVar(&dst.allowedIPRanges, "allowed-ip-ranges", def.allowedIPRanges, "Allowed IP ranges for the token. If not defined, the token can not be used from any IP. To allow access from all IPs, use `0.0.0.0/0` as the value.")
+	fs.StringArrayVar(&dst.allowedIPRanges, "allow-ip-range", def.allowedIPRanges, "Allowed IP ranges for the token. If not defined, the token can not be used from any IP. To allow access from all IPs, use `0.0.0.0/0` as the value.")
 
 	commands.Must(fs.SetAnnotation("name", commands.FlagAnnotationNoFileCompletions, nil))
 	commands.Must(fs.SetAnnotation("expires-at", commands.FlagAnnotationNoFileCompletions, nil))
 	commands.Must(fs.SetAnnotation("expires-in", commands.FlagAnnotationNoFileCompletions, nil))
-	commands.Must(fs.SetAnnotation("allowed-ip-ranges", commands.FlagAnnotationNoFileCompletions, nil))
+	commands.Must(fs.SetAnnotation("allow-ip-range", commands.FlagAnnotationNoFileCompletions, nil))
 }
 
 // InitCommand implements Command.InitCommand
