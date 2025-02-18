@@ -43,25 +43,19 @@ func (l *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 			token.Name,
 			token.ID,
 			token.Type,
-			token.CreatedAt,
 			token.LastUsed,
 			token.ExpiresAt,
-			token.AllowedIPRanges,
-			token.CanCreateSubTokens,
 		})
 	}
 	return output.MarshaledWithHumanOutput{
 		Value: tokens,
 		Output: output.Table{
 			Columns: []output.TableColumn{
+				{Key: "id", Header: "UUID", Colour: ui.DefaultUUUIDColours},
 				{Key: "name", Header: "Name"},
-				{Key: "id", Header: "Token ID", Colour: ui.DefaultUUUIDColours},
 				{Key: "type", Header: "Type"},
-				{Key: "created_at", Header: "Created At"},
 				{Key: "last_used", Header: "Last Used"},
 				{Key: "expires_at", Header: "Expires At"},
-				{Key: "allowed_ip_ranges", Header: "Allowed IP Ranges"},
-				{Key: "can_create_sub_tokens", Header: "Can Create Sub Tokens"},
 			},
 			Rows: rows,
 		},
