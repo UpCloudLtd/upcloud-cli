@@ -41,6 +41,26 @@
          <lastmod>2025-02-18</lastmod>
     </url>
     <url>
+         <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_account/token/</loc>
+         <lastmod>2025-02-18</lastmod>
+    </url>
+    <url>
+         <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_account/token/create/</loc>
+         <lastmod>2025-02-18</lastmod>
+    </url>
+    <url>
+         <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_account/token/delete/</loc>
+         <lastmod>2025-02-18</lastmod>
+    </url>
+    <url>
+         <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_account/token/list/</loc>
+         <lastmod>2025-02-18</lastmod>
+    </url>
+    <url>
+         <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_account/token/show/</loc>
+         <lastmod>2025-02-18</lastmod>
+    </url>
+    <url>
          <loc>https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_database/</loc>
          <lastmod>2025-02-18</lastmod>
     </url>
