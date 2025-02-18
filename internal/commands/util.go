@@ -7,9 +7,11 @@ import (
 	"os"
 	"reflect"
 	"regexp"
+	"slices"
 	"strings"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/validation"
+	"github.com/spf13/cobra"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/jedib0t/go-pretty/v6/text"
@@ -139,6 +141,115 @@ func ParseSSHKeys(sshKeys []string) ([]string, error) {
 	}
 
 	return allSSHKeys, nil
+}
+
+// SetDeprecationHelp hides a specific alias in the help output and prints a deprecation warning when used.
+// Only works for primary commands, not subcommands.
+func SetDeprecationHelp(cmd *cobra.Command, deprecatedAliases []string) {
+	// Construct new alias list, excluding the deprecated aliases
+	var filteredAliases []string
+	for _, alias := range cmd.Aliases {
+		if !slices.Contains(deprecatedAliases, alias) { // ✅ Using slices.Contains
+			filteredAliases = append(filteredAliases, alias)
+		}
+	}
+
+	// Update the alias list in the usage template **before** help is triggered
+	originalTemplate := cmd.UsageTemplate()
+	var modifiedTemplate string
+
+	if len(filteredAliases) > 0 {
+		modifiedTemplate = strings.ReplaceAll(originalTemplate, "{{.NameAndAliases}}{{end}}", "{{.Use}}, "+strings.Join(filteredAliases, ", ")+"{{end}}")
+	} else {
+		modifiedTemplate = strings.ReplaceAll(originalTemplate, "{{.NameAndAliases}}{{end}}", "{{.Use}}{{end}}")
+	}
+
+	// Apply the updated usage template **before help is called**
+	cmd.SetUsageTemplate(modifiedTemplate)
+
+	// Custom Help Function to Show Deprecation Warning
+	cmd.SetHelpFunc(func(cmd *cobra.Command, _ []string) {
+		if slices.Contains(deprecatedAliases, cmd.CalledAs()) {
+			PrintDeprecationWarning(cmd.CalledAs(), cmd.Use)
+		}
+
+		// Print the help output with the modified alias list
+		fmt.Println(cmd.UsageString())
+	})
+
+	// Intercept help execution using PersistentPreRunE
+	originalPreRunE := cmd.PersistentPreRunE
+
+	// Show deprecation message when upctl <command> help is called
+	cmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
+		// Call the parent command's PersistentPreRunE first
+		if cmd.Parent() != nil && cmd.Parent().PersistentPreRunE != nil {
+			if err := cmd.Parent().PersistentPreRunE(cmd.Parent(), args); err != nil {
+				return err
+			}
+		}
+
+		// Show deprecation warning if the alias was used
+		if slices.Contains(deprecatedAliases, cmd.CalledAs()) {
+			PrintDeprecationWarning(cmd.CalledAs(), cmd.Use)
+		}
+
+		// Call the original PersistentPreRunE (if defined)
+		if originalPreRunE != nil {
+			return originalPreRunE(cmd, args)
+		}
+
+		return nil
+	}
+}
+
+// SetSubcommandDeprecationHelp detects the correct interface implementation and wraps the relevant execution function.
+func SetSubcommandDeprecationHelp(cmd Command, aliases []string) {
+	// Set a custom help function to display the warning for `-h` or `--help`
+	cobraCmd := cmd.Cobra()
+	originalHelpFunc := cobraCmd.HelpFunc()
+	cobraCmd.SetHelpFunc(func(cmd *cobra.Command, args []string) {
+		for _, alias := range aliases {
+			if IsDeprecatedAliasUsed(alias) {
+				PrintDeprecationWarning(alias, cmd.Parent().Use)
+				break
+			}
+		}
+		originalHelpFunc(cmd, args)
+	})
+}
+
+// isDeprecatedAliasUsed checks if the deprecated alias was used in the command invocation
+func IsDeprecatedAliasUsed(deprecatedAlias string) bool {
+	if len(os.Args) < 2 {
+		return false
+	}
+
+	for _, arg := range os.Args[1:] {
+		if arg == deprecatedAlias {
+			return true
+		}
+	}
+	return false
+}
+
+// PrintDeprecationWarning prints a deprecation message
+func PrintDeprecationWarning(deprecatedAlias, newCommand string) {
+	fmt.Fprintf(os.Stderr, "⚠️  Deprecation Warning: The alias '%s' is deprecated and will be removed in a future release.\n", deprecatedAlias)
+	fmt.Fprintf(os.Stderr, "   Please use '%s' instead.\n", newCommand)
+}
+
+func SetSubcommandExecutionDeprecationMessage(cmd Command, deprecatedParentAliases []string, mainParentAlias string) {
+	parentCmd := cmd.Cobra().Parent()
+	if parentCmd != nil {
+		for _, deprecatedParentAlias := range deprecatedParentAliases {
+			// Check if the parent was called using the deprecated alias
+			if IsDeprecatedAliasUsed(deprecatedParentAlias) {
+				PrintDeprecationWarning(deprecatedParentAlias, mainParentAlias)
+				break
+			}
+		}
+	}
 }
 
 // Must panics if the error is not nil.

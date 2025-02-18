@@ -16,8 +16,8 @@ func DeleteCommand() commands.Command {
 		BaseCommand: commands.New(
 			"delete",
 			"Delete a load balancer",
-			"upctl loadbalancer delete 55199a44-4751-4e27-9394-7c7661910be3",
-			"upctl loadbalancer delete my-load-balancer",
+			"upctl load-balancer delete 55199a44-4751-4e27-9394-7c7661910be3",
+			"upctl load-balancer delete my-load-balancer",
 		),
 	}
 }
@@ -28,8 +28,18 @@ type deleteCommand struct {
 	completion.LoadBalancer
 }
 
+func (s *deleteCommand) InitCommand() {
+	// Deprecating loadbalancer in favour of load-balancer
+	// TODO: Remove this in the future
+	commands.SetSubcommandDeprecationHelp(s, []string{"loadbalancer"})
+}
+
 // Execute implements commands.MultipleArgumentCommand
 func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
+	// Deprecating loadbalancer in favour of load-balancer
+	// TODO: Remove this in the future
+	commands.SetSubcommandExecutionDeprecationMessage(s, []string{"loadbalancer"}, "load-balancer")
+
 	svc := exec.All()
 	msg := fmt.Sprintf("Deleting load balancer %v", arg)
 	exec.PushProgressStarted(msg)

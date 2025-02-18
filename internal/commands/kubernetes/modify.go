@@ -52,10 +52,18 @@ func (c *modifyCommand) InitCommand() {
 	c.AddFlags(fs)
 	c.Cobra().MarkFlagsMutuallyExclusive("label", "clear-labels")
 	commands.Must(c.Cobra().RegisterFlagCompletionFunc("label", cobra.NoFileCompletions))
+
+	// Deprecating k8s
+	// TODO: Remove this in the future
+	commands.SetSubcommandDeprecationHelp(c, []string{"k8s"})
 }
 
 // Execute implements commands.MultipleArgumentCommand
 func (c *modifyCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
+	// Deprecating k8s
+	// TODO: Remove this in the future
+	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"k8s"}, "uks")
+
 	msg := fmt.Sprintf("Modifying Kubernetes cluster %v", arg)
 	exec.PushProgressStarted(msg)
 

@@ -9,7 +9,7 @@ import (
 // PlansCommand creates the "loadbalancer plans" command
 func PlansCommand() commands.Command {
 	return &plansCommand{
-		BaseCommand: commands.New("plans", "List available load balancer plans", "upctl loadbalancer plans"),
+		BaseCommand: commands.New("plans", "List available load balancer plans", "upctl load-balancer plans"),
 	}
 }
 
@@ -17,8 +17,18 @@ type plansCommand struct {
 	*commands.BaseCommand
 }
 
+func (s *plansCommand) InitCommand() {
+	// Deprecating loadbalancer in favour of load-balancer
+	// TODO: Remove this in the future
+	commands.SetSubcommandDeprecationHelp(s, []string{"loadbalancer"})
+}
+
 // Execute implements commands.NoArgumentCommand
 func (s *plansCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
+	// Deprecating loadbalancer in favour of load-balancer
+	// TODO: Remove this in the future
+	commands.SetSubcommandExecutionDeprecationMessage(s, []string{"loadbalancer"}, "load-balancer")
+
 	svc := exec.All()
 	plans, err := svc.GetLoadBalancerPlans(exec.Context(), &request.GetLoadBalancerPlansRequest{})
 	if err != nil {

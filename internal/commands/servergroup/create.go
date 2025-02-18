@@ -23,16 +23,16 @@ func CreateCommand() commands.Command {
 		BaseCommand: commands.New(
 			"create",
 			"Create a server group",
-			`upctl servergroup create \
+			`upctl server-group create \
 				--title my-server-group \
 				--anti-affinity-policy yes \
 				--server 1fdfda29-ead1-4855-b71f-a432179800ab \
 				--server my-server`,
-			`upctl servergroup create \
+			`upctl server-group create \
 				--title my-server-group \
 				--anti-affinity-policy yes \
 				--label env=dev`,
-			`upctl servergroup create \
+			`upctl server-group create \
 				--title my-server-group \
 				--anti-affinity-policy strict \
 				--label env=dev \
@@ -97,6 +97,10 @@ func (c *createCommand) InitCommand() {
 	commands.Must(c.Cobra().MarkFlagRequired("title"))
 	commands.Must(c.Cobra().RegisterFlagCompletionFunc("title", cobra.NoFileCompletions))
 	commands.Must(c.Cobra().RegisterFlagCompletionFunc("label", cobra.NoFileCompletions))
+
+	// Deprecating servergroup in favour of server-group
+	// TODO: Remove this in the future
+	commands.SetSubcommandDeprecationHelp(c, []string{"servergroup"})
 }
 
 func (c *createCommand) InitCommandWithConfig(cfg *config.Config) {
@@ -105,6 +109,10 @@ func (c *createCommand) InitCommandWithConfig(cfg *config.Config) {
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (c *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
+	// Deprecating servergroup in favour of server-group
+	// TODO: Remove this in the future
+	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"servergroup"}, "server-group")
+
 	svc := exec.All()
 
 	if err := c.params.processParams(exec); err != nil {

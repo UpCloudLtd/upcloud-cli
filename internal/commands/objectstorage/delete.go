@@ -42,10 +42,18 @@ func (c *deleteCommand) InitCommand() {
 	config.AddToggleFlag(flags, &c.deletePolicies, "delete-policies", false, "Delete all policies from the service before deleting the object storage instance.")
 	config.AddToggleFlag(flags, &c.deleteBuckets, "delete-buckets", false, "Delete all buckets from the service before deleting the object storage instance.")
 	c.AddFlags(flags)
+
+	// Deprecating objectstorage and objsto in favour of object-storage
+	// TODO: Remove this in the future
+	commands.SetSubcommandDeprecationHelp(c, []string{"objectstorage", "objsto"})
 }
 
 // Execute implements commands.MultipleArgumentCommand
 func (c *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
+	// Deprecating objectstorage and objsto in favour of object-storage
+	// TODO: Remove this in the future
+	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"objectstorage", "objsto"}, "object-storage")
+
 	svc := exec.All()
 	msg := fmt.Sprintf("Deleting object storage service %v", arg)
 	exec.PushProgressStarted(msg)

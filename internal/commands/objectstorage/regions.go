@@ -20,8 +20,18 @@ type regionsCommand struct {
 	*commands.BaseCommand
 }
 
+func (s *regionsCommand) InitCommand() {
+	// Deprecating objectstorage and objsto in favour of object-storage
+	// TODO: Remove this in the future
+	commands.SetSubcommandDeprecationHelp(s, []string{"objectstorage", "objsto"})
+}
+
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (s *regionsCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
+	// Deprecating objectstorage and objsto in favour of object-storage
+	// TODO: Remove this in the future
+	commands.SetSubcommandExecutionDeprecationMessage(s, []string{"objectstorage", "objsto"}, "object-storage")
+
 	regions, err := exec.All().GetManagedObjectStorageRegions(exec.Context(), &request.GetManagedObjectStorageRegionsRequest{})
 	if err != nil {
 		return nil, err

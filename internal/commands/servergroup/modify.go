@@ -30,11 +30,11 @@ func ModifyCommand() commands.Command {
 		BaseCommand: commands.New(
 			"modify",
 			"Modify a server group",
-			"upctl servergroup modify 8abc8009-4325-4b23-4321-b1232cd81231 --title your-server-group",
-			"upctl servergroup modify my-server-group --anti-affinity-policy strict",
-			`upctl servergroup modify my-server-group --server my-server-1 --server my-server-2 --server my-server-3-`,
-			`upctl servergroup modify 8abc8009-4325-4b23-4321-b1232cd81231 --server 0bab98e5-b327-4ab8-ba16-738d4af7578b --server my-server-2`,
-			`upctl servergroup modify my-server-group --label env=dev`,
+			"upctl server-group modify 8abc8009-4325-4b23-4321-b1232cd81231 --title your-server-group",
+			"upctl server-group modify my-server-group --anti-affinity-policy strict",
+			`upctl server-group modify my-server-group --server my-server-1 --server my-server-2 --server my-server-3-`,
+			`upctl server-group modify 8abc8009-4325-4b23-4321-b1232cd81231 --server 0bab98e5-b327-4ab8-ba16-738d4af7578b --server my-server-2`,
+			`upctl server-group modify my-server-group --label env=dev`,
 		),
 	}
 }
@@ -89,6 +89,10 @@ func (c *modifyCommand) InitCommand() {
 	c.AddFlags(fs)
 	commands.Must(c.Cobra().RegisterFlagCompletionFunc("title", cobra.NoFileCompletions))
 	commands.Must(c.Cobra().RegisterFlagCompletionFunc("label", cobra.NoFileCompletions))
+
+	// Deprecating servergroup in favour of server-group
+	// TODO: Remove this in the future
+	commands.SetSubcommandDeprecationHelp(c, []string{"servergroup"})
 }
 
 func (c *modifyCommand) InitCommandWithConfig(cfg *config.Config) {
@@ -97,6 +101,10 @@ func (c *modifyCommand) InitCommandWithConfig(cfg *config.Config) {
 
 // Execute implements commands.MultipleArgumentCommand
 func (c *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
+	// Deprecating servergroup in favour of server-group
+	// TODO: Remove this in the future
+	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"servergroup"}, "server-group")
+
 	svc := exec.All()
 
 	err := c.params.processParams(exec, uuid)

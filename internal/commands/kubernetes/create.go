@@ -152,6 +152,10 @@ func (c *createCommand) InitCommand() {
 	commands.Must(c.Cobra().MarkFlagRequired("network"))
 	commands.Must(c.Cobra().MarkFlagRequired("zone"))
 	commands.Must(c.Cobra().RegisterFlagCompletionFunc("name", cobra.NoFileCompletions))
+
+	// Deprecating k8s
+	// TODO: Remove this in the future
+	commands.SetSubcommandDeprecationHelp(c, []string{"k8s"})
 }
 
 func (c *createCommand) InitCommandWithConfig(cfg *config.Config) {
@@ -162,6 +166,10 @@ func (c *createCommand) InitCommandWithConfig(cfg *config.Config) {
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (c *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
+	// Deprecating k8s
+	// TODO: Remove this in the future
+	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"k8s"}, "uks")
+
 	svc := exec.All()
 
 	if err := c.params.processParams(exec); err != nil {
