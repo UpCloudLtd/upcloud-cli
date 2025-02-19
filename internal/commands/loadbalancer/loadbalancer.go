@@ -6,9 +6,15 @@ import (
 
 // BaseLoadBalancerCommand creates the base "loadbalancer" command
 func BaseLoadBalancerCommand() commands.Command {
-	return &loadbalancerCommand{
-		commands.New("load-balancer", "Manage load balancers"),
+	// Initialize the BaseCommand properly
+	baseCmd := commands.New("load-balancer", "Manage load balancers")
+	baseCmd.SetDeprecatedAliases([]string{"loadbalancer"})
+
+	lbc := &loadbalancerCommand{
+		BaseCommand: baseCmd,
 	}
+
+	return lbc
 }
 
 type loadbalancerCommand struct {
@@ -21,5 +27,5 @@ func (lb *loadbalancerCommand) InitCommand() {
 
 	// Deprecating loadbalancer in favour of load-balancer
 	// TODO: Remove this in the future
-	commands.SetDeprecationHelp(lb.Cobra(), []string{"loadbalancer"})
+	commands.SetDeprecationHelp(lb.Cobra(), lb.DeprecatedAliases())
 }
