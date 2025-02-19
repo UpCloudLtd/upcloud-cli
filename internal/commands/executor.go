@@ -33,6 +33,7 @@ type Executor interface {
 	Firewall() service.Firewall
 	IPAddress() service.IPAddress
 	Account() service.Account
+	Token() service.Token
 	All() internal.AllServices
 	Debug(msg string, args ...interface{})
 	WithLogger(args ...interface{}) Executor
@@ -132,6 +133,10 @@ func (e executorImpl) IPAddress() service.IPAddress {
 }
 
 func (e executorImpl) Account() service.Account {
+	return e.service
+}
+
+func (e executorImpl) Token() service.Token {
 	return e.service
 }
 

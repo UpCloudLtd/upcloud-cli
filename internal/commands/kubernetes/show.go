@@ -1,9 +1,6 @@
 package kubernetes
 
 import (
-	"fmt"
-	"strings"
-
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/format"
@@ -11,7 +8,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
-	"github.com/jedib0t/go-pretty/v6/text"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 )
@@ -86,7 +82,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 								{Title: "Network UUID:", Value: cluster.Network, Colour: ui.DefaultUUUIDColours},
 								{Title: "Network name:", Value: networkName, Format: format.PossiblyUnknownString},
 								{Title: "Network CIDR:", Value: cluster.NetworkCIDR, Colour: ui.DefaultAddressColours},
-								{Title: "Kubernetes API allowed IPs:", Value: cluster.ControlPlaneIPFilter, Format: formatIPFilter},
+								{Title: "Kubernetes API allowed IPs:", Value: cluster.ControlPlaneIPFilter, Format: format.IPFilter},
 								{Title: "Private node groups:", Value: cluster.PrivateNodeGroups, Format: format.Boolean},
 								{Title: "Zone:", Value: cluster.Zone},
 								{Title: "Operational state:", Value: cluster.State, Format: format.KubernetesClusterState},
@@ -107,31 +103,4 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 			},
 		},
 	}, nil
-}
-
-func formatIPFilter(val interface{}) (text.Colors, string, error) {
-	addresses, ok := val.([]string)
-	if !ok {
-		return nil, "", fmt.Errorf("cannot parse IP addresses from %T, expected []string", val)
-	}
-
-	allowAll := false
-	var strs []string
-	for _, ipa := range addresses {
-		if ipa == "0.0.0.0/0" {
-			allowAll = true
-		}
-
-		strs = append(strs, ui.DefaultAddressColours.Sprint(ipa))
-	}
-
-	if addresses == nil || allowAll {
-		return nil, "all", nil
-	}
-
-	if addresses == nil || allowAll {
-		return nil, text.FgHiBlack.Sprint("none"), nil
-	}
-
-	return nil, strings.Join(strs, ",\n"), nil
 }

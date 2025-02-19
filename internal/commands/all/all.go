@@ -4,6 +4,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/account"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/account/permissions"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/account/token"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/database"
 	databaseindex "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/database/index"
 	databaseproperties "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/database/properties"
@@ -121,6 +122,13 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	// Account permissions
 	permissionsCommand := commands.BuildCommand(permissions.BasePermissionsCommand(), accountCommand.Cobra(), conf)
 	commands.BuildCommand(permissions.ListCommand(), permissionsCommand.Cobra(), conf)
+
+	// Account token
+	tokenCommand := commands.BuildCommand(token.BaseTokenCommand(), accountCommand.Cobra(), conf)
+	commands.BuildCommand(token.CreateCommand(), tokenCommand.Cobra(), conf)
+	commands.BuildCommand(token.ListCommand(), tokenCommand.Cobra(), conf)
+	commands.BuildCommand(token.ShowCommand(), tokenCommand.Cobra(), conf)
+	commands.BuildCommand(token.DeleteCommand(), tokenCommand.Cobra(), conf)
 
 	// Zone
 	zoneCommand := commands.BuildCommand(zone.BaseZoneCommand(), rootCmd, conf)
