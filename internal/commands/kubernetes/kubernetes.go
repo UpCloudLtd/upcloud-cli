@@ -18,7 +18,4 @@ type kubernetesCommand struct {
 // InitCommand implements Command.InitCommand
 func (k *kubernetesCommand) InitCommand() {
 	k.Cobra().Aliases = []string{"k8s", "uks"}
-	// Deprecating k8s
-	// TODO: Remove this in the future
-	commands.SetDeprecationHelp(k.Cobra(), []string{"k8s"})
 }
