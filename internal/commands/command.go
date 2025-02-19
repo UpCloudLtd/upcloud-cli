@@ -14,6 +14,10 @@ import (
 	"github.com/spf13/pflag"
 )
 
+type CommandContextKey string
+
+const commandKey CommandContextKey = "command"
+
 // New returns a BaseCommand that implements Command. It is used as a base to create custom commands from.
 func New(name, usage string, examples ...string) *BaseCommand {
 	cmd := &cobra.Command{
@@ -29,7 +33,7 @@ func New(name, usage string, examples ...string) *BaseCommand {
 
 	// Store reference to itself in the context - We need this to access the command in the CobraCommand interface
 	// Specifically to generate the reference documentation
-	cmd.SetContext(context.WithValue(context.Background(), "command", baseCmd))
+	cmd.SetContext(context.WithValue(context.Background(), commandKey, baseCmd))
 
 	return baseCmd
 }
@@ -165,12 +169,12 @@ func (s *BaseCommand) isDeprecatedAlias(alias string) bool {
 	return false
 }
 
-func (bc *BaseCommand) DeprecatedAliases() []string {
-	return bc.deprecatedAliases
+func (s *BaseCommand) DeprecatedAliases() []string {
+	return s.deprecatedAliases
 }
 
-func (bc *BaseCommand) SetDeprecatedAliases(aliases []string) {
-	bc.deprecatedAliases = aliases
+func (s *BaseCommand) SetDeprecatedAliases(aliases []string) {
+	s.deprecatedAliases = aliases
 }
 
 // MaximumExecutions return the max executed workers

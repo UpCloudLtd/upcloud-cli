@@ -46,12 +46,10 @@ func (c *configCommand) InitCommand() {
 		"",
 		"Absolute path for writing output. If the file exists, the config will be merged.")
 	c.AddFlags(flagSet)
-
 }
 
 // Execute implements commands.MultipleArgumentCommand
 func (c *configCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
-
 	svc := exec.All()
 
 	msg := fmt.Sprintf("Getting kubeconfig for Kubernetes cluster %s", uuid)

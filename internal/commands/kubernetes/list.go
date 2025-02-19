@@ -22,7 +22,6 @@ type listCommand struct {
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
-
 	svc := exec.All()
 	clusters, err := svc.GetKubernetesClusters(exec.Context(), &request.GetKubernetesClustersRequest{})
 	if err != nil {
