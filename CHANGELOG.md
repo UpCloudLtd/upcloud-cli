@@ -13,6 +13,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add termination_protection to upctl database show output
 - Experimental support for token authentication by defining token in `UPCLOUD_TOKEN` environment variable.
 - Experimental support for managing tokens with `account token` commands.
+
+### Changed
+
+- List cloud native plans in their own section in human readable `server plans` output.
+
+### Fixed
+
+- Prevent filename completion of flags that don't take filename args.
+
+### Deprecated
 - Adding deprecation messages to some commands and aliases and adding new command names to improve consistency
     - Deprecated commands: 
         - loadbalancer (new: load-balancer)
@@ -31,14 +41,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
         - server: srv
         - server-group: sg
         - storage: st
-
-### Changed
-
-- List cloud native plans in their own section in human readable `server plans` output.
-
-### Fixed
-
-- Prevent filename completion of flags that don't take filename args.
 
 ## [3.14.0] - 2025-01-08
 
