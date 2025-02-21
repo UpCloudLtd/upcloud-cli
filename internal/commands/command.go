@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -13,15 +14,28 @@ import (
 	"github.com/spf13/pflag"
 )
 
+type CommandContextKey string
+
+const commandKey CommandContextKey = "command"
+
 // New returns a BaseCommand that implements Command. It is used as a base to create custom commands from.
 func New(name, usage string, examples ...string) *BaseCommand {
-	return &BaseCommand{
-		cobra: &cobra.Command{
-			Use:     name,
-			Short:   usage,
-			Example: strings.Join(examples, "\n"),
-		},
+	cmd := &cobra.Command{
+		Use:     name,
+		Short:   usage,
+		Example: strings.Join(examples, "\n"),
 	}
+
+	// Initialize BaseCommand
+	baseCmd := &BaseCommand{
+		cobra: cmd,
+	}
+
+	// Store reference to itself in the context - We need this to access the command in the CobraCommand interface
+	// Specifically to generate the reference documentation
+	cmd.SetContext(context.WithValue(context.Background(), commandKey, baseCmd))
+
+	return baseCmd
 }
 
 // Command is the base command type for all commands.
@@ -125,7 +139,42 @@ func BuildCommand(child Command, parent *cobra.Command, config *config.Config) C
 
 // BaseCommand is the base type for all commands, implementing Command
 type BaseCommand struct {
-	cobra *cobra.Command
+	cobra             *cobra.Command
+	deprecatedAliases []string
+}
+
+// Aliases return non deprecated aliases
+func (s *BaseCommand) Aliases() []string {
+	// Get all aliases from Cobra
+	allAliases := s.cobra.Aliases
+
+	// Filter out deprecated aliases
+	var filteredAliases []string
+	for _, alias := range allAliases {
+		if !s.isDeprecatedAlias(alias) {
+			filteredAliases = append(filteredAliases, alias)
+		}
+	}
+
+	return filteredAliases
+}
+
+// isDeprecatedAlias checks if an alias is deprecated
+func (s *BaseCommand) isDeprecatedAlias(alias string) bool {
+	for _, deprecated := range s.deprecatedAliases {
+		if alias == deprecated {
+			return true
+		}
+	}
+	return false
+}
+
+func (s *BaseCommand) DeprecatedAliases() []string {
+	return s.deprecatedAliases
+}
+
+func (s *BaseCommand) SetDeprecatedAliases(aliases []string) {
+	s.deprecatedAliases = aliases
 }
 
 // MaximumExecutions return the max executed workers

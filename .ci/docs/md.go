@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
@@ -120,9 +121,16 @@ func genMarkdown(cmd *cobra.Command, w io.Writer) error {
 		buf.WriteString(fmt.Sprintf("```\n%s\n```\n\n", cmd.UseLine()))
 	}
 
-	if len(cmd.Aliases) > 0 {
-		buf.WriteString("## Aliases\n\n")
-		buf.WriteString(fmt.Sprintf("%s\n\n", formatFlags(cmd.Aliases)))
+	ctx := cmd.Context()
+	if ctx != nil {
+		if wrapper := ctx.Value("command"); wrapper != nil {
+			if c, ok := wrapper.(*commands.BaseCommand); ok {
+				if aliases := c.Aliases(); len(aliases) > 0 {
+					buf.WriteString("## Aliases\n\n")
+					buf.WriteString(fmt.Sprintf("%s\n\n", formatFlags(aliases)))
+				}
+			}
+		}
 	}
 
 	if len(cmd.Example) > 0 {
