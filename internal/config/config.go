@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"path/filepath"
+	"regexp"
 	"runtime/debug"
 	"strings"
 	"time"
@@ -216,6 +217,15 @@ func (s *Config) CreateService() (internal.AllServices, error) {
 }
 
 func GetVersion() string {
+	version := getVersion()
+	re := regexp.MustCompile(`v[0-9]+\.[0-9]+\.[0-9]+.*`)
+	if re.MatchString(version) {
+		return version[1:]
+	}
+	return version
+}
+
+func getVersion() string {
 	// Version was overridden during the build
 	if Version != "dev" {
 		return Version
