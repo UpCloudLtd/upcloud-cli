@@ -39,6 +39,10 @@ type modifyCommand struct {
 
 // InitCommand implements Command.InitCommand
 func (c *modifyCommand) InitCommand() {
+	// Deprecating uks
+	// TODO: Remove this in the future
+	commands.SetSubcommandDeprecationHelp(c, []string{"uks"})
+
 	fs := &pflag.FlagSet{}
 	fs.StringArrayVar(
 		&c.controlPlaneIPFilter,
@@ -56,6 +60,10 @@ func (c *modifyCommand) InitCommand() {
 
 // Execute implements commands.MultipleArgumentCommand
 func (c *modifyCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
+	// Deprecating uks
+	// TODO: Remove this in the future
+	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"k8s"}, "uks")
+
 	msg := fmt.Sprintf("Modifying Kubernetes cluster %v", arg)
 	exec.PushProgressStarted(msg)
 

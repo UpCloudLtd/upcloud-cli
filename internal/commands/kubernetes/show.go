@@ -30,8 +30,18 @@ type showCommand struct {
 	completion.Kubernetes
 }
 
+func (s *showCommand) InitCommand() {
+	// Deprecating uks
+	// TODO: Remove this in the future
+	commands.SetSubcommandDeprecationHelp(s, []string{"uks"})
+}
+
 // Execute implements commands.MultipleArgumentCommand
 func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
+	// Deprecating uks
+	// TODO: Remove this in the future
+	commands.SetSubcommandExecutionDeprecationMessage(s, []string{"k8s"}, "uks")
+
 	svc := exec.All()
 	cluster, err := svc.GetKubernetesCluster(exec.Context(), &request.GetKubernetesClusterRequest{UUID: uuid})
 	if err != nil {

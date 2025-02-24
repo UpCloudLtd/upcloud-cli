@@ -17,8 +17,18 @@ type plansCommand struct {
 	*commands.BaseCommand
 }
 
+func (s *plansCommand) InitCommand() {
+	// Deprecating uks
+	// TODO: Remove this in the future
+	commands.SetSubcommandDeprecationHelp(s, []string{"uks"})
+}
+
 // Execute implements commands.NoArgumentCommand
 func (s *plansCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
+	// Deprecating uks
+	// TODO: Remove this in the future
+	commands.SetSubcommandExecutionDeprecationMessage(s, []string{"k8s"}, "uks")
+
 	svc := exec.All()
 	plans, err := svc.GetKubernetesPlans(exec.Context(), &request.GetKubernetesPlansRequest{})
 	if err != nil {

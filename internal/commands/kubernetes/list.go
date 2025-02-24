@@ -20,8 +20,18 @@ type listCommand struct {
 	*commands.BaseCommand
 }
 
+func (s *listCommand) InitCommand() {
+	// Deprecating uks
+	// TODO: Remove this in the future
+	commands.SetSubcommandDeprecationHelp(s, []string{"uks"})
+}
+
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
+	// Deprecating uks
+	// TODO: Remove this in the future
+	commands.SetSubcommandExecutionDeprecationMessage(s, []string{"k8s"}, "uks")
+
 	svc := exec.All()
 	clusters, err := svc.GetKubernetesClusters(exec.Context(), &request.GetKubernetesClustersRequest{})
 	if err != nil {
