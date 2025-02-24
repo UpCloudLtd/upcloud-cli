@@ -13,6 +13,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add termination_protection to upctl database show output
 - Experimental support for token authentication by defining token in `UPCLOUD_TOKEN` environment variable.
 - Experimental support for managing tokens with `account token` commands.
+- New command names and aliases added to improve consistency:
+    - Commands:
+        - load-balancer
+        - network-peering
+        - object-storage
+        - server-group
+    - Aliases:
+        - account: acc
+        - gateway: gw
+        - network-peering: np
+        - object-storage: obs
+        - partner: pr
+        - router: rt
+        - server: srv
+        - server-group: sg
+        - storage: st
 
 ### Changed
 
@@ -23,24 +39,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Prevent filename completion of flags that don't take filename args.
 
 ### Deprecated
-- Adding deprecation messages to some commands and aliases and adding new command names to improve consistency
+- Deprecation of some commands and aliases ( new command names added to improve consistency )
     - Deprecated commands: 
-        - loadbalancer (new: load-balancer)
-        - networkpeering (new: network-peering)
-        - objectstorage (new: object-storage)
-        - servergroup (new: server-group)
+        - loadbalancer
+        - networkpeering
+        - objectstorage
+        - servergroup
     - Deprecated aliases:
         - object-storage: objsto
-    - New aliases:
-        - account: acc
-        - gateway: gw
-        - network-peering: np
-        - object-storage: obs
-        - partner: pr
-        - router: rt
-        - server: srv
-        - server-group: sg
-        - storage: st
+
 
 ## [3.14.0] - 2025-01-08
 
