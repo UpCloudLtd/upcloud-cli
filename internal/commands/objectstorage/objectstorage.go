@@ -6,8 +6,11 @@ import (
 
 // BaseobjectstorageCommand creates the base "object-storage" command
 func BaseobjectstorageCommand() commands.Command {
+	baseCmd := commands.New("object-storage", "Manage managed object storage services")
+	baseCmd.SetDeprecatedAliases([]string{"objectstorage", "objsto"})
+
 	return &objectstorageCommand{
-		commands.New("object-storage", "Manage managed object storage services"),
+		BaseCommand: baseCmd,
 	}
 }
 
@@ -21,5 +24,5 @@ func (c *objectstorageCommand) InitCommand() {
 
 	// Deprecating objectstorage and objsto in favour of object-storage
 	// TODO: Remove this in the future
-	commands.SetDeprecationHelp(c.Cobra(), []string{"objectstorage", "objsto"})
+	commands.SetDeprecationHelp(c.Cobra(), c.DeprecatedAliases())
 }
