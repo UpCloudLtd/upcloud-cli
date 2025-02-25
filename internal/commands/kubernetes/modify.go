@@ -39,6 +39,10 @@ type modifyCommand struct {
 
 // InitCommand implements Command.InitCommand
 func (c *modifyCommand) InitCommand() {
+	// Deprecating uks
+	// TODO: Remove this in the future
+	commands.SetSubcommandDeprecationHelp(c, []string{"uks"})
+
 	fs := &pflag.FlagSet{}
 	fs.StringArrayVar(
 		&c.controlPlaneIPFilter,
@@ -52,15 +56,11 @@ func (c *modifyCommand) InitCommand() {
 	c.AddFlags(fs)
 	c.Cobra().MarkFlagsMutuallyExclusive("label", "clear-labels")
 	commands.Must(c.Cobra().RegisterFlagCompletionFunc("label", cobra.NoFileCompletions))
-
-	// Deprecating k8s
-	// TODO: Remove this in the future
-	commands.SetSubcommandDeprecationHelp(c, []string{"k8s"})
 }
 
 // Execute implements commands.MultipleArgumentCommand
 func (c *modifyCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
-	// Deprecating k8s
+	// Deprecating uks
 	// TODO: Remove this in the future
 	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"k8s"}, "uks")
 
