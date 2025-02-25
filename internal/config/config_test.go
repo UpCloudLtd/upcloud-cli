@@ -33,3 +33,31 @@ func TestConfig_Load(t *testing.T) {
 	assert.NotEmpty(t, cfg.GetString("username"))
 	assert.NotEmpty(t, cfg.GetString("password"))
 }
+
+func TestVersion(t *testing.T) {
+	tests := []struct {
+		name     string
+		expected string
+		version  string
+	}{
+		{
+			name:     "Removes v prefix",
+			version:  "v1.2.3",
+			expected: "1.2.3",
+		},
+		{
+			name:     "Removes v prefix with suffix",
+			version:  "v1.2.3-rc1",
+			expected: "1.2.3-rc1",
+		},
+	}
+	for _, test := range tests {
+		test := test
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			Version = test.version
+			actual := GetVersion()
+			assert.Equal(t, test.expected, actual)
+		})
+	}
+}
