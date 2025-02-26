@@ -211,6 +211,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Use correct currency symbol, `€` instead of `$`, in human output of `account show`.
+- Remove `v` prefix from version in `version` command output and User-Agent header
 
 ## [3.0.0] - 2023-10-18
 
