@@ -17,16 +17,15 @@ type plansCommand struct {
 	*commands.BaseCommand
 }
 
-// InitCommand implements Command.InitCommand
 func (s *plansCommand) InitCommand() {
-	// Deprecating k8s
+	// Deprecating uks
 	// TODO: Remove this in the future
-	commands.SetSubcommandDeprecationHelp(s, []string{"k8s"})
+	commands.SetSubcommandDeprecationHelp(s, []string{"uks"})
 }
 
 // Execute implements commands.NoArgumentCommand
 func (s *plansCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
-	// Deprecating k8s
+	// Deprecating uks
 	// TODO: Remove this in the future
 	commands.SetSubcommandExecutionDeprecationMessage(s, []string{"k8s"}, "uks")
 

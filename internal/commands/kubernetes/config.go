@@ -47,14 +47,14 @@ func (c *configCommand) InitCommand() {
 		"Absolute path for writing output. If the file exists, the config will be merged.")
 	c.AddFlags(flagSet)
 
-	// Deprecating k8s
+	// Deprecating uks in favor of k8s
 	// TODO: Remove this in the future
-	commands.SetSubcommandDeprecationHelp(c, []string{"k8s"})
+	commands.SetSubcommandDeprecationHelp(c, []string{"uks"})
 }
 
 // Execute implements commands.MultipleArgumentCommand
 func (c *configCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
-	// Deprecating k8s
+	// Deprecating uks
 	// TODO: Remove this in the future
 	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"k8s"}, "uks")
 

@@ -6,8 +6,11 @@ import (
 
 // BaseKubernetesCommand creates the base "kubernetes" command
 func BaseKubernetesCommand() commands.Command {
+	baseCmd := commands.New("kubernetes", "Manage Kubernetes clusters")
+	baseCmd.SetDeprecatedAliases([]string{"uks"})
+
 	return &kubernetesCommand{
-		commands.New("kubernetes", "Manage Kubernetes clusters"),
+		BaseCommand: baseCmd,
 	}
 }
 
@@ -18,7 +21,7 @@ type kubernetesCommand struct {
 // InitCommand implements Command.InitCommand
 func (k *kubernetesCommand) InitCommand() {
 	k.Cobra().Aliases = []string{"k8s", "uks"}
-	// Deprecating k8s
+
 	// TODO: Remove this in the future
-	commands.SetDeprecationHelp(k.Cobra(), []string{"k8s"})
+	commands.SetDeprecationHelp(k.Cobra(), k.DeprecatedAliases())
 }
