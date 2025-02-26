@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Experimental support for reading password or token from system keyring.
+- Experimental support from saving token to system keyring with `upctl account login --with-token`.
 
 ## [3.15.0] - 2025-02-26
 
