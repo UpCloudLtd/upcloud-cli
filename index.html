@@ -798,6 +798,28 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="commands_reference/upctl_database/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    database 
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
     
@@ -806,10 +828,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3_2" >
         
           
-          <label class="md-nav__link" for="__nav_2_3_1" id="__nav_2_3_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2_3_2" id="__nav_2_3_2_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -821,8 +843,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_3_1_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2_3_1">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3_2">
             <span class="md-nav__icon md-icon"></span>
             database index
           </label>
@@ -897,28 +919,6 @@
           </ul>
         </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="commands_reference/upctl_database/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    database 
-    
-  </span>
-  
-
-      </a>
     </li>
   
 
@@ -5012,12 +5012,12 @@ using a package manager, Docker image, or from sources with <code>go install</co
 <div class="tabbed-block">
 <p>Download pre-built package from GitHub releases and install it with your package manager.</p>
 <p>On Ubuntu or Debian, use the <code>.deb</code> package.</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>curl<span class="w"> </span>-Lo<span class="w"> </span>upcloud-cli_3.14.0_amd64.deb<span class="w"> </span>https://github.com/UpCloudLtd/upcloud-cli/releases/download/v3.14.0/upcloud-cli_3.14.0_amd64.deb
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>./upcloud-cli_3.14.0_amd64.deb
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>curl<span class="w"> </span>-Lo<span class="w"> </span>upcloud-cli_3.15.0_amd64.deb<span class="w"> </span>https://github.com/UpCloudLtd/upcloud-cli/releases/download/v3.15.0/upcloud-cli_3.15.0_amd64.deb
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>./upcloud-cli_3.15.0_amd64.deb
 </span></code></pre></div>
 <p>On RHEL based distributions, use the <code>.rpm</code> package.</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>curl<span class="w"> </span>-Lo<span class="w"> </span>upcloud-cli-3.14.0-1.x86_64.rpm<span class="w"> </span>https://github.com/UpCloudLtd/upcloud-cli/releases/download/v3.14.0/upcloud-cli-3.14.0-1.x86_64.rpm
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>./upcloud-cli-3.14.0-1.x86_64.rpm
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>curl<span class="w"> </span>-Lo<span class="w"> </span>upcloud-cli-3.15.0-1.x86_64.rpm<span class="w"> </span>https://github.com/UpCloudLtd/upcloud-cli/releases/download/v3.15.0/upcloud-cli-3.15.0-1.x86_64.rpm
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>./upcloud-cli-3.15.0-1.x86_64.rpm
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
@@ -5028,8 +5028,8 @@ using a package manager, Docker image, or from sources with <code>go install</co
 </div>
 <div class="tabbed-block">
 <p>First, download the archived binary from GitHub releases to current folder and extract the binary from the archive.</p>
-<div class="language-pwsh highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nb">Invoke-WebRequest</span> <span class="n">-Uri</span> <span class="s2">&quot;https://github.com/UpCloudLtd/upcloud-cli/releases/download/v3.14.0/upcloud-cli_3.14.0_windows_x86_64.zip&quot;</span> <span class="n">-OutFile</span> <span class="s2">&quot;upcloud-cli_3.14.0_windows_x86_64.zip&quot;</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nb">Expand-Archive</span> <span class="n">-Path</span> <span class="s2">&quot;upcloud-cli_3.14.0_windows_x86_64.zip&quot;</span>
+<div class="language-pwsh highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nb">Invoke-WebRequest</span> <span class="n">-Uri</span> <span class="s2">&quot;https://github.com/UpCloudLtd/upcloud-cli/releases/download/v3.15.0/upcloud-cli_3.15.0_windows_x86_64.zip&quot;</span> <span class="n">-OutFile</span> <span class="s2">&quot;upcloud-cli_3.15.0_windows_x86_64.zip&quot;</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nb">Expand-Archive</span> <span class="n">-Path</span> <span class="s2">&quot;upcloud-cli_3.15.0_windows_x86_64.zip&quot;</span>
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
 </span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c"># Print current location</span>
 </span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="nb">Get-Location</span>
@@ -5039,7 +5039,7 @@ using a package manager, Docker image, or from sources with <code>go install</co
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="c"># Use Set-Location to change into folder that you used in previous step.</span>
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
 </span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nb">New-Item</span> <span class="n">-ItemType</span> <span class="n">Directory</span> <span class="nv">$env:ProgramFiles</span><span class="p">\</span><span class="n">upcloud-cli</span><span class="p">\</span> <span class="n">-Force</span>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nb">Move-Item</span> <span class="n">-Path</span> <span class="n">upcloud-cli_3</span><span class="p">.</span><span class="n">14</span><span class="p">.</span><span class="n">0_windows_x86_64</span><span class="p">\</span><span class="n">upctl</span><span class="p">.</span><span class="n">exe</span> <span class="n">-Destination</span> <span class="nv">$env:ProgramFiles</span><span class="p">\</span><span class="n">upcloud-cli</span><span class="p">\</span> <span class="n">-Force</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nb">Move-Item</span> <span class="n">-Path</span> <span class="n">upcloud-cli_3</span><span class="p">.</span><span class="n">15</span><span class="p">.</span><span class="n">0_windows_x86_64</span><span class="p">\</span><span class="n">upctl</span><span class="p">.</span><span class="n">exe</span> <span class="n">-Destination</span> <span class="nv">$env:ProgramFiles</span><span class="p">\</span><span class="n">upcloud-cli</span><span class="p">\</span> <span class="n">-Force</span>
 </span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
 </span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="c"># Setting the Path is required only on first install.</span>
 </span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="c"># Thus, this step can be skipped when updating to a more recent version.</span>
