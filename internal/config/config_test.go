@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/zalando/go-keyring"
 )
 
 func TestConfig_LoadInvalidYAML(t *testing.T) {
@@ -34,7 +35,7 @@ func TestConfig_Load(t *testing.T) {
 	assert.NotEmpty(t, cfg.GetString("password"))
 }
 
-func TestVersion(t *testing.T) {
+func TestConfig_GetVersion(t *testing.T) {
 	tests := []struct {
 		name     string
 		expected string
@@ -60,4 +61,26 @@ func TestVersion(t *testing.T) {
 			assert.Equal(t, test.expected, actual)
 		})
 	}
+}
+
+func TestConfig_LoadKeyring(t *testing.T) {
+	// Note that configs defined in environment variables will override configs defined in the config file. Thus, this test will fail if credentials are currently defined as environment variables.
+	cfg := New()
+	tmpFile, err := os.CreateTemp(os.TempDir(), "")
+	assert.NoError(t, err)
+	_, err = tmpFile.WriteString("username: unittest")
+	assert.NoError(t, err)
+
+	err = keyring.Set("UpCloud", "unittest", "unittest_password")
+	assert.NoError(t, err)
+
+	cfg.GlobalFlags.ConfigFile = tmpFile.Name()
+	err = cfg.Load()
+	assert.NoError(t, err)
+	assert.Equal(t, cfg.GetString("username"), "unittest")
+	assert.Equal(t, "unittest_password", cfg.GetString("password"))
+	t.Cleanup(func() {
+		// remove test user from keyring
+		assert.NoError(t, keyring.Delete("UpCloud", "unittest"))
+	})
 }

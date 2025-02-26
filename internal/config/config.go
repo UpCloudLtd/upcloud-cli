@@ -11,6 +11,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/clierrors"
 	internal "github.com/UpCloudLtd/upcloud-cli/v3/internal/service"
+	"github.com/zalando/go-keyring"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/client"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/service"
@@ -34,6 +35,9 @@ const (
 
 	// env vars custom prefix
 	envPrefix = "UPCLOUD"
+
+	// keyringServiceName is the name of the service to use when using the system keyring
+	keyringServiceName = "UpCloud"
 )
 
 var (
@@ -93,6 +97,26 @@ func (s *Config) Load() error {
 	if err := v.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
 			return fmt.Errorf("unable to parse config from file '%v': %w", v.ConfigFileUsed(), err)
+		}
+	}
+
+	// If no credentials are provided, check if token is stored in keyring
+	if v.GetString("token") == "" && v.GetString("username") == "" && v.GetString("password") == "" {
+		token, err := keyring.Get(keyringServiceName, "")
+		if err == nil {
+			if err := v.MergeConfigMap(map[string]interface{}{"token": token}); err != nil {
+				return fmt.Errorf("unable to merge token from keyring: %w", err)
+			}
+		}
+	}
+
+	// If only username is provided, check if password is stored in keyring
+	if v.GetString("username") != "" && v.GetString("token") == "" && v.GetString("password") == "" {
+		password, err := keyring.Get(keyringServiceName, v.GetString("username"))
+		if err == nil {
+			if err := v.MergeConfigMap(map[string]interface{}{"password": password}); err != nil {
+				return fmt.Errorf("unable to merge password from keyring: %w", err)
+			}
 		}
 	}
 
@@ -197,7 +221,7 @@ func (s *Config) CreateService() (internal.AllServices, error) {
 		if s.GetString("config") != "" {
 			configDetails = fmt.Sprintf("used %s", s.GetString("config"))
 		}
-		return nil, clierrors.MissingCredentialsError{ConfigFile: configDetails}
+		return nil, clierrors.MissingCredentialsError{ConfigFile: configDetails, ServiceName: keyringServiceName}
 	}
 
 	configs := []client.ConfigFn{
