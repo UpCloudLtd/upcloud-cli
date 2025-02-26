@@ -64,6 +64,7 @@ func TestConfig_GetVersion(t *testing.T) {
 }
 
 func TestConfig_LoadKeyring(t *testing.T) {
+	// Note that configs defined in environment variables will override configs defined in the config file. Thus, this test will fail if credentials are currently defined as environment variables.
 	cfg := New()
 	tmpFile, err := os.CreateTemp(os.TempDir(), "")
 	assert.NoError(t, err)
@@ -76,7 +77,7 @@ func TestConfig_LoadKeyring(t *testing.T) {
 	cfg.GlobalFlags.ConfigFile = tmpFile.Name()
 	err = cfg.Load()
 	assert.NoError(t, err)
-	assert.NotEmpty(t, cfg.GetString("username"))
+	assert.Equal(t, cfg.GetString("username"), "unittest")
 	assert.Equal(t, "unittest_password", cfg.GetString("password"))
 	t.Cleanup(func() {
 		// remove test user from keyring
