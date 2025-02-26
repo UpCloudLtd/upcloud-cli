@@ -100,7 +100,18 @@ func (s *Config) Load() error {
 		}
 	}
 
-	if v.GetString("username") != "" && v.GetString("password") == "" {
+	// If no credentials are provided, check if token is stored in keyring
+	if v.GetString("token") == "" && v.GetString("username") == "" && v.GetString("password") == "" {
+		token, err := keyring.Get(serviceName, "")
+		if err == nil {
+			if err := v.MergeConfigMap(map[string]interface{}{"token": token}); err != nil {
+				return fmt.Errorf("unable to merge token from keyring: %w", err)
+			}
+		}
+	}
+
+	// If only username is provided, check if password is stored in keyring
+	if v.GetString("username") != "" && v.GetString("token") == "" && v.GetString("password") == "" {
 		password, err := keyring.Get(serviceName, v.GetString("username"))
 		if err == nil {
 			if err := v.MergeConfigMap(map[string]interface{}{"password": password}); err != nil {
