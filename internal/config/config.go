@@ -36,8 +36,8 @@ const (
 	// env vars custom prefix
 	envPrefix = "UPCLOUD"
 
-	// serviceName is the name of the service
-	serviceName = "upctl"
+	// keyringServiceName is the name of the service to use when using the system keyring
+	keyringServiceName = "UpCloud"
 )
 
 var (
@@ -81,7 +81,7 @@ func (s *Config) Load() error {
 	v.SetEnvPrefix(envPrefix)
 	v.SetEnvKeyReplacer(strings.NewReplacer("-", "_", ".", "_"))
 	v.AutomaticEnv()
-	v.SetConfigName(serviceName)
+	v.SetConfigName("upctl")
 	v.SetConfigType("yaml")
 
 	configFile := s.GlobalFlags.ConfigFile
@@ -102,7 +102,7 @@ func (s *Config) Load() error {
 
 	// If no credentials are provided, check if token is stored in keyring
 	if v.GetString("token") == "" && v.GetString("username") == "" && v.GetString("password") == "" {
-		token, err := keyring.Get(serviceName, "")
+		token, err := keyring.Get(keyringServiceName, "")
 		if err == nil {
 			if err := v.MergeConfigMap(map[string]interface{}{"token": token}); err != nil {
 				return fmt.Errorf("unable to merge token from keyring: %w", err)
@@ -112,7 +112,7 @@ func (s *Config) Load() error {
 
 	// If only username is provided, check if password is stored in keyring
 	if v.GetString("username") != "" && v.GetString("token") == "" && v.GetString("password") == "" {
-		password, err := keyring.Get(serviceName, v.GetString("username"))
+		password, err := keyring.Get(keyringServiceName, v.GetString("username"))
 		if err == nil {
 			if err := v.MergeConfigMap(map[string]interface{}{"password": password}); err != nil {
 				return fmt.Errorf("unable to merge password from keyring: %w", err)
@@ -221,7 +221,7 @@ func (s *Config) CreateService() (internal.AllServices, error) {
 		if s.GetString("config") != "" {
 			configDetails = fmt.Sprintf("used %s", s.GetString("config"))
 		}
-		return nil, clierrors.MissingCredentialsError{ConfigFile: configDetails, ServiceName: serviceName}
+		return nil, clierrors.MissingCredentialsError{ConfigFile: configDetails, ServiceName: keyringServiceName}
 	}
 
 	configs := []client.ConfigFn{
@@ -234,7 +234,7 @@ func (s *Config) CreateService() (internal.AllServices, error) {
 	}
 
 	client := client.New("", "", configs...)
-	client.UserAgent = fmt.Sprintf("%s/%s", serviceName, GetVersion())
+	client.UserAgent = fmt.Sprintf("upctl/%s", GetVersion())
 
 	svc := service.New(client)
 	return svc, nil

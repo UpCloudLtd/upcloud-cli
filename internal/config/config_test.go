@@ -70,7 +70,7 @@ func TestConfig_LoadKeyring(t *testing.T) {
 	_, err = tmpFile.WriteString("username: unittest")
 	assert.NoError(t, err)
 
-	err = keyring.Set("upctl", "unittest", "unittest_password")
+	err = keyring.Set("UpCloud", "unittest", "unittest_password")
 	assert.NoError(t, err)
 
 	cfg.GlobalFlags.ConfigFile = tmpFile.Name()
@@ -80,6 +80,6 @@ func TestConfig_LoadKeyring(t *testing.T) {
 	assert.Equal(t, "unittest_password", cfg.GetString("password"))
 	t.Cleanup(func() {
 		// remove test user from keyring
-		assert.NoError(t, keyring.Delete("upctl", "unittest"))
+		assert.NoError(t, keyring.Delete("UpCloud", "unittest"))
 	})
 }
