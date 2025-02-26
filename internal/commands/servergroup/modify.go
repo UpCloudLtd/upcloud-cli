@@ -2,7 +2,6 @@ package servergroup
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
@@ -83,7 +82,7 @@ func (p *modifyParams) processParams(exec commands.Executor, uuid string) error 
 func (c *modifyCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 	aaPolicies := []string{"yes", "strict", "no"}
-	fs.StringVar(&c.params.antiAffinityPolicy, "anti-affinity-policy", defaultModifyParams.antiAffinityPolicy, "Anti-affinity policy. Valid values are "+strings.Join(aaPolicies, ", ")+". Will take effect upon server start.")
+	fs.StringVar(&c.params.antiAffinityPolicy, "anti-affinity-policy", defaultModifyParams.antiAffinityPolicy, "Anti-affinity policy. Valid values are "+namedargs.ValidValuesHelp(aaPolicies...)+". Will take effect upon server start.")
 	fs.StringArrayVar(&c.params.labels, "label", defaultModifyParams.labels, "Labels to describe the server in `key=value` format, multiple can be declared. If set, all the existing labels will be replaced with provided ones.\nUsage: --label env=dev\n\n--label owner=operations")
 	fs.StringVar(&c.params.Title, "title", defaultModifyParams.Title, "New server group title.")
 	fs.StringArrayVar(&c.params.servers, "server", defaultModifyParams.servers, "Servers that belong to the server group, multiple can be declared. If set, all the existing server entries will be replaced with provided ones.\nUsage: --server my-server\n\n--server 00333d1b-3a4a-4b75-820a-4a56d70395dd")

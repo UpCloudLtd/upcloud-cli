@@ -2,7 +2,6 @@ package servergroup
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
@@ -90,7 +89,7 @@ func (c *createCommand) InitCommand() {
 
 	fs.StringVar(&c.params.Title, "title", defaultCreateParams.Title, "Server group title.")
 	aaPolicies := []string{"yes", "strict", "no"}
-	fs.StringVar(&c.params.antiAffinityPolicy, "anti-affinity-policy", defaultCreateParams.antiAffinityPolicy, "Anti-affinity policy. Valid values are "+strings.Join(aaPolicies, ", ")+".  Will take effect upon server start.")
+	fs.StringVar(&c.params.antiAffinityPolicy, "anti-affinity-policy", defaultCreateParams.antiAffinityPolicy, "Anti-affinity policy. Valid values are "+namedargs.ValidValuesHelp(aaPolicies...)+". Will take effect upon server start.")
 	fs.StringArrayVar(&c.params.labels, "label", defaultCreateParams.labels, "Labels to describe the server group in `key=value` format, multiple can be declared.\nUsage: --label env=dev\n\n--label owner=operations")
 	fs.StringArrayVar(&c.params.servers, "server", defaultCreateParams.servers, "Servers to be added to the server group, multiple can be declared.\nUsage: --server my-server\n\n--server 00333d1b-3a4a-4b75-820a-4a56d70395dd")
 
