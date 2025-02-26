@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Experimental support for reading password or token from system keyring.
+
 ## [3.15.0] - 2025-02-26
 
 ### Added
@@ -41,6 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Prevent filename completion of flags that don't take filename args.
 
 ### Deprecated
+
 - Deprecation of some commands and aliases ( new command names added to improve consistency )
     - Deprecated commands: 
         - loadbalancer
