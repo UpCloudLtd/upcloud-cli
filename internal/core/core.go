@@ -3,12 +3,12 @@ package core
 import (
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/clierrors"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/all"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/namedargs"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/terminal"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
 
@@ -94,7 +94,7 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 	outputFormats := []string{config.ValueOutputHuman, config.ValueOutputJSON, config.ValueOutputYAML}
 	flags.StringVarP(
 		&conf.GlobalFlags.OutputFormat, "output", "o", "human",
-		"Output format (supported: "+strings.Join(outputFormats, ", ")+")",
+		"Output format. Valid values are "+namedargs.ValidValuesHelp(outputFormats...)+".",
 	)
 	config.AddToggleFlag(flags, &conf.GlobalFlags.ForceColours, "force-colours", false, "Force coloured output despite detected terminal support.")
 	config.AddToggleFlag(flags, &conf.GlobalFlags.NoColours, "no-colours", false, "Disable coloured output despite detected terminal support. Colours can also be disabled by setting NO_COLOR environment variable.")
