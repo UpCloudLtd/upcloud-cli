@@ -35,9 +35,6 @@ func (s *loginCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 	config.AddToggleFlag(fs, &s.withToken, "with-token", false, "Read token from standard input.")
 	s.AddFlags(fs)
-
-	// Require the with-token flag until we support using browser to authenticate.
-	commands.Must(s.Cobra().MarkFlagRequired("with-token"))
 }
 
 // DoesNotUseServices implements commands.OfflineCommand as this command does not use services

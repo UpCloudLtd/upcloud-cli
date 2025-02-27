@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/cli/browser"
+	"github.com/rs/cors"
 )
 
 type ReceiverServer struct {
@@ -34,17 +35,21 @@ func (s *ReceiverServer) GetLoginURL() string {
 }
 
 func (s *ReceiverServer) Start() error {
-	handler := http.NewServeMux()
-	handler.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /ping", func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	})
+	mux.HandleFunc("POST /callback", func(w http.ResponseWriter, req *http.Request) {
 		token := req.URL.Query().Get("token")
 		if token == "" {
-			http.Redirect(w, req, getURL("error"), http.StatusSeeOther)
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 		s.token = token
-		http.Redirect(w, req, getURL("success"), http.StatusSeeOther)
+		w.WriteHeader(http.StatusNoContent)
 	})
 
+	handler := cors.Default().Handler(mux)
 	listener, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
 		return fmt.Errorf("failed to create receiver server: %w", err)
