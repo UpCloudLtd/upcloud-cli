@@ -85,7 +85,7 @@ using a package manager, Docker image, or from sources with `go install`:
 
     ```sh
     mise use upctl  # or with -g for global
-    ´´´
+    ```
 
 === "aqua"
 
@@ -95,8 +95,8 @@ using a package manager, Docker image, or from sources with `go install`:
     registries:
     - type: standard
     packages:
-    - name: UpCloudLtd/upcloud-cli@v3.14.0
-    ´´´
+    - name: UpCloudLtd/upcloud-cli@{{ latest_release }}
+    ```
 
 ---
 
