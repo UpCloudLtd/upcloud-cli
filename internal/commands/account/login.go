@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/UpCloudLtd/progress/messages"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/account/tokenreceiver"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/spf13/pflag"
@@ -33,9 +35,6 @@ func (s *loginCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 	config.AddToggleFlag(fs, &s.withToken, "with-token", false, "Read token from standard input.")
 	s.AddFlags(fs)
-
-	// Require the with-token flag until we support using browser to authenticate.
-	commands.Must(s.Cobra().MarkFlagRequired("with-token"))
 }
 
 // DoesNotUseServices implements commands.OfflineCommand as this command does not use services
@@ -46,6 +45,46 @@ func (s *loginCommand) ExecuteWithoutArguments(exec commands.Executor) (output.O
 	if s.withToken.Value() {
 		return s.executeWithToken(exec)
 	}
+
+	return s.execute(exec)
+}
+
+func (s *loginCommand) execute(exec commands.Executor) (output.Output, error) {
+	msg := "Waiting to receive token from browser."
+	exec.PushProgressStarted(msg)
+
+	receiver := tokenreceiver.New()
+	err := receiver.Start()
+	if err != nil {
+		return commands.HandleError(exec, msg, err)
+	}
+
+	err = receiver.OpenBrowser()
+	if err != nil {
+		url := receiver.GetLoginURL()
+		exec.PushProgressUpdate(messages.Update{
+			Message: "Failed to open browser.",
+			Status:  messages.MessageStatusError,
+			Details: fmt.Sprintf("Please open a browser and navigate to %s to continue with the login.", url),
+		})
+	}
+
+	token, err := receiver.Wait(exec.Context())
+	if err != nil {
+		return commands.HandleError(exec, msg, err)
+	}
+
+	exec.PushProgressUpdate(messages.Update{
+		Key:     msg,
+		Message: "Saving created token to the system keyring.",
+	})
+
+	err = config.SaveTokenToKeyring(token)
+	if err != nil {
+		return commands.HandleError(exec, msg, fmt.Errorf("failed to save token to keyring: %w", err))
+	}
+
+	exec.PushProgressSuccess(msg)
 
 	return output.None{}, nil
 }

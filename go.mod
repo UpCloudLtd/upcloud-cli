@@ -7,10 +7,12 @@ require (
 	github.com/UpCloudLtd/upcloud-go-api/v8 v8.16.0
 	github.com/adrg/xdg v0.3.2
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d
+	github.com/cli/browser v1.3.0
 	github.com/gemalto/flume v0.12.0
 	github.com/jedib0t/go-pretty/v6 v6.4.9
 	github.com/m7shapan/cidr v0.0.0-20200427124835-7eba0889a5d2
 	github.com/mattn/go-isatty v0.0.16
+	github.com/rs/cors v1.11.1
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.7.1
