@@ -21,6 +21,8 @@ import (
 const (
 	// FlagAnnotationNoFileCompletions is the annotation name to use for our flags that have no filename completions.
 	FlagAnnotationNoFileCompletions = "upctl_flag_no_file_completions"
+	// FlagAnnotationFixedCompletions is the annotation name to use for our flags that have a fixed set of completions.
+	FlagAnnotationFixedCompletions = "upctl_flag_fixed_completions"
 )
 
 // ParseN parses a complex, querystring-type argument from `in` and splits values to `n` amount of substrings

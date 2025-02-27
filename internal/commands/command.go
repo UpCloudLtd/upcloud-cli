@@ -192,6 +192,8 @@ func (s *BaseCommand) AddFlags(flags *pflag.FlagSet) {
 		s.Cobra().Flags().AddFlag(flag)
 		if _, ok := flag.Annotations[FlagAnnotationNoFileCompletions]; ok {
 			Must(s.Cobra().RegisterFlagCompletionFunc(flag.Name, cobra.NoFileCompletions))
+		} else if values, ok := flag.Annotations[FlagAnnotationFixedCompletions]; ok {
+			Must(s.Cobra().RegisterFlagCompletionFunc(flag.Name, cobra.FixedCompletions(values, cobra.ShellCompDirectiveNoFileComp)))
 		}
 	})
 }
