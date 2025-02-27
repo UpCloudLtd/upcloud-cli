@@ -16,7 +16,7 @@ func LoginCommand() commands.Command {
 	return &loginCommand{
 		BaseCommand: commands.New(
 			"login",
-			"Configure an authentication token to the system keyring.",
+			"Configure an authentication token to the system keyring (EXPERIMENTAL) ",
 			"upctl account login --with-token",
 		),
 	}
@@ -59,7 +59,7 @@ func (s *loginCommand) executeWithToken(exec commands.Executor) (output.Output, 
 
 	msg := "Saving provided token to the system keyring."
 	exec.PushProgressStarted(msg)
-	err = config.SaveToken(strings.TrimSpace(token))
+	err = config.SaveTokenToKeyring(strings.TrimSpace(token))
 	if err != nil {
 		return commands.HandleError(exec, msg, err)
 	}

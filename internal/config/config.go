@@ -249,7 +249,7 @@ func GetVersion() string {
 	return version
 }
 
-func SaveToken(token string) error {
+func SaveTokenToKeyring(token string) error {
 	return keyring.Set(keyringServiceName, "", token)
 }
 
