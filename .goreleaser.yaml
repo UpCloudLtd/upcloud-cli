@@ -45,6 +45,19 @@ archives:
 checksum:
   name_template: 'checksums.txt'
 
+signs:
+  - certificate: ${artifact}-keyless.pem
+    signature: ${artifact}-keyless.sig
+    cmd: cosign
+    args:
+      - sign-blob
+      - --b64=false
+      - --output-certificate=${certificate}
+      - --output-signature=${signature}
+      - --yes
+      - ${artifact}
+    artifacts: checksum
+
 snapshot:
   version_template: "{{ .Tag }}-next"
 
@@ -171,6 +184,13 @@ dockers:
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
       - "--label=org.opencontainers.image.version={{.Version}}"
       - "--label=org.opencontainers.image.source=https://github.com/UpCloudLtd/upcloud-cli.git"
+
+docker_signs:
+  - args:
+      - sign
+      - --yes
+      - ${artifact}@${digest}
+    artifacts: all
 
 release:
   # Repo in which the release will be created.
