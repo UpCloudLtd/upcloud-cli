@@ -37,11 +37,12 @@ func (s *plansCommand) ExecuteWithoutArguments(exec commands.Executor) (output.O
 
 	rows := []output.TableRow{}
 	for _, plan := range plans {
-		rows = append(rows, output.TableRow{
-			plan.Name,
-			plan.ServerNumber,
-			plan.MaxNodes,
-		})
+		if !plan.Deprecated {
+			rows = append(rows, output.TableRow{
+				plan.Name,
+				plan.MaxNodes,
+			})
+		}
 	}
 
 	return output.MarshaledWithHumanOutput{
@@ -49,7 +50,6 @@ func (s *plansCommand) ExecuteWithoutArguments(exec commands.Executor) (output.O
 		Output: output.Table{
 			Columns: []output.TableColumn{
 				{Key: "name", Header: "Name"},
-				{Key: "server_number", Header: "Control nodes"},
 				{Key: "max_nodes", Header: "Max worker nodes"},
 			},
 			Rows: rows,
