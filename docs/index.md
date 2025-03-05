@@ -16,6 +16,7 @@ using a package manager, Docker image, or from sources with `go install`:
 
     ```sh
     curl -Lo upcloud-cli_{{ latest_release }}_amd64.deb https://github.com/UpCloudLtd/upcloud-cli/releases/download/v{{ latest_release }}/upcloud-cli_{{ latest_release }}_amd64.deb
+    # Preferably verify the asset before proceeding with install, see "Verify assets" below
     sudo apt install ./upcloud-cli_{{ latest_release }}_amd64.deb
     ```
 
@@ -23,6 +24,7 @@ using a package manager, Docker image, or from sources with `go install`:
 
     ```sh
     curl -Lo upcloud-cli-{{ latest_release }}-1.x86_64.rpm https://github.com/UpCloudLtd/upcloud-cli/releases/download/v{{ latest_release }}/upcloud-cli-{{ latest_release }}-1.x86_64.rpm
+    # Preferably verify the asset before proceeding with install, see "Verify assets" below
     sudo dnf install ./upcloud-cli-{{ latest_release }}-1.x86_64.rpm
     ```
 
@@ -41,6 +43,7 @@ using a package manager, Docker image, or from sources with `go install`:
 
     ```pwsh
     Invoke-WebRequest -Uri "https://github.com/UpCloudLtd/upcloud-cli/releases/download/v{{ latest_release }}/upcloud-cli_{{ latest_release }}_windows_x86_64.zip" -OutFile "upcloud-cli_{{ latest_release }}_windows_x86_64.zip"
+    # Preferably verify the asset before proceeding with install, see "Verify assets" below
     Expand-Archive -Path "upcloud-cli_{{ latest_release }}_windows_x86_64.zip"
 
     # Print current location
@@ -105,6 +108,35 @@ After installing `upctl`, you can run `upctl version` command to verify that the
 ```sh
 upctl version
 ```
+
+### Verify assets
+
+[GitHub artifact attestations](https://docs.github.com/en/actions/security-for-github-actions/using-artifact-attestations)
+and plain old checksum files are available for verifying release assets.
+
+=== "Attestations"
+
+    [Release asset artifact attestations](https://github.com/UpCloudLtd/upcloud-cli/attestations)
+    can be verified for example with the [GitHub CLI](https://github.com/cli/cli),
+    using the Linux x86_64 asset as an example:
+
+    ```sh
+    gh attestation verify \
+        /path/to/locally/downloaded/upcloud-cli_{{ latest_release }}_linux_x86_64.tar.gz \
+        --repo UpCloudLtd/upcloud-cli
+    ```
+
+    Attestations are available starting from version 3.16.0.
+
+=== "Digests"
+
+    Release assets' SHA-256 digests are available in releases,
+    in asset named `checksums.txt`. They can be checked for example with:
+
+    ```sh
+    # make sure at least one downloaded asset and checksums.txt are in the current directory
+    sha256sum -c --ignore-missing checksums.txt
+    ```
 
 ### Configure shell completions
 
