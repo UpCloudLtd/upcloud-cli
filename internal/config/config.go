@@ -249,6 +249,10 @@ func GetVersion() string {
 	return version
 }
 
+func SaveTokenToKeyring(token string) error {
+	return keyring.Set(keyringServiceName, "", token)
+}
+
 func getVersion() string {
 	// Version was overridden during the build
 	if Version != "dev" {
