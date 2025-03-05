@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Experimental support for reading password or token from system keyring.
 
+### Changed
+
+- In human readable output of `kubernetes plans`, remove `server_number` column and hide deprecated plans.
+
 ## [3.15.0] - 2025-02-26
 
 ### Added
