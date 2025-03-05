@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_gateway/delete/">
+        <link rel="canonical" href="https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_account/login/">
       
       
-        <link rel="prev" href="../">
+        <link rel="prev" href="../list/">
       
       
-        <link rel="next" href="../list/">
+        <link rel="next" href="../permissions/">
       
       
       <link rel="icon" href="../../../favicon.png">
@@ -24,7 +24,7 @@
     
     
       
-        <title>upctl gateway delete - UpCloud command-line client</title>
+        <title>upctl account login - UpCloud command-line client</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#upctl-gateway-delete" class="md-skip">
+        <a href="#upctl-account-login" class="md-skip">
           Skip to content
         </a>
       
@@ -124,7 +124,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              upctl gateway delete
+              upctl account login
             
           </span>
         </div>
@@ -331,17 +331,19 @@
                 
   
   
+    
   
   
+  
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" checked>
         
           
           <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
@@ -356,7 +358,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2_2">
             <span class="md-nav__icon md-icon"></span>
             upctl account
@@ -370,7 +372,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../upctl_account/" class="md-nav__link">
+      <a href="../" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -392,7 +394,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../upctl_account/delete/" class="md-nav__link">
+      <a href="../delete/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -414,7 +416,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../upctl_account/list/" class="md-nav__link">
+      <a href="../list/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -433,10 +435,31 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../upctl_account/login/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    account login
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -446,6 +469,50 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#examples" class="md-nav__link"> Examples </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#options" class="md-nav__link"> Options </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#global-options" class="md-nav__link"> Global options </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#related-commands" class="md-nav__link"> Related commands </a>
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -494,7 +561,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../upctl_account/permissions/" class="md-nav__link">
+      <a href="../permissions/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -516,7 +583,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../upctl_account/permissions/list/" class="md-nav__link">
+      <a href="../permissions/list/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -546,7 +613,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../upctl_account/show/" class="md-nav__link">
+      <a href="../show/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -604,7 +671,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../upctl_account/token/" class="md-nav__link">
+      <a href="../token/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -626,7 +693,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../upctl_account/token/create/" class="md-nav__link">
+      <a href="../token/create/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -648,7 +715,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../upctl_account/token/delete/" class="md-nav__link">
+      <a href="../token/delete/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -670,7 +737,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../upctl_account/token/list/" class="md-nav__link">
+      <a href="../token/list/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -692,7 +759,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../upctl_account/token/show/" class="md-nav__link">
+      <a href="../token/show/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1673,19 +1740,17 @@
                 
   
   
-    
   
   
-  
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
         
           
           <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
@@ -1700,7 +1765,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2_4">
             <span class="md-nav__icon md-icon"></span>
             upctl gateway
@@ -1714,7 +1779,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../" class="md-nav__link">
+      <a href="../../upctl_gateway/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1733,31 +1798,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    gateway delete
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../upctl_gateway/delete/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1767,50 +1811,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <!-- Limit TOC depth to 1 -->
-
-<li class="md-nav__item">
-  <a href="#examples" class="md-nav__link"> Examples </a>
-</li>
-      
-        <!-- Limit TOC depth to 1 -->
-
-<li class="md-nav__item">
-  <a href="#options" class="md-nav__link"> Options </a>
-</li>
-      
-        <!-- Limit TOC depth to 1 -->
-
-<li class="md-nav__item">
-  <a href="#global-options" class="md-nav__link"> Global options </a>
-</li>
-      
-        <!-- Limit TOC depth to 1 -->
-
-<li class="md-nav__item">
-  <a href="#related-commands" class="md-nav__link"> Related commands </a>
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1823,7 +1823,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../list/" class="md-nav__link">
+      <a href="../../upctl_gateway/list/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1845,7 +1845,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../plans/" class="md-nav__link">
+      <a href="../../upctl_gateway/plans/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5041,13 +5041,12 @@
 
 <!-- Hide edit button as command reference and changelog do not exist on main branch -->
 
-<h1 id="upctl-gateway-delete">upctl gateway delete</h1>
-<p>Delete a gateway</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>upctl gateway delete &lt;UUID/Title...&gt; [flags]
+<h1 id="upctl-account-login">upctl account login</h1>
+<p>Configure an authentication token to the system keyring (EXPERIMENTAL) </p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>upctl account login [flags]
 </span></code></pre></div>
 <h2 id="examples">Examples</h2>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>upctl gateway delete 8abc8009-4325-4b23-4321-b1232cd81231
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>upctl gateway delete my-gateway
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>upctl account login --with-token
 </span></code></pre></div>
 <h2 id="options">Options</h2>
 <table>
@@ -5059,8 +5058,12 @@
 </thead>
 <tbody>
 <tr>
+<td><code>--with-token</code></td>
+<td>Read token from standard input.</td>
+</tr>
+<tr>
 <td><code>--help</code>, <code>-h</code></td>
-<td>help for delete<br/>Default: <code>false</code></td>
+<td>help for login<br/>Default: <code>false</code></td>
 </tr>
 </tbody>
 </table>
@@ -5109,8 +5112,8 @@
 </thead>
 <tbody>
 <tr>
-<td><a href="../">upctl gateway</a></td>
-<td>Manage gateways</td>
+<td><a href="../">upctl account</a></td>
+<td>Manage accounts</td>
 </tr>
 </tbody>
 </table>
