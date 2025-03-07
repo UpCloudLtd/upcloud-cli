@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Remove client side default value for kubernetes cluster plan and use default from API instead if no plan is defined.
+
 ## [3.16.0] - 2025-03-05
 
 This release introduces GitHub artifact attestations for our release binary assets.

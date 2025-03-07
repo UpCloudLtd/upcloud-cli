@@ -88,7 +88,6 @@ func TestCreateKubernetes(t *testing.T) {
 				UtilityNetworkAccess: upcloud.BoolPtr(false),
 			},
 		},
-		Plan: "development",
 		Zone: "de-fra1",
 	}
 
