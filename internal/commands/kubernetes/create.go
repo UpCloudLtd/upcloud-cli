@@ -116,7 +116,7 @@ func (c *createCommand) InitCommand() {
 
 	fs.StringVar(&c.params.Name, "name", "", "Kubernetes cluster name.")
 	fs.StringArrayVar(&c.params.labels, "label", nil, "Labels to describe the cluster in `key=value` format, multiple can be declared.")
-	fs.StringVar(&c.params.Plan, "plan", "development", "Plan to use for the cluster. Run `upctl kubernetes plans` to list all available plans.")
+	fs.StringVar(&c.params.Plan, "plan", "", "Plan to use for the cluster. Run `upctl kubernetes plans` to list all available plans.")
 	fs.StringVar(&c.params.Version, "version", "", "Identifier of the version of Kubernetes to use when creating the cluster. Run `upctl kubernetes versions` to list all available versions.")
 	fs.StringVar(&c.params.networkArg, "network", "", "Network to use. The value should be name or UUID of a private network.")
 	fs.StringArrayVar(
