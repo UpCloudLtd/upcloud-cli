@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Experimental support for listing and deleting all resources with `all list` and `all purge` commands. This initial version supports networks, network-peerings, and routers.
+
 ### Fixed
 
 - Kubernetes node-group subcommand not working
@@ -14,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Deprecated
 
 - Deprecated `upctl kubernetes nodegroup` command, use `upctl kubernetes node-group` instead.
+
 ## [3.17.0] - 2025-03-14
 
 ### Added
