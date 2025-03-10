@@ -16,4 +16,6 @@ type allCommand struct {
 }
 
 // InitCommand implements Command.InitCommand
-func (c *allCommand) InitCommand() {}
+func (c *allCommand) InitCommand() {
+	c.Cobra().Hidden = true
+}

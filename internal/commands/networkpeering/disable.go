@@ -44,18 +44,15 @@ func (c *disableCommand) InitCommand() {
 	commands.SetSubcommandDeprecationHelp(c, []string{"networkpeering"})
 }
 
-// Execute implements commands.MultipleArgumentCommand
-func (c *disableCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
-	// Deprecating networkpeering in favour of network-peering
-	// TODO: Remove this in the future
-	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"networkpeering"}, "network-peering")
-
+func disablePeering(exec commands.Executor, uuid string, wait bool) (output.Output, error) {
 	svc := exec.All()
-	msg := fmt.Sprintf("Disabling network peering %v", arg)
+	msg := fmt.Sprintf("Disabling network peering %v", uuid)
+
+	// Use UUID as message key to allow updating the message later
 	exec.PushProgressStarted(msg)
 
 	peering, err := svc.ModifyNetworkPeering(exec.Context(), &request.ModifyNetworkPeeringRequest{
-		UUID: arg,
+		UUID: uuid,
 		NetworkPeering: request.ModifyNetworkPeering{
 			ConfiguredStatus: upcloud.NetworkPeeringConfiguredStatusDisabled,
 		},
@@ -64,11 +61,20 @@ func (c *disableCommand) Execute(exec commands.Executor, arg string) (output.Out
 		return commands.HandleError(exec, msg, err)
 	}
 
-	if c.wait.Value() {
-		waitForNetworkPeeringState(arg, upcloud.NetworkPeeringStateDisabled, exec, msg)
+	if wait {
+		waitForNetworkPeeringState(uuid, upcloud.NetworkPeeringStateDisabled, exec, msg)
 	} else {
 		exec.PushProgressSuccess(msg)
 	}
 
-	return output.OnlyMarshaled{Value: peering}, nil
+	return output.OnlyMarshaled{Value: peering}, err
+}
+
+// Execute implements commands.MultipleArgumentCommand
+func (c *disableCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
+	// Deprecating networkpeering in favour of network-peering
+	// TODO: Remove this in the future
+	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"networkpeering"}, "network-peering")
+
+	return disablePeering(exec, arg, c.wait.Value())
 }
