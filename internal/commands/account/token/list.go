@@ -40,8 +40,8 @@ func (l *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 	var rows []output.TableRow
 	for _, token := range *tokens {
 		rows = append(rows, output.TableRow{
-			token.Name,
 			token.ID,
+			token.Name,
 			token.Type,
 			token.LastUsed,
 			token.ExpiresAt,
