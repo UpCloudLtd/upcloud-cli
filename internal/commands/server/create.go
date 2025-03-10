@@ -259,7 +259,7 @@ type createCommand struct {
 func (s *createCommand) InitCommand() {
 	s.Cobra().Long = commands.WrapLongDescription(`Create a new server
 
-	Note that the default template, Ubuntu Server 24.04 LTS (Noble Numbat), only supports SSH key based authentication. Use ` + "`" + `--ssh-keys` + "`" + ` option to provide the keys when creating a server with the default template. The examples below use public key from the ` + "`" + `~/.ssh` + "`" + ` directory. If you want to use different authentication method, use ` + "`" + `--os` + "`" + ` parameter to specify a different template.`)
+Note that the default template, Ubuntu Server 24.04 LTS (Noble Numbat), only supports SSH key based authentication. Use ` + "`" + `--ssh-keys` + "`" + ` option to provide the keys when creating a server with the default template. The examples below use public key from the ` + "`" + `~/.ssh` + "`" + ` directory. If you want to use different authentication method, use ` + "`" + `--os` + "`" + ` parameter to specify a different template.`)
 
 	fs := &pflag.FlagSet{}
 	s.params = createParams{CreateServerRequest: request.CreateServerRequest{}}
