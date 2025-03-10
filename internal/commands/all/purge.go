@@ -15,7 +15,7 @@ func PurgeCommand() commands.Command {
 	return &purgeCommand{
 		BaseCommand: commands.New(
 			"purge",
-			"Delete UpCloud resources within the current account",
+			"Delete all resources from the current account",
 			"upctl all purge",
 			"upctl all purge --name \"*tf-acc-test*-\"",
 		),
@@ -28,6 +28,8 @@ type purgeCommand struct {
 }
 
 func (c *purgeCommand) InitCommand() {
+	c.Cobra().Long = `Delete all resources from the current account. Use ` + "`" + `upctl all list` + "`" + ` command to preview targeted resources before purging.`
+
 	flags := &pflag.FlagSet{}
 	flags.StringVar(&c.name, "name", "", "Only delete resources matching the given name.")
 	c.AddFlags(flags)

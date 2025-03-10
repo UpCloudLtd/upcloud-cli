@@ -13,7 +13,7 @@ func ListCommand() commands.Command {
 	return &listCommand{
 		BaseCommand: commands.New(
 			"list",
-			"List UpCloud resources within the current account",
+			"List all resources within the current account",
 			"upctl all list",
 			"upctl all list --name \"*tf-acc-test*-\"",
 		),

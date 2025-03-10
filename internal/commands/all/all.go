@@ -7,7 +7,7 @@ import (
 // BaseAllCommand creates the base "all" command
 func BaseAllCommand() commands.Command {
 	return &allCommand{
-		commands.New("all", "Manage all UpCloud resources within the account"),
+		commands.New("all", "Manage all UpCloud resources within the account (EXPERIMENTAL)"),
 	}
 }
 
@@ -18,4 +18,7 @@ type allCommand struct {
 // InitCommand implements Command.InitCommand
 func (c *allCommand) InitCommand() {
 	c.Cobra().Hidden = true
+	c.Cobra().Long = `Manage all resources within the account (EXPERIMENTAL).
+
+These commands are under development and not all resources types are yet supported.`
 }
