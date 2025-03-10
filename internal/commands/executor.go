@@ -37,6 +37,7 @@ type Executor interface {
 	All() internal.AllServices
 	Debug(msg string, args ...interface{})
 	WithLogger(args ...interface{}) Executor
+	WithProgress(progress *progress.Progress) Executor
 }
 
 type executeResult struct {
@@ -55,6 +56,11 @@ type executorImpl struct {
 
 func (e executorImpl) WithLogger(args ...interface{}) Executor {
 	e.logger = e.logger.With(args...)
+	return &e
+}
+
+func (e executorImpl) WithProgress(progress *progress.Progress) Executor {
+	e.progress = progress
 	return &e
 }
 
@@ -101,9 +107,9 @@ func (e *executorImpl) PushProgressUpdateMessage(key, msg string) {
 	})
 }
 
-func (e *executorImpl) PushProgressSuccess(msg string) {
+func (e *executorImpl) PushProgressSuccess(key string) {
 	e.PushProgressUpdate(messages.Update{
-		Key:    msg,
+		Key:    key,
 		Status: messages.MessageStatusSuccess,
 	})
 }
