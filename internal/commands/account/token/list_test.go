@@ -43,10 +43,10 @@ func TestListCommand(t *testing.T) {
 	}
 
 	expected := `
- UUID   Name                                   Type        Last Used                       Expires At                    
-────── ────────────────────────────────────── ─────────── ─────────────────────────────── ───────────────────────────────
- test   0cdabbf9-090b-4fc5-a6ae-3f76801ed171   workspace   2021-11-01 12:00:00 +0000 UTC   2022-10-01 12:00:00 +0000 UTC 
- foo    0cdabbf9-090b-4fc5-a6ae-3f76801ed172   workspace   <nil>                           2022-10-01 12:00:00 +0000 UTC 
+ UUID                                   Name   Type        Last Used                       Expires At                    
+────────────────────────────────────── ────── ─────────── ─────────────────────────────── ───────────────────────────────
+ 0cdabbf9-090b-4fc5-a6ae-3f76801ed171   test   workspace   2021-11-01 12:00:00 +0000 UTC   2022-10-01 12:00:00 +0000 UTC 
+ 0cdabbf9-090b-4fc5-a6ae-3f76801ed172   foo    workspace   <nil>                           2022-10-01 12:00:00 +0000 UTC 
 
 `
 
