@@ -15,7 +15,7 @@ func ListCommand() commands.Command {
 			"list",
 			"List all resources within the current account",
 			"upctl all list",
-			"upctl all list --include \"*tf-acc-test*-\"",
+			"upctl all list --include *tf-acc-test* --exclude *persistent*",
 		),
 	}
 }
