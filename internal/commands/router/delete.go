@@ -37,12 +37,12 @@ func (s *deleteCommand) MaximumExecutions() int {
 	return maxRouterActions
 }
 
-// Execute implements commands.MultipleArgumentCommand
-func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
-	msg := fmt.Sprintf("Deleting router %s", arg)
+func Delete(exec commands.Executor, uuid string) (output.Output, error) {
+	svc := exec.Network()
+	msg := fmt.Sprintf("Deleting router %s", uuid)
 	exec.PushProgressStarted(msg)
 
-	err := exec.Network().DeleteRouter(exec.Context(), &request.DeleteRouterRequest{UUID: arg})
+	err := svc.DeleteRouter(exec.Context(), &request.DeleteRouterRequest{UUID: uuid})
 	if err != nil {
 		return commands.HandleError(exec, msg, err)
 	}
@@ -50,4 +50,9 @@ func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Outp
 	exec.PushProgressSuccess(msg)
 
 	return output.None{}, nil
+}
+
+// Execute implements commands.MultipleArgumentCommand
+func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
+	return Delete(exec, arg)
 }

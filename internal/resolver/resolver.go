@@ -17,6 +17,11 @@ type ResolutionProvider interface {
 	PositionalArgumentHelp() string
 }
 
+type CachingResolutionProvider[T any] interface {
+	ResolutionProvider
+	GetCached(uuid string) (T, error)
+}
+
 type MatchType int
 
 const (
