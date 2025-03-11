@@ -15,25 +15,27 @@ func ListCommand() commands.Command {
 			"list",
 			"List all resources within the current account",
 			"upctl all list",
-			"upctl all list --name \"*tf-acc-test*-\"",
+			"upctl all list --include \"*tf-acc-test*-\"",
 		),
 	}
 }
 
 type listCommand struct {
 	*commands.BaseCommand
-	name string
+	include []string
+	exclude []string
 }
 
 func (c *listCommand) InitCommand() {
 	flags := &pflag.FlagSet{}
-	flags.StringVar(&c.name, "name", "", "Only list resources matching the given name.")
+	flags.StringArrayVarP(&c.include, "include", "i", []string{"*"}, includeHelp)
+	flags.StringArrayVarP(&c.exclude, "exclude", "e", []string{}, excludeHelp)
 	c.AddFlags(flags)
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (c *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
-	resources, err := listResources(exec, c.name)
+	resources, err := listResources(exec, c.include, c.exclude)
 	if err != nil {
 		return nil, err
 	}
