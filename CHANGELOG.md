@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Experimental support for listing and deleting all resources with `all list` and `all purge` commands. This initial version supports networks, network-peerings, and routers.
+- Experimental support for listing and deleting all resources with `all list` and `all purge` commands. This initial version supports networks, network-peerings, routers, and object-storages.
+- Add `--wait` flag to `object-storage delete` command.
 
 ### Fixed
 
