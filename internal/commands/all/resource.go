@@ -12,6 +12,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/network"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/networkpeering"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/objectstorage"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/router"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 )
@@ -132,6 +133,18 @@ func listResources(exec commands.Executor, include, exclude []string) ([]Resourc
 		})
 	}
 
+	objectstorages, err := getMatches(exec, &resolver.CachingObjectStorage{}, include, exclude)
+	if err != nil {
+		return nil, err
+	}
+	for _, objsto := range objectstorages {
+		resources = append(resources, Resource{
+			Name: objsto.Name,
+			Type: "object-storage",
+			UUID: objsto.UUID,
+		})
+	}
+
 	return resources, nil
 }
 
@@ -143,6 +156,8 @@ func deleteResource(exec commands.Executor, resource Resource) (err error) {
 		_, err = networkpeering.Delete(exec, resource.UUID, true)
 	case "router":
 		_, err = router.Delete(exec, resource.UUID)
+	case "object-storage":
+		_, err = objectstorage.Delete(exec, resource.UUID, true, true, true, true)
 	}
 	return
 }
@@ -154,6 +169,10 @@ type deleteResult struct {
 }
 
 func deleteResources(exec commands.Executor, resources []Resource, workerCount int) error {
+	if len(resources) == 0 {
+		return nil
+	}
+
 	cfg := progress.GetDefaultOutputConfig()
 	buf := bytes.NewBuffer(nil)
 	cfg.Target = buf

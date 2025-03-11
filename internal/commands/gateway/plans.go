@@ -8,7 +8,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 )
 
-// PlansCommand creates the "server plans" command
+// PlansCommand creates the "gateway plans" command
 func PlansCommand() commands.Command {
 	return &plansCommand{
 		BaseCommand: commands.New("plans", "List gateway plans", "upctl gateway plans"),

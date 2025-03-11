@@ -33,6 +33,7 @@ type deleteCommand struct {
 	deleteUsers    config.OptionalBoolean
 	deletePolicies config.OptionalBoolean
 	deleteBuckets  config.OptionalBoolean
+	wait           config.OptionalBoolean
 }
 
 // InitCommand implements Command.InitCommand
@@ -41,6 +42,7 @@ func (c *deleteCommand) InitCommand() {
 	config.AddToggleFlag(flags, &c.deleteUsers, "delete-users", false, "Delete all users from the service before deleting the object storage instance.")
 	config.AddToggleFlag(flags, &c.deletePolicies, "delete-policies", false, "Delete all policies from the service before deleting the object storage instance.")
 	config.AddToggleFlag(flags, &c.deleteBuckets, "delete-buckets", false, "Delete all buckets from the service before deleting the object storage instance.")
+	config.AddToggleFlag(flags, &c.wait, "wait", false, "Wait until the object storage instance has been deleted  before returning.")
 	c.AddFlags(flags)
 
 	// Deprecating objectstorage and objsto in favour of object-storage
@@ -48,27 +50,22 @@ func (c *deleteCommand) InitCommand() {
 	commands.SetSubcommandDeprecationHelp(c, []string{"objectstorage", "objsto"})
 }
 
-// Execute implements commands.MultipleArgumentCommand
-func (c *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
-	// Deprecating objectstorage and objsto in favour of object-storage
-	// TODO: Remove this in the future
-	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"objectstorage", "objsto"}, "object-storage")
-
+func Delete(exec commands.Executor, uuid string, deleteUsers, deletePolicies, deleteBuckets, wait bool) (output.Output, error) {
 	svc := exec.All()
-	msg := fmt.Sprintf("Deleting object storage service %v", arg)
+	msg := fmt.Sprintf("Deleting object storage service %v", uuid)
 	exec.PushProgressStarted(msg)
 
-	if c.deleteUsers.Value() {
-		exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Deleting users from the service %s", arg))
+	if deleteUsers {
+		exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Deleting users from the service %s", uuid))
 
-		users, err := svc.GetManagedObjectStorageUsers(exec.Context(), &request.GetManagedObjectStorageUsersRequest{ServiceUUID: arg})
+		users, err := svc.GetManagedObjectStorageUsers(exec.Context(), &request.GetManagedObjectStorageUsersRequest{ServiceUUID: uuid})
 		if err != nil {
 			return commands.HandleError(exec, msg, err)
 		}
 
 		for _, user := range users {
 			err = svc.DeleteManagedObjectStorageUser(exec.Context(), &request.DeleteManagedObjectStorageUserRequest{
-				ServiceUUID: arg,
+				ServiceUUID: uuid,
 				Username:    user.Username,
 			})
 			if err != nil {
@@ -77,10 +74,10 @@ func (c *deleteCommand) Execute(exec commands.Executor, arg string) (output.Outp
 		}
 	}
 
-	if c.deletePolicies.Value() {
-		exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Deleting policies from the service %s", arg))
+	if deletePolicies {
+		exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Deleting policies from the service %s", uuid))
 
-		policies, err := svc.GetManagedObjectStoragePolicies(exec.Context(), &request.GetManagedObjectStoragePoliciesRequest{ServiceUUID: arg})
+		policies, err := svc.GetManagedObjectStoragePolicies(exec.Context(), &request.GetManagedObjectStoragePoliciesRequest{ServiceUUID: uuid})
 		if err != nil {
 			return commands.HandleError(exec, msg, err)
 		}
@@ -91,7 +88,7 @@ func (c *deleteCommand) Execute(exec commands.Executor, arg string) (output.Outp
 			}
 
 			err = svc.DeleteManagedObjectStoragePolicy(exec.Context(), &request.DeleteManagedObjectStoragePolicyRequest{
-				ServiceUUID: arg,
+				ServiceUUID: uuid,
 				Name:        policy.Name,
 			})
 			if err != nil {
@@ -100,17 +97,17 @@ func (c *deleteCommand) Execute(exec commands.Executor, arg string) (output.Outp
 		}
 	}
 
-	if c.deleteBuckets.Value() {
-		exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Deleting buckets from the service %s", arg))
+	if deleteBuckets {
+		exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Deleting buckets from the service %s", uuid))
 
-		buckets, err := svc.GetManagedObjectStorageBucketMetrics(exec.Context(), &request.GetManagedObjectStorageBucketMetricsRequest{ServiceUUID: arg})
+		buckets, err := svc.GetManagedObjectStorageBucketMetrics(exec.Context(), &request.GetManagedObjectStorageBucketMetricsRequest{ServiceUUID: uuid})
 		if err != nil {
 			return commands.HandleError(exec, msg, err)
 		}
 
 		for _, bucket := range buckets {
 			err = svc.DeleteManagedObjectStorageBucket(exec.Context(), &request.DeleteManagedObjectStorageBucketRequest{
-				ServiceUUID: arg,
+				ServiceUUID: uuid,
 				Name:        bucket.Name,
 			})
 			if err != nil {
@@ -118,8 +115,8 @@ func (c *deleteCommand) Execute(exec commands.Executor, arg string) (output.Outp
 			}
 		}
 
-		exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Waiting buckets to be deleted from the service %s", arg))
-		err = waitUntilBucketsHaveBeenDeleted(exec, arg)
+		exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Waiting buckets to be deleted from the service %s", uuid))
+		err = waitUntilBucketsHaveBeenDeleted(exec, uuid)
 		if err != nil {
 			return commands.HandleError(exec, msg, err)
 		}
@@ -127,15 +124,32 @@ func (c *deleteCommand) Execute(exec commands.Executor, arg string) (output.Outp
 
 	exec.PushProgressUpdateMessage(msg, msg)
 	err := svc.DeleteManagedObjectStorage(exec.Context(), &request.DeleteManagedObjectStorageRequest{
-		UUID: arg,
+		UUID: uuid,
 	})
 	if err != nil {
 		return commands.HandleError(exec, msg, err)
 	}
 
+	if wait {
+		exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Waiting for object storage service %s to be deleted", uuid))
+		err = svc.WaitForManagedObjectStorageDeletion(exec.Context(), &request.WaitForManagedObjectStorageDeletionRequest{UUID: uuid})
+		if err != nil {
+			return commands.HandleError(exec, msg, err)
+		}
+	}
+
 	exec.PushProgressSuccess(msg)
 
 	return output.None{}, nil
+}
+
+// Execute implements commands.MultipleArgumentCommand
+func (c *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
+	// Deprecating objectstorage and objsto in favour of object-storage
+	// TODO: Remove this in the future
+	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"objectstorage", "objsto"}, "object-storage")
+
+	return Delete(exec, arg, c.deleteUsers.Value(), c.deletePolicies.Value(), c.deleteBuckets.Value(), c.wait.Value())
 }
 
 func waitUntilBucketsHaveBeenDeleted(exec commands.Executor, serviceUUID string) error {
