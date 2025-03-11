@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"slices"
+	"sort"
+	"sync"
 	"time"
 
 	"github.com/UpCloudLtd/progress"
@@ -15,11 +17,17 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/objectstorage"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/router"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
+	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 )
 
 const (
 	includeHelp = "Include resources matching the given name. If defined multiple times, resource is included if it matches any of the given names. `*` matches all resources."
 	excludeHelp = "Exclude resources matching the given name. If defined multiple times, resource is included if it matches any of the given names."
+
+	typeNetwork        = "network"
+	typeNetworkPeering = "network-peering"
+	typeRouter         = "router"
+	typeObjectStorage  = "object-storage"
 )
 
 type Resource struct {
@@ -88,75 +96,120 @@ func getMatches[T any](exec commands.Executor, resolutionProvider resolver.Cachi
 	return matches, nil
 }
 
+func findResources[T any](exec commands.Executor, r resolver.CachingResolutionProvider[T], include, exclude []string) ([]Resource, error) {
+	var resources []Resource
+	matches, err := getMatches(exec, r, include, exclude)
+	if err != nil {
+		return nil, err
+	}
+	for _, match := range matches {
+		resource, err := getResource(match)
+		if err != nil {
+			return nil, err
+		}
+		resources = append(resources, resource)
+	}
+	return resources, nil
+}
+
+func getResource(val any) (Resource, error) {
+	switch v := val.(type) {
+	case upcloud.Network:
+		return Resource{
+			Name: v.Name,
+			Type: typeNetwork,
+			UUID: v.UUID,
+		}, nil
+	case upcloud.NetworkPeering:
+		return Resource{
+			Name: v.Name,
+			Type: typeNetworkPeering,
+			UUID: v.UUID,
+		}, nil
+	case upcloud.Router:
+		return Resource{
+			Name: v.Name,
+			Type: typeRouter,
+			UUID: v.UUID,
+		}, nil
+	case upcloud.ManagedObjectStorage:
+		return Resource{
+			Name: v.Name,
+			Type: typeObjectStorage,
+			UUID: v.UUID,
+		}, nil
+	}
+	return Resource{}, fmt.Errorf("unsupported type %T", val)
+}
+
+type findResult struct {
+	Resources []Resource
+	Error     error
+}
+
 func listResources(exec commands.Executor, include, exclude []string) ([]Resource, error) {
 	var resources []Resource
+	numTypes := 4
 
-	// Use the same order as in hub.upcloud.com
+	returnChan := make(chan findResult, numTypes)
 
-	networks, err := getMatches(exec, &resolver.CachingNetwork{}, include, exclude)
-	if err != nil {
-		return nil, err
-	}
-	for _, network := range networks {
-		resources = append(resources, Resource{
-			Name: network.Name,
-			Type: "network",
-			UUID: network.UUID,
-		})
+	var wg sync.WaitGroup
+	wg.Add(numTypes)
+
+	go func() {
+		defer wg.Done()
+		res, err := findResources(exec, &resolver.CachingNetwork{}, include, exclude)
+		returnChan <- findResult{Resources: res, Error: err}
+	}()
+
+	go func() {
+		defer wg.Done()
+		res, err := findResources(exec, &resolver.CachingNetworkPeering{}, include, exclude)
+		returnChan <- findResult{Resources: res, Error: err}
+	}()
+
+	go func() {
+		defer wg.Done()
+		res, err := findResources(exec, &resolver.CachingRouter{}, include, exclude)
+		returnChan <- findResult{Resources: res, Error: err}
+	}()
+
+	go func() {
+		defer wg.Done()
+		res, err := findResources(exec, &resolver.CachingObjectStorage{}, include, exclude)
+		returnChan <- findResult{Resources: res, Error: err}
+	}()
+
+	wg.Wait()
+	close(returnChan)
+
+	for res := range returnChan {
+		if res.Error != nil {
+			return nil, res.Error
+		}
+		resources = append(resources, res.Resources...)
 	}
 
-	peerings, err := getMatches(exec, &resolver.CachingNetworkPeering{}, include, exclude)
-	if err != nil {
-		return nil, err
-	}
-	for _, peering := range peerings {
-		resources = append(resources, Resource{
-			Name: peering.Name,
-			Type: "network-peering",
-			UUID: peering.UUID,
-		})
-	}
-
-	routers, err := getMatches(exec, &resolver.CachingRouter{}, include, exclude)
-	if err != nil {
-		return nil, err
-	}
-	for _, router := range routers {
-		if router.Type == "service" {
-			continue
+	sort.Slice(resources, func(i, j int) bool {
+		if resources[i].Type != resources[j].Type {
+			return resources[i].Type < resources[j].Type
 		}
 
-		resources = append(resources, Resource{
-			Name: router.Name,
-			Type: "router",
-			UUID: router.UUID,
-		})
-	}
-
-	objectstorages, err := getMatches(exec, &resolver.CachingObjectStorage{}, include, exclude)
-	if err != nil {
-		return nil, err
-	}
-	for _, objsto := range objectstorages {
-		resources = append(resources, Resource{
-			Name: objsto.Name,
-			Type: "object-storage",
-			UUID: objsto.UUID,
-		})
-	}
+		return resources[i].Name < resources[j].Name
+	})
 
 	return resources, nil
 }
 
 func deleteResource(exec commands.Executor, resource Resource) (err error) {
 	switch resource.Type {
-	case "network":
+	case typeNetwork:
 		_, err = network.Delete(exec, resource.UUID)
-	case "network-peering":
+	case typeNetworkPeering:
 		_, err = networkpeering.Delete(exec, resource.UUID, true)
-	case "router":
+	case typeRouter:
 		_, err = router.Delete(exec, resource.UUID)
-	case "object-storage":
+	case typeObjectStorage:
 		_, err = objectstorage.Delete(exec, resource.UUID, true, true, true, true)
 	}
 	return
