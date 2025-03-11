@@ -1,9 +1,6 @@
 package all
 
 import (
-	"fmt"
-
-	"github.com/UpCloudLtd/progress/messages"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 
@@ -17,51 +14,37 @@ func PurgeCommand() commands.Command {
 			"purge",
 			"Delete all resources from the current account",
 			"upctl all purge",
-			"upctl all purge --name \"*tf-acc-test*-\"",
+			"upctl all purge --include \"*tf-acc-test*-\"",
 		),
 	}
 }
 
 type purgeCommand struct {
 	*commands.BaseCommand
-	name string
+	include []string
+	exclude []string
 }
 
 func (c *purgeCommand) InitCommand() {
 	c.Cobra().Long = `Delete all resources from the current account. Use ` + "`" + `upctl all list` + "`" + ` command to preview targeted resources before purging.`
 
 	flags := &pflag.FlagSet{}
-	flags.StringVar(&c.name, "name", "", "Only delete resources matching the given name.")
+	flags.StringArrayVarP(&c.include, "include", "i", []string{"*"}, includeHelp)
+	flags.StringArrayVarP(&c.exclude, "exclude", "e", []string{}, excludeHelp)
 	c.AddFlags(flags)
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (c *purgeCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
-	msg := "Deleting all resources"
-	if c.name != "" {
-		msg += fmt.Sprintf(` matching name "%s"`, c.name)
-	}
-	exec.PushProgressStarted(msg)
-
-	resources, err := listResources(exec, c.name)
+	resources, err := listResources(exec, c.include, c.exclude)
 	if err != nil {
 		return nil, err
 	}
 
-	if len(resources) == 0 {
-		exec.PushProgressUpdate(messages.Update{
-			Key:     msg,
-			Details: "Found no resources to delete",
-			Status:  messages.MessageStatusWarning,
-		})
-		return output.None{}, nil
-	}
-
 	err = deleteResources(exec, resources, 16)
 	if err != nil {
-		return commands.HandleError(exec, msg, err)
+		return nil, err
 	}
 
-	exec.PushProgressSuccess(msg)
 	return output.None{}, err
 }

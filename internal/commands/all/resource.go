@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"slices"
 	"time"
 
 	"github.com/UpCloudLtd/progress"
@@ -15,23 +16,62 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 )
 
+const (
+	includeHelp = "Include resources matching the given name. If defined multiple times, resource is included if it matches any of the given names. `*` matches all resources."
+	excludeHelp = "Exclude resources matching the given name. If defined multiple times, resource is included if it matches any of the given names."
+)
+
 type Resource struct {
 	Name string
 	Type string
 	UUID string
 }
 
-func getMatches[T any](exec commands.Executor, resolutionProvider resolver.CachingResolutionProvider[T], name string) ([]T, error) {
+func setAdd(a, b []string) []string {
+	for _, i := range b {
+		if !slices.Contains(a, i) {
+			a = append(a, i)
+		}
+	}
+	return a
+}
+
+func setRemove(a, b []string) []string {
+	var res []string
+	for _, i := range a {
+		if !slices.Contains(b, i) {
+			res = append(res, i)
+		}
+	}
+	return res
+}
+
+func getMatches[T any](exec commands.Executor, resolutionProvider resolver.CachingResolutionProvider[T], include, exclude []string) ([]T, error) {
 	resolve, err := resolutionProvider.Get(exec.Context(), exec.All())
 	if err != nil {
 		return nil, err
 	}
 
-	resolved := resolve(name)
-	uuids, err := resolved.GetAll()
-	if err != nil {
-		if !errors.Is(err, resolver.NotFoundError(name)) {
-			return nil, err
+	var uuids []string
+	for _, i := range include {
+		resolved := resolve(i)
+		toAdd, err := resolved.GetAll()
+		uuids = setAdd(uuids, toAdd)
+		if err != nil {
+			if !errors.Is(err, resolver.NotFoundError(i)) {
+				return nil, err
+			}
+		}
+	}
+
+	for _, i := range exclude {
+		resolved := resolve(i)
+		toRemove, err := resolved.GetAll()
+		uuids = setRemove(uuids, toRemove)
+		if err != nil {
+			if !errors.Is(err, resolver.NotFoundError(i)) {
+				return nil, err
+			}
 		}
 	}
 
@@ -47,16 +87,12 @@ func getMatches[T any](exec commands.Executor, resolutionProvider resolver.Cachi
 	return matches, nil
 }
 
-func listResources(exec commands.Executor, name string) ([]Resource, error) {
+func listResources(exec commands.Executor, include, exclude []string) ([]Resource, error) {
 	var resources []Resource
-
-	if name == "" {
-		name = "*"
-	}
 
 	// Use the same order as in hub.upcloud.com
 
-	networks, err := getMatches(exec, &resolver.CachingNetwork{}, name)
+	networks, err := getMatches(exec, &resolver.CachingNetwork{}, include, exclude)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +104,7 @@ func listResources(exec commands.Executor, name string) ([]Resource, error) {
 		})
 	}
 
-	peerings, err := getMatches(exec, &resolver.CachingNetworkPeering{}, name)
+	peerings, err := getMatches(exec, &resolver.CachingNetworkPeering{}, include, exclude)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +116,7 @@ func listResources(exec commands.Executor, name string) ([]Resource, error) {
 		})
 	}
 
-	routers, err := getMatches(exec, &resolver.CachingRouter{}, name)
+	routers, err := getMatches(exec, &resolver.CachingRouter{}, include, exclude)
 	if err != nil {
 		return nil, err
 	}
