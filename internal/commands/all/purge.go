@@ -14,7 +14,7 @@ func PurgeCommand() commands.Command {
 			"purge",
 			"Delete all resources from the current account",
 			"upctl all purge",
-			"upctl all purge --include \"*tf-acc-test*-\"",
+			"upctl all purge --include *tf-acc-test* --exclude *persistent*",
 		),
 	}
 }
