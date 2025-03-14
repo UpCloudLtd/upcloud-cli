@@ -179,6 +179,15 @@ func (m *Service) ModifyServer(_ context.Context, r *request.ModifyServerRequest
 	return args[0].(*upcloud.ServerDetails), args.Error(1)
 }
 
+// RelocateServer implements service.Server.RelocateServer
+func (m *Service) RelocateServer(_ context.Context, r *request.RelocateServerRequest) (*upcloud.ServerDetails, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.ServerDetails), args.Error(1)
+}
+
 // DeleteServer implements service.Server.DeleteServer
 func (m *Service) DeleteServer(_ context.Context, r *request.DeleteServerRequest) error {
 	args := m.Called(r)

@@ -7,9 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
+### Added
+
+- Server relocation support
 
 ## [3.16.1] - 2025-03-07
+
+### Fixed
 
 - Remove client side default value for kubernetes cluster plan and use default from API instead if no plan is defined.
 

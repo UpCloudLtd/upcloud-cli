@@ -50,6 +50,7 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	commands.BuildCommand(server.LoadCommand(), serverCommand.Cobra(), conf)
 	commands.BuildCommand(server.EjectCommand(), serverCommand.Cobra(), conf)
 	commands.BuildCommand(server.DeleteCommand(), serverCommand.Cobra(), conf)
+	commands.BuildCommand(server.RelocateCommand(), serverCommand.Cobra(), conf)
 
 	// Server Network Interfaces
 	networkInterfaceCommand := commands.BuildCommand(networkinterface.BaseNetworkInterfaceCommand(), serverCommand.Cobra(), conf)
