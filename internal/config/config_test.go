@@ -6,15 +6,16 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/zalando/go-keyring"
 )
 
 func TestConfig_LoadInvalidYAML(t *testing.T) {
 	cfg := New()
 	tmpFile, err := os.CreateTemp(os.TempDir(), "")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	_, err = tmpFile.WriteString("usernamd:sdkfo\npassword: foo")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	cfg.GlobalFlags.ConfigFile = tmpFile.Name()
 	err = cfg.Load()
@@ -24,9 +25,9 @@ func TestConfig_LoadInvalidYAML(t *testing.T) {
 func TestConfig_Load(t *testing.T) {
 	cfg := New()
 	tmpFile, err := os.CreateTemp(os.TempDir(), "")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	_, err = tmpFile.WriteString("username: sdkfo\npassword: foo")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	cfg.GlobalFlags.ConfigFile = tmpFile.Name()
 	err = cfg.Load()
@@ -69,16 +70,16 @@ func TestConfig_LoadKeyring(t *testing.T) {
 
 	cfg := New()
 	tmpFile, err := os.CreateTemp(os.TempDir(), "")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	_, err = tmpFile.WriteString("username: unittest")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	err = keyring.Set("UpCloud", "unittest", "unittest_password")
 	assert.NoError(t, err)
 
 	cfg.GlobalFlags.ConfigFile = tmpFile.Name()
 	err = cfg.Load()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, cfg.GetString("username"), "unittest")
 	assert.Equal(t, "unittest_password", cfg.GetString("password"))
 	t.Cleanup(func() {
