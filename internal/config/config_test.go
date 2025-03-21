@@ -64,7 +64,9 @@ func TestConfig_GetVersion(t *testing.T) {
 }
 
 func TestConfig_LoadKeyring(t *testing.T) {
-	// Note that configs defined in environment variables will override configs defined in the config file. Thus, this test will fail if credentials are currently defined as environment variables.
+	t.Setenv("UPCLOUD_USERNAME", "")
+	t.Setenv("UPCLOUD_PASSWORD", "")
+
 	cfg := New()
 	tmpFile, err := os.CreateTemp(os.TempDir(), "")
 	assert.NoError(t, err)
