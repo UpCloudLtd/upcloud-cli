@@ -628,7 +628,11 @@ func (m *Service) CloneManagedDatabase(_ context.Context, r *request.CloneManage
 }
 
 func (m *Service) CreateManagedDatabase(_ context.Context, r *request.CreateManagedDatabaseRequest) (*upcloud.ManagedDatabase, error) {
-	return nil, nil
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.ManagedDatabase), args.Error(1)
 }
 
 func (m *Service) DeleteManagedDatabaseIndex(_ context.Context, r *request.DeleteManagedDatabaseIndexRequest) error {
