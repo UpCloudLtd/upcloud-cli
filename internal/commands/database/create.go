@@ -2,7 +2,6 @@ package database
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
@@ -45,7 +44,7 @@ type createParams struct {
 	properties          []string
 }
 
-func (s *createParams) processParams(exec commands.Executor) error {
+func (s *createParams) processParams() error {
 	if len(s.labels) > 0 {
 		labelSlice, err := labels.StringsToSliceOfLabels(s.labels)
 		if err != nil {
@@ -63,31 +62,14 @@ func (s *createParams) processParams(exec commands.Executor) error {
 	}
 
 	if len(s.properties) > 0 {
-		props := make(request.ManagedDatabasePropertiesRequest)
+		var props request.ManagedDatabasePropertiesRequest
 		for _, prop := range s.properties {
 			parts := strings.SplitN(prop, "=", 2)
 			if len(parts) != 2 {
 				return fmt.Errorf("invalid property format: %s, expected key=value", prop)
 			}
-
 			key := upcloud.ManagedDatabasePropertyKey(parts[0])
-			valueStr := parts[1]
-
-			// try to determine value type (number, boolean, or string)
-			if valueStr == "true" || valueStr == "false" {
-				props[key] = valueStr == "true"
-			} else if i, err := strconv.Atoi(valueStr); err == nil {
-				props[key] = i
-			} else if f, err := strconv.ParseFloat(valueStr, 64); err == nil {
-				props[key] = f
-			} else {
-				// remove quotes
-				if (strings.HasPrefix(valueStr, "\"") && strings.HasSuffix(valueStr, "\"")) ||
-					(strings.HasPrefix(valueStr, "'") && strings.HasSuffix(valueStr, "'")) {
-					valueStr = valueStr[1 : len(valueStr)-1]
-				}
-				props[key] = valueStr
-			}
+			props.Set(key, parts[1])
 		}
 
 		s.Properties = props
@@ -96,25 +78,19 @@ func (s *createParams) processParams(exec commands.Executor) error {
 	return nil
 }
 
-// Build implements commands.BuildCommand
-func (s *createCommand) Build(exec commands.Executor) (commands.Command, error) {
-	s.params = defaultCreateParams
-	return s, nil
-}
-
 // InitCommand implements commands.InitializeCommand
 func (s *createCommand) InitCommand() {
 	flags := &pflag.FlagSet{}
 	s.params = createParams{CreateManagedDatabaseRequest: request.CreateManagedDatabaseRequest{}}
 	def := defaultCreateParams
-	flags.StringVar(&s.params.HostNamePrefix, "host-name-prefix", def.HostNamePrefix, "Name of the database")
-	flags.StringVar(&s.params.Title, "title", def.Title, "Title of the database")
-	flags.StringVar(&s.params.Plan, "plan", def.Plan, "Plan for the database")
+	flags.StringVar(&s.params.HostNamePrefix, "host-name-prefix", def.HostNamePrefix, "A host name prefix for the database")
+	flags.StringVar(&s.params.Title, "title", def.Title, "A short, informational description.")
+	flags.StringVar(&s.params.Plan, "plan", def.Plan, "Plan to use for the database. Run `upctl database plans [database type]` to list all available plans.")
 	flags.StringVar(&s.params.Zone, "zone", def.Zone, namedargs.ZoneDescription("database"))
 	flags.StringVar(&s.params.dbType, "type", string(def.Type), "Type of the database")
-	flags.StringSliceVar(&s.params.labels, "labels", def.labels, "Labels for the database")
-	flags.StringSliceVar(&s.params.networks, "networks", def.networks, "Networks to connect the database to")
-	flags.BoolVar(&s.params.terminateProtection, "terminate-protection", def.terminateProtection, "Enable termination protection")
+	flags.StringSliceVar(&s.params.labels, "labels", def.labels, "Labels to describe the database in `key=value` format, multiple can be declared.\nUsage: --label env=dev\n\n--label owner=operations")
+	flags.StringSliceVar(&s.params.networks, "networks", def.networks, "A network interface for the database, multiple can be declared.\nUsage: --network family=IPv4,type=public\n\n--network type=private,network=037a530b-533e-4cef-b6ad-6af8094bb2bc,ip-address=10.0.0.1")
+	flags.BoolVar(&s.params.terminateProtection, "terminate-protection", def.terminateProtection, "Prevents the database from being powered off, or deleted.")
 	flags.StringSliceVar(&s.params.properties, "property", nil, "Properties for the database in the format key=value (can be specified multiple times)")
 	config.AddToggleFlag(flags, &s.wait, "wait", false, "Wait for database to be in running state before returning.")
 
@@ -135,7 +111,7 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	msg := fmt.Sprintf("Creating database %v", s.params.Title)
 	exec.PushProgressStarted(msg)
 
-	if err := s.params.processParams(exec); err != nil {
+	if err := s.params.processParams(); err != nil {
 		return nil, err
 	}
 
