@@ -51,15 +51,15 @@ func TestCreateCommand(t *testing.T) {
 			},
 		},
 		{
-			name: "all parameters",
+			name: "pg with label and protection parameters",
 			args: []string{
 				"--title=full-test",
 				"--zone=fi-hel1",
 				"--host-name-prefix=fulldb",
 				"--plan=4x4xCPU-8GB-200GB",
 				"--type=pg",
-				"--labels=env=test,app=database",
-				"--terminate-protection",
+				"--label=env=test,app=database",
+				"--enable-termination-protection",
 			},
 			createDatabaseReq: request.CreateManagedDatabaseRequest{
 				Title:                 "full-test",
@@ -72,19 +72,45 @@ func TestCreateCommand(t *testing.T) {
 			},
 		},
 		{
-			name: "pg database type",
+			name: "opensearch with properties parameters",
 			args: []string{
-				"--title=pg-test",
+				"--title=full-test",
 				"--zone=fi-hel1",
-				"--host-name-prefix=pgdb",
-				"--type=pg",
+				"--host-name-prefix=fulldb",
+				"--plan=4x4xCPU-8GB-200GB",
+				"--type=opensearch",
+				"--property=saml={\"enabled\":true}", // without quotes
+				"--property=openid=\"{\"client_id\":\"test_client_id\"}\"", // with quotes
+				"--property=ism_enabled=true",
+				"--property=custom_domain=custom.upcloud.com",
 			},
 			createDatabaseReq: request.CreateManagedDatabaseRequest{
-				Title:          "pg-test",
+				Title:          "full-test",
 				Zone:           "fi-hel1",
-				HostNamePrefix: "pgdb",
+				HostNamePrefix: "fulldb",
+				Plan:           "4x4xCPU-8GB-200GB",
+				Type:           upcloud.ManagedDatabaseServiceTypeOpenSearch,
+				Properties: request.ManagedDatabasePropertiesRequest{
+					"ism_enabled":   true,
+					"custom_domain": "custom.upcloud.com",
+					"saml":          map[string]interface{}{"enabled": true},
+					"openid":        map[string]interface{}{"client_id": "test_client_id"},
+				},
+			},
+		},
+		{
+			name: "mysql default database type",
+			args: []string{
+				"--title=mysql-test",
+				"--zone=fi-hel1",
+				"--host-name-prefix=mysqldb",
+			},
+			createDatabaseReq: request.CreateManagedDatabaseRequest{
+				Title:          "mysql-test",
+				Zone:           "fi-hel1",
+				HostNamePrefix: "mysqldb",
 				Plan:           "2x2xCPU-4GB-100GB",
-				Type:           upcloud.ManagedDatabaseServiceTypePostgreSQL,
+				Type:           upcloud.ManagedDatabaseServiceTypeMySQL,
 			},
 		},
 		{
@@ -119,7 +145,6 @@ func TestCreateCommand(t *testing.T) {
 
 			storage.CachedStorages = nil
 			createDatabaseReq := test.createDatabaseReq
-			// Fix: Use CreateManagedDatabase instead of CreateDatabase to match the actual method call
 			mService.On("CreateManagedDatabase", &createDatabaseReq).Return(&databaseDetailsMaint, nil)
 
 			c := commands.BuildCommand(testCmd, nil, conf)

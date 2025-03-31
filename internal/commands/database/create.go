@@ -1,6 +1,7 @@
 package database
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -24,7 +25,22 @@ type createCommand struct {
 
 func CreateCommand() commands.Command {
 	return &createCommand{
-		BaseCommand: commands.New("create", "Create a new database", "upctl database create"),
+		BaseCommand: commands.New(
+			"create",
+			"Create a new database",
+			`upctl database create \
+				--title=mydb \ 
+				--zone=fi-hel1 \
+				--host-name-prefix=mydb`,
+			`upctl database create \
+				--title=mydb \ 
+				--zone=fi-hel1 \
+				--type=pg \
+				--host-name-prefix=mydb \
+				--termination-protection \
+				--label env=dev \
+				--property max_connections=200`,
+		),
 	}
 }
 
@@ -37,11 +53,11 @@ var defaultCreateParams = createParams{
 
 type createParams struct {
 	request.CreateManagedDatabaseRequest
-	labels              []string
-	networks            []string
-	terminateProtection bool
-	dbType              string
-	properties          []string
+	labels                []string
+	networks              []string
+	terminationProtection config.OptionalBoolean
+	dbType                string
+	properties            []string
 }
 
 func (s *createParams) processParams() error {
@@ -53,29 +69,50 @@ func (s *createParams) processParams() error {
 		s.Labels = labelSlice
 	}
 
-	if s.terminateProtection {
-		s.TerminationProtection = &s.terminateProtection
-	}
-
 	if s.dbType != "" {
 		s.Type = upcloud.ManagedDatabaseServiceType(s.dbType)
 	}
 
 	if len(s.properties) > 0 {
-		var props request.ManagedDatabasePropertiesRequest
-		for _, prop := range s.properties {
-			parts := strings.SplitN(prop, "=", 2)
-			if len(parts) != 2 {
-				return fmt.Errorf("invalid property format: %s, expected key=value", prop)
-			}
-			key := upcloud.ManagedDatabasePropertyKey(parts[0])
-			props.Set(key, parts[1])
+		props, err := processProperties(s.properties)
+		if err != nil {
+			return fmt.Errorf("invalid properties: %w", err)
 		}
-
 		s.Properties = props
 	}
 
+	if s.terminationProtection.IsSet() {
+		terminationProtection := s.terminationProtection.Value()
+		s.TerminationProtection = &terminationProtection
+	}
 	return nil
+}
+
+func processProperties(in []string) (request.ManagedDatabasePropertiesRequest, error) {
+	resp := request.ManagedDatabasePropertiesRequest{}
+	for _, prop := range in {
+		parts := strings.SplitN(prop, "=", 2)
+		if len(parts) != 2 {
+			return resp, fmt.Errorf("invalid property format: %s, expected key=value", prop)
+		}
+
+		key := upcloud.ManagedDatabasePropertyKey(parts[0])
+		value := parts[1]
+
+		// remove quotes from the start and end of the value if they exist
+		if (strings.HasPrefix(value, "\"") && strings.HasSuffix(value, "\"")) ||
+			(strings.HasPrefix(value, "'") && strings.HasSuffix(value, "'")) {
+			value = value[1 : len(value)-1]
+		}
+
+		var parsedValue interface{}
+		if err := json.Unmarshal([]byte(value), &parsedValue); err != nil {
+			resp.Set(key, value) // set as plain string if parsing fails
+		} else {
+			resp.Set(key, parsedValue)
+		}
+	}
+	return resp, nil
 }
 
 // InitCommand implements commands.InitializeCommand
@@ -88,10 +125,11 @@ func (s *createCommand) InitCommand() {
 	flags.StringVar(&s.params.Plan, "plan", def.Plan, "Plan to use for the database. Run `upctl database plans [database type]` to list all available plans.")
 	flags.StringVar(&s.params.Zone, "zone", def.Zone, namedargs.ZoneDescription("database"))
 	flags.StringVar(&s.params.dbType, "type", string(def.Type), "Type of the database")
-	flags.StringSliceVar(&s.params.labels, "labels", def.labels, "Labels to describe the database in `key=value` format, multiple can be declared.\nUsage: --label env=dev\n\n--label owner=operations")
-	flags.StringSliceVar(&s.params.networks, "networks", def.networks, "A network interface for the database, multiple can be declared.\nUsage: --network family=IPv4,type=public\n\n--network type=private,network=037a530b-533e-4cef-b6ad-6af8094bb2bc,ip-address=10.0.0.1")
-	flags.BoolVar(&s.params.terminateProtection, "terminate-protection", def.terminateProtection, "Prevents the database from being powered off, or deleted.")
-	flags.StringSliceVar(&s.params.properties, "property", nil, "Properties for the database in the format key=value (can be specified multiple times)")
+	flags.StringSliceVar(&s.params.labels, "label", def.labels, "Labels to describe the database in `key=value` format, multiple can be declared.\nUsage: --label env=dev\n\n--label owner=operations")
+	flags.StringSliceVar(&s.params.networks, "network", def.networks, "A network interface for the database, multiple can be declared.\nUsage: --network family=IPv4,type=public\n\n--network type=private,network=037a530b-533e-4cef-b6ad-6af8094bb2bc,ip-address=10.0.0.1")
+	config.AddEnableOrDisableFlag(flags, &s.params.terminationProtection, def.terminationProtection.Value(), "termination-protection", "the database from being powered off, or deleted.")
+
+	flags.StringArrayVar(&s.params.properties, "property", nil, "Properties for the database in the format key=value (can be specified multiple times)")
 	config.AddToggleFlag(flags, &s.wait, "wait", false, "Wait for database to be in running state before returning.")
 
 	s.AddFlags(flags)
