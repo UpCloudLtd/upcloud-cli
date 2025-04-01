@@ -42,7 +42,7 @@ func (c *deleteCommand) InitCommand() {
 	config.AddToggleFlag(flags, &c.deleteUsers, "delete-users", false, "Delete all users from the service before deleting the object storage instance.")
 	config.AddToggleFlag(flags, &c.deletePolicies, "delete-policies", false, "Delete all policies from the service before deleting the object storage instance.")
 	config.AddToggleFlag(flags, &c.deleteBuckets, "delete-buckets", false, "Delete all buckets from the service before deleting the object storage instance.")
-	config.AddToggleFlag(flags, &c.wait, "wait", false, "Wait until the object storage instance has been deleted  before returning.")
+	config.AddToggleFlag(flags, &c.wait, "wait", false, "Wait until the object storage instance has been deleted before returning.")
 	c.AddFlags(flags)
 
 	// Deprecating objectstorage and objsto in favour of object-storage
@@ -136,6 +136,7 @@ func Delete(exec commands.Executor, uuid string, deleteUsers, deletePolicies, de
 		if err != nil {
 			return commands.HandleError(exec, msg, err)
 		}
+		exec.PushProgressUpdateMessage(msg, msg)
 	}
 
 	exec.PushProgressSuccess(msg)

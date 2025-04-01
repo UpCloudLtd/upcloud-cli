@@ -12,6 +12,7 @@ import (
 	"github.com/UpCloudLtd/progress"
 	"github.com/UpCloudLtd/progress/messages"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/database"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/network"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/networkpeering"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/objectstorage"
@@ -28,6 +29,7 @@ const (
 	typeNetworkPeering = "network-peering"
 	typeRouter         = "router"
 	typeObjectStorage  = "object-storage"
+	typeDatabase       = "database"
 )
 
 type Resource struct {
@@ -138,6 +140,12 @@ func getResource(val any) (Resource, error) {
 			Type: typeObjectStorage,
 			UUID: v.UUID,
 		}, nil
+	case upcloud.ManagedDatabase:
+		return Resource{
+			Name: v.Title,
+			Type: typeDatabase,
+			UUID: v.UUID,
+		}, nil
 	}
 	return Resource{}, fmt.Errorf("unsupported type %T", val)
 }
@@ -149,7 +157,7 @@ type findResult struct {
 
 func listResources(exec commands.Executor, include, exclude []string) ([]Resource, error) {
 	var resources []Resource
-	numTypes := 4
+	numTypes := 5
 
 	returnChan := make(chan findResult, numTypes)
 
@@ -177,6 +185,12 @@ func listResources(exec commands.Executor, include, exclude []string) ([]Resourc
 	go func() {
 		defer wg.Done()
 		res, err := findResources(exec, &resolver.CachingObjectStorage{}, include, exclude)
+		returnChan <- findResult{Resources: res, Error: err}
+	}()
+
+	go func() {
+		defer wg.Done()
+		res, err := findResources(exec, &resolver.CachingDatabase{}, include, exclude)
 		returnChan <- findResult{Resources: res, Error: err}
 	}()
 
@@ -211,6 +225,8 @@ func deleteResource(exec commands.Executor, resource Resource) (err error) {
 		_, err = router.Delete(exec, resource.UUID)
 	case typeObjectStorage:
 		_, err = objectstorage.Delete(exec, resource.UUID, true, true, true, true)
+	case typeDatabase:
+		_, err = database.Delete(exec, resource.UUID, true, true)
 	}
 	return
 }
