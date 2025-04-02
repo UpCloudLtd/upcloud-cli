@@ -6,8 +6,10 @@ import (
 
 // BaseNodeGroupCommand creates the base "kubernetes nodegroups" command
 func BaseNodeGroupCommand() commands.Command {
+	baseCmd := commands.New("node-group", "Manage cluster node-groups")
+	baseCmd.SetDeprecatedAliases([]string{"nodegroup"})
 	return &nodegroupCommand{
-		commands.New("nodegroup", "Manage cluster node-groups"),
+		BaseCommand: baseCmd,
 	}
 }
 
@@ -17,5 +19,6 @@ type nodegroupCommand struct {
 
 // InitCommand implements Command.InitCommand
 func (k *nodegroupCommand) InitCommand() {
-	k.Cobra().Aliases = []string{"node-group"}
+	k.Cobra().Aliases = []string{"nodegroup"}
+	commands.SetDeprecationHelp(k.Cobra(), k.DeprecatedAliases())
 }
