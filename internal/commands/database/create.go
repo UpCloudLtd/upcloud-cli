@@ -125,6 +125,8 @@ func (s *createCommand) InitCommand() {
 	flags.StringVar(&s.params.Plan, "plan", def.Plan, "Plan to use for the database. Run `upctl database plans [database type]` to list all available plans.")
 	flags.StringVar(&s.params.Zone, "zone", def.Zone, namedargs.ZoneDescription("database"))
 	flags.StringVar(&s.params.dbType, "type", string(def.Type), "Type of the database")
+	flags.StringVar(&s.params.Maintenance.DayOfWeek, "dow", def.Maintenance.DayOfWeek, "Full name of weekday in English, lower case(sunday) for automatic maintenance day of the week. Set randomly if not provided.")
+	flags.StringVar(&s.params.Maintenance.Time, "time", def.Maintenance.Time, "Database time in UTC of automatic maintenance HH:MM:SS. Set randomly if not provided.")
 	flags.StringSliceVar(&s.params.labels, "label", def.labels, "Labels to describe the database in `key=value` format, multiple can be declared.\nUsage: --label env=dev\n\n--label owner=operations")
 	flags.StringSliceVar(&s.params.networks, "network", def.networks, "A network interface for the database, multiple can be declared.\nUsage: --network family=IPv4,type=public\n\n--network type=private,network=037a530b-533e-4cef-b6ad-6af8094bb2bc,ip-address=10.0.0.1")
 	config.AddEnableOrDisableFlag(flags, &s.params.terminationProtection, def.terminationProtection.Value(), "termination-protection", "the database from being powered off, or deleted.")
