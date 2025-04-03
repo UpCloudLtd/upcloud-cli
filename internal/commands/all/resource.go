@@ -98,19 +98,64 @@ func getMatches[T any](exec commands.Executor, resolutionProvider resolver.Cachi
 	return matches, nil
 }
 
-func findResources[T any](exec commands.Executor, r resolver.CachingResolutionProvider[T], include, exclude []string) ([]Resource, error) {
-	var resources []Resource
-	matches, err := getMatches(exec, r, include, exclude)
-	if err != nil {
-		return nil, err
-	}
-	for _, match := range matches {
-		resource, err := getResource(match)
+type findResult struct {
+	Resources []Resource
+	Error     error
+}
+
+func findResources[T any](exec commands.Executor, wg *sync.WaitGroup, returnChan chan findResult, r resolver.CachingResolutionProvider[T], include, exclude []string) {
+	wg.Add(1)
+
+	go func() {
+		defer wg.Done()
+		var resources []Resource
+		matches, err := getMatches(exec, r, include, exclude)
 		if err != nil {
-			return nil, err
+			returnChan <- findResult{Resources: nil, Error: err}
+			return
 		}
-		resources = append(resources, resource)
+		for _, match := range matches {
+			resource, err := getResource(match)
+			if err != nil {
+				returnChan <- findResult{Resources: nil, Error: err}
+				return
+			}
+			resources = append(resources, resource)
+		}
+		returnChan <- findResult{Resources: resources, Error: nil}
+	}()
+}
+
+func listResources(exec commands.Executor, include, exclude []string) ([]Resource, error) {
+	var resources []Resource
+	returnChan := make(chan findResult, 5)
+
+	var wg sync.WaitGroup
+
+	findResources(exec, &wg, returnChan, &resolver.CachingNetwork{}, include, exclude)
+	findResources(exec, &wg, returnChan, &resolver.CachingNetworkPeering{}, include, exclude)
+	findResources(exec, &wg, returnChan, &resolver.CachingRouter{}, include, exclude)
+	findResources(exec, &wg, returnChan, &resolver.CachingObjectStorage{}, include, exclude)
+	findResources(exec, &wg, returnChan, &resolver.CachingDatabase{}, include, exclude)
+
+	wg.Wait()
+	close(returnChan)
+
+	for res := range returnChan {
+		if res.Error != nil {
+			return nil, res.Error
+		}
+		resources = append(resources, res.Resources...)
 	}
+
+	sort.Slice(resources, func(i, j int) bool {
+		if resources[i].Type != resources[j].Type {
+			return resources[i].Type < resources[j].Type
+		}
+
+		return resources[i].Name < resources[j].Name
+	})
+
 	return resources, nil
 }
 
@@ -148,71 +193,6 @@ func getResource(val any) (Resource, error) {
 		}, nil
 	}
 	return Resource{}, fmt.Errorf("unsupported type %T", val)
-}
-
-type findResult struct {
-	Resources []Resource
-	Error     error
-}
-
-func listResources(exec commands.Executor, include, exclude []string) ([]Resource, error) {
-	var resources []Resource
-	numTypes := 5
-
-	returnChan := make(chan findResult, numTypes)
-
-	var wg sync.WaitGroup
-	wg.Add(numTypes)
-
-	go func() {
-		defer wg.Done()
-		res, err := findResources(exec, &resolver.CachingNetwork{}, include, exclude)
-		returnChan <- findResult{Resources: res, Error: err}
-	}()
-
-	go func() {
-		defer wg.Done()
-		res, err := findResources(exec, &resolver.CachingNetworkPeering{}, include, exclude)
-		returnChan <- findResult{Resources: res, Error: err}
-	}()
-
-	go func() {
-		defer wg.Done()
-		res, err := findResources(exec, &resolver.CachingRouter{}, include, exclude)
-		returnChan <- findResult{Resources: res, Error: err}
-	}()
-
-	go func() {
-		defer wg.Done()
-		res, err := findResources(exec, &resolver.CachingObjectStorage{}, include, exclude)
-		returnChan <- findResult{Resources: res, Error: err}
-	}()
-
-	go func() {
-		defer wg.Done()
-		res, err := findResources(exec, &resolver.CachingDatabase{}, include, exclude)
-		returnChan <- findResult{Resources: res, Error: err}
-	}()
-
-	wg.Wait()
-	close(returnChan)
-
-	for res := range returnChan {
-		if res.Error != nil {
-			return nil, res.Error
-		}
-		resources = append(resources, res.Resources...)
-	}
-
-	sort.Slice(resources, func(i, j int) bool {
-		if resources[i].Type != resources[j].Type {
-			return resources[i].Type < resources[j].Type
-		}
-
-		return resources[i].Name < resources[j].Name
-	})
-
-	return resources, nil
 }
 
 func deleteResource(exec commands.Executor, resource Resource) (err error) {
