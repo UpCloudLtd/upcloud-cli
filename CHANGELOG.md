@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Kubernetes node-group subcommand not working
+
+### Deprecated
+
+- Deprecated `upctl kubernetes nodegroup` command, use `upctl kubernetes node-group` instead.
 ## [3.17.0] - 2025-03-14
 
 ### Added
