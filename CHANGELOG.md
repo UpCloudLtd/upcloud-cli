@@ -13,11 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Deprecated
 
-- Deprecating command: upctl kubernetes servergroup
+- Deprecating command: upctl kubernetes nodegroup
 
 ### Added
 
-- Added command: upctl kubernetes server-group
+- Added command: upctl kubernetes node-group
 
 ## [3.17.0] - 2025-03-14
 
