@@ -15,6 +15,7 @@ func TestConfig_LoadInvalidYAML(t *testing.T) {
 	tmpFile, err := os.CreateTemp(os.TempDir(), "")
 	require.NoError(t, err)
 	t.Cleanup(func() {
+		assert.NoError(t, tmpFile.Close())
 		assert.NoError(t, os.Remove(tmpFile.Name()))
 	})
 	_, err = tmpFile.WriteString("usernamd:sdkfo\npassword: foo")
@@ -30,6 +31,7 @@ func TestConfig_Load(t *testing.T) {
 	tmpFile, err := os.CreateTemp(os.TempDir(), "")
 	require.NoError(t, err)
 	t.Cleanup(func() {
+		assert.NoError(t, tmpFile.Close())
 		assert.NoError(t, os.Remove(tmpFile.Name()))
 	})
 	_, err = tmpFile.WriteString("username: sdkfo\npassword: foo")
@@ -78,6 +80,7 @@ func TestConfig_LoadKeyring(t *testing.T) {
 	tmpFile, err := os.CreateTemp(os.TempDir(), "")
 	require.NoError(t, err)
 	t.Cleanup(func() {
+		assert.NoError(t, tmpFile.Close())
 		assert.NoError(t, os.Remove(tmpFile.Name()))
 	})
 	_, err = tmpFile.WriteString("username: unittest")
