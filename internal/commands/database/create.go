@@ -81,6 +81,14 @@ func (s *createParams) processParams() error {
 		s.Properties = props
 	}
 
+	if len(s.networks) > 0 {
+		networks, err := processNetworks(s.networks)
+		if err != nil {
+			return fmt.Errorf("invalid networks: %w", err)
+		}
+		s.Networks = networks
+	}
+
 	if s.terminationProtection.IsSet() {
 		terminationProtection := s.terminationProtection.Value()
 		s.TerminationProtection = &terminationProtection
@@ -115,6 +123,39 @@ func processProperties(in []string) (request.ManagedDatabasePropertiesRequest, e
 	return resp, nil
 }
 
+func processNetworks(in []string) ([]upcloud.ManagedDatabaseNetwork, error) {
+	var networks []upcloud.ManagedDatabaseNetwork
+	for _, netStr := range in {
+		network := upcloud.ManagedDatabaseNetwork{}
+		pairs := strings.Split(netStr, ",")
+
+		for _, pair := range pairs {
+			parts := strings.SplitN(pair, "=", 2)
+			if len(parts) != 2 {
+				return nil, fmt.Errorf("invalid network format: %s, expected key=value", pair)
+			}
+
+			key := strings.TrimSpace(parts[0])
+			value := strings.TrimSpace(parts[1])
+
+			switch key {
+			case "family":
+				network.Family = value
+			case "name":
+				network.Name = value
+			case "type":
+				network.Type = value
+			case "uuid":
+				network.UUID = &value
+			default:
+				return nil, fmt.Errorf("unknown network parameter: %s", key)
+			}
+		}
+		networks = append(networks, network)
+	}
+	return networks, nil
+}
+
 // InitCommand implements commands.InitializeCommand
 func (s *createCommand) InitCommand() {
 	flags := &pflag.FlagSet{}
@@ -128,7 +169,7 @@ func (s *createCommand) InitCommand() {
 	flags.StringVar(&s.params.Maintenance.DayOfWeek, "dow", def.Maintenance.DayOfWeek, "Full name of weekday in English, lower case(sunday) for automatic maintenance day of the week. Set randomly if not provided.")
 	flags.StringVar(&s.params.Maintenance.Time, "time", def.Maintenance.Time, "Database time in UTC of automatic maintenance HH:MM:SS. Set randomly if not provided.")
 	flags.StringSliceVar(&s.params.labels, "label", def.labels, "Labels to describe the database in `key=value` format, multiple can be declared.\nUsage: --label env=dev\n\n--label owner=operations")
-	flags.StringSliceVar(&s.params.networks, "network", def.networks, "A network interface for the database, multiple can be declared.\nUsage: --network family=IPv4,type=public\n\n--network type=private,network=037a530b-533e-4cef-b6ad-6af8094bb2bc,ip-address=10.0.0.1")
+	flags.StringArrayVar(&s.params.networks, "network", def.networks, "A network interface for the database, multiple can be declared.\nUsage: --network name=network-name,family=IPv4,type=private,uuid=030e83d2-d413-4d19-b1c9-af05cdb60c1f")
 	config.AddEnableOrDisableFlag(flags, &s.params.terminationProtection, def.terminationProtection.Value(), "termination-protection", "the database from being powered off, or deleted.")
 
 	flags.StringArrayVar(&s.params.properties, "property", nil, "Properties for the database in the format key=value (can be specified multiple times)")
