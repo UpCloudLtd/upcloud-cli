@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add `database create` command.
+- Support server and storage resources in `all list` and `all purge` commands.
+- Add `--stop` flag to `server delete` command.
+- Add `--backups` flag to `storage delete` command.
 
 ### Fixed
 

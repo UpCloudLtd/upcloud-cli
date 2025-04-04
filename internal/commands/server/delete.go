@@ -31,23 +31,31 @@ type deleteCommand struct {
 	resolver.CachingServer
 	completion.StoppedServer
 	deleteStorages config.OptionalBoolean
+	stop           config.OptionalBoolean
 }
 
 // InitCommand implements Command.InitCommand
 func (s *deleteCommand) InitCommand() {
 	flags := &pflag.FlagSet{}
 	config.AddToggleFlag(flags, &s.deleteStorages, "delete-storages", false, "Delete storages that are attached to the server.")
+	config.AddToggleFlag(flags, &s.stop, "stop", false, "Stop the server before deleting it. Equivalent to running `upctl server stop --type hard --wait` before the delete command.")
 	s.AddFlags(flags)
 }
 
-// Execute implements commands.MultipleArgumentCommand
-func (s *deleteCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
+func Delete(exec commands.Executor, uuid string, deleteStorages, stopServer bool) (output.Output, error) {
+	if stopServer {
+		_, err := stop(exec, uuid, "hard", true)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	svc := exec.Server()
 	msg := fmt.Sprintf("Deleting server %v", uuid)
 	exec.PushProgressStarted(msg)
 
 	var err error
-	if s.deleteStorages.Value() {
+	if deleteStorages {
 		exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Deleting server %v and attached storages", uuid))
 		err = svc.DeleteServerAndStorages(exec.Context(), &request.DeleteServerAndStoragesRequest{
 			UUID: uuid,
@@ -64,4 +72,9 @@ func (s *deleteCommand) Execute(exec commands.Executor, uuid string) (output.Out
 	exec.PushProgressSuccess(msg)
 
 	return output.None{}, nil
+}
+
+// Execute implements commands.MultipleArgumentCommand
+func (s *deleteCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
+	return Delete(exec, uuid, s.deleteStorages.Value(), s.stop.Value())
 }
