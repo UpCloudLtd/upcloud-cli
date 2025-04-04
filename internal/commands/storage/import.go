@@ -13,6 +13,7 @@ import (
 	"github.com/UpCloudLtd/progress/messages"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/namedargs"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
@@ -137,26 +138,14 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	// next, figure out if we want to import to an existing storage (and validate it) or create one
 	var storageToImportTo upcloud.Storage
 	if s.existingStorageUUIDOrName != "" {
-		// user specified an existing storage, validate it
-		// initialize resolver
-		// TODO: maybe this resolver business should be rethought? this use case isnt really supported,
-		//       possibly split resolving and caching to separate bits?
-		_, err := s.Resolver.Get(exec.Context(), exec.All())
-		if err != nil {
-			return nil, fmt.Errorf("cannot setup storage resolver: %w", err)
-		}
-		foundUUID, err := s.Resolver.Resolve(s.existingStorageUUIDOrName)
-		if err != nil {
-			return nil, fmt.Errorf("cannot resolve existing storage: %w", err)
-		}
-		cached, err := s.Resolver.GetCached(foundUUID)
+		storage, err := namedargs.GetStorage(exec, s.existingStorageUUIDOrName)
 		if err != nil {
 			return nil, fmt.Errorf("cannot get existing storage: %w", err)
 		}
-		if cached.Size < fileSizeInGB {
+		if storage.Size < fileSizeInGB {
 			return nil, fmt.Errorf("the existing storage is too small for the file")
 		}
-		storageToImportTo = cached
+		storageToImportTo = storage
 	} else {
 		// We need to create a new storage.
 		// Infer created storage size from the file if default size is used
