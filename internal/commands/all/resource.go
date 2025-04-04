@@ -18,6 +18,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/objectstorage"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/router"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/server"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/servergroup"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/storage"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
@@ -33,6 +34,7 @@ const (
 	typeObjectStorage  = "object-storage"
 	typeDatabase       = "database"
 	typeServer         = "server"
+	typeServerGroup    = "server-group"
 	typeStorage        = "storage"
 )
 
@@ -133,7 +135,7 @@ func findResources[T any](exec commands.Executor, wg *sync.WaitGroup, returnChan
 
 func listResources(exec commands.Executor, include, exclude []string) ([]Resource, error) {
 	var resources []Resource
-	returnChan := make(chan findResult, 7)
+	returnChan := make(chan findResult, 8)
 
 	var wg sync.WaitGroup
 
@@ -143,6 +145,7 @@ func listResources(exec commands.Executor, include, exclude []string) ([]Resourc
 	findResources(exec, &wg, returnChan, &resolver.CachingObjectStorage{}, include, exclude)
 	findResources(exec, &wg, returnChan, &resolver.CachingDatabase{}, include, exclude)
 	findResources(exec, &wg, returnChan, &resolver.CachingServer{}, include, exclude)
+	findResources(exec, &wg, returnChan, &resolver.CachingServerGroup{}, include, exclude)
 	findResources(exec, &wg, returnChan, &resolver.CachingStorage{Access: "private"}, include, exclude)
 
 	wg.Wait()
@@ -205,6 +208,12 @@ func getResource(val any) (Resource, error) {
 			UUID:  v.UUID,
 			State: v.State,
 		}, nil
+	case upcloud.ServerGroup:
+		return Resource{
+			Name: v.Title,
+			Type: typeServerGroup,
+			UUID: v.UUID,
+		}, nil
 	case upcloud.Storage:
 		return Resource{
 			Name: v.Title,
@@ -229,6 +238,8 @@ func deleteResource(exec commands.Executor, resource Resource) (err error) {
 		_, err = database.Delete(exec, resource.UUID, true, true)
 	case typeServer:
 		_, err = server.Delete(exec, resource.UUID, resource.State, false, true)
+	case typeServerGroup:
+		_, err = servergroup.Delete(exec, resource.UUID)
 	case typeStorage:
 		_, err = storage.Delete(exec, resource.UUID, "delete")
 	}
