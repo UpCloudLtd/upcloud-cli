@@ -1127,7 +1127,11 @@ func (m *Service) CreateManagedObjectStorage(ctx context.Context, r *request.Cre
 }
 
 func (m *Service) GetManagedObjectStorages(ctx context.Context, r *request.GetManagedObjectStoragesRequest) ([]upcloud.ManagedObjectStorage, error) {
-	return nil, nil
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].([]upcloud.ManagedObjectStorage), args.Error(1)
 }
 
 func (m *Service) GetManagedObjectStorage(ctx context.Context, r *request.GetManagedObjectStorageRequest) (*upcloud.ManagedObjectStorage, error) {

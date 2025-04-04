@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.18.0] - 2025-04-04
 
+### Added
+
+- Experimental support for listing and deleting all resources with `all list` and `all purge` commands. This initial version supports networks, network-peerings, routers, databases, and object-storages.
+- Add `--wait` flag to `object-storage delete` command.
+- Add `--disable-termination-protection` and `--wait` flags to `database delete` command.
+
 ### Fixed
 
 - Kubernetes node-group subcommand not working
