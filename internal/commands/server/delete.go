@@ -9,6 +9,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 
+	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 	"github.com/spf13/pflag"
 )
@@ -42,8 +43,8 @@ func (s *deleteCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
-func Delete(exec commands.Executor, uuid string, deleteStorages, stopServer bool) (output.Output, error) {
-	if stopServer {
+func Delete(exec commands.Executor, uuid, state string, deleteStorages, stopServer bool) (output.Output, error) {
+	if stopServer && state != upcloud.ServerStateStopped {
 		_, err := stop(exec, uuid, "hard", true)
 		if err != nil {
 			return nil, err
@@ -76,5 +77,7 @@ func Delete(exec commands.Executor, uuid string, deleteStorages, stopServer bool
 
 // Execute implements commands.MultipleArgumentCommand
 func (s *deleteCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
-	return Delete(exec, uuid, s.deleteStorages.Value(), s.stop.Value())
+	server, _ := s.GetCached(uuid)
+
+	return Delete(exec, uuid, server.State, s.deleteStorages.Value(), s.stop.Value())
 }

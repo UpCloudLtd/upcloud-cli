@@ -37,9 +37,10 @@ const (
 )
 
 type Resource struct {
-	Name string
-	Type string
-	UUID string
+	Name  string
+	Type  string
+	UUID  string
+	State string
 }
 
 func setAdd(a, b []string) []string {
@@ -199,9 +200,10 @@ func getResource(val any) (Resource, error) {
 		}, nil
 	case upcloud.Server:
 		return Resource{
-			Name: v.Title,
-			Type: typeServer,
-			UUID: v.UUID,
+			Name:  v.Title,
+			Type:  typeServer,
+			UUID:  v.UUID,
+			State: v.State,
 		}, nil
 	case upcloud.Storage:
 		return Resource{
@@ -226,7 +228,7 @@ func deleteResource(exec commands.Executor, resource Resource) (err error) {
 	case typeDatabase:
 		_, err = database.Delete(exec, resource.UUID, true, true)
 	case typeServer:
-		_, err = server.Delete(exec, resource.UUID, false, true)
+		_, err = server.Delete(exec, resource.UUID, resource.State, false, true)
 	case typeStorage:
 		_, err = storage.Delete(exec, resource.UUID, "delete")
 	}
