@@ -36,18 +36,13 @@ func (c *deleteCommand) InitCommand() {
 	commands.SetSubcommandDeprecationHelp(c, []string{"servergroup"})
 }
 
-// Execute implements commands.MultipleArgumentCommand
-func (c *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
-	// Deprecating servergroup in favour of server-group
-	// TODO: Remove this in the future
-	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"servergroup"}, "server-group")
-
+func Delete(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.All()
-	msg := fmt.Sprintf("Deleting server group %v", arg)
+	msg := fmt.Sprintf("Deleting server group %v", uuid)
 	exec.PushProgressStarted(msg)
 
 	err := svc.DeleteServerGroup(exec.Context(), &request.DeleteServerGroupRequest{
-		UUID: arg,
+		UUID: uuid,
 	})
 	if err != nil {
 		return commands.HandleError(exec, msg, err)
@@ -56,4 +51,13 @@ func (c *deleteCommand) Execute(exec commands.Executor, arg string) (output.Outp
 	exec.PushProgressSuccess(msg)
 
 	return output.None{}, nil
+}
+
+// Execute implements commands.MultipleArgumentCommand
+func (c *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
+	// Deprecating servergroup in favour of server-group
+	// TODO: Remove this in the future
+	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"servergroup"}, "server-group")
+
+	return Delete(exec, arg)
 }

@@ -20,6 +20,7 @@ func mockListResponses(mService *smock.Service) {
 	mService.On("GetNetworks").Return(networks, nil)
 	mService.On("GetRouters").Return(&upcloud.Routers{}, nil)
 	mService.On("GetServers").Return(&upcloud.Servers{}, nil)
+	mService.On("GetServerGroups", mock.Anything).Return(nil, nil)
 	mService.On("GetStorages", mock.Anything).Return(&upcloud.Storages{}, nil)
 }
 
