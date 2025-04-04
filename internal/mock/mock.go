@@ -1456,3 +1456,31 @@ func (m *Service) GetPartnerAccounts(ctx context.Context) ([]upcloud.PartnerAcco
 	}
 	return args[0].([]upcloud.PartnerAccount), args.Error(1)
 }
+
+func (m *Service) GetTags(ctx context.Context) (*upcloud.Tags, error) {
+	args := m.Called()
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.Tags), args.Error(1)
+}
+
+func (m *Service) CreateTag(ctx context.Context, r *request.CreateTagRequest) (*upcloud.Tag, error) {
+	return nil, nil
+}
+
+func (m *Service) ModifyTag(ctx context.Context, r *request.ModifyTagRequest) (*upcloud.Tag, error) {
+	return nil, nil
+}
+
+func (m *Service) DeleteTag(ctx context.Context, r *request.DeleteTagRequest) error {
+	return nil
+}
+
+func (m *Service) TagServer(ctx context.Context, r *request.TagServerRequest) (*upcloud.ServerDetails, error) {
+	return nil, nil
+}
+
+func (m *Service) UntagServer(ctx context.Context, r *request.UntagServerRequest) (*upcloud.ServerDetails, error) {
+	return nil, nil
+}

@@ -17,6 +17,9 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/networkpeering"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/objectstorage"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/router"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/server"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/servergroup"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/storage"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 )
@@ -30,12 +33,25 @@ const (
 	typeRouter         = "router"
 	typeObjectStorage  = "object-storage"
 	typeDatabase       = "database"
+	typeServer         = "server"
+	typeServerGroup    = "server-group"
+	typeStorage        = "storage"
+	typeTag            = "tag"
 )
 
 type Resource struct {
-	Name string
-	Type string
-	UUID string
+	Name  string
+	Type  string
+	UUID  string
+	State string
+}
+
+func (r Resource) Key() string {
+	key := r.UUID
+	if key == "" {
+		key = r.Name
+	}
+	return key
 }
 
 func setAdd(a, b []string) []string {
@@ -128,15 +144,19 @@ func findResources[T any](exec commands.Executor, wg *sync.WaitGroup, returnChan
 
 func listResources(exec commands.Executor, include, exclude []string) ([]Resource, error) {
 	var resources []Resource
-	returnChan := make(chan findResult, 5)
+	returnChan := make(chan findResult, 9)
 
 	var wg sync.WaitGroup
 
 	findResources(exec, &wg, returnChan, &resolver.CachingNetwork{}, include, exclude)
 	findResources(exec, &wg, returnChan, &resolver.CachingNetworkPeering{}, include, exclude)
-	findResources(exec, &wg, returnChan, &resolver.CachingRouter{}, include, exclude)
+	findResources(exec, &wg, returnChan, &resolver.CachingRouter{Type: "normal"}, include, exclude)
 	findResources(exec, &wg, returnChan, &resolver.CachingObjectStorage{}, include, exclude)
 	findResources(exec, &wg, returnChan, &resolver.CachingDatabase{}, include, exclude)
+	findResources(exec, &wg, returnChan, &resolver.CachingServer{}, include, exclude)
+	findResources(exec, &wg, returnChan, &resolver.CachingServerGroup{}, include, exclude)
+	findResources(exec, &wg, returnChan, &resolver.CachingStorage{Access: "private"}, include, exclude)
+	findResources(exec, &wg, returnChan, &cachingTag{}, include, exclude)
 
 	wg.Wait()
 	close(returnChan)
@@ -191,6 +211,30 @@ func getResource(val any) (Resource, error) {
 			Type: typeDatabase,
 			UUID: v.UUID,
 		}, nil
+	case upcloud.Server:
+		return Resource{
+			Name:  v.Title,
+			Type:  typeServer,
+			UUID:  v.UUID,
+			State: v.State,
+		}, nil
+	case upcloud.ServerGroup:
+		return Resource{
+			Name: v.Title,
+			Type: typeServerGroup,
+			UUID: v.UUID,
+		}, nil
+	case upcloud.Storage:
+		return Resource{
+			Name: v.Title,
+			Type: typeStorage,
+			UUID: v.UUID,
+		}, nil
+	case upcloud.Tag:
+		return Resource{
+			Name: v.Name,
+			Type: typeTag,
+		}, nil
 	}
 	return Resource{}, fmt.Errorf("unsupported type %T", val)
 }
@@ -207,6 +251,14 @@ func deleteResource(exec commands.Executor, resource Resource) (err error) {
 		_, err = objectstorage.Delete(exec, resource.UUID, true, true, true, true)
 	case typeDatabase:
 		_, err = database.Delete(exec, resource.UUID, true, true)
+	case typeServer:
+		_, err = server.Delete(exec, resource.UUID, resource.State, false, true)
+	case typeServerGroup:
+		_, err = servergroup.Delete(exec, resource.UUID)
+	case typeStorage:
+		_, err = storage.Delete(exec, resource.UUID, "delete")
+	case typeTag:
+		_, err = deleteTag(exec, resource.Name)
 	}
 	return
 }
@@ -245,7 +297,7 @@ func deleteResources(exec commands.Executor, resources []Resource, workerCount i
 			go func(r Resource) {
 				workerID := <-workerQueue
 				exec.PushProgressUpdate(messages.Update{
-					Key:     r.UUID,
+					Key:     r.Key(),
 					Message: fmt.Sprintf("Deleting %s %s", r.Type, r.Name),
 					Status:  messages.MessageStatusStarted,
 				})
@@ -263,7 +315,7 @@ func deleteResources(exec commands.Executor, resources []Resource, workerCount i
 			// Requeue failed deletes after 5 seconds
 			if res.Error != nil {
 				exec.PushProgressUpdate(messages.Update{
-					Key:     res.Resource.UUID,
+					Key:     res.Resource.Key(),
 					Message: fmt.Sprintf("Waiting 5 seconds before retrying to delete %s %s", res.Resource.Type, res.Resource.Name),
 				})
 				go func(r Resource) {
@@ -271,7 +323,7 @@ func deleteResources(exec commands.Executor, resources []Resource, workerCount i
 					deleteQueue <- r
 				}(res.Resource)
 			} else {
-				exec.PushProgressSuccess(res.Resource.UUID)
+				exec.PushProgressSuccess(res.Resource.Key())
 				deleted = append(deleted, res.Resource)
 			}
 

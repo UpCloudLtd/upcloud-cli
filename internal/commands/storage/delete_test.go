@@ -33,10 +33,16 @@ func TestDeleteStorageCommand(t *testing.T) {
 		expected    request.DeleteStorageRequest
 	}{
 		{
-			name:        "Backend called",
+			name:        "delete storage",
 			args:        []string{},
 			methodCalls: 1,
 			expected:    request.DeleteStorageRequest{UUID: Storage2.UUID},
+		},
+		{
+			name:        "delete storage and keep only latest backup",
+			args:        []string{"--backups", "keep_latest"},
+			methodCalls: 1,
+			expected:    request.DeleteStorageRequest{UUID: Storage2.UUID, Backups: request.DeleteStorageBackupsModeKeepLatest},
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {

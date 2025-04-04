@@ -18,7 +18,7 @@ var (
 	s2   = upcloud.Storage{UUID: "bcd", Title: "badada"}
 	s3   = upcloud.Storage{UUID: "cde", Title: "cdasds"}
 	amb1 = upcloud.Storage{UUID: "def", Title: "dadads"}
-	amb2 = upcloud.Storage{UUID: "def", Title: "eadads"}
+	amb2 = upcloud.Storage{UUID: "erh", Title: "eadads"}
 	amb3 = upcloud.Storage{UUID: "ghi", Title: "dadads"}
 )
 

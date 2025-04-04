@@ -1,11 +1,11 @@
 package storage
 
 import (
-	"fmt"
 	"io"
 	"net/url"
 	"os"
 	"runtime"
+	"slices"
 	"strings"
 	"testing"
 
@@ -26,13 +26,6 @@ func TestReaderCounterInterface(_ *testing.T) {
 }
 
 func TestImportCommand(t *testing.T) {
-	tmpFile, err := os.CreateTemp(os.TempDir(), "pre-")
-	if err != nil {
-		fmt.Println("Cannot create temporary file", err)
-	}
-
-	defer os.Remove(tmpFile.Name())
-
 	Storage1 := upcloud.Storage{
 		UUID:   UUID1,
 		Title:  Title1,
@@ -115,6 +108,18 @@ func TestImportCommand(t *testing.T) {
 			},
 		},
 		{
+			name: "use existing storage",
+			args: []string{
+				"--source-location", "http://example.com",
+				"--storage", Storage2.Title,
+			},
+			request: request.CreateStorageImportRequest{
+				StorageUUID:    Storage2.UUID,
+				Source:         upcloud.StorageImportSourceHTTPImport,
+				SourceLocation: "http://example.com",
+			},
+		},
+		{
 			name: "local import, non-existent file",
 			args: []string{
 				//				"--source-type", upcloud.StorageImportSourceDirectUpload,
@@ -133,7 +138,7 @@ func TestImportCommand(t *testing.T) {
 			mService.On("GetStorages", mock.Anything).Return(&upcloud.Storages{Storages: []upcloud.Storage{Storage1, Storage2}}, nil)
 			req := test.request
 			mService.On("CreateStorageImport", &req).Return(&StorageImportCompleted, nil)
-			mService.On("GetStorageImportDetails", &request.GetStorageImportDetailsRequest{UUID: Storage1.UUID}).Return(&StorageImportCompleted, nil)
+			mService.On("GetStorageImportDetails", &request.GetStorageImportDetailsRequest{UUID: req.StorageUUID}).Return(&StorageImportCompleted, nil)
 			mService.On("CreateStorage", mock.Anything).Return(&StorageDetails1, nil)
 
 			c := commands.BuildCommand(ImportCommand(), nil, conf)
@@ -144,9 +149,16 @@ func TestImportCommand(t *testing.T) {
 			if test.error != "" {
 				assert.EqualError(t, err, test.error)
 			} else {
+				assert.NoError(t, err)
+
+				createCount := 1
+				if slices.Contains(test.args, "--storage") {
+					createCount = 0
+				}
+
 				mService.AssertNumberOfCalls(t, "CreateStorageImport", 1)
 				mService.AssertNumberOfCalls(t, "GetStorageImportDetails", 1)
-				mService.AssertNumberOfCalls(t, "CreateStorage", 1)
+				mService.AssertNumberOfCalls(t, "CreateStorage", createCount)
 			}
 		})
 	}

@@ -17,3 +17,18 @@ func Resolve(provider resolver.ResolutionProvider, exec commands.Executor, arg s
 	resolved := resolver(arg)
 	return resolved.GetOnly()
 }
+
+// Resolve initializes given resolution provider, uses it to resolve given argument, and returns the cached resource.
+func Get[T any](provider resolver.CachingResolutionProvider[T], exec commands.Executor, arg string) (T, error) {
+	resolver, err := provider.Get(exec.Context(), exec.All())
+	if err != nil {
+		return *new(T), fmt.Errorf("could not initialize resolver: %w", err)
+	}
+
+	resolved := resolver(arg)
+	uuid, err := resolved.GetOnly()
+	if err != nil {
+		return *new(T), err
+	}
+	return provider.GetCached(uuid)
+}

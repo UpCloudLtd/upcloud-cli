@@ -1,9 +1,12 @@
 package all
 
 import (
+	"fmt"
+
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
+	"github.com/jedib0t/go-pretty/v6/text"
 
 	"github.com/spf13/pflag"
 )
@@ -52,9 +55,21 @@ func (c *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 	return output.Table{
 		Columns: []output.TableColumn{
 			{Key: "type", Header: "Type"},
-			{Key: "uuid", Header: "UUID", Colour: ui.DefaultUUUIDColours},
+			{Key: "uuid", Header: "UUID", Format: formatUUID},
 			{Key: "name", Header: "Name"},
 		},
 		Rows: rows,
 	}, nil
+}
+
+func formatUUID(val interface{}) (text.Colors, string, error) {
+	str, ok := val.(string)
+	if !ok {
+		return nil, "", fmt.Errorf("cannot parse %T, expected string", val)
+	}
+
+	if str == "" {
+		return nil, text.FgHiBlack.Sprint("-"), nil
+	}
+	return ui.DefaultUUUIDColours, str, nil
 }
