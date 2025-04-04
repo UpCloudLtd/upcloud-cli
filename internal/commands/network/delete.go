@@ -33,16 +33,13 @@ func DeleteCommand() commands.Command {
 func (s *deleteCommand) InitCommand() {
 }
 
-// Execute implements commands.MultipleArgumentCommand
-func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
+func Delete(exec commands.Executor, uuid string) (output.Output, error) {
 	svc := exec.Network()
 
-	msg := fmt.Sprintf("Deleting network %v", arg)
+	msg := fmt.Sprintf("Deleting network %s", uuid)
 	exec.PushProgressStarted(msg)
 
-	err := svc.DeleteNetwork(exec.Context(), &request.DeleteNetworkRequest{
-		UUID: arg,
-	})
+	err := svc.DeleteNetwork(exec.Context(), &request.DeleteNetworkRequest{UUID: uuid})
 	if err != nil {
 		return commands.HandleError(exec, msg, err)
 	}
@@ -50,4 +47,9 @@ func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Outp
 	exec.PushProgressSuccess(msg)
 
 	return output.None{}, nil
+}
+
+// Execute implements commands.MultipleArgumentCommand
+func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
+	return Delete(exec, arg)
 }
