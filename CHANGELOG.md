@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.18.0] - 2025-04-04
+
 ### Added
 
 - Experimental support for listing and deleting all resources with `all list` and `all purge` commands. This initial version supports networks, network-peerings, routers, databases, and object-storages.
@@ -541,7 +543,8 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.17.0...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.18.0...HEAD
+[3.17.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.17.0...v3.18.0
 [3.17.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.16.1...v3.17.0
 [3.16.1]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.16.0...v3.16.1
 [3.16.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.15.0...v3.16.0
