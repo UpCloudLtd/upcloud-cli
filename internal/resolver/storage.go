@@ -12,6 +12,8 @@ import (
 // CachingStorage implements resolver for storages, caching the results
 type CachingStorage struct {
 	Cache[upcloud.Storage]
+
+	Access string
 }
 
 // make sure we implement the ResolutionProvider interfaces
@@ -22,7 +24,7 @@ var (
 
 // Get implements ResolutionProvider.Get
 func (s *CachingStorage) Get(ctx context.Context, svc internal.AllServices) (Resolver, error) {
-	storages, err := svc.GetStorages(ctx, &request.GetStoragesRequest{})
+	storages, err := svc.GetStorages(ctx, &request.GetStoragesRequest{Access: s.Access})
 	if err != nil {
 		return nil, err
 	}
