@@ -138,11 +138,11 @@ func listResources(exec commands.Executor, include, exclude []string) ([]Resourc
 
 	findResources(exec, &wg, returnChan, &resolver.CachingNetwork{}, include, exclude)
 	findResources(exec, &wg, returnChan, &resolver.CachingNetworkPeering{}, include, exclude)
-	findResources(exec, &wg, returnChan, &resolver.CachingRouter{}, include, exclude)
+	findResources(exec, &wg, returnChan, &resolver.CachingRouter{Type: "normal"}, include, exclude)
 	findResources(exec, &wg, returnChan, &resolver.CachingObjectStorage{}, include, exclude)
 	findResources(exec, &wg, returnChan, &resolver.CachingDatabase{}, include, exclude)
 	findResources(exec, &wg, returnChan, &resolver.CachingServer{}, include, exclude)
-	findResources(exec, &wg, returnChan, &resolver.CachingStorage{}, include, exclude)
+	findResources(exec, &wg, returnChan, &resolver.CachingStorage{Access: "private"}, include, exclude)
 
 	wg.Wait()
 	close(returnChan)
