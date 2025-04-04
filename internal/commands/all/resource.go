@@ -46,6 +46,14 @@ type Resource struct {
 	State string
 }
 
+func (r Resource) Key() string {
+	key := r.UUID
+	if key == "" {
+		key = r.Name
+	}
+	return key
+}
+
 func setAdd(a, b []string) []string {
 	for _, i := range b {
 		if !slices.Contains(a, i) {
@@ -225,7 +233,6 @@ func getResource(val any) (Resource, error) {
 	case upcloud.Tag:
 		return Resource{
 			Name: v.Name,
-			UUID: v.Name,
 			Type: typeTag,
 		}, nil
 	}
@@ -290,7 +297,7 @@ func deleteResources(exec commands.Executor, resources []Resource, workerCount i
 			go func(r Resource) {
 				workerID := <-workerQueue
 				exec.PushProgressUpdate(messages.Update{
-					Key:     r.UUID,
+					Key:     r.Key(),
 					Message: fmt.Sprintf("Deleting %s %s", r.Type, r.Name),
 					Status:  messages.MessageStatusStarted,
 				})
@@ -308,7 +315,7 @@ func deleteResources(exec commands.Executor, resources []Resource, workerCount i
 			// Requeue failed deletes after 5 seconds
 			if res.Error != nil {
 				exec.PushProgressUpdate(messages.Update{
-					Key:     res.Resource.UUID,
+					Key:     res.Resource.Key(),
 					Message: fmt.Sprintf("Waiting 5 seconds before retrying to delete %s %s", res.Resource.Type, res.Resource.Name),
 				})
 				go func(r Resource) {
@@ -316,7 +323,7 @@ func deleteResources(exec commands.Executor, resources []Resource, workerCount i
 					deleteQueue <- r
 				}(res.Resource)
 			} else {
-				exec.PushProgressSuccess(res.Resource.UUID)
+				exec.PushProgressSuccess(res.Resource.Key())
 				deleted = append(deleted, res.Resource)
 			}
 
