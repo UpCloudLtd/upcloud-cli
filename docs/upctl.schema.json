@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "upctl configuration schema",
+  "description": "upctl is a command line client for UpCloud services.\nThe upctl.yaml file can be used to configure it.\nhttps://upcloudltd.github.io/upcloud-cli/",
+  "properties": {
+    "token": {
+      "type": "string",
+      "description": "Authentication token\nhttps://upcloudltd.github.io/upcloud-cli/#configure-credentials"
+    },
+    "username": {
+      "type": "string",
+      "description": "Authentication username\nhttps://upcloudltd.github.io/upcloud-cli/#configure-credentials"
+    },
+    "password": {
+      "type": "string",
+      "description": "Authentication password\nhttps://upcloudltd.github.io/upcloud-cli/#configure-credentials"
+    },
+    "client-timeout": {
+      "type": "string",
+      "description": "Client timeout duration\nhttps://pkg.go.dev/time#ParseDuration",
+      "pattern": "^([0-9]+(h|m|[muµn]?s)?)+$"
+    },
+    "output": {
+      "type": "string",
+      "description": "Output format",
+      "enum": [
+        "human",
+        "yaml",
+        "json"
+      ],
+      "default": "human"
+    }
+  },
+  "additionalProperties": false
+}
