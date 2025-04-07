@@ -28,7 +28,7 @@ func TestCreateCommand(t *testing.T) {
 			args: []string{
 				"--title=db-test",
 				"--zone=fi-hel1",
-				"--host-name-prefix=testdb",
+				"--hostname-prefix=testdb",
 			},
 			createDatabaseReq: request.CreateManagedDatabaseRequest{
 				Title:          "db-test",
@@ -43,7 +43,7 @@ func TestCreateCommand(t *testing.T) {
 			args: []string{
 				"--title=full-test",
 				"--zone=fi-hel1",
-				"--host-name-prefix=fulldb",
+				"--hostname-prefix=fulldb",
 				"--plan=4x4xCPU-8GB-200GB",
 				"--type=pg",
 				"--label=env=test,app=database",
@@ -64,7 +64,7 @@ func TestCreateCommand(t *testing.T) {
 			args: []string{
 				"--title=full-test",
 				"--zone=fi-hel1",
-				"--host-name-prefix=fulldb",
+				"--hostname-prefix=fulldb",
 				"--plan=4x4xCPU-8GB-200GB",
 				"--type=opensearch",
 				"--property=saml={\"enabled\":true}", // without quotes
@@ -91,7 +91,7 @@ func TestCreateCommand(t *testing.T) {
 			args: []string{
 				"--title=mysql-test",
 				"--zone=fi-hel1",
-				"--host-name-prefix=mysqldb",
+				"--hostname-prefix=mysqldb",
 			},
 			createDatabaseReq: request.CreateManagedDatabaseRequest{
 				Title:          "mysql-test",
@@ -106,7 +106,7 @@ func TestCreateCommand(t *testing.T) {
 			args: []string{
 				"--title=mysql-test",
 				"--zone=fi-hel1",
-				"--host-name-prefix=mysqldb",
+				"--hostname-prefix=mysqldb",
 				"--maintenance-dow=monday",
 				"--maintenance-time=02:00",
 			},
@@ -126,7 +126,7 @@ func TestCreateCommand(t *testing.T) {
 			name: "missing required title parameter",
 			args: []string{
 				"--zone=fi-hel1",
-				"--host-name-prefix=testdb",
+				"--hostname-prefix=testdb",
 			},
 			error: "required flag(s) \"title\" not set",
 		},
@@ -134,17 +134,17 @@ func TestCreateCommand(t *testing.T) {
 			name: "missing required zone parameter",
 			args: []string{
 				"--title=db-test",
-				"--host-name-prefix=testdb",
+				"--hostname-prefix=testdb",
 			},
 			error: "required flag(s) \"zone\" not set",
 		},
 		{
-			name: "missing required host-name-prefix parameter",
+			name: "missing required hostname-prefix parameter",
 			args: []string{
 				"--title=db-test",
 				"--zone=fi-hel1",
 			},
-			error: "required flag(s) \"host-name-prefix\" not set",
+			error: "required flag(s) \"hostname-prefix\" not set",
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {

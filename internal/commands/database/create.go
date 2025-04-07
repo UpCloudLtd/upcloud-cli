@@ -31,12 +31,12 @@ func CreateCommand() commands.Command {
 			`upctl database create \
 				--title=mydb \ 
 				--zone=fi-hel1 \
-				--host-name-prefix=mydb`,
+				--hostname-prefix=mydb`,
 			`upctl database create \
 				--title=mydb \ 
 				--zone=fi-hel1 \
 				--type=pg \
-				--host-name-prefix=mydb \
+				--hostname-prefix=mydb \
 				--termination-protection \
 				--label env=dev \
 				--property max_connections=200`,
@@ -161,7 +161,7 @@ func (s *createCommand) InitCommand() {
 	flags := &pflag.FlagSet{}
 	s.params = createParams{CreateManagedDatabaseRequest: request.CreateManagedDatabaseRequest{}}
 	def := defaultCreateParams
-	flags.StringVar(&s.params.HostNamePrefix, "host-name-prefix", def.HostNamePrefix, "A host name prefix for the database")
+	flags.StringVar(&s.params.HostNamePrefix, "hostname-prefix", def.HostNamePrefix, "A host name prefix for the database")
 	flags.StringVar(&s.params.Title, "title", def.Title, "A short, informational description.")
 	flags.StringVar(&s.params.Plan, "plan", def.Plan, "Plan to use for the database. Run `upctl database plans [database type]` to list all available plans.")
 	flags.StringVar(&s.params.Zone, "zone", def.Zone, namedargs.ZoneDescription("database"))
@@ -179,7 +179,7 @@ func (s *createCommand) InitCommand() {
 
 	commands.Must(s.Cobra().MarkFlagRequired("title"))
 	commands.Must(s.Cobra().MarkFlagRequired("zone"))
-	commands.Must(s.Cobra().MarkFlagRequired("host-name-prefix"))
+	commands.Must(s.Cobra().MarkFlagRequired("hostname-prefix"))
 }
 
 func (s *createCommand) InitCommandWithConfig(cfg *config.Config) {
