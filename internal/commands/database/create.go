@@ -170,9 +170,9 @@ func (s *createCommand) InitCommand() {
 	flags.StringVar(&s.params.Maintenance.Time, "maintenance-time", def.Maintenance.Time, "Database time in UTC of automatic maintenance HH:MM:SS. Set randomly if not provided.")
 	flags.StringSliceVar(&s.params.labels, "label", def.labels, "Labels to describe the database in `key=value` format, multiple can be declared.\nUsage: --label env=dev\n\n--label owner=operations")
 	flags.StringArrayVar(&s.params.networks, "network", def.networks, "A network interface for the database, multiple can be declared.\nUsage: --network name=network-name,family=IPv4,type=private,uuid=030e83d2-d413-4d19-b1c9-af05cdb60c1f")
-	config.AddEnableOrDisableFlag(flags, &s.params.terminationProtection, def.terminationProtection.Value(), "termination-protection", "the database from being powered off, or deleted.")
+	config.AddEnableOrDisableFlag(flags, &s.params.terminationProtection, def.terminationProtection.Value(), "termination-protection", "termination protection to prevent the database instance from being powered off or deleted")
 
-	flags.StringArrayVar(&s.params.properties, "property", nil, "Properties for the database in the format key=value (can be specified multiple times)")
+	flags.StringArrayVar(&s.params.properties, "property", nil, "Properties for the database in `key=value` format. Can be specified multiple times.")
 	config.AddToggleFlag(flags, &s.wait, "wait", false, "Wait for database to be in running state before returning.")
 
 	s.AddFlags(flags)
