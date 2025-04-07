@@ -28,3 +28,11 @@ var _ error = NotFoundError("")
 func (s NotFoundError) Error() string {
 	return fmt.Sprintf("nothing found matching '%v'", string(s))
 }
+
+type CacheUninitializedError string
+
+var _ error = CacheUninitializedError("")
+
+func (s CacheUninitializedError) Error() string {
+	return fmt.Sprintf("resolver cache for %s has not been initialized", string(s))
+}

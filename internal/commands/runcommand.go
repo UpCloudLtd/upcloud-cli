@@ -139,7 +139,7 @@ func execute(command Command, executor Executor, args []string, mode resolveMode
 		argQueue = []resolvedArgument{{}}
 	}
 
-	outputs := make([]output.Output, 0, len(args))
+	outputs := make([]output.Output, 0, len(resolvedArgs))
 	executor.Debug("starting work", "workers", workerCount)
 	for {
 		select {
