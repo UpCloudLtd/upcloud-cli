@@ -9,9 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Support server, server-group, storage, and tag resources in `all list` and `all purge` commands.
+- Support kubernetes, server, server-group, storage, and tag resources in `all list` and `all purge` commands.
 - Add `--stop` flag to `server delete` command.
 - Add `--backups` flag to `storage delete` command.
+- Add `--wait` flag to `kubernetes delete` command.
 
 ## [3.18.0] - 2025-04-04
 

@@ -23,6 +23,7 @@ func mockListResponses(mService *smock.Service) {
 	mService.On("GetServerGroups", mock.Anything).Return(nil, nil)
 	mService.On("GetStorages", mock.Anything).Return(&upcloud.Storages{}, nil)
 	mService.On("GetTags").Return(&upcloud.Tags{}, nil)
+	mService.On("GetKubernetesClusters", mock.Anything).Return(nil, nil)
 }
 
 var networks = &upcloud.Networks{Networks: []upcloud.Network{
