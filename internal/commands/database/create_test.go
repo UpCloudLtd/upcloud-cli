@@ -13,21 +13,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var (
-	Title1             = "mock-storage-title1"
-	Title2             = "mock-storage-title2"
-	UUID1              = "0127dfd6-3884-4079-a948-3a8881df1a7a"
-	UUID3              = "012c61a6-b8f0-48c2-a63a-b4bf7d26a655"
-	PrivateNetworkUUID = "03b5b0a0-ad4c-4817-9632-dafdb3ace5d9"
-	MockPrivateIPv4    = "10.0.0.1"
-	MockPrivateIPv6    = "fd42:42::1"
-	MockPublicIPv4     = "192.0.2.0"
-	MockPublicIPv6     = "2001:DB8::1"
-)
-
 func TestCreateCommand(t *testing.T) {
 	databaseDetailsMaint := upcloud.ManagedDatabase{
-		UUID: UUID1,
+		UUID: "0927dfd6-3884-4079-a948-3a8881df1a7a",
 	}
 	for _, test := range []struct {
 		name              string
@@ -111,6 +99,27 @@ func TestCreateCommand(t *testing.T) {
 				HostNamePrefix: "mysqldb",
 				Plan:           "2x2xCPU-4GB-100GB",
 				Type:           upcloud.ManagedDatabaseServiceTypeMySQL,
+			},
+		},
+		{
+			name: "maintenance-dow and maintenance-time",
+			args: []string{
+				"--title=mysql-test",
+				"--zone=fi-hel1",
+				"--host-name-prefix=mysqldb",
+				"--maintenance-dow=monday",
+				"--maintenance-time=02:00",
+			},
+			createDatabaseReq: request.CreateManagedDatabaseRequest{
+				Title:          "mysql-test",
+				Zone:           "fi-hel1",
+				HostNamePrefix: "mysqldb",
+				Plan:           "2x2xCPU-4GB-100GB",
+				Type:           upcloud.ManagedDatabaseServiceTypeMySQL,
+				Maintenance: request.ManagedDatabaseMaintenanceTimeRequest{
+					DayOfWeek: "monday",
+					Time:      "02:00",
+				},
 			},
 		},
 		{
