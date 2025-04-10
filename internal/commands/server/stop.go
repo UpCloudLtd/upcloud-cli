@@ -45,25 +45,29 @@ func (s *stopCommand) InitCommand() {
 	s.AddFlags(flags)
 }
 
-// Execute implements commands.MultipleArgumentCommand
-func (s *stopCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
+func stop(exec commands.Executor, uuid, stopType string, wait bool) (output.Output, error) {
 	svc := exec.Server()
 	msg := fmt.Sprintf("Stopping server %v", uuid)
 	exec.PushProgressStarted(msg)
 
 	res, err := svc.StopServer(exec.Context(), &request.StopServerRequest{
 		UUID:     uuid,
-		StopType: s.StopType,
+		StopType: stopType,
 	})
 	if err != nil {
 		return commands.HandleError(exec, msg, err)
 	}
 
-	if s.wait.Value() {
+	if wait {
 		waitForServerState(uuid, upcloud.ServerStateStopped, exec, msg)
 	} else {
 		exec.PushProgressSuccess(msg)
 	}
 
 	return output.OnlyMarshaled{Value: res}, nil
+}
+
+// Execute implements commands.MultipleArgumentCommand
+func (s *stopCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
+	return stop(exec, uuid, s.StopType, s.wait.Value())
 }

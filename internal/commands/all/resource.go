@@ -13,10 +13,14 @@ import (
 	"github.com/UpCloudLtd/progress/messages"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/database"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/kubernetes"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/network"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/networkpeering"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/objectstorage"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/router"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/server"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/servergroup"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/storage"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 )
@@ -25,17 +29,31 @@ const (
 	includeHelp = "Include resources matching the given name. If defined multiple times, resource is included if it matches any of the given names. `*` matches all resources."
 	excludeHelp = "Exclude resources matching the given name. If defined multiple times, resource is included if it matches any of the given names."
 
+	typeKubernetes     = "kubernetes-cluster"
 	typeNetwork        = "network"
 	typeNetworkPeering = "network-peering"
 	typeRouter         = "router"
 	typeObjectStorage  = "object-storage"
 	typeDatabase       = "database"
+	typeServer         = "server"
+	typeServerGroup    = "server-group"
+	typeStorage        = "storage"
+	typeTag            = "tag"
 )
 
 type Resource struct {
-	Name string
-	Type string
-	UUID string
+	Name  string
+	Type  string
+	UUID  string
+	State string
+}
+
+func (r Resource) Key() string {
+	key := r.UUID
+	if key == "" {
+		key = r.Name
+	}
+	return key
 }
 
 func setAdd(a, b []string) []string {
@@ -128,15 +146,20 @@ func findResources[T any](exec commands.Executor, wg *sync.WaitGroup, returnChan
 
 func listResources(exec commands.Executor, include, exclude []string) ([]Resource, error) {
 	var resources []Resource
-	returnChan := make(chan findResult, 5)
+	returnChan := make(chan findResult, 10)
 
 	var wg sync.WaitGroup
 
+	findResources(exec, &wg, returnChan, &resolver.CachingKubernetes{}, include, exclude)
 	findResources(exec, &wg, returnChan, &resolver.CachingNetwork{}, include, exclude)
 	findResources(exec, &wg, returnChan, &resolver.CachingNetworkPeering{}, include, exclude)
-	findResources(exec, &wg, returnChan, &resolver.CachingRouter{}, include, exclude)
+	findResources(exec, &wg, returnChan, &resolver.CachingRouter{Type: "normal"}, include, exclude)
 	findResources(exec, &wg, returnChan, &resolver.CachingObjectStorage{}, include, exclude)
 	findResources(exec, &wg, returnChan, &resolver.CachingDatabase{}, include, exclude)
+	findResources(exec, &wg, returnChan, &resolver.CachingServer{}, include, exclude)
+	findResources(exec, &wg, returnChan, &resolver.CachingServerGroup{}, include, exclude)
+	findResources(exec, &wg, returnChan, &resolver.CachingStorage{Access: "private"}, include, exclude)
+	findResources(exec, &wg, returnChan, &cachingTag{}, include, exclude)
 
 	wg.Wait()
 	close(returnChan)
@@ -161,6 +184,12 @@ func listResources(exec commands.Executor, include, exclude []string) ([]Resourc
 
 func getResource(val any) (Resource, error) {
 	switch v := val.(type) {
+	case upcloud.KubernetesCluster:
+		return Resource{
+			Name: v.Name,
+			Type: typeKubernetes,
+			UUID: v.UUID,
+		}, nil
 	case upcloud.Network:
 		return Resource{
 			Name: v.Name,
@@ -191,12 +220,38 @@ func getResource(val any) (Resource, error) {
 			Type: typeDatabase,
 			UUID: v.UUID,
 		}, nil
+	case upcloud.Server:
+		return Resource{
+			Name:  v.Title,
+			Type:  typeServer,
+			UUID:  v.UUID,
+			State: v.State,
+		}, nil
+	case upcloud.ServerGroup:
+		return Resource{
+			Name: v.Title,
+			Type: typeServerGroup,
+			UUID: v.UUID,
+		}, nil
+	case upcloud.Storage:
+		return Resource{
+			Name: v.Title,
+			Type: typeStorage,
+			UUID: v.UUID,
+		}, nil
+	case upcloud.Tag:
+		return Resource{
+			Name: v.Name,
+			Type: typeTag,
+		}, nil
 	}
 	return Resource{}, fmt.Errorf("unsupported type %T", val)
 }
 
 func deleteResource(exec commands.Executor, resource Resource) (err error) {
 	switch resource.Type {
+	case typeKubernetes:
+		_, err = kubernetes.Delete(exec, resource.UUID, true)
 	case typeNetwork:
 		_, err = network.Delete(exec, resource.UUID)
 	case typeNetworkPeering:
@@ -207,6 +262,14 @@ func deleteResource(exec commands.Executor, resource Resource) (err error) {
 		_, err = objectstorage.Delete(exec, resource.UUID, true, true, true, true)
 	case typeDatabase:
 		_, err = database.Delete(exec, resource.UUID, true, true)
+	case typeServer:
+		_, err = server.Delete(exec, resource.UUID, resource.State, false, true)
+	case typeServerGroup:
+		_, err = servergroup.Delete(exec, resource.UUID)
+	case typeStorage:
+		_, err = storage.Delete(exec, resource.UUID, "delete")
+	case typeTag:
+		_, err = deleteTag(exec, resource.Name)
 	}
 	return
 }
@@ -245,7 +308,7 @@ func deleteResources(exec commands.Executor, resources []Resource, workerCount i
 			go func(r Resource) {
 				workerID := <-workerQueue
 				exec.PushProgressUpdate(messages.Update{
-					Key:     r.UUID,
+					Key:     r.Key(),
 					Message: fmt.Sprintf("Deleting %s %s", r.Type, r.Name),
 					Status:  messages.MessageStatusStarted,
 				})
@@ -263,7 +326,7 @@ func deleteResources(exec commands.Executor, resources []Resource, workerCount i
 			// Requeue failed deletes after 5 seconds
 			if res.Error != nil {
 				exec.PushProgressUpdate(messages.Update{
-					Key:     res.Resource.UUID,
+					Key:     res.Resource.Key(),
 					Message: fmt.Sprintf("Waiting 5 seconds before retrying to delete %s %s", res.Resource.Type, res.Resource.Name),
 				})
 				go func(r Resource) {
@@ -271,7 +334,7 @@ func deleteResources(exec commands.Executor, resources []Resource, workerCount i
 					deleteQueue <- r
 				}(res.Resource)
 			} else {
-				exec.PushProgressSuccess(res.Resource.UUID)
+				exec.PushProgressSuccess(res.Resource.Key())
 				deleted = append(deleted, res.Resource)
 			}
 

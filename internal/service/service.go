@@ -24,4 +24,5 @@ type AllServices interface {
 	service.Host
 	service.Partner
 	service.Token
+	service.Tag
 }
