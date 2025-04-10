@@ -39,7 +39,7 @@ type deleteCommand struct {
 func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	// Deprecating uks
 	// TODO: Remove this in the future
-	commands.SetSubcommandExecutionDeprecationMessage(s, []string{"k8s"}, "uks")
+	commands.SetSubcommandExecutionDeprecationMessage(s, []string{"uks"}, "k8s")
 
 	svc := exec.All()
 	msg := fmt.Sprintf("Deleting Kubernetes cluster %v", arg)

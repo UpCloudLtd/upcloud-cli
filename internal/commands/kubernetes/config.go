@@ -56,7 +56,7 @@ func (c *configCommand) InitCommand() {
 func (c *configCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	// Deprecating uks
 	// TODO: Remove this in the future
-	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"k8s"}, "uks")
+	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"uks"}, "k8s")
 
 	svc := exec.All()
 
