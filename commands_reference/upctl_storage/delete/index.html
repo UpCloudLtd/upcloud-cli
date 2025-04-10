@@ -5310,7 +5310,7 @@
 <h2 id="examples">Examples</h2>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>upctl storage delete 01ac5319-08ac-4e7b-81e5-3140d2bbd7d8
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>upctl storage delete 0175bb34-8aed-47ce-9290-10cc45f78601 01fcb78f-e73d-4e4d-af5a-0bd6cdba4306
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>upctl storage delete &quot;My Storage&quot;
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>upctl storage delete &quot;My Storage&quot; --backups keep_latest
 </span></code></pre></div>
 <h2 id="options">Options</h2>
 <table>
@@ -5321,6 +5321,10 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td><code>--backups</code></td>
+<td>Controls what to do with backups related to the storage. Valid values are <code>keep</code>, <code>keep_latest</code> and <code>delete</code>.</td>
+</tr>
 <tr>
 <td><code>--help</code>, <code>-h</code></td>
 <td>help for delete<br/>Default: <code>false</code></td>
