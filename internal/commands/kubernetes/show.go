@@ -40,7 +40,7 @@ func (s *showCommand) InitCommand() {
 func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	// Deprecating uks
 	// TODO: Remove this in the future
-	commands.SetSubcommandExecutionDeprecationMessage(s, []string{"k8s"}, "uks")
+	commands.SetSubcommandExecutionDeprecationMessage(s, []string{"uks"}, "k8s")
 
 	svc := exec.All()
 	cluster, err := svc.GetKubernetesCluster(exec.Context(), &request.GetKubernetesClusterRequest{UUID: uuid})

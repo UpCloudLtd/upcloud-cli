@@ -62,7 +62,7 @@ func (c *modifyCommand) InitCommand() {
 func (c *modifyCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	// Deprecating uks
 	// TODO: Remove this in the future
-	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"k8s"}, "uks")
+	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"uks"}, "k8s")
 
 	msg := fmt.Sprintf("Modifying Kubernetes cluster %v", arg)
 	exec.PushProgressStarted(msg)

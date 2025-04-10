@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add `database create` command.
 
+### Fixed
+
+- When running kubernetes commands, show deprecation message when using `uks` alias. The deprecation message is currently displayed when using `k8s` alias, which will not be removed.
+
 ## [3.18.0] - 2025-04-04
 
 ### Added

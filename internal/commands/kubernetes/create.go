@@ -168,7 +168,7 @@ func (c *createCommand) InitCommandWithConfig(cfg *config.Config) {
 func (c *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	// Deprecating uks
 	// TODO: Remove this in the future
-	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"k8s"}, "uks")
+	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"uks"}, "k8s")
 
 	svc := exec.All()
 

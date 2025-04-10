@@ -27,7 +27,7 @@ func (s *plansCommand) InitCommand() {
 func (s *plansCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	// Deprecating uks
 	// TODO: Remove this in the future
-	commands.SetSubcommandExecutionDeprecationMessage(s, []string{"k8s"}, "uks")
+	commands.SetSubcommandExecutionDeprecationMessage(s, []string{"uks"}, "k8s")
 
 	svc := exec.All()
 	plans, err := svc.GetKubernetesPlans(exec.Context(), &request.GetKubernetesPlansRequest{})

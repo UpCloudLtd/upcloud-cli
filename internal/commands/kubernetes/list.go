@@ -30,7 +30,7 @@ func (s *listCommand) InitCommand() {
 func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	// Deprecating uks
 	// TODO: Remove this in the future
-	commands.SetSubcommandExecutionDeprecationMessage(s, []string{"k8s"}, "uks")
+	commands.SetSubcommandExecutionDeprecationMessage(s, []string{"uks"}, "k8s")
 
 	svc := exec.All()
 	clusters, err := svc.GetKubernetesClusters(exec.Context(), &request.GetKubernetesClustersRequest{})
