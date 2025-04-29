@@ -125,7 +125,10 @@ func (s *Config) Load() error {
 	settings := v.AllSettings()
 	// sanitize password before logging settings
 	if _, ok := settings["password"]; ok {
-		settings["password"] = "..."
+		settings["password"] = "[REDACTED]"
+	}
+	if _, ok := settings["token"]; ok {
+		settings["token"] = "[REDACTED]"
 	}
 	logger.Debug("viper initialized", "settings", settings)
 
