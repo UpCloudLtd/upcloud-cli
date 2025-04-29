@@ -117,7 +117,9 @@ func execute(command Command, executor Executor, args []string, mode resolveMode
 	if err != nil {
 		// If authentication failed, return helpful message instead of the raw error.
 		if clierrors.CheckAuthenticationFailed(err) {
-			return nil, clierrors.InvalidCredentialsError{}
+			outputError("", clierrors.InvalidCredentialsError{}, executor)
+			executor.StopProgressLog()
+			return []output.Output{output.Error{Value: err}}, nil
 		}
 		return nil, fmt.Errorf("cannot resolve command line arguments: %w", err)
 	}
