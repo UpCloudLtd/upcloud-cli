@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.19.1] - 2025-04-29
+
 ### Fixed
 
 - Redact token from debug logs.
@@ -561,7 +563,8 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.19.0...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.19.1...HEAD
+[3.19.1]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.19.0...v3.19.1
 [3.19.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.18.0...v3.19.0
 [3.18.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.17.0...v3.18.0
 [3.17.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.16.1...v3.17.0
