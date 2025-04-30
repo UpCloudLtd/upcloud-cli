@@ -109,6 +109,10 @@ After installing `upctl`, you can run `upctl version` command to verify that the
 upctl version
 ```
 
+### SBOMs
+
+[SPDX SBOM](https://spdx.dev/use/specifications/) documents (`*.spdx.json`) are available alongside release archives.
+
 ### Verify assets
 
 [GitHub artifact attestations](https://docs.github.com/en/actions/security-for-github-actions/using-artifact-attestations)
