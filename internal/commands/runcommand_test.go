@@ -188,6 +188,7 @@ func TestRunCommand(t *testing.T) {
 				test.command.(*mockMulti).On("Execute", mock.Anything, mock.Anything).Return(output.OnlyMarshaled{Value: "mock"}, nil)
 			}
 			mService := &smock.Service{}
+			mService.On("GetAccount").Return(nil, nil)
 			cfg := config.New()
 			cfg.Viper().Set(config.KeyOutput, config.ValueOutputJSON)
 			// capture stdout
@@ -229,13 +230,15 @@ func TestRunCommand(t *testing.T) {
 }
 
 func TestExecute_Offline(t *testing.T) {
+	mService := &smock.Service{}
+	mService.On("GetAccount").Return(nil, nil)
 	cmd := &mockNone{Command: &cobra.Command{}}
 	cmd.On("ExecuteWithoutArguments", mock.Anything).Return(output.OnlyMarshaled{Value: "mock"}, nil)
 
 	cfg := config.New()
 	cfg.Viper().Set(config.KeyOutput, config.ValueOutputJSON)
 
-	err := commandRunE(cmd, nil, cfg, []string{})
+	err := commandRunE(cmd, mService, cfg, []string{})
 	assert.NoError(t, err)
 }
 

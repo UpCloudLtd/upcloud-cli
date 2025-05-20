@@ -80,7 +80,14 @@ const (
 
 func resolveArguments(nc Command, exec Executor, args []string, mode resolveMode) (out []resolvedArgument, err error) {
 	if mode == resolveNone {
-		return nil, nil
+		acc := exec.Account()
+		if acc == nil {
+			// we don't have account service, nothing to validate
+			return nil, nil
+		}
+		// we only care about error here to report back any issue with auth
+		_, err := acc.GetAccount(exec.Context())
+		return nil, err
 	}
 
 	if resolve, ok := nc.(resolver.ResolutionProvider); ok {
