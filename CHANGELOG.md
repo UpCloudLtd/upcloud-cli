@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Set exit code to 103 if authentication fails also in commands that do not take arguments (e.g. `server list`).
+
 ## [3.19.1] - 2025-04-29
 
 ### Fixed
