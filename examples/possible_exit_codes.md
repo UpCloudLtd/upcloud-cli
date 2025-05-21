@@ -39,8 +39,21 @@ If we now try to run above command again, exit code will be two as both of the s
 upctl server stop --type hard ${prefix}vm-1 ${prefix}vm-2 --wait
 ```
 
-Finally, we can cleanup the created resources.
+Let's cleanup the created resources while we have working credentials.
 
 ```sh
 upctl server delete ${prefix}vm-1 ${prefix}vm-2 --delete-storages
+```
+
+To test validation of credentials, we configure `UPCLOUD_TOKEN` environment variable with invalid value.
+
+```env
+UPCLOUD_TOKEN=invalid
+```
+
+When authentication fails, upctl sets exit code to 103.
+
+```sh exit_code=103
+upctl server list
+# Error: invalid user credentials, authentication failed using the given username and password
 ```
