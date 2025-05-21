@@ -5237,8 +5237,15 @@
 <p>If we now try to run above command again, exit code will be two as both of the servers are already stopped. Thus both stop operations failed.</p>
 <div class="language-sh highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>upctl<span class="w"> </span>server<span class="w"> </span>stop<span class="w"> </span>--type<span class="w"> </span>hard<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>vm-1<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>vm-2<span class="w"> </span>--wait
 </span></code></pre></div>
-<p>Finally, we can cleanup the created resources.</p>
+<p>Let's cleanup the created resources while we have working credentials.</p>
 <div class="language-sh highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>upctl<span class="w"> </span>server<span class="w"> </span>delete<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>vm-1<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>vm-2<span class="w"> </span>--delete-storages
+</span></code></pre></div>
+<p>To test validation of credentials, we configure <code>UPCLOUD_TOKEN</code> environment variable with invalid value.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>UPCLOUD_TOKEN=invalid
+</span></code></pre></div>
+<p>When authentication fails, upctl sets exit code to 103.</p>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>upctl<span class="w"> </span>server<span class="w"> </span>list
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="c1"># Error: invalid user credentials, authentication failed using the given username and password</span>
 </span></code></pre></div>
 
 
