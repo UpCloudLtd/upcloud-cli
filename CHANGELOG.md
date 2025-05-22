@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Support load-balancer resources in `all list` and `all purge` commands.
+- Add `--wait` flag to `load-balancer delete` command.
+
 ### Fixed
 
 - Set exit code to 103 if authentication fails also in commands that do not take arguments (e.g. `server list`).
