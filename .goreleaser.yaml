@@ -172,6 +172,10 @@ dockers:
       - "--label=org.opencontainers.image.version={{.Version}}"
       - "--label=org.opencontainers.image.source=https://github.com/UpCloudLtd/upcloud-cli.git"
 
+sboms:
+  - documents:
+      - ${artifact}.spdx.json
+
 release:
   # Repo in which the release will be created.
   # Default is extracted from the origin remote URL or empty if its private hosted.
