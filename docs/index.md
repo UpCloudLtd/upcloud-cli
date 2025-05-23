@@ -74,6 +74,8 @@ using a package manager, Docker image, or from sources with `go install`:
     go install github.com/UpCloudLtd/upcloud-cli/v3/...@latest
     ```
 
+    Make sure to have recent enough Go installed (see `go.mod` in the source tree for the constraints).
+
 === "Docker"
 
     Pull the latest build from GHCR by running:
