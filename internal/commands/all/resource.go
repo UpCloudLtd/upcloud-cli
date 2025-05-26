@@ -14,6 +14,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/database"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/kubernetes"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/loadbalancer"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/network"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/networkpeering"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/objectstorage"
@@ -30,6 +31,7 @@ const (
 	excludeHelp = "Exclude resources matching the given name. If defined multiple times, resource is included if it matches any of the given names."
 
 	typeKubernetes     = "kubernetes-cluster"
+	typeLoadBalancer   = "load-balancer"
 	typeNetwork        = "network"
 	typeNetworkPeering = "network-peering"
 	typeRouter         = "router"
@@ -146,11 +148,12 @@ func findResources[T any](exec commands.Executor, wg *sync.WaitGroup, returnChan
 
 func listResources(exec commands.Executor, include, exclude []string) ([]Resource, error) {
 	var resources []Resource
-	returnChan := make(chan findResult, 10)
+	returnChan := make(chan findResult, 11)
 
 	var wg sync.WaitGroup
 
 	findResources(exec, &wg, returnChan, &resolver.CachingKubernetes{}, include, exclude)
+	findResources(exec, &wg, returnChan, &resolver.CachingLoadBalancer{}, include, exclude)
 	findResources(exec, &wg, returnChan, &resolver.CachingNetwork{}, include, exclude)
 	findResources(exec, &wg, returnChan, &resolver.CachingNetworkPeering{}, include, exclude)
 	findResources(exec, &wg, returnChan, &resolver.CachingRouter{Type: "normal"}, include, exclude)
@@ -184,6 +187,12 @@ func listResources(exec commands.Executor, include, exclude []string) ([]Resourc
 
 func getResource(val any) (Resource, error) {
 	switch v := val.(type) {
+	case upcloud.LoadBalancer:
+		return Resource{
+			Name: v.Name,
+			Type: typeLoadBalancer,
+			UUID: v.UUID,
+		}, nil
 	case upcloud.KubernetesCluster:
 		return Resource{
 			Name: v.Name,
@@ -252,6 +261,8 @@ func deleteResource(exec commands.Executor, resource Resource) (err error) {
 	switch resource.Type {
 	case typeKubernetes:
 		_, err = kubernetes.Delete(exec, resource.UUID, true)
+	case typeLoadBalancer:
+		_, err = loadbalancer.Delete(exec, resource.UUID, true)
 	case typeNetwork:
 		_, err = network.Delete(exec, resource.UUID)
 	case typeNetworkPeering:
