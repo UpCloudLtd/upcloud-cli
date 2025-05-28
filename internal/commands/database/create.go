@@ -107,12 +107,6 @@ func processProperties(in []string) (request.ManagedDatabasePropertiesRequest, e
 		key := upcloud.ManagedDatabasePropertyKey(parts[0])
 		value := parts[1]
 
-		// remove quotes from the start and end of the value if they exist
-		if (strings.HasPrefix(value, "\"") && strings.HasSuffix(value, "\"")) ||
-			(strings.HasPrefix(value, "'") && strings.HasSuffix(value, "'")) {
-			value = value[1 : len(value)-1]
-		}
-
 		var parsedValue interface{}
 		if err := json.Unmarshal([]byte(value), &parsedValue); err != nil {
 			resp.Set(key, value) // set as plain string if parsing fails
