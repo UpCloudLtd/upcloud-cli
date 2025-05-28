@@ -166,7 +166,27 @@ func (s *createCommand) InitCommand() {
 	flags.StringArrayVar(&s.params.networks, "network", def.networks, "A network interface for the database, multiple can be declared.\nUsage: --network name=network-name,family=IPv4,type=private,uuid=030e83d2-d413-4d19-b1c9-af05cdb60c1f")
 	config.AddEnableOrDisableFlag(flags, &s.params.terminationProtection, def.terminationProtection.Value(), "termination-protection", "termination protection to prevent the database instance from being powered off or deleted")
 
-	flags.StringArrayVar(&s.params.properties, "property", nil, "Properties for the database in `key=value` format. Can be specified multiple times.")
+	flags.StringArrayVar(&s.params.properties, "property", nil,
+		"Properties for the database in `key=value` format. Can be specified multiple times.\n\n"+
+			"Supported types for values:\n\n"+
+			"  • Boolean:       true, false\n\n"+
+			"  • Number:        123, 3.14\n\n"+
+			"  • String:        quoted: '\"text\"' or \\\"text\\\"\n\n"+
+			"  • Object:        JSON: '{\"key\": \"value\"}'\n\n"+
+			"  • Array:         JSON: '[1, 2, 3]' or '[\"a\", \"b\"]'\n\n\n"+
+			"Examples:\n\n"+
+			"  --property public_access=true\n\n"+
+			"  --property version='\"17\"'\n\n"+
+			"  --property password_encryption=\\\"scram-sha-256\\\"\n\n"+
+			"  --property config='{\"retries\": 3, \"timeout\": \"30s\"}'\n\n"+
+			"  --property list='[\"read\", \"write\"]'\n\n"+
+			"Tips:\n\n"+
+			"  • Strings values must be quoted or they'll be parsed as numbers/booleans.\n\n"+
+			"      Example: --property public_access=true --property max_connections=100\n\n"+
+			"      These values will be parsed as a boolean and a number, respectively. \n\n"+
+			"      To pass a string value, --property version=\\\"17\\\"\n\n"+
+			"  • Use single quotes around values to avoid escaping inner double quotes.")
+
 	config.AddToggleFlag(flags, &s.wait, "wait", false, "Wait for database to be in running state before returning.")
 
 	s.AddFlags(flags)
