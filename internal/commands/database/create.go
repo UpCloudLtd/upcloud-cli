@@ -3,6 +3,7 @@ package database
 import (
 	"encoding/json"
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
@@ -60,7 +61,7 @@ type createParams struct {
 	properties            []string
 }
 
-func (s *createParams) processParams() error {
+func (s *createParams) processParams(t *upcloud.ManagedDatabaseType) error {
 	if len(s.labels) > 0 {
 		labelSlice, err := labels.StringsToSliceOfLabels(s.labels)
 		if err != nil {
@@ -74,7 +75,7 @@ func (s *createParams) processParams() error {
 	}
 
 	if len(s.properties) > 0 {
-		props, err := processProperties(s.properties)
+		props, err := processProperties(s.properties, t)
 		if err != nil {
 			return fmt.Errorf("invalid properties: %w", err)
 		}
@@ -96,7 +97,19 @@ func (s *createParams) processParams() error {
 	return nil
 }
 
-func processProperties(in []string) (request.ManagedDatabasePropertiesRequest, error) {
+func isStringProperty(key upcloud.ManagedDatabasePropertyKey, t *upcloud.ManagedDatabaseType) bool {
+	if propType, ok := t.Properties[string(key)].Type.(string); ok {
+		return propType == "string"
+	}
+
+	if propType, ok := t.Properties[string(key)].Type.([]string); ok {
+		return slices.Contains(propType, "string")
+	}
+
+	return false
+}
+
+func processProperties(in []string, t *upcloud.ManagedDatabaseType) (request.ManagedDatabasePropertiesRequest, error) {
 	resp := request.ManagedDatabasePropertiesRequest{}
 	for _, prop := range in {
 		parts := strings.SplitN(prop, "=", 2)
@@ -107,15 +120,21 @@ func processProperties(in []string) (request.ManagedDatabasePropertiesRequest, e
 		key := upcloud.ManagedDatabasePropertyKey(parts[0])
 		value := parts[1]
 
-		// remove quotes from the start and end of the value if they exist
+		// Remove quotes from the start and end of the value if they exist
 		if (strings.HasPrefix(value, "\"") && strings.HasSuffix(value, "\"")) ||
 			(strings.HasPrefix(value, "'") && strings.HasSuffix(value, "'")) {
 			value = value[1 : len(value)-1]
 		}
 
+		// Handle numerical string values, e.g. Postgres version
+		if isStringProperty(key, t) {
+			resp.Set(key, value)
+			continue
+		}
+
 		var parsedValue interface{}
 		if err := json.Unmarshal([]byte(value), &parsedValue); err != nil {
-			resp.Set(key, value) // set as plain string if parsing fails
+			resp.Set(key, value) // Set as plain string if parsing fails
 		} else {
 			resp.Set(key, parsedValue)
 		}
@@ -192,7 +211,14 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	msg := fmt.Sprintf("Creating database %v", s.params.Title)
 	exec.PushProgressStarted(msg)
 
-	if err := s.params.processParams(); err != nil {
+	t, err := svc.GetManagedDatabaseServiceType(exec.Context(), &request.GetManagedDatabaseServiceTypeRequest{
+		Type: s.params.dbType,
+	})
+	if err != nil {
+		return commands.HandleError(exec, msg, err)
+	}
+
+	if err := s.params.processParams(t); err != nil {
 		return nil, err
 	}
 
