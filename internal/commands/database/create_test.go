@@ -11,12 +11,24 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestCreateCommand(t *testing.T) {
 	databaseDetailsMaint := upcloud.ManagedDatabase{
 		UUID: "0927dfd6-3884-4079-a948-3a8881df1a7a",
 	}
+	serviceType := upcloud.ManagedDatabaseType{
+		Properties: map[string]upcloud.ManagedDatabaseServiceProperty{
+			"version": {
+				Type: []string{"string", "null"},
+			},
+			"numeric_string": {
+				Type: "string",
+			},
+		},
+	}
+
 	for _, test := range []struct {
 		name              string
 		args              []string
@@ -39,7 +51,7 @@ func TestCreateCommand(t *testing.T) {
 			},
 		},
 		{
-			name: "pg with label and protection parameters",
+			name: "pg with label, protection, and version parameters",
 			args: []string{
 				"--title=full-test",
 				"--zone=fi-hel1",
@@ -48,6 +60,7 @@ func TestCreateCommand(t *testing.T) {
 				"--type=pg",
 				"--label=env=test,app=database",
 				"--enable-termination-protection",
+				"--property=version=13",
 			},
 			createDatabaseReq: request.CreateManagedDatabaseRequest{
 				Title:                 "full-test",
@@ -57,6 +70,9 @@ func TestCreateCommand(t *testing.T) {
 				Type:                  upcloud.ManagedDatabaseServiceTypePostgreSQL,
 				Labels:                []upcloud.Label{{Key: "env", Value: "test"}, {Key: "app", Value: "database"}},
 				TerminationProtection: boolPtr(true),
+				Properties: request.ManagedDatabasePropertiesRequest{
+					"version": "13",
+				},
 			},
 		},
 		{
@@ -71,6 +87,7 @@ func TestCreateCommand(t *testing.T) {
 				"--property=openid=\"{\"client_id\":\"test_client_id\"}\"", // with quotes
 				"--property=ism_enabled=true",
 				"--property=custom_domain=custom.upcloud.com",
+				"--property=numeric_string=123",
 			},
 			createDatabaseReq: request.CreateManagedDatabaseRequest{
 				Title:          "full-test",
@@ -79,10 +96,11 @@ func TestCreateCommand(t *testing.T) {
 				Plan:           "4x4xCPU-8GB-200GB",
 				Type:           upcloud.ManagedDatabaseServiceTypeOpenSearch,
 				Properties: request.ManagedDatabasePropertiesRequest{
-					"ism_enabled":   true,
-					"custom_domain": "custom.upcloud.com",
-					"saml":          map[string]interface{}{"enabled": true},
-					"openid":        map[string]interface{}{"client_id": "test_client_id"},
+					"ism_enabled":    true,
+					"custom_domain":  "custom.upcloud.com",
+					"saml":           map[string]interface{}{"enabled": true},
+					"openid":         map[string]interface{}{"client_id": "test_client_id"},
+					"numeric_string": "123",
 				},
 			},
 		},
@@ -155,6 +173,7 @@ func TestCreateCommand(t *testing.T) {
 			storage.CachedStorages = nil
 			createDatabaseReq := test.createDatabaseReq
 			mService.On("CreateManagedDatabase", &createDatabaseReq).Return(&databaseDetailsMaint, nil)
+			mService.On("GetManagedDatabaseServiceType", mock.Anything).Return(&serviceType, nil)
 
 			c := commands.BuildCommand(testCmd, nil, conf)
 
