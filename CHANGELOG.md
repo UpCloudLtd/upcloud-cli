@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.20.1] - 2025-06-09
+
 ### Fixed
 
 - In database create, parse numeric string values into strings, E.g., Postgres version property will be now correctly parsed as string value.
@@ -578,7 +580,8 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.20.0...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.20.1...HEAD
+[3.20.1]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.20.0...v3.20.1
 [3.20.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.19.1...v3.20.0
 [3.19.1]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.19.0...v3.19.1
 [3.19.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.18.0...v3.19.0
