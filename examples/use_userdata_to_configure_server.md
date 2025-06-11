@@ -6,6 +6,7 @@ To keep track of resources created during this example, we will use common prefi
 
 ```env
 prefix=example-upctl-server-userdata-
+zone=pl-waw1
 ```
 
 First, create a file for the user-data script. The script installs [podman](https://podman.io/) and uses it to run a [hello container](https://github.com/UpCloudLtd/hello-container) that will be exposed in the port 80 of the server.
@@ -24,7 +25,7 @@ ssh-keygen -t ed25519 -q -f "./id_ed25519" -N ""
 
 upctl server create \
     --hostname ${prefix}server \
-    --zone pl-waw1 \
+    --zone ${zone} \
     --plan "DEV-1xCPU-1GB-10GB" \
     --ssh-keys ./id_ed25519.pub \
     --network type=public \

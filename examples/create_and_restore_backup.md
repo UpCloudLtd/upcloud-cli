@@ -6,6 +6,7 @@ To keep track of resources created during this example, we will use common prefi
 
 ```env
 prefix=example-upctl-backup-
+zone=pl-waw1
 ```
 
 We will first create a ssh-key into the current working directory for configuring an nginx server via SSH connection.
@@ -19,7 +20,7 @@ We will then create a server with a single network interface and default templat
 ```sh
 upctl server create \
     --hostname ${prefix}source-server \
-    --zone pl-waw1 \
+    --zone ${zone} \
     --ssh-keys ./id_ed25519.pub \
     --network type=public \
     --wait
@@ -68,7 +69,7 @@ We can then create a new server based on the backup of the source servers disk.
 ```sh
 upctl server create \
     --hostname ${prefix}restored-server \
-    --zone pl-waw1 \
+    --zone ${zone} \
     --ssh-keys ./id_ed25519.pub \
     --network type=public \
     --storage action=clone,storage=${prefix}source-server-backup \
