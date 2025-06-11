@@ -6,6 +6,7 @@ To keep track of resources created during this example, we will use common prefi
 
 ```env
 prefix=example-upctl-ssh-server-
+zone=pl-waw1
 ```
 
 In order to be able to connect to the server we are going to create, we will need an ssh-key. If you already have a ssh-key available, you can skip this step. The example creates the ssh-key into the current working directory, if you want to use this key for other authentication purposes as well, create the key into `~/.ssh` directory instead.
@@ -20,7 +21,7 @@ Create a server using the above created ssh-key as login method.
 ```sh
 upctl server create \
     --hostname ${prefix}server \
-    --zone pl-waw1 \
+    --zone ${zone} \
     --ssh-keys ./id_ed25519.pub \
     --network type=public \
     --network type=utility \

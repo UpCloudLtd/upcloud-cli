@@ -6,6 +6,7 @@ To keep track of resources created during this example, we will use common prefi
 
 ```env
 prefix=example-upctl-custom-template-
+zone=pl-waw1
 ```
 
 First, we will create server which disk will be used as a source for the custom template.
@@ -16,7 +17,7 @@ ssh-keygen -t ed25519 -q -f "./id_ed25519" -N ""
 
 upctl server create \
     --hostname ${prefix}source-server \
-    --zone pl-waw1 \
+    --zone ${zone} \
     --ssh-keys ./id_ed25519.pub \
     --network type=public \
     --network type=utility \
@@ -55,7 +56,7 @@ To test that the template creation succeeded, create a new server from the just 
 ```sh
 upctl server create \
     --hostname ${prefix}server \
-    --zone pl-waw1 \
+    --zone ${zone} \
     --network type=public \
     --network type=utility \
     --os ${prefix}template \
