@@ -24,7 +24,7 @@ theme:
   font:
     text: Source Sans Pro
     code: Source Code Pro
-  favicon: favicon.png
+  favicon: favicon.svg
   language: en
   features:
     - navigation.instant
