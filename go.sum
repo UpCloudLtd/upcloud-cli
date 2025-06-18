@@ -19,6 +19,8 @@ github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
 github.com/UpCloudLtd/progress v1.0.2 h1:CTr1bBuFuXop9TEhR1PakbUMPTlUVL7Bgae9JgqXwPg=
 github.com/UpCloudLtd/progress v1.0.2/go.mod h1:iGxOnb9HvHW0yrLGUjHr0lxHhn7TehgWwh7a8NqK6iQ=
+github.com/UpCloudLtd/upcloud-go-api/credentials v0.0.0-20250618210043-f99c5aee4ae8 h1:W3Fv1vc7T7plwwDx6G4yOta9RihpALMR23cGuPkCgXI=
+github.com/UpCloudLtd/upcloud-go-api/credentials v0.0.0-20250618210043-f99c5aee4ae8/go.mod h1:7OtVs2UqtfvjkC1HfE+Oud0MnbMv7qUWnbEgxnTAqts=
 github.com/UpCloudLtd/upcloud-go-api/v8 v8.17.0 h1:B3iN68qDnTCIRcx1W3F2p6MlzGgcIKF7y6U6BGEO11U=
 github.com/UpCloudLtd/upcloud-go-api/v8 v8.17.0/go.mod h1:bFnrOkfsDDmsb94nnBV5eSQjjsfDnwAzLnCt9+b4t/4=
 github.com/adrg/xdg v0.3.2 h1:GUSGQ5pHdev83AYhDSS1A/CX+0JIsxbiWtow2DSA+RU=
