@@ -6,6 +6,7 @@ To keep track of resources created during this example, we will use common prefi
 
 ```env
 prefix=example-upctl-exit-codes-
+zone=pl-waw1
 ```
 
 Exit code 100 is set, for example, when command argument validation fails.
@@ -21,8 +22,8 @@ Let's create two servers and stop one of those to later see other failing exit c
 # Create ssh-key into current working directory
 ssh-keygen -t ed25519 -q -f "./id_ed25519" -N ""
 
-upctl server create --hostname ${prefix}vm-1 --zone pl-waw1 --ssh-keys ./id_ed25519.pub --wait
-upctl server create --hostname ${prefix}vm-2 --zone pl-waw1 --ssh-keys ./id_ed25519.pub --wait
+upctl server create --hostname ${prefix}vm-1 --zone ${zone} --ssh-keys ./id_ed25519.pub --wait
+upctl server create --hostname ${prefix}vm-2 --zone ${zone} --ssh-keys ./id_ed25519.pub --wait
 
 upctl server stop --type hard ${prefix}vm-1 --wait
 ```
