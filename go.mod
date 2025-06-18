@@ -4,6 +4,7 @@ go 1.25.0
 
 require (
 	github.com/UpCloudLtd/progress v1.0.3
+	github.com/UpCloudLtd/upcloud-go-api/credentials v0.1.1
 	github.com/UpCloudLtd/upcloud-go-api/v8 v8.25.0
 	github.com/adrg/xdg v0.5.3
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d
