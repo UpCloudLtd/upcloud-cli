@@ -3,4 +3,5 @@ FROM alpine:3.16
 RUN apk add --update --no-cache ca-certificates jq
 COPY upctl /bin/upctl
 
+USER 65534:65534
 ENTRYPOINT ["/bin/upctl"]
