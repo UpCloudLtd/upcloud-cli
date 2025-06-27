@@ -5,7 +5,7 @@ site_description: upctl provides a command-line interface to UpCloud services. I
 site_url: https://upcloudltd.github.io/upcloud-cli/
 repo_name: UpCloudLtd/upcloud-cli
 repo_url: https://github.com/UpCloudLtd/upcloud-cli
-copyright: Copyright &copy; 2022 UpCloud Ltd
+copyright: Copyright &copy; 2022 UpCloud Oy
 
 extra_css:
   - extra.css
