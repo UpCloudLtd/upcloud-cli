@@ -57,7 +57,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 						{Title: "UUID:", Key: "uuid", Value: storage.UUID, Colour: ui.DefaultUUUIDColours},
 						{Title: "Title:", Key: "title", Value: storage.Title},
 						{Title: "Access:", Key: "access", Value: storage.Access},
-						{Title: "Type:", Key: "type", Value: storage.Type},
+						{Title: "Type:", Key: "type", Value: storage.Type, Format: formatShowType(storage.TemplateType)},
 						{Title: "State:", Key: "state", Value: storage.State, Format: format.StorageState},
 						{Title: "Size:", Key: "size", Value: storage.Size},
 						{Title: "Tier:", Key: "tier", Value: storage.Tier},
@@ -137,4 +137,18 @@ func formatShowServers(val interface{}) (text.Colors, string, error) {
 	}
 
 	return nil, str, nil
+}
+
+func formatShowType(templateType string) func(any) (text.Colors, string, error) {
+	return func(val any) (text.Colors, string, error) {
+		st, ok := val.(string)
+		if !ok {
+			return nil, "", fmt.Errorf("cannot render storage type from %T, expected string", val)
+		}
+
+		if templateType == "" {
+			return nil, st, nil
+		}
+		return nil, fmt.Sprintf("%s (%s)", st, templateType), nil
+	}
 }
