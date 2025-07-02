@@ -36,7 +36,7 @@ jobs:
           retention-days: 7
       - name: Deploy to pages
         if: ${{ github.ref_name == 'main' || github.event_name == 'release'}}
-        uses: JamesIves/github-pages-deploy-action@65b5dfd4f5bcd3a7403bbc2959c144256167464e # 4.5.0
+        uses: JamesIves/github-pages-deploy-action@6c2d9db40f9296374acc17b90404b6e8864128c8 # 4.7.3
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
