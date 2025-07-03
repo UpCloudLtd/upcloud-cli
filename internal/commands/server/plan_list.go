@@ -57,6 +57,7 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 		Value: plans,
 		Output: output.Combined{
 			planSection("general_purpose", "General purpose", rows["general_purpose"]),
+			planSection("gpu", "GPU", rows["gpu"]),
 			planSection("cloud_native", "Cloud native", rows["cloud_native"]),
 			planSection("high_cpu", "High CPU", rows["high_cpu"]),
 			planSection("high_memory", "High memory", rows["high_memory"]),
@@ -77,6 +78,9 @@ func planType(p upcloud.Plan) string {
 	}
 	if strings.HasPrefix(p.Name, "CLOUDNATIVE-") {
 		return "cloud_native"
+	}
+	if strings.HasPrefix(p.Name, "GPU-") {
+		return "gpu"
 	}
 	return "general_purpose"
 }
