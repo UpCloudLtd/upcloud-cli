@@ -5,7 +5,7 @@ go 1.23.0
 toolchain go1.24.2
 
 require (
-	github.com/UpCloudLtd/progress v1.0.2
+	github.com/UpCloudLtd/progress v1.0.3
 	github.com/UpCloudLtd/upcloud-go-api/v8 v8.17.0
 	github.com/adrg/xdg v0.3.2
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d
