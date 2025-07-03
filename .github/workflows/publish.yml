@@ -56,7 +56,7 @@ jobs:
       - name: Clear Docker login session
         run: rm -f ${HOME}/.docker/config.json
       - name: Generate artifact attestations
-        uses: actions/attest-build-provenance@f9eaf234fc1c2e333c1eca18177db0f44fa6ba52 # v2.2.1
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2.4.0
         with:
           subject-checksums: dist/checksums.txt
       - name: Generate AUR PKGBUILD
