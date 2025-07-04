@@ -19,6 +19,10 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/network"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/networkpeering"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/objectstorage"
+	objectstoragebucket "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/objectstorage/bucket"
+	objectstoragelabel "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/objectstorage/label"
+	objectstoragenetwork "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/objectstorage/network"
+	objectstorageuser "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/objectstorage/user"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/partner"
 	partneraccount "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/partner/account"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/root"
@@ -209,10 +213,38 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 
 	// Managed object storage operations
 	objectStorageCommand := commands.BuildCommand(objectstorage.BaseobjectstorageCommand(), rootCmd, conf)
+	commands.BuildCommand(objectstorage.CreateCommand(), objectStorageCommand.Cobra(), conf)
 	commands.BuildCommand(objectstorage.DeleteCommand(), objectStorageCommand.Cobra(), conf)
 	commands.BuildCommand(objectstorage.ListCommand(), objectStorageCommand.Cobra(), conf)
 	commands.BuildCommand(objectstorage.ShowCommand(), objectStorageCommand.Cobra(), conf)
 	commands.BuildCommand(objectstorage.RegionsCommand(), objectStorageCommand.Cobra(), conf)
+
+	// Object storage user management
+	userCommand := commands.BuildCommand(objectstorageuser.BaseUserCommand(), objectStorageCommand.Cobra(), conf)
+	commands.BuildCommand(objectstorageuser.CreateCommand(), userCommand.Cobra(), conf)
+	commands.BuildCommand(objectstorageuser.DeleteCommand(), userCommand.Cobra(), conf)
+	commands.BuildCommand(objectstorageuser.ListCommand(), userCommand.Cobra(), conf)
+	commands.BuildCommand(objectstorageuser.CreateAccessKeyCommand(), userCommand.Cobra(), conf)
+	commands.BuildCommand(objectstorageuser.DeleteAccessKeyCommand(), userCommand.Cobra(), conf)
+	commands.BuildCommand(objectstorageuser.ListAccessKeysCommand(), userCommand.Cobra(), conf)
+
+	// Object storage network management
+	objectStorageNetworkCommand := commands.BuildCommand(objectstoragenetwork.BaseNetworkCommand(), objectStorageCommand.Cobra(), conf)
+	commands.BuildCommand(objectstoragenetwork.AttachCommand(), objectStorageNetworkCommand.Cobra(), conf)
+	commands.BuildCommand(objectstoragenetwork.DetachCommand(), objectStorageNetworkCommand.Cobra(), conf)
+	commands.BuildCommand(objectstoragenetwork.ListCommand(), objectStorageNetworkCommand.Cobra(), conf)
+
+	// Object storage bucket management
+	bucketCommand := commands.BuildCommand(objectstoragebucket.BaseBucketCommand(), objectStorageCommand.Cobra(), conf)
+	commands.BuildCommand(objectstoragebucket.CreateCommand(), bucketCommand.Cobra(), conf)
+	commands.BuildCommand(objectstoragebucket.DeleteCommand(), bucketCommand.Cobra(), conf)
+	commands.BuildCommand(objectstoragebucket.ListCommand(), bucketCommand.Cobra(), conf)
+
+	// Object storage label management
+	labelCommand := commands.BuildCommand(objectstoragelabel.BaseLabelCommand(), objectStorageCommand.Cobra(), conf)
+	commands.BuildCommand(objectstoragelabel.AddCommand(), labelCommand.Cobra(), conf)
+	commands.BuildCommand(objectstoragelabel.RemoveCommand(), labelCommand.Cobra(), conf)
+	commands.BuildCommand(objectstoragelabel.ListCommand(), labelCommand.Cobra(), conf)
 
 	// Network Gateway operations
 	gatewayCommand := commands.BuildCommand(gateway.BaseGatewayCommand(), rootCmd, conf)

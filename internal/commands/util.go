@@ -254,6 +254,28 @@ func SetSubcommandExecutionDeprecationMessage(cmd Command, deprecatedParentAlias
 	}
 }
 
+// formatLabelsCondensed formats labels in a condensed key=value format for short displays
+// Used by object storage commands to show labels in a compact format
+func FormatLabelsCondensed(labels []upcloud.Label) string {
+	if len(labels) == 0 {
+		return "none"
+	}
+
+	var labelStrings []string
+	for _, label := range labels {
+		if label.Value != "" {
+			labelStrings = append(labelStrings, fmt.Sprintf("%s=%s", label.Key, label.Value))
+		} else {
+			labelStrings = append(labelStrings, label.Key)
+		}
+	}
+
+	if len(labelStrings) <= 3 {
+		return fmt.Sprintf("[%s]", strings.Join(labelStrings, ", "))
+	}
+	return fmt.Sprintf("[%s... (+%d more)]", strings.Join(labelStrings[:3], ", "), len(labelStrings)-3)
+}
+
 // Must panics if the error is not nil.
 func Must(err error) {
 	if err != nil {
