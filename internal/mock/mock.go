@@ -1070,6 +1070,22 @@ func (m *Service) GetKubernetesPlans(ctx context.Context, r *request.GetKubernet
 	return args[0].([]upcloud.KubernetesPlan), args.Error(1)
 }
 
+func (m *Service) GetKubernetesClusterAvailableUpgrades(ctx context.Context, r *request.GetKubernetesClusterAvailableUpgradesRequest) (*upcloud.KubernetesClusterAvailableUpgrades, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.KubernetesClusterAvailableUpgrades), args.Error(1)
+}
+
+func (m *Service) UpgradeKubernetesCluster(ctx context.Context, r *request.UpgradeKubernetesClusterRequest) (*upcloud.KubernetesClusterUpgrade, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.KubernetesClusterUpgrade), args.Error(1)
+}
+
 func (m *Service) CreateServerGroup(ctx context.Context, r *request.CreateServerGroupRequest) (*upcloud.ServerGroup, error) {
 	args := m.Called(r)
 	if args[0] == nil {
