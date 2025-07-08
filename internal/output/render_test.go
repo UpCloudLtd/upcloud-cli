@@ -3,12 +3,15 @@ package output_test
 import (
 	"bytes"
 	"errors"
+	"io"
+	"strings"
 	"testing"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 type failWriter struct{}
@@ -26,21 +29,29 @@ func TestRenderFailingWriter(t *testing.T) {
 }
 
 func TestRender(t *testing.T) {
+	rr := strings.NewReader("raw hello")
 	renderTests := []outputTestCase{
 		{
 			name:                "none",
 			input:               output.None{},
-			expectedHumanResult: "\n",
-			expectedJSONResult:  "\n",
+			expectedHumanResult: "",
+			expectedJSONResult:  "",
 			expectedYAMLResult:  "",
 		},
 		{
 			name:                "marshaled",
 			input:               output.OnlyMarshaled{Value: "hello"},
-			expectedHumanResult: "\n", // marshaled should not output in human mode
+			expectedHumanResult: "", // marshaled should not output in human mode
 			expectedJSONResult: `"hello"
 `,
 			expectedYAMLResult: "hello\n",
+		},
+		{
+			name:                "raw",
+			input:               output.Raw{Source: io.NopCloser(rr)},
+			expectedHumanResult: "raw hello",
+			expectedJSONResult:  "raw hello",
+			expectedYAMLResult:  "raw hello",
 		},
 	}
 	for _, test := range renderTests {
@@ -51,11 +62,15 @@ func TestRender(t *testing.T) {
 			cfg.Viper().Set(config.KeyOutput, "human")
 			err := output.Render(out, cfg.Output(), test.input)
 			validateOutput(t, test.expectedHumanResult, test.expectedErrorMessage, out.Bytes(), err)
+			_, err = rr.Seek(0, io.SeekStart)
+			require.NoError(t, err)
 			out.Truncate(0)
 
 			cfg.Viper().Set(config.KeyOutput, "json")
 			err = output.Render(out, cfg.Output(), test.input)
 			validateOutput(t, test.expectedJSONResult, test.expectedErrorMessage, out.Bytes(), err)
+			_, err = rr.Seek(0, io.SeekStart)
+			require.NoError(t, err)
 			out.Truncate(0)
 
 			cfg.Viper().Set(config.KeyOutput, "yaml")
