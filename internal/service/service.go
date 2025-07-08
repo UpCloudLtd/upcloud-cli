@@ -25,4 +25,5 @@ type AllServices interface {
 	service.Partner
 	service.Token
 	service.Tag
+	service.AuditLog
 }
