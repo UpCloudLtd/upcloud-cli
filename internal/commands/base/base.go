@@ -6,6 +6,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/account/permissions"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/account/token"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/all"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/auditlog"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/database"
 	databaseindex "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/database/index"
 	databaseproperties "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/database/properties"
@@ -268,6 +269,10 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	partnerAccountCommand := commands.BuildCommand(partneraccount.BaseAccountCommand(), partnerCommand.Cobra(), conf)
 	commands.BuildCommand(partneraccount.CreateCommand(), partnerAccountCommand.Cobra(), conf)
 	commands.BuildCommand(partneraccount.ListCommand(), partnerAccountCommand.Cobra(), conf)
+
+	// Audit log operations
+	auditlogCommand := commands.BuildCommand(auditlog.BaseAuditLogCommand(), rootCmd, conf)
+	commands.BuildCommand(auditlog.ExportCommand(), auditlogCommand.Cobra(), conf)
 
 	// Operations for managing all resources at once
 	allCommand := commands.BuildCommand(all.BaseAllCommand(), rootCmd, conf)
