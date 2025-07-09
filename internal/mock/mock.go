@@ -3,6 +3,7 @@ package mock
 
 import (
 	"context"
+	"io"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
@@ -96,6 +97,7 @@ var (
 	_ service.ManagedObjectStorage = &Service{}
 	_ service.Gateway              = &Service{}
 	_ service.Token                = &Service{}
+	_ service.AuditLog             = &Service{}
 )
 
 // GetServerConfigurations implements service.Server.GetServerConfigurations
@@ -1503,4 +1505,13 @@ func (m *Service) TagServer(ctx context.Context, r *request.TagServerRequest) (*
 
 func (m *Service) UntagServer(ctx context.Context, r *request.UntagServerRequest) (*upcloud.ServerDetails, error) {
 	return nil, nil
+}
+
+// ExportAuditLog implements service.AuditLog.ExportAuditLog
+func (m *Service) ExportAuditLog(_ context.Context, r *request.ExportAuditLogRequest) (io.ReadCloser, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(io.ReadCloser), args.Error(1)
 }
