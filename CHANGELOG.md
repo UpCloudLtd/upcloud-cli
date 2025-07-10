@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Object storage service creation with `object-storage create` command supporting labels, networks, and configured status
+- Object storage label management with dedicated commands: `object-storage label add`, `object-storage label remove`, and `object-storage label list`
+- Object storage network management with `object-storage network attach` and `object-storage network detach` commands
+- Object storage bucket management with `object-storage bucket create`, `object-storage bucket delete`, and `object-storage bucket list` commands
+- Object storage user management with `object-storage user create`, `object-storage user delete`, and `object-storage user list` commands
+- Object storage user access key management with `object-storage create-access-key`, `object-storage delete-access-key`, and `object-storage list-access-keys` commands
+
 ## [3.21.0] - 2025-07-15
 
 ### Added
