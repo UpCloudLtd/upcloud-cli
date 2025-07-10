@@ -3,6 +3,7 @@ package mock
 
 import (
 	"context"
+	"io"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
@@ -1503,4 +1504,37 @@ func (m *Service) TagServer(ctx context.Context, r *request.TagServerRequest) (*
 
 func (m *Service) UntagServer(ctx context.Context, r *request.UntagServerRequest) (*upcloud.ServerDetails, error) {
 	return nil, nil
+}
+
+// ExportAuditLog implements service.AuditLog.ExportAuditLog
+func (m *Service) ExportAuditLog(_ context.Context, r *request.ExportAuditLogRequest) (io.ReadCloser, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(io.ReadCloser), args.Error(1)
+}
+
+func (m *Service) WaitForLoadBalancerOperationalState(_ context.Context, r *request.WaitForLoadBalancerOperationalStateRequest) (*upcloud.LoadBalancer, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.LoadBalancer), args.Error(1)
+}
+
+func (m *Service) WaitForLoadBalancerDeletion(_ context.Context, r *request.WaitForLoadBalancerDeletionRequest) error {
+	args := m.Called(r)
+	if args[0] == nil {
+		return args.Error(0)
+	}
+	return nil
+}
+
+func (m *Service) GetDevicesAvailability(ctx context.Context) (*upcloud.DevicesAvailability, error) {
+	args := m.Called()
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.DevicesAvailability), args.Error(1)
 }

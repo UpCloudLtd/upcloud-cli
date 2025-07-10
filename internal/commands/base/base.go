@@ -31,6 +31,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/storage"
 	storagebackup "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/storage/backup"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/zone"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/zone/devices"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
 
 	"github.com/spf13/cobra"
@@ -136,6 +137,8 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	// Zone
 	zoneCommand := commands.BuildCommand(zone.BaseZoneCommand(), rootCmd, conf)
 	commands.BuildCommand(zone.ListCommand(), zoneCommand.Cobra(), conf)
+	devicesCommand := commands.BuildCommand(devices.DevicesCommand(), zoneCommand.Cobra(), conf)
+	commands.BuildCommand(devices.ShowCommand(), devicesCommand.Cobra(), conf)
 
 	// Databases
 	databaseCommand := commands.BuildCommand(database.BaseDatabaseCommand(), rootCmd, conf)
