@@ -1504,3 +1504,27 @@ func (m *Service) TagServer(ctx context.Context, r *request.TagServerRequest) (*
 func (m *Service) UntagServer(ctx context.Context, r *request.UntagServerRequest) (*upcloud.ServerDetails, error) {
 	return nil, nil
 }
+
+func (m *Service) WaitForLoadBalancerOperationalState(_ context.Context, r *request.WaitForLoadBalancerOperationalStateRequest) (*upcloud.LoadBalancer, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.LoadBalancer), args.Error(1)
+}
+
+func (m *Service) WaitForLoadBalancerDeletion(_ context.Context, r *request.WaitForLoadBalancerDeletionRequest) error {
+	args := m.Called(r)
+	if args[0] == nil {
+		return args.Error(0)
+	}
+	return nil
+}
+
+func (m *Service) GetDevicesAvailability(ctx context.Context) (*upcloud.DevicesAvailability, error) {
+	args := m.Called()
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.DevicesAvailability), args.Error(1)
+}

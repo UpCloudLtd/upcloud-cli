@@ -19,8 +19,8 @@ github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
 github.com/UpCloudLtd/progress v1.0.3 h1:8SfntHkBPyQc5BL3946Bgi9KYnQOxa5RR2EKdadujdg=
 github.com/UpCloudLtd/progress v1.0.3/go.mod h1:iGxOnb9HvHW0yrLGUjHr0lxHhn7TehgWwh7a8NqK6iQ=
-github.com/UpCloudLtd/upcloud-go-api/v8 v8.19.0 h1:jw1PuZhalunYXiIWM4B+p3JNO6PAxZ4QYdJNHmq2CMs=
-github.com/UpCloudLtd/upcloud-go-api/v8 v8.19.0/go.mod h1:zA0iX1Kjf88t+q3AvOM5UD90iwIZabRH0qjQJ9b9GTc=
+github.com/UpCloudLtd/upcloud-go-api/v8 v8.21.0 h1:gPi3bLwNixV2xo3IFMhP65uOdJcE2KCooXQ5bzPJqEk=
+github.com/UpCloudLtd/upcloud-go-api/v8 v8.21.0/go.mod h1:ImDdnWfVVM6WCRTrskGhAw2W1cRwu5IEkBw+9UCzAv8=
 github.com/adrg/xdg v0.3.2 h1:GUSGQ5pHdev83AYhDSS1A/CX+0JIsxbiWtow2DSA+RU=
 github.com/adrg/xdg v0.3.2/go.mod h1:7I2hH/IT30IsupOpKZ5ue7/qNi3CoKzD6tL3HwpaRMQ=
 github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=
