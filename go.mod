@@ -13,7 +13,7 @@ require (
 	github.com/jedib0t/go-pretty/v6 v6.4.9
 	github.com/m7shapan/cidr v0.0.0-20200427124835-7eba0889a5d2
 	github.com/mattn/go-isatty v0.0.20
-	github.com/spf13/cobra v1.6.1
+	github.com/spf13/cobra v1.9.1
 	github.com/spf13/pflag v1.0.6
 	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.10.0
@@ -35,7 +35,7 @@ require (
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
-	github.com/inconshreveable/mousetrap v1.0.1 // indirect
+	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
