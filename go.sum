@@ -21,6 +21,10 @@ github.com/UpCloudLtd/progress v1.0.3 h1:8SfntHkBPyQc5BL3946Bgi9KYnQOxa5RR2EKdad
 github.com/UpCloudLtd/progress v1.0.3/go.mod h1:iGxOnb9HvHW0yrLGUjHr0lxHhn7TehgWwh7a8NqK6iQ=
 github.com/UpCloudLtd/upcloud-go-api/v8 v8.21.0 h1:gPi3bLwNixV2xo3IFMhP65uOdJcE2KCooXQ5bzPJqEk=
 github.com/UpCloudLtd/upcloud-go-api/v8 v8.21.0/go.mod h1:ImDdnWfVVM6WCRTrskGhAw2W1cRwu5IEkBw+9UCzAv8=
+github.com/UpCloudLtd/upcloud-go-api/v8 v8.21.1-0.20250716111947-3120a06fd03a h1:UtmIqD3iQJCrM0/ne/zACU7nAo1eRPVtwkWX8Ee69T4=
+github.com/UpCloudLtd/upcloud-go-api/v8 v8.21.1-0.20250716111947-3120a06fd03a/go.mod h1:ImDdnWfVVM6WCRTrskGhAw2W1cRwu5IEkBw+9UCzAv8=
+github.com/UpCloudLtd/upcloud-go-api/v8 v8.21.1-0.20250716115546-8d494ce44220 h1:OeFWxvL6/r/mV/5dcEaZu46jufUE//g6XHi63z64GLc=
+github.com/UpCloudLtd/upcloud-go-api/v8 v8.21.1-0.20250716115546-8d494ce44220/go.mod h1:ImDdnWfVVM6WCRTrskGhAw2W1cRwu5IEkBw+9UCzAv8=
 github.com/adrg/xdg v0.3.2 h1:GUSGQ5pHdev83AYhDSS1A/CX+0JIsxbiWtow2DSA+RU=
 github.com/adrg/xdg v0.3.2/go.mod h1:7I2hH/IT30IsupOpKZ5ue7/qNi3CoKzD6tL3HwpaRMQ=
 github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=

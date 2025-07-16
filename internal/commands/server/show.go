@@ -143,6 +143,33 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 			},
 		},
 		labels.GetLabelsSection(server.Labels),
+	}
+
+	if len(server.Devices) > 0 {
+		deviceRows := []output.TableRow{}
+		for _, device := range server.Devices {
+			deviceRows = append(deviceRows, output.TableRow{
+				device.Type,
+				device.Model,
+				device.Serial,
+			})
+		}
+
+		combined = append(combined, output.CombinedSection{
+			Key:   "devices",
+			Title: "Devices:",
+			Contents: output.Table{
+				Columns: []output.TableColumn{
+					{Key: "type", Header: "Type"},
+					{Key: "model", Header: "Model"},
+					{Key: "serial", Header: "Serial", Colour: ui.DefaultUUUIDColours},
+				},
+				Rows: deviceRows,
+			},
+		})
+	}
+
+	combined = append(combined,
 		output.CombinedSection{
 			Key:   "storage",
 			Title: "Storage: (Flags: B = bootdisk, P = part of plan)",
@@ -174,7 +201,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 				Rows: nicRows,
 			},
 		},
-	}
+	)
 
 	// Firewall rules
 	if server.Firewall == "on" {
