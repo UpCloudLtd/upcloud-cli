@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - stack destroy command for supabase, dokku and starter-kit
+- Add devices list to `server show` output.
 
 ## [3.24.1] - 2025-10-14
 
