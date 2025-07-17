@@ -28,6 +28,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/server/networkinterface"
 	serverstorage "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/server/storage"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/servergroup"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/stack"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/storage"
 	storagebackup "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/storage/backup"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/zone"
@@ -237,6 +238,11 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	allCommand := commands.BuildCommand(all.BaseAllCommand(), rootCmd, conf)
 	commands.BuildCommand(all.PurgeCommand(), allCommand.Cobra(), conf)
 	commands.BuildCommand(all.ListCommand(), allCommand.Cobra(), conf)
+
+	stackCommand := commands.BuildCommand(stack.BaseStackCommand(), rootCmd, conf)
+	stackDeployCommand := commands.BuildCommand(stack.DeployCommand(), stackCommand.Cobra(), conf)
+	commands.BuildCommand(stack.DeploySupabaseCommand(), stackDeployCommand.Cobra(), conf)
+	commands.BuildCommand(stack.DeployDokkuCommand(), stackDeployCommand.Cobra(), conf)
 
 	// Misc
 	commands.BuildCommand(
