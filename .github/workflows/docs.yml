@@ -9,10 +9,15 @@ on:
     types:
     - released
 
+permissions:
+  contents: read
+
 jobs:
   generate-and-deploy:
     name: Generate and deploy
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout head
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
