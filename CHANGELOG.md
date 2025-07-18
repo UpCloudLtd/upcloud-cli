@@ -7,9 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-
 ## [3.21.0] - 2025-07-15
+
+### Added
 
 - Add `zone devices` and `zone devices show` commands for listing available devices.
 
