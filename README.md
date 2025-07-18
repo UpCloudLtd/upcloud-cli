@@ -1,6 +1,7 @@
 # UpCloud CLI - upctl
 
 [![upcloud-cli test](https://github.com/UpCloudLtd/upctl/actions/workflows/test.yml/badge.svg)](https://github.com/UpCloudLtd/upctl/actions/workflows/test.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/UpCloudLtd/upcloud-cli/badge)](https://scorecard.dev/viewer/?uri=github.com%2FUpCloudLtd%2Fupcloud-cli)
 
 `upctl` provides a command-line interface to [UpCloud](https://upcloud.com/) services. It allows you
 to control your resources from the command line or any compatible interface.
