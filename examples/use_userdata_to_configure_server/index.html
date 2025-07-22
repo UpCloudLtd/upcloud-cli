@@ -5344,8 +5344,9 @@
 </span></code></pre></div>
 <p>First, create a file for the user-data script. The script installs <a href="https://podman.io/">podman</a> and uses it to run a <a href="https://github.com/UpCloudLtd/hello-container">hello container</a> that will be exposed in the port 80 of the server.</p>
 <div class="language-sh highlight"><span class="filename">user-data.sh</span><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="ch">#!/bin/sh</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>podman
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>podman<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>-p<span class="w"> </span><span class="m">80</span>:80<span class="w"> </span>ghcr.io/upcloudltd/hello
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>sudo<span class="w"> </span>apt-get<span class="w"> </span>update
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>podman
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>podman<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>-p<span class="w"> </span><span class="m">80</span>:80<span class="w"> </span>ghcr.io/upcloudltd/hello
 </span></code></pre></div>
 <p>Create a server and use the user-data script from <code>user-data.sh</code> to configure the server.</p>
 <div class="language-sh highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Create ssh-key into current working directory</span>

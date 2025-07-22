@@ -5356,8 +5356,9 @@
 <p>To have something to backup, we will install a nginx server and configure a non-default HTML content to serve.</p>
 <div class="language-sh highlight"><span class="filename">configure-nginx.sh</span><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="ch">#!/bin/sh -xe</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>apt<span class="w"> </span>install<span class="w"> </span>nginx<span class="w"> </span>-y
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Hello from </span><span class="k">$(</span>hostname<span class="k">)</span><span class="s2">&quot;</span><span class="s1">&#39;!&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>/var/www/html/index.html
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>apt-get<span class="w"> </span>update
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>apt-get<span class="w"> </span>install<span class="w"> </span>nginx<span class="w"> </span>-y
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Hello from </span><span class="k">$(</span>hostname<span class="k">)</span><span class="s2">&quot;</span><span class="s1">&#39;!&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>/var/www/html/index.html
 </span></code></pre></div>
 <p>To configure the server, we will parse the public IP of the server and run the above script using SSH connection. We can then use <code>curl</code> to ensure that the HTTP server serves the content we defined.</p>
 <div class="language-sh highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Parse public IP of the server with jq</span>
