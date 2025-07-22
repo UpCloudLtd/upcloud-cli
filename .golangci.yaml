@@ -33,6 +33,13 @@ linters:
   settings:
     goconst:
       min-len: 5
+    revive:
+      rules:
+        - name: var-naming
+          arguments:
+          - []
+          - []
+          - - skip-package-name-checks: true
   exclusions:
     generated: lax
     presets:

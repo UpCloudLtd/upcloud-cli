@@ -42,5 +42,5 @@ func (s *CachingLoadBalancer) Get(ctx context.Context, svc internal.AllServices)
 
 // PositionalArgumentHelp implements resolver.ResolutionProvider
 func (s CachingLoadBalancer) PositionalArgumentHelp() string {
-	return "<UUID/Name...>"
+	return helpUUIDName
 }

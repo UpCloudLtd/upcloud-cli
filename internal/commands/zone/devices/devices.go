@@ -7,7 +7,7 @@ import (
 )
 
 // DevicesCommand creates the "zone devices" command
-func DevicesCommand() commands.Command { //nolint:revive // Does not make sense to add Base prefix here to avoid stuttering warning
+func DevicesCommand() commands.Command {
 	return &devicesCommand{
 		BaseCommand: commands.New("devices", "List available devices for each zone", "upctl zone devices"),
 	}
