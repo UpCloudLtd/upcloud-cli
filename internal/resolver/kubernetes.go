@@ -43,5 +43,5 @@ func (s *CachingKubernetes) Get(ctx context.Context, svc service.AllServices) (R
 
 // PositionalArgumentHelp implements resolver.ResolutionProvider
 func (s CachingKubernetes) PositionalArgumentHelp() string {
-	return "<UUID/Name...>" //nolint:goconst
+	return helpUUIDName
 }

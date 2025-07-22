@@ -37,7 +37,7 @@ func (s *showCommand) InitCommand() {
 
 // Execute implements commands.MultipleArgumentCommand
 func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
-	router, err := s.CachingRouter.GetCached(arg)
+	router, err := s.GetCached(arg)
 	if err != nil {
 		return nil, err
 	}

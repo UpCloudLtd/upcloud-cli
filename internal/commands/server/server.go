@@ -24,7 +24,7 @@ const (
 	simpleBackupDescription = "Simple backup rule in `HHMM,{daily,dailies,weeklies,monthlies}` format or `no`. For example: `2300,dailies`."
 )
 
-// BaseServerCommand crestes the base "server" command
+// BaseServerCommand creates the base "server" command
 func BaseServerCommand() commands.Command {
 	return &serverCommand{
 		commands.New("server", "Manage servers"),
