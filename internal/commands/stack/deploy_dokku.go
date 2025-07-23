@@ -42,14 +42,16 @@ func (s *deployDokkuCommand) InitCommand() {
 	fs.StringVar(&s.certManagerEmail, "cert-manager-email", "ops@example.com", "Email for TLS cert registration (default: ops@example.com)")
 	fs.StringVar(&s.globalDomain, "global-domain", s.globalDomain, "Example: example.com. If you do not have a domain name leave this empty and it will get the value of the ingress nginx load balancer automatically. Example: lb-0a39e6584…")
 	fs.IntVar(&s.numNodes, "num-nodes", 3, "Number of nodes in the Dokku cluster (default: 3)")
-	fs.StringVar(&s.sshPath, "ssh-path", s.sshPath, "Path to your private SSH key (default: ~/.ssh/id_rsa). Needed to be able to ‘git push dokku@<host>:<app>’ when deploying apps with git push")
+	fs.StringVar(&s.sshPath, "ssh-path", "~/.ssh/id_rsa", "Path to your private SSH key (default: ~/.ssh/id_rsa). Needed to be able to ‘git push dokku@<host>:<app>’ when deploying apps with git push")
 	// Note: default value for pub ssh path might not resolve properly
 	fs.StringVar(&s.sshPubPath, "ssh-path-pub", "~/.ssh/id_rsa.pub", "Path to your public SSH key (default: ~/.ssh/id_rsa.pub)")
-	fs.StringVar(&s.githubPackageUrl, "github-package-url", s.name, "Specify the name of the Supabase project")
+	fs.StringVar(&s.githubPackageUrl, "github-package-url", "ghcr.io", "Container registry hostname (default: ghcr.io)")
 	s.AddFlags(fs)
 
 	commands.Must(s.Cobra().MarkFlagRequired("location"))
 	commands.Must(s.Cobra().MarkFlagRequired("name"))
+	commands.Must(s.Cobra().MarkFlagRequired("github-pat"))
+	commands.Must(s.Cobra().MarkFlagRequired("github-user"))
 }
 
 func (s *deployDokkuCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
