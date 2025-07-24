@@ -23,7 +23,6 @@ import (
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/tools/clientcmd"
 )
 
 // ExtractChart extracts the embedded Supabase chart files to the specified target directory.
@@ -53,18 +52,9 @@ func ExtractChart(fsys embed.FS, targetDir string) error {
 	})
 }
 
-func waitForAPIServer(kubeconfigPath string) error {
-	cfg, err := clientcmd.BuildConfigFromFlags("", kubeconfigPath)
-	if err != nil {
-		return fmt.Errorf("loading kubeconfig: %w", err)
-	}
-	clientset, err := kubernetes.NewForConfig(cfg)
-	if err != nil {
-		return fmt.Errorf("building clientset: %w", err)
-	}
-
+func waitForAPIServer(kubeClient *kubernetes.Clientset) error {
 	for i := 1; i <= 30; i++ {
-		if _, err := clientset.Discovery().ServerVersion(); err == nil {
+		if _, err := kubeClient.Discovery().ServerVersion(); err == nil {
 			fmt.Printf("API ready after %d attempts\n", i)
 			return nil
 		} else {
@@ -75,76 +65,53 @@ func waitForAPIServer(kubeconfigPath string) error {
 	return fmt.Errorf("timed out waiting for API server")
 }
 
-// deployHelmRelease will check if a Helm release named releaseName exists in namespace=releaseName.
-// - If it doesn't exist and upgrade = false, it will install the chart at chartPath using valuesFiles.
-// - If it does exist and upgrade = true, it will perform a Helm upgrade with the same chartPath and values.
-func DeployHelmRelease(releaseName string, chartPath string, valuesFiles []string, upgrade bool) error {
-	kubeconfigPath := os.Getenv("KUBECONFIG")
-
-	// Wait for the Kubernetes API server to be ready
-	err := waitForAPIServer(kubeconfigPath) // Use the loaded kubeconfig path
+func createNamespace(kubeClient *kubernetes.Clientset, namespace string) error {
+	fmt.Printf("Ensuring namespace %q exists...\n", namespace)
+	_, err := kubeClient.CoreV1().Namespaces().Get(context.Background(), namespace, v1.GetOptions{})
 	if err != nil {
-		return fmt.Errorf("waiting for API server: %w", err)
-	}
-
-	// Load kubeconfig and create Kubernetes client
-	config, err := clientcmd.BuildConfigFromFlags("", kubeconfigPath)
-	if err != nil {
-		return fmt.Errorf("loading kubeconfig: %w", err)
-	}
-	clientset, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		return fmt.Errorf("building clientset: %w", err)
-	}
-
-	// Ensure the target namespace exists
-	fmt.Printf("Ensuring namespace %q exists...\n", releaseName)
-	_, err = clientset.CoreV1().Namespaces().Get(context.Background(), releaseName, v1.GetOptions{})
-	if err != nil {
-		// Correctly check for StatusError and StatusReasonNotFound
+		// Check for StatusError and StatusReasonNotFound
 		if apierrors.IsNotFound(err) {
-			fmt.Printf("Namespace %q not found, creating...\n", releaseName)
-			_, createErr := clientset.CoreV1().Namespaces().Create(context.Background(), &corev1.Namespace{
+			fmt.Printf("Namespace %q not found, creating...\n", namespace)
+			_, createErr := kubeClient.CoreV1().Namespaces().Create(context.Background(), &corev1.Namespace{
 				ObjectMeta: v1.ObjectMeta{
-					Name: releaseName,
+					Name: namespace,
 				},
 			}, v1.CreateOptions{})
 			if createErr != nil {
-				return fmt.Errorf("failed to create namespace %q: %w", releaseName, createErr)
+				return fmt.Errorf("failed to create namespace %q: %w", namespace, createErr)
 			}
-			fmt.Printf("Namespace %q created successfully.\n", releaseName)
+			fmt.Printf("Namespace %q created successfully.\n", namespace)
 		} else {
-			return fmt.Errorf("error getting namespace %q: %w", releaseName, err)
+			return fmt.Errorf("error getting namespace %q: %w", namespace, err)
 		}
 	} else {
-		fmt.Printf("Namespace %q already exists.\n", releaseName)
+		fmt.Printf("Namespace %q already exists.\n", namespace)
+	}
+	return nil
+}
+
+func createHelmLogFile(chartPath string) (*os.File, error) {
+	timestamp := time.Now().Format("20060102-150405")
+	logDir := filepath.Join(chartPath, "logs-"+timestamp)
+	logFileName := "deploy.log"
+	logFilePath := filepath.Join(logDir, logFileName)
+
+	if err := os.MkdirAll(logDir, 0755); err != nil {
+		return nil, fmt.Errorf("failed to create log directory %q: %w", logDir, err)
 	}
 
-	// Set HELM_NAMESPACE environment variable to ensure resources land in the correct namespace
-	// This is needed because otherwise the resources end up in the default namespace even if the actionConfig is set to the target namespace.
-	// https://github.com/helm/helm/issues/9171 and https://github.com/helm/helm/issues/8780
-	os.Setenv("HELM_NAMESPACE", releaseName)
-	fmt.Printf("Set HELM_NAMESPACE to %q\n", releaseName)
-
-	// Bootstrap Helm action config
-	settings := cli.New()
-	actionConfig := new(action.Configuration)
-	driverName := os.Getenv("HELM_DRIVER")
-	if err := actionConfig.Init(
-		settings.RESTClientGetter(),
-		releaseName,
-		driverName,
-		func(format string, v ...interface{}) {
-			fmt.Printf(format, v...)
-		},
-	); err != nil {
-		return fmt.Errorf("initializing helm action config: %w", err)
+	logFile, err := os.Create(logFilePath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create log file %q: %w", logFilePath, err)
 	}
+	return logFile, nil
+}
 
-	// Load the chart from disk
+func loadHelmCharts(chartPath string) (*chart.Chart, error) {
+	// Load helm charts from disk
 	ch, err := loader.Load(chartPath)
 	if err != nil {
-		return fmt.Errorf("loading chart from %q: %w", chartPath, err)
+		return nil, fmt.Errorf("loading chart from %q: %w", chartPath, err)
 	}
 
 	// Remove test templates from the chart
@@ -156,42 +123,96 @@ func DeployHelmRelease(releaseName string, chartPath string, valuesFiles []strin
 	}
 	ch.Templates = filteredTemplates
 
+	return ch, nil
+}
+
+func mergeValueFiles(valuesFiles []string) (map[string]interface{}, error) {
 	// Merge values files with override
 	mergedVals := map[string]interface{}{}
 	for _, vf := range valuesFiles {
 		vals, err := chartutil.ReadValuesFile(vf)
 		if err != nil {
-			return fmt.Errorf("reading values file %q: %w", vf, err)
+			return nil, fmt.Errorf("reading values file %q: %w", vf, err)
 		}
 
 		valsMap := vals.AsMap()
 
 		if err := mergo.Merge(&mergedVals, valsMap, mergo.WithOverride, mergo.WithTypeCheck); err != nil {
-			fmt.Printf("error merging values from file %s: %v\n", vf, err)
-			return fmt.Errorf("merging values from file %q: %w", vf, err)
+			return nil, fmt.Errorf("merging values from file %q: %w", vf, err)
 		}
 	}
+	return mergedVals, nil
+}
 
-	// --- START: Added code for dry-run debugging ---
-	/*
-		fmt.Println("\n--- Performing Helm Dry Run to inspect rendered manifests ---")
-		dryRunClient := action.NewInstall(actionConfig)
-		dryRunClient.ReleaseName = releaseName
-		dryRunClient.Namespace = releaseName
-		dryRunClient.DryRun = true       // Crucially, set dry run to true
-		dryRunClient.ClientOnly = true   // Render client-side only (no API calls)
-		dryRunClient.IncludeCRDs = false // Exclude CRDs for cleaner output if not relevant to namespace issue
+// initHelmActionConfig initializes the Helm action configuration with the provided chart path and release name.
+func initHelmActionConfig(chartPath, releaseName string, logFile *os.File) (*action.Configuration, error) {
+	settings := cli.New()
+	actionConfig := new(action.Configuration)
+	driverName := os.Getenv("HELM_DRIVER")
+	if err := actionConfig.Init(
+		settings.RESTClientGetter(),
+		releaseName,
+		driverName,
+		func(format string, v ...interface{}) {
+			msg := fmt.Sprintf(format, v...)
 
-		renderedRelease, err := dryRunClient.Run(ch, mergedVals)
-		if err != nil {
-			return fmt.Errorf("helm dry-run failed: %w", err)
-		}
-		fmt.Printf("--- START: Rendered Manifests for %s in namespace %s ---\n", releaseName, releaseName)
-		fmt.Println(renderedRelease.Manifest)
-		fmt.Printf("--- END: Rendered Manifests ---\n")
-		fmt.Println("--- Dry Run Complete ---")
-	*/
-	// --- END: Added code for dry-run debugging ---
+			// Write all messages to the log file
+			if _, writeErr := logFile.WriteString(msg + "\n"); writeErr != nil {
+				// Handle error writing to log file, but don't fail the main process
+				fmt.Fprintf(os.Stderr, "Error writing to log file: %v\n", writeErr)
+			}
+		},
+	); err != nil {
+		return nil, fmt.Errorf("initializing helm action config: %w", err)
+	}
+
+	return actionConfig, nil
+}
+
+// deployHelmRelease will check if a Helm release named releaseName exists in namespace=releaseName.
+// - If it doesn't exist and upgrade = false, it will install the chart at chartPath using valuesFiles.
+// - If it does exist and upgrade = true, it will perform a Helm upgrade with the same chartPath and values.
+func DeployHelmRelease(kubeClient *kubernetes.Clientset, releaseName string, chartPath string, valuesFiles []string, upgrade bool) error {
+	// Set HELM_NAMESPACE environment variable to ensure resources land in the correct namespace
+	// Bug: https://github.com/helm/helm/issues/9171 and https://github.com/helm/helm/issues/8780
+	os.Setenv("HELM_NAMESPACE", releaseName)
+
+	// Wait for the Kubernetes API server to be ready
+	err := waitForAPIServer(kubeClient)
+	if err != nil {
+		return fmt.Errorf("waiting for API server: %w", err)
+	}
+
+	// Ensure the target namespace exists
+	err = createNamespace(kubeClient, releaseName)
+	if err != nil {
+		return fmt.Errorf("ensuring namespace %q exists: %w", releaseName, err)
+	}
+
+	// Configure Helm logging to file
+	logFile, err := createHelmLogFile(chartPath)
+	if err != nil {
+		return fmt.Errorf("creating Helm log file: %w", err)
+	}
+	defer logFile.Close()
+
+	// Bootstrap Helm action config
+	actionConfig, err := initHelmActionConfig(chartPath, releaseName, logFile)
+	if err != nil {
+		return fmt.Errorf("initializing Helm action config: %w", err)
+	}
+
+	// Load the Helm chart from the specified path
+	ch, err := loadHelmCharts(chartPath)
+	if err != nil {
+		return fmt.Errorf("loading Helm chart from %q: %w", chartPath, err)
+	}
+
+	// Merge values from the specified files
+	mergedVals, err := mergeValueFiles(valuesFiles)
+	if err != nil {
+		return fmt.Errorf("merging values files: %w", err)
+	}
 
 	// Check for existing release in the *correct* namespace
 	statusClient := action.NewStatus(actionConfig)
@@ -234,23 +255,11 @@ func DeployHelmRelease(releaseName string, chartPath string, valuesFiles []strin
 	return nil
 }
 
-func WaitForLoadBalancer(namespace, serviceName string, maxRetries int, sleepInterval time.Duration) (string, error) {
-	// Load kubeconfig from KUBECONFIG env var
-	kubeconfigPath := os.Getenv("KUBECONFIG")
-	config, err := clientcmd.BuildConfigFromFlags("", kubeconfigPath)
-	if err != nil {
-		return "", fmt.Errorf("failed to load kubeconfig: %w", err)
-	}
-
-	clientset, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		return "", fmt.Errorf("failed to create Kubernetes client: %w", err)
-	}
-
+func WaitForLoadBalancer(kubeClient *kubernetes.Clientset, namespace, serviceName string, maxRetries int, sleepInterval time.Duration) (string, error) {
 	fmt.Println("Waiting for Kong LoadBalancer external hostname...")
 
 	for i := 1; i <= maxRetries; i++ {
-		svc, err := clientset.CoreV1().Services(namespace).Get(context.Background(), serviceName, v1.GetOptions{})
+		svc, err := kubeClient.CoreV1().Services(namespace).Get(context.Background(), serviceName, v1.GetOptions{})
 		if err != nil {
 			fmt.Printf("Error getting service %s/%s: %v\n", namespace, serviceName, err)
 		} else if len(svc.Status.LoadBalancer.Ingress) > 0 {
@@ -315,6 +324,8 @@ func UpdateDNS(valuesFile, updatedValuesFile, dnsPrefix string) error {
 	return nil
 }
 
+// updateValueAtPath updates the value at the specified path in the YAML node with the given dnsPrefix.
+// It returns true if the value was updated, false otherwise.
 func updateValueAtPath(node *yaml.Node, path []string, dnsPrefix string) bool {
 	if node.Kind != yaml.DocumentNode || len(node.Content) == 0 {
 		return false
@@ -337,13 +348,14 @@ func updateValueAtPath(node *yaml.Node, path []string, dnsPrefix string) bool {
 		}
 	}
 
-	// Now we are at the map where the final key should be updated
 	lastKey := path[len(path)-1]
 	for i := 0; i < len(current.Content); i += 2 {
 		k := current.Content[i]
 		v := current.Content[i+1]
 		if k.Value == lastKey {
-			v.Value = fmt.Sprintf("http://%s.%s", strings.ToLower(lastKey), dnsPrefix+".upcloudlb.com")
+			originalValue := v.Value
+			newValue := strings.Replace(originalValue, "REPLACEME.upcloudlb.com", dnsPrefix+".upcloudlb.com", -1)
+			v.Value = newValue
 			return true
 		}
 	}

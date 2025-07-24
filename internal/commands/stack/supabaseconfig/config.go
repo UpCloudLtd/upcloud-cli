@@ -14,6 +14,9 @@ import (
 )
 
 type SupabaseConfig struct {
+	LbHostname  string
+	ClusterName string
+
 	JWTSecret         string
 	AnonKey           string
 	ServiceRoleKey    string
