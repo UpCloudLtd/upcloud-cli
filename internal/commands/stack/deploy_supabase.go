@@ -1,7 +1,6 @@
 package stack
 
 import (
-	"encoding/json"
 	"fmt"
 	"math/rand"
 	"os"
@@ -18,6 +17,8 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 	"github.com/spf13/pflag"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/tools/clientcmd"
 )
 
 func DeploySupabaseCommand() commands.Command {
@@ -33,19 +34,19 @@ func DeploySupabaseCommand() commands.Command {
 
 type deploySupabaseCommand struct {
 	*commands.BaseCommand
-	location   string
+	zone       string
 	name       string
 	configPath string
 }
 
 func (s *deploySupabaseCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
-	fs.StringVar(&s.location, "location", s.location, "Select the location (region) for the stack deployment")
-	fs.StringVar(&s.name, "name", s.name, "Specify the name of the Supabase project")
+	fs.StringVar(&s.zone, "zone", s.zone, "Zone for the stack deployment")
+	fs.StringVar(&s.name, "name", s.name, "Supabase stack name")
 	fs.StringVar(&s.configPath, "configPath", s.configPath, "Optional path to a configuration file for the Supabase stack")
 	s.AddFlags(fs)
 
-	commands.Must(s.Cobra().MarkFlagRequired("location"))
+	commands.Must(s.Cobra().MarkFlagRequired("zone"))
 	commands.Must(s.Cobra().MarkFlagRequired("name"))
 
 	// configPath is optional, but if provided, it should be a valid path
@@ -61,98 +62,132 @@ func (s *deploySupabaseCommand) ExecuteWithoutArguments(exec commands.Executor) 
 	//exec.PushProgressStarted(msg)
 
 	// Command implementation for deploying a Supabase stack
-	error := deploy(s.location, s.name, s.configPath, exec)
-	if error != nil {
-		fmt.Printf("Error deploying Supabase stack: %+v\n", error)
-		return commands.HandleError(exec, msg, error)
+	config, err := deploy(s.zone, s.name, s.configPath, exec)
+	if err != nil {
+		fmt.Printf("Error deploying Supabase stack: %+v\n", err)
+		return commands.HandleError(exec, msg, err)
 	}
 
 	exec.PushProgressSuccess("Supabase stack created successfully")
 
-	return output.Raw([]byte("Commamnd executed successfully")), nil
+	return output.Raw(summaryOutput(config)), nil
 }
 
-func deploy(location, name, configPath string, exec commands.Executor) error {
+func clusterExists(clusterName string, clusters []upcloud.KubernetesCluster) bool {
+	for _, cluster := range clusters {
+		if cluster.Name == clusterName {
+			return true
+		}
+	}
+	return false
+}
+
+// getNetworkFromName retrieves the network from the net name, returns nil if it does not exist
+func getNetworkFromName(networkName string, networks []upcloud.Network) *upcloud.Network {
+	for _, network := range networks {
+		if network.Name == networkName {
+			return &network
+		}
+	}
+	return nil
+}
+
+// createNetwork creates a network with a random 10.0.X.0/24 subnet
+// It will try 10 times to create a network with a random subnet
+// If it fails to create a network after 10 attempts, it returns an error
+func createNetwork(exec commands.Executor, networkName, location string) (*upcloud.Network, error) {
+	var networkCreated = false
+	var network *upcloud.Network
+
+	for range 10 {
+		// Generate random 10.0.X.0/24 subnet
+		x := rand.Intn(254) + 1
+		cidr := fmt.Sprintf("10.0.%d.0/24", x)
+		fmt.Println("Trying to create network with CIDR:", cidr)
+		var err error
+		network, err = exec.Network().CreateNetwork(exec.Context(), &request.CreateNetworkRequest{
+			Name:   networkName,
+			Zone:   location,
+			Router: "",
+			Labels: []upcloud.Label{
+				{Key: "stacks.upcloud.com/stack", Value: "supabase"},
+				{Key: "stacks.upcloud.com/created-by", Value: "upctl"},
+				{Key: "stacks.upcloud.com/chart-version", Value: "0.1.3"},
+				{Key: "stacks.upcloud.com/name", Value: networkName},
+			},
+			IPNetworks: []upcloud.IPNetwork{{Address: cidr, DHCP: upcloud.True, Family: upcloud.IPAddressFamilyIPv4}},
+		})
+
+		if err != nil {
+			fmt.Printf("Failed to create network %s with CIDR %s: %v\n", networkName, cidr, err)
+			continue
+		} else {
+			fmt.Println("Network created successfully:", network.Name, "with network.UUID", network.UUID)
+			networkCreated = true
+			break
+		}
+	}
+	if !networkCreated {
+		return nil, fmt.Errorf("failed to create network after 10 attempts")
+	}
+	return network, nil
+}
+
+func deploy(location, name, configPath string, exec commands.Executor) (*stacksecrets.SupabaseConfig, error) {
 	fmt.Printf("Deploying Supabase stack '%s' in location '%s'\n", name, location)
 
-	clusterName := fmt.Sprintf("supabase-%s-%s", name, location)
-	networkName := fmt.Sprintf("supabase-net-%s-%s", name, location)
-	var networkID string
-	var networkCIDR string
+	clusterName := fmt.Sprintf("stack-supabase-cluster-%s-%s", name, location)
+	networkName := fmt.Sprintf("stack-supabase-net-%s-%s", name, location)
+	var network *upcloud.Network
 
 	clusters, err := exec.All().GetKubernetesClusters(exec.Context(), &request.GetKubernetesClustersRequest{})
 
 	if err != nil {
-		return fmt.Errorf("failed to get Kubernetes clusters: %w", err)
+		return nil, fmt.Errorf("failed to get Kubernetes clusters: %w", err)
 	}
 
-	for _, cluster := range clusters {
-		if cluster.Name == clusterName {
-			// TODO: We need to include the upgrade option when the cluster already exists
-			return fmt.Errorf("a cluster with the name '%s' already exists", clusterName)
-		}
+	// TODO: We need to include the upgrade option when the cluster already exists
+	// For now we are not supporting upgrades or updates
+	if clusterExists(clusterName, clusters) {
+		return nil, fmt.Errorf("a cluster with the name '%s' already exists", clusterName)
 	}
 
 	fmt.Println("Creating Kubernetes cluster:", clusterName)
 	// Check if the network already exists
 	networks, err := exec.Network().GetNetworks(exec.Context())
 	if err != nil {
-		return fmt.Errorf("failed to get networks: %w", err)
+		return nil, fmt.Errorf("failed to get networks: %w", err)
 	}
 
-	networkExists := false
-	for _, network := range networks.Networks {
-		if network.Name == networkName {
-			networkExists = true
-			networkID = network.UUID
-			break
-		}
-	}
+	network = getNetworkFromName(networkName, networks.Networks)
 
 	// Create the network if it does not exist
-	if !networkExists {
-		fmt.Println("Network does NOT exists, creating:", networkName)
-		var networkCreated bool = false
-
-		for i := 0; i < 10; i++ {
-			// Generate random 10.0.X.0/24 subnet
-			x := rand.Intn(254) + 1
-			cidr := fmt.Sprintf("10.0.%d.0/24", x)
-			fmt.Println("Trying to create network with CIDR:", cidr)
-
-			network, err := exec.Network().CreateNetwork(exec.Context(), &request.CreateNetworkRequest{
-				Name:       networkName,
-				Zone:       location,
-				Router:     "",
-				IPNetworks: []upcloud.IPNetwork{{Address: cidr, DHCP: 1, Family: upcloud.IPAddressFamilyIPv4}},
-			})
-
-			if err != nil {
-				fmt.Printf("Failed to create network %s with CIDR %s: %v\n", networkName, cidr, err)
-				continue
-			} else {
-				fmt.Println("Network created successfully:", network.Name, "with network.UUID", network.UUID)
-				networkCreated = true
-				networkID = network.UUID
-				networkCIDR = cidr
-				break
-			}
+	if network == nil {
+		fmt.Println("Network does NOT exist, creating:", networkName)
+		network, err = createNetwork(exec, networkName, location)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create network: %w", err)
 		}
-		if !networkCreated {
-			return fmt.Errorf("failed to create network after 10 attempts")
+
+		if network == nil {
+			return nil, fmt.Errorf("created network %s is nil", networkName)
+		}
+		if len(network.IPNetworks) == 0 {
+			return nil, fmt.Errorf("created network %s has no IP networks", networkName)
 		}
 	}
 
-	fmt.Println(("Moving to creating Kubernetes cluster..."))
+	fmt.Println(("Creating Kubernetes cluster..."))
 	cluster, err := exec.All().CreateKubernetesCluster(exec.Context(), &request.CreateKubernetesClusterRequest{
 		Name:        clusterName,
-		Network:     networkID,
+		Network:     network.UUID,
 		Zone:        location,
-		NetworkCIDR: networkCIDR,
+		NetworkCIDR: network.IPNetworks[0].Address,
 		Labels: []upcloud.Label{
 			{Key: "stacks.upcloud.com/stack", Value: "supabase"},
 			{Key: "stacks.upcloud.com/created-by", Value: "upctl"},
 			{Key: "stacks.upcloud.com/chart-version", Value: "0.1.3"},
+			{Key: "stacks.upcloud.com/name", Value: clusterName},
 		},
 		NodeGroups: []request.KubernetesNodeGroup{
 			{
@@ -164,7 +199,7 @@ func deploy(location, name, configPath string, exec commands.Executor) error {
 	})
 
 	if err != nil {
-		return fmt.Errorf("failed to create Kubernetes cluster: %w", err)
+		return nil, fmt.Errorf("failed to create Kubernetes cluster: %w", err)
 	}
 
 	fmt.Println("Kubernetes cluster created successfully:", cluster.Name, "with UUID", cluster.UUID)
@@ -175,7 +210,7 @@ func deploy(location, name, configPath string, exec commands.Executor) error {
 	})
 
 	if err != nil {
-		return fmt.Errorf("failed to get kubeconfig for cluster %s: %w", cluster.UUID, err)
+		return nil, fmt.Errorf("failed to get kubeconfig for cluster %s: %w", cluster.UUID, err)
 	}
 
 	fmt.Println("Kubeconfig received successfully for cluster:", cluster.Name)
@@ -183,69 +218,64 @@ func deploy(location, name, configPath string, exec commands.Executor) error {
 	// Create a tmp dir for this deployment
 	chartDir, err := os.MkdirTemp("", fmt.Sprintf("supabase-%s-%s", name, location))
 	if err != nil {
-		return fmt.Errorf("failed to make temp dir for deployment: %w", err)
-	}
-
-	// Save kubeconfig to temp file
-	kubeconfigPath := filepath.Join(chartDir, "kubeconfig.yaml")
-	if err := os.WriteFile(kubeconfigPath, []byte(kubeconfig), 0600); err != nil {
-		return fmt.Errorf("failed to write kubeconfig: %w", err)
-	}
-
-	// Point helm (client-go) to kubeconfig
-	os.Setenv("KUBECONFIG", kubeconfigPath)
-
-	fmt.Println("Kubeconfig received successfully and saved to:", kubeconfigPath)
-
-	// TODO: Read deploy_supabase.env file and use it to set up the Supabase stack
-
-	// Generate configuration for the Supabase stack
-	config, err := supabaseconfig.Generate(configPath)
-	if err != nil {
-		return fmt.Errorf("failed to generate secrets: %w", err)
-	}
-
-	// Print the secrets to the console
-	data, err := json.MarshalIndent(config, "", "  ")
-	if err != nil {
-		fmt.Println("Failed to marshal secrets:", err)
-	} else {
-		fmt.Println(string(data))
+		return nil, fmt.Errorf("failed to make temp dir for deployment: %w", err)
 	}
 
 	// clean up at the end
 	//defer os.RemoveAll(chartDir)
+
+	// Save kubeconfig to temp file
+	kubeconfigPath := filepath.Join(chartDir, "kubeconfig.yaml")
+	if err := os.WriteFile(kubeconfigPath, []byte(kubeconfig), 0600); err != nil {
+		return nil, fmt.Errorf("failed to write kubeconfig: %w", err)
+	}
+
+	// Create a Kubernetes client from the kubeconfig
+	os.Setenv("KUBECONFIG", kubeconfigPath)
+	kubeClient, err := getKubernetesClient(kubeconfigPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create Kubernetes client: %w", err)
+	}
+
+	fmt.Println("Kubeconfig received successfully and saved to:", kubeconfigPath)
+
+	// Generate configuration for the Supabase stack from input config file
+	config, err := supabaseconfig.Generate(configPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to generate secrets: %w", err)
+	}
 
 	valuesPath := filepath.Join(chartDir, "charts/supabase/values.example.yaml")
 	securePath := filepath.Join(chartDir, fmt.Sprintf("supabase-%s-values.secure.yaml", name))
 	updatedValuesFile := filepath.Join(chartDir, fmt.Sprintf("supabase-%s-values.updated.yaml", name))
 	err = stacksecrets.WriteSecureValues(securePath, config)
 	if err != nil {
-		return fmt.Errorf("failed to write secrets file: %w", err)
+		return nil, fmt.Errorf("failed to write secrets file: %w", err)
 	}
 
 	// unpack the supabase charts into that temp dir
 	if err := supabase.ExtractChart(supabasechart.ChartFS, chartDir); err != nil {
-		return fmt.Errorf("failed to extract supabase chart: %w", err)
+		return nil, fmt.Errorf("failed to extract supabase chart: %w", err)
 	}
 
 	// Deploy the Helm release
-	// FOR INSTALL:
-	// VALUES_FILE="${CHART_DIR}/values.example.yaml"
-	// SECURE_VALUES_FILE="${CHART_DIR}/values.secure.yaml" -> This is the file in chartDir
-	err = supabase.DeployHelmRelease(clusterName, filepath.Join(chartDir, "charts/supabase"), []string{valuesPath, securePath}, false)
+	err = supabase.DeployHelmRelease(kubeClient, clusterName, filepath.Join(chartDir, "charts/supabase"), []string{valuesPath, securePath}, false)
 	if err != nil {
-		return fmt.Errorf("failed to deploy Supabase Helm release: %w", err)
+		return nil, fmt.Errorf("failed to deploy Supabase Helm release: %w", err)
 	}
 
 	fmt.Println("Supabase Helm release deployed successfully")
 
 	fmt.Println("Waiting on Supabase Kong Load Balancer to be ready...")
 	// Wait for the Supabase stack to be ready
-	lbHostname, err := supabase.WaitForLoadBalancer(clusterName, clusterName+"-supabase-kong", 60, 20*time.Second)
+	lbHostname, err := supabase.WaitForLoadBalancer(kubeClient, clusterName, clusterName+"-supabase-kong", 60, 20*time.Second)
+
+	// Adding the cluster name and lbHostname to the config for reporting purposes
+	config.LbHostname = lbHostname
+	config.ClusterName = clusterName
 
 	if err != nil {
-		return fmt.Errorf("failed to wait for Supabase Kong Load Balancer: %w", err)
+		return nil, fmt.Errorf("failed to wait for Supabase Kong Load Balancer: %w", err)
 	}
 
 	fmt.Println("Supabase Kong Load Balancer ", lbHostname, " is ready")
@@ -257,7 +287,7 @@ func deploy(location, name, configPath string, exec commands.Executor) error {
 
 	err = supabase.UpdateDNS(valuesPath, updatedValuesFile, dnsPrefix)
 	if err != nil {
-		return fmt.Errorf("failed to update DNS entries in values file: %w", err)
+		return nil, fmt.Errorf("failed to update DNS entries in values file: %w", err)
 	}
 
 	files := []string{
@@ -265,39 +295,50 @@ func deploy(location, name, configPath string, exec commands.Executor) error {
 		securePath,
 	}
 
-	// If a configPath is provided, add it to the files to be used for the Helm release
-	//if configPath != "" {
-	//	files = append(files, configPath)
-	//}
-
-	supabase.DeployHelmRelease(clusterName, filepath.Join(chartDir, "charts/supabase"), files, true)
+	supabase.DeployHelmRelease(kubeClient, clusterName, filepath.Join(chartDir, "charts/supabase"), files, true)
 
 	fmt.Println("Supabase stack deployed successfully with updated DNS entries")
 
-	printSummary(lbHostname, clusterName, config)
-
-	return nil
+	return config, nil
 }
 
-func printSummary(lbHostname, namespace string, config *stacksecrets.SupabaseConfig) {
-	fmt.Println("Supabase deployed successfully!")
-	fmt.Printf("Public endpoint:      http://%s:8000\n", lbHostname)
-	fmt.Printf("Namespace:            %s\n", namespace)
-	fmt.Printf("ANON_KEY:             %s\n", config.AnonKey)
-	fmt.Printf("SERVICE_ROLE_KEY:     %s\n", config.ServiceRoleKey)
-	fmt.Printf("POSTGRES_PASSWORD:    %s\n", orNotSet(config.PostgresPassword))
-	fmt.Printf("POOLER_TENANT_ID:     %s\n", config.PoolerTenantID)
-	fmt.Printf("DASHBOARD_USERNAME:   %s\n", config.DashboardUsername)
-	fmt.Printf("DASHBOARD_PASSWORD:   %s\n", config.DashboardPassword)
-	fmt.Printf("S3 ENABLED:           %t\n", config.S3Enabled)
-	fmt.Printf("S3_BUCKET:            %s\n", orNotSet(config.S3BucketName))
-	fmt.Printf("S3_ENDPOINT:          %s\n", orNotSet(config.S3Endpoint))
-	fmt.Printf("S3_REGION:            %s\n", orNotSet(config.S3Region))
-	fmt.Printf("SMTP ENABLED:         %t\n", config.SmtpEnabled)
-	fmt.Printf("SMTP_HOST:           %s\n", orNotSet(config.SmtpHost))
-	fmt.Printf("SMTP_PORT:            %s\n", orNotSet(config.SmtpPort))
-	fmt.Printf("SMTP_USER:            %s\n", orNotSet(config.SmtpUsername))
-	fmt.Printf("SMTP_SENDER_NAME:     %s\n", orNotSet(config.SmtpSenderName))
+func summaryOutput(config *stacksecrets.SupabaseConfig) []byte {
+	builder := &strings.Builder{}
+
+	fmt.Fprintln(builder, "Supabase deployed successfully!")
+	fmt.Fprintf(builder, "Public endpoint:      http://%s:8000\n", config.LbHostname)
+	fmt.Fprintf(builder, "Namespace:            %s\n", config.ClusterName)
+	fmt.Fprintf(builder, "ANON_KEY:             %s\n", config.AnonKey)
+	fmt.Fprintf(builder, "SERVICE_ROLE_KEY:     %s\n", config.ServiceRoleKey)
+	fmt.Fprintf(builder, "POSTGRES_PASSWORD:    %s\n", orNotSet(config.PostgresPassword))
+	fmt.Fprintf(builder, "POOLER_TENANT_ID:     %s\n", config.PoolerTenantID)
+	fmt.Fprintf(builder, "DASHBOARD_USERNAME:   %s\n", config.DashboardUsername)
+	fmt.Fprintf(builder, "DASHBOARD_PASSWORD:   %s\n", config.DashboardPassword)
+	fmt.Fprintf(builder, "S3 ENABLED:           %t\n", config.S3Enabled)
+	fmt.Fprintf(builder, "S3_BUCKET:            %s\n", orNotSet(config.S3BucketName))
+	fmt.Fprintf(builder, "S3_ENDPOINT:          %s\n", orNotSet(config.S3Endpoint))
+	fmt.Fprintf(builder, "S3_REGION:            %s\n", orNotSet(config.S3Region))
+	fmt.Fprintf(builder, "SMTP ENABLED:         %t\n", config.SmtpEnabled)
+	fmt.Fprintf(builder, "SMTP_HOST:           %s\n", orNotSet(config.SmtpHost))
+	fmt.Fprintf(builder, "SMTP_PORT:            %s\n", orNotSet(config.SmtpPort))
+	fmt.Fprintf(builder, "SMTP_USER:            %s\n", orNotSet(config.SmtpUsername))
+	fmt.Fprintf(builder, "SMTP_SENDER_NAME:     %s\n", orNotSet(config.SmtpSenderName))
+
+	return []byte(builder.String())
+}
+
+func getKubernetesClient(kubeconfigPath string) (*kubernetes.Clientset, error) {
+	config, err := clientcmd.BuildConfigFromFlags("", kubeconfigPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load kubeconfig: %w", err)
+	}
+
+	kubeClient, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create Kubernetes client: %w", err)
+	}
+
+	return kubeClient, nil
 }
 
 func orNotSet(val string) string {
