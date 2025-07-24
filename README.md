@@ -10,21 +10,6 @@ to control your resources from the command line or any compatible interface.
 
 For instructions on how to install `upctl`, configure credentials, and run commands, see [Getting started](https://upcloudltd.github.io/upcloud-cli/) instructions in the documentation.
 
-## Install with go install
-
-Install the latest version of `upctl` with `go install` by running:
-
-```sh
-go install github.com/UpCloudLtd/upcloud-cli/v3/...@latest
-```
-
-Run `upctl version` to verify that the tool was installed successfully and `upctl help` to print usage instructions.
-
-```sh
-upctl version
-upctl help
-```
-
 ## Exit codes
 
 Exit code communicates success or the type and number of failures. Possible exit codes of `upctl` are:
