@@ -1,21 +1,33 @@
 package output
 
-import "fmt"
+import "io"
 
-// Raw is a way to output raw data to the user. It is *only* supported in humanized output and used for generating shell completion scripts.
-type Raw []byte
+// Raw is a way to output raw data from a source reader.
+type Raw struct {
+	Source io.ReadCloser
+}
 
 // MarshalJSON implements output.Output
 func (s Raw) MarshalJSON() ([]byte, error) {
-	return nil, fmt.Errorf("json output not supported")
+	return []byte{}, nil
 }
 
 // MarshalHuman implements output.Output
 func (s Raw) MarshalHuman() ([]byte, error) {
-	return s, nil
+	return []byte{}, nil
 }
 
 // MarshalRawMap implements output.Output
 func (s Raw) MarshalRawMap() (map[string]interface{}, error) {
-	return nil, fmt.Errorf("raw mao output not supported")
+	return map[string]interface{}{}, nil
+}
+
+// Read implements io.ReadCloser.
+func (s Raw) Read(p []byte) (n int, err error) {
+	return s.Source.Read(p)
+}
+
+// Close implements io.ReadCloser.
+func (s Raw) Close() error {
+	return s.Source.Close()
 }
