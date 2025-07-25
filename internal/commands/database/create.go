@@ -30,14 +30,14 @@ func CreateCommand() commands.Command {
 			"create",
 			"Create a new database",
 			`upctl database create \
-				--title=mydb \ 
-				--zone=fi-hel1 \
-				--hostname-prefix=mydb`,
+				--title mydb \
+				--zone fi-hel1 \
+				--hostname-prefix mydb`,
 			`upctl database create \
-				--title=mydb \ 
-				--zone=fi-hel1 \
-				--type=pg \
-				--hostname-prefix=mydb \
+				--title mydb \
+				--zone fi-hel1 \
+				--type pg \
+				--hostname-prefix mydb \
 				--termination-protection \
 				--label env=dev \
 				--property max_connections=200`,
