@@ -38,9 +38,9 @@ func TestCreateCommand(t *testing.T) {
 		{
 			name: "minimum required parameters",
 			args: []string{
-				"--title=db-test",
-				"--zone=fi-hel1",
-				"--hostname-prefix=testdb",
+				"--title", "db-test",
+				"--zone", "fi-hel1",
+				"--hostname-prefix", "testdb",
 			},
 			createDatabaseReq: request.CreateManagedDatabaseRequest{
 				Title:          "db-test",
@@ -53,14 +53,14 @@ func TestCreateCommand(t *testing.T) {
 		{
 			name: "pg with label, protection, and version parameters",
 			args: []string{
-				"--title=full-test",
-				"--zone=fi-hel1",
-				"--hostname-prefix=fulldb",
-				"--plan=4x4xCPU-8GB-200GB",
-				"--type=pg",
-				"--label=env=test,app=database",
+				"--title", "full-test",
+				"--zone", "fi-hel1",
+				"--hostname-prefix", "fulldb",
+				"--plan", "4x4xCPU-8GB-200GB",
+				"--type", "pg",
+				"--label", "env=test,app=database",
 				"--enable-termination-protection",
-				"--property=version=13",
+				"--property", "version=13",
 			},
 			createDatabaseReq: request.CreateManagedDatabaseRequest{
 				Title:                 "full-test",
@@ -78,16 +78,16 @@ func TestCreateCommand(t *testing.T) {
 		{
 			name: "opensearch with properties parameters",
 			args: []string{
-				"--title=full-test",
-				"--zone=fi-hel1",
-				"--hostname-prefix=fulldb",
-				"--plan=4x4xCPU-8GB-200GB",
-				"--type=opensearch",
-				"--property=saml={\"enabled\":true}", // without quotes
-				"--property=openid=\"{\"client_id\":\"test_client_id\"}\"", // with quotes
-				"--property=ism_enabled=true",
-				"--property=custom_domain=custom.upcloud.com",
-				"--property=numeric_string=123",
+				"--title", "full-test",
+				"--zone", "fi-hel1",
+				"--hostname-prefix", "fulldb",
+				"--plan", "4x4xCPU-8GB-200GB",
+				"--type", "opensearch",
+				"--property", "saml={\"enabled\":true}", // without quotes
+				"--property", "openid=\"{\"client_id\":\"test_client_id\"}\"", // with quotes
+				"--property", "ism_enabled=true",
+				"--property", "custom_domain=custom.upcloud.com",
+				"--property", "numeric_string=123",
 			},
 			createDatabaseReq: request.CreateManagedDatabaseRequest{
 				Title:          "full-test",
@@ -107,9 +107,9 @@ func TestCreateCommand(t *testing.T) {
 		{
 			name: "mysql default database type",
 			args: []string{
-				"--title=mysql-test",
-				"--zone=fi-hel1",
-				"--hostname-prefix=mysqldb",
+				"--title", "mysql-test",
+				"--zone", "fi-hel1",
+				"--hostname-prefix", "mysqldb",
 			},
 			createDatabaseReq: request.CreateManagedDatabaseRequest{
 				Title:          "mysql-test",
@@ -122,11 +122,11 @@ func TestCreateCommand(t *testing.T) {
 		{
 			name: "maintenance-dow and maintenance-time",
 			args: []string{
-				"--title=mysql-test",
-				"--zone=fi-hel1",
-				"--hostname-prefix=mysqldb",
-				"--maintenance-dow=monday",
-				"--maintenance-time=02:00",
+				"--title", "mysql-test",
+				"--zone", "fi-hel1",
+				"--hostname-prefix", "mysqldb",
+				"--maintenance-dow", "monday",
+				"--maintenance-time", "02:00",
 			},
 			createDatabaseReq: request.CreateManagedDatabaseRequest{
 				Title:          "mysql-test",
@@ -143,24 +143,24 @@ func TestCreateCommand(t *testing.T) {
 		{
 			name: "missing required title parameter",
 			args: []string{
-				"--zone=fi-hel1",
-				"--hostname-prefix=testdb",
+				"--zone", "fi-hel1",
+				"--hostname-prefix", "testdb",
 			},
 			error: "required flag(s) \"title\" not set",
 		},
 		{
 			name: "missing required zone parameter",
 			args: []string{
-				"--title=db-test",
-				"--hostname-prefix=testdb",
+				"--title", "db-test",
+				"--hostname-prefix", "testdb",
 			},
 			error: "required flag(s) \"zone\" not set",
 		},
 		{
 			name: "missing required hostname-prefix parameter",
 			args: []string{
-				"--title=db-test",
-				"--zone=fi-hel1",
+				"--title", "db-test",
+				"--zone", "fi-hel1",
 			},
 			error: "required flag(s) \"hostname-prefix\" not set",
 		},
