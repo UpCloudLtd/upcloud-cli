@@ -33,7 +33,7 @@ func TestScaleKubernetesNodeGroup(t *testing.T) {
 			args: []string{
 				clusterUUID,
 				"--name", "my-node-group",
-				"--count=6",
+				"--count", "6",
 			},
 			expected: request.ModifyKubernetesNodeGroupRequest{
 				ClusterUUID: clusterUUID,
