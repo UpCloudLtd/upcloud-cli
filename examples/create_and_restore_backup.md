@@ -31,7 +31,8 @@ To have something to backup, we will install a nginx server and configure a non-
 ```sh filename=configure-nginx.sh
 #!/bin/sh -xe
 
-apt install nginx -y
+apt-get update
+apt-get install nginx -y
 echo "Hello from $(hostname)"'!' > /var/www/html/index.html
 ```
 

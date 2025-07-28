@@ -39,7 +39,7 @@ func (s *showCommand) InitCommand() {
 
 // Execute implements commands.MultipleArgumentCommand
 func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
-	network, err := s.CachingNetwork.GetCached(arg)
+	network, err := s.GetCached(arg)
 	if err != nil {
 		return nil, err
 	}

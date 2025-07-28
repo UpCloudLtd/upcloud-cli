@@ -98,7 +98,7 @@ func (s *createParams) processParams(exec commands.Executor) error {
 
 		// Enable metadata service for cloud-init templates. Leave empty for other templates to use value defined by user.
 		if osStorage.TemplateType == upcloud.StorageTemplateTypeCloudInit {
-			s.CreateServerRequest.Metadata = upcloud.True
+			s.Metadata = upcloud.True
 		}
 
 		s.StorageDevices = append(s.StorageDevices, request.CreateServerStorageDevice{

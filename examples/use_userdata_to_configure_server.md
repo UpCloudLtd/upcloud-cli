@@ -13,7 +13,8 @@ First, create a file for the user-data script. The script installs [podman](http
 
 ```sh filename=user-data.sh
 #!/bin/sh
-sudo apt install -y podman
+sudo apt-get update
+sudo apt-get install -y podman
 podman run -d -p 80:80 ghcr.io/upcloudltd/hello
 ```
 

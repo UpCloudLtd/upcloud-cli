@@ -108,7 +108,7 @@ func TestInputValidation(t *testing.T) {
 				test.setupFixture()
 			}
 
-			cmd.SetOutput(stdout) // prevent noisy prints
+			cmd.SetOut(stdout) // prevent noisy prints
 			cmd.SetArgs(test.args)
 
 			err := cmd.Execute()

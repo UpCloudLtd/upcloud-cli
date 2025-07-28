@@ -27,7 +27,7 @@ type listCommand struct {
 
 func (c *listCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
-	c.PageParameters.ConfigureFlags(fs)
+	c.ConfigureFlags(fs)
 	c.AddFlags(fs)
 }
 

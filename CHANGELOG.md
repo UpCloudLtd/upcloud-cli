@@ -16,6 +16,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Object storage user management with `object-storage user create`, `object-storage user delete`, and `object-storage user list` commands
 - Object storage user access key management with `object-storage create-access-key`, `object-storage delete-access-key`, and `object-storage list-access-keys` commands
 
+## [3.21.0] - 2025-07-15
+
+### Added
+
+- Add `zone devices` and `zone devices show` commands for listing available devices.
+
 ## [3.20.2] - 2025-07-09
 
 ### Changed
@@ -599,7 +605,8 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.20.2...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.21.0...HEAD
+[3.21.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.20.2...v3.21.0
 [3.20.2]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.20.1...v3.20.2
 [3.20.1]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.20.0...v3.20.1
 [3.20.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.19.1...v3.20.0
