@@ -3,8 +3,8 @@ al.essio.dev/pkg/shellescape v1.5.1/go.mod h1:6sIqp7X2P6mThCQ7twERpZTuigpr6KbZWt
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/UpCloudLtd/progress v1.0.3 h1:8SfntHkBPyQc5BL3946Bgi9KYnQOxa5RR2EKdadujdg=
 github.com/UpCloudLtd/progress v1.0.3/go.mod h1:iGxOnb9HvHW0yrLGUjHr0lxHhn7TehgWwh7a8NqK6iQ=
-github.com/UpCloudLtd/upcloud-go-api/v8 v8.21.0 h1:gPi3bLwNixV2xo3IFMhP65uOdJcE2KCooXQ5bzPJqEk=
-github.com/UpCloudLtd/upcloud-go-api/v8 v8.21.0/go.mod h1:ImDdnWfVVM6WCRTrskGhAw2W1cRwu5IEkBw+9UCzAv8=
+github.com/UpCloudLtd/upcloud-go-api/v8 v8.22.0 h1:40GwpMlDJZbMlpIqA+1TF80U8Rfr6DbJEONft+1HU6A=
+github.com/UpCloudLtd/upcloud-go-api/v8 v8.22.0/go.mod h1:ImDdnWfVVM6WCRTrskGhAw2W1cRwu5IEkBw+9UCzAv8=
 github.com/adrg/xdg v0.3.2 h1:GUSGQ5pHdev83AYhDSS1A/CX+0JIsxbiWtow2DSA+RU=
 github.com/adrg/xdg v0.3.2/go.mod h1:7I2hH/IT30IsupOpKZ5ue7/qNi3CoKzD6tL3HwpaRMQ=
 github.com/ansel1/merry v1.5.0 h1:9E6Jj5Yda9SfY3dhbOZUq1CeHl5JA1+mItYvKqokJ7s=
