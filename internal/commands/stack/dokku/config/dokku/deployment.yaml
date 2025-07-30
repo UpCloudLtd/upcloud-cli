@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dokku
+  namespace: dokku
+  annotations:
+    kubectl.kubernetes.io/default-container: dokku
+  labels:
+    app: dokku
+    app.kubernetes.io/name: dokku
+    app.kubernetes.io/instance: dokku
+    app.kubernetes.io/version: "0.35.18"
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: dokku
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dokku
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: dokku
+      labels:
+        app: dokku
+        app.kubernetes.io/name: dokku
+        app.kubernetes.io/instance: dokku
+        app.kubernetes.io/version: "0.35.18"
+        app.kubernetes.io/managed-by: kustomize
+        app.kubernetes.io/part-of: dokku
+    spec:
+      serviceAccountName: dokku-kubectl
+      containers:
+        - name: dokku
+          image: ghcr.io/upcloudltd/stacks-dokku:latest
+          securityContext:
+            privileged: true
+          ports:
+            - containerPort: 22
+              name: ssh
+              protocol: TCP
+            - containerPort: 80
+              name: http
+              protocol: TCP
+            - containerPort: 443
+              name: https
+              protocol: TCP
+          env:
+            - name: DOKKU_HOSTNAME
+              value: upcloud.dokku
+            - name: DOCKER_HOST
+              value: tcp://localhost:2375
+            - name: DOCKER_DRIVER
+              value: overlay2
+            - name: DOKKU_HOST_ROOT
+              value: /var/lib/dokku/home/dokku
+            - name: DOKKU_LIB_HOST_ROOT
+              value: /var/lib/dokku/var/lib/dokku
+          volumeMounts:
+            - name: dokku-storage
+              mountPath: /mnt/dokku
+              subPath: dokku
+        - name: dind
+          image: docker:28.1.1-dind
+          imagePullPolicy: Always
+          command: ["dockerd", "--host", "tcp://127.0.0.1:2375"]
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: dokku-storage
+              mountPath: /var/lib/docker
+              subPath: docker
+      volumes:
+        - name: dokku-storage
+          persistentVolumeClaim:
+            claimName: dokku-storage
