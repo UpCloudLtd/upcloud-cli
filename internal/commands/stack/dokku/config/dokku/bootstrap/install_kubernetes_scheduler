@@ -1,0 +1,4 @@
+#!/bin/bash
+
+dokku plugin:install https://github.com/dokku/dokku-scheduler-kubernetes
+dokku plugin:install-dependencies
