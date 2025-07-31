@@ -5,7 +5,7 @@ import (
 )
 
 func BaseStackCommand() commands.Command {
-	baseCmd := commands.New("stack", "Manage stacks")
+	baseCmd := commands.New("stack", "Manage stacks (EXPERIMENTAL)")
 
 	return &stackCommand{
 		BaseCommand: baseCmd,

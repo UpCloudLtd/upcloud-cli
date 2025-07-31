@@ -7,7 +7,7 @@ func DeployCommand() commands.Command {
 	return &deployCommand{
 		BaseCommand: commands.New(
 			"deploy",
-			"Deploy a stack",
+			"Deploy a stack (EXPERIMENTAL)",
 			"upctl stack deploy <stack-name>",
 			"upctl stack deploy (supabase|dokku)",
 		),

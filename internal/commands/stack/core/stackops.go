@@ -44,7 +44,6 @@ func CreateNetwork(exec commands.Executor, networkName, location string) (*upclo
 		// Generate random 10.0.X.0/24 subnet
 		x := rand.Intn(254) + 1
 		cidr := fmt.Sprintf("10.0.%d.0/24", x)
-		fmt.Println("Trying to create network with CIDR:", cidr)
 		var err error
 		network, err = exec.Network().CreateNetwork(exec.Context(), &request.CreateNetworkRequest{
 			Name:   networkName,
@@ -60,10 +59,8 @@ func CreateNetwork(exec commands.Executor, networkName, location string) (*upclo
 		})
 
 		if err != nil {
-			fmt.Printf("Failed to create network %s with CIDR %s: %v\n", networkName, cidr, err)
 			continue
 		} else {
-			fmt.Println("Network created successfully:", network.Name, "with network.UUID", network.UUID)
 			networkCreated = true
 			break
 		}
