@@ -1,4 +1,4 @@
-package stack
+package supabase
 
 import (
 	"fmt"
@@ -8,73 +8,15 @@ import (
 	"time"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
-	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/stack/stackops"
-	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/stack/supabase"
-	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/stack/supabase/supabasechart"
-	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/stack/supabaseconfig"
-	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/stack/core"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
-	"github.com/spf13/pflag"
+	"gopkg.in/yaml.v3"
 )
 
-func DeploySupabaseCommand() commands.Command {
-	return &deploySupabaseCommand{
-		BaseCommand: commands.New(
-			"supabase",
-			"Deploy a Supabase stack",
-			"upctl stack deploy supabase <project-name>",
-			"upctl stack deploy supabase my-new-project",
-		),
-	}
-}
-
-type deploySupabaseCommand struct {
-	*commands.BaseCommand
-	zone       string
-	name       string
-	configPath string
-}
-
-func (s *deploySupabaseCommand) InitCommand() {
-	fs := &pflag.FlagSet{}
-	fs.StringVar(&s.zone, "zone", s.zone, "Zone for the stack deployment")
-	fs.StringVar(&s.name, "name", s.name, "Supabase stack name")
-	fs.StringVar(&s.configPath, "configPath", s.configPath, "Optional path to a configuration file for the Supabase stack")
-	s.AddFlags(fs)
-
-	commands.Must(s.Cobra().MarkFlagRequired("zone"))
-	commands.Must(s.Cobra().MarkFlagRequired("name"))
-
-	// configPath is optional, but if provided, it should be a valid path
-	if s.configPath != "" {
-		if _, err := os.Stat(s.configPath); os.IsNotExist(err) {
-			commands.Must(s.Cobra().MarkFlagRequired("configPath"))
-		}
-	}
-}
-
-func (s *deploySupabaseCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
-	msg := fmt.Sprintf("Creating supabase stack %v", s.name)
-	//exec.PushProgressStarted(msg)
-
-	// Command implementation for deploying a Supabase stack
-	config, err := deploy(s.zone, s.name, s.configPath, exec)
-	if err != nil {
-		fmt.Printf("Error deploying Supabase stack: %+v\n", err)
-		return commands.HandleError(exec, msg, err)
-	}
-
-	exec.PushProgressSuccess("Supabase stack created successfully")
-
-	return output.Raw(summaryOutput(config)), nil
-}
-
-func deploy(location, name, configPath string, exec commands.Executor) (*supabaseconfig.SupabaseConfig, error) {
-	fmt.Printf("Deploying Supabase stack '%s' in location '%s'\n", name, location)
-
-	clusterName := fmt.Sprintf("stack-supabase-cluster-%s-%s", name, location)
-	networkName := fmt.Sprintf("stack-supabase-net-%s-%s", name, location)
+func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) (*SupabaseConfig, error) {
+	clusterName := fmt.Sprintf("stack-supabase-cluster-%s-%s", s.name, s.zone)
+	networkName := fmt.Sprintf("stack-supabase-net-%s-%s", s.name, s.zone)
 	var network *upcloud.Network
 
 	clusters, err := exec.All().GetKubernetesClusters(exec.Context(), &request.GetKubernetesClustersRequest{})
@@ -85,7 +27,7 @@ func deploy(location, name, configPath string, exec commands.Executor) (*supabas
 
 	// TODO: We need to include the upgrade option when the cluster already exists
 	// For now we are not supporting upgrades or updates
-	if stackops.ClusterExists(clusterName, clusters) {
+	if core.ClusterExists(clusterName, clusters) {
 		return nil, fmt.Errorf("a cluster with the name '%s' already exists", clusterName)
 	}
 
@@ -96,14 +38,14 @@ func deploy(location, name, configPath string, exec commands.Executor) (*supabas
 		return nil, fmt.Errorf("failed to get networks: %w", err)
 	}
 
-	network = stackops.GetNetworkFromName(networkName, networks.Networks)
+	network = core.GetNetworkFromName(networkName, networks.Networks)
 
 	// Create the network if it does not exist
 	if network == nil {
 		fmt.Println("Network does NOT exist, creating:", networkName)
-		network, err = stackops.CreateNetwork(exec, networkName, location)
+		network, err = core.CreateNetwork(exec, networkName, s.zone)
 		if err != nil {
-			return nil, fmt.Errorf("failed to create network: %w", err)
+			return nil, fmt.Errorf("failed to create network: %w for kubernetes deployment", err)
 		}
 
 		if network == nil {
@@ -118,7 +60,7 @@ func deploy(location, name, configPath string, exec commands.Executor) (*supabas
 	cluster, err := exec.All().CreateKubernetesCluster(exec.Context(), &request.CreateKubernetesClusterRequest{
 		Name:        clusterName,
 		Network:     network.UUID,
-		Zone:        location,
+		Zone:        s.zone,
 		NetworkCIDR: network.IPNetworks[0].Address,
 		Labels: []upcloud.Label{
 			{Key: "stacks.upcloud.com/stack", Value: "supabase"},
@@ -152,15 +94,6 @@ func deploy(location, name, configPath string, exec commands.Executor) (*supabas
 
 	fmt.Println("Kubeconfig received successfully for cluster:", cluster.Name)
 
-	// Create a tmp dir for this deployment
-	chartDir, err := os.MkdirTemp("", fmt.Sprintf("supabase-%s-%s", name, location))
-	if err != nil {
-		return nil, fmt.Errorf("failed to make temp dir for deployment: %w", err)
-	}
-
-	// clean up at the end
-	//defer os.RemoveAll(chartDir)
-
 	// Save kubeconfig to temp file
 	kubeconfigPath := filepath.Join(chartDir, "kubeconfig.yaml")
 	if err := os.WriteFile(kubeconfigPath, []byte(kubeconfig), 0600); err != nil {
@@ -169,7 +102,7 @@ func deploy(location, name, configPath string, exec commands.Executor) (*supabas
 
 	// Create a Kubernetes client from the kubeconfig
 	os.Setenv("KUBECONFIG", kubeconfigPath)
-	kubeClient, err := stackops.GetKubernetesClient(kubeconfigPath)
+	kubeClient, err := core.GetKubernetesClient(kubeconfigPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create Kubernetes client: %w", err)
 	}
@@ -177,26 +110,21 @@ func deploy(location, name, configPath string, exec commands.Executor) (*supabas
 	fmt.Println("Kubeconfig received successfully and saved to:", kubeconfigPath)
 
 	// Generate configuration for the Supabase stack from input config file
-	config, err := supabaseconfig.Generate(configPath)
+	config, err := Generate(s.configPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate secrets: %w", err)
 	}
 
 	valuesPath := filepath.Join(chartDir, "charts/supabase/values.example.yaml")
-	securePath := filepath.Join(chartDir, fmt.Sprintf("supabase-%s-values.secure.yaml", name))
-	updatedValuesFile := filepath.Join(chartDir, fmt.Sprintf("supabase-%s-values.updated.yaml", name))
-	err = supabaseconfig.WriteSecureValues(securePath, config)
+	securePath := filepath.Join(chartDir, fmt.Sprintf("supabase-%s-values.secure.yaml", s.name))
+	updatedValuesFile := filepath.Join(chartDir, fmt.Sprintf("supabase-%s-values.updated.yaml", s.name))
+	err = WriteSecureValues(securePath, config)
 	if err != nil {
 		return nil, fmt.Errorf("failed to write secrets file: %w", err)
 	}
 
-	// unpack the supabase charts into that temp dir
-	if err := stackops.ExtractChart(supabasechart.ChartFS, chartDir); err != nil {
-		return nil, fmt.Errorf("failed to extract supabase chart: %w", err)
-	}
-
 	// Deploy the Helm release
-	err = supabase.DeployHelmRelease(kubeClient, clusterName, filepath.Join(chartDir, "charts/supabase"), []string{valuesPath, securePath}, false)
+	err = core.DeployHelmRelease(kubeClient, clusterName, filepath.Join(chartDir, "charts/supabase"), []string{valuesPath, securePath}, false)
 	if err != nil {
 		return nil, fmt.Errorf("failed to deploy Supabase Helm release: %w", err)
 	}
@@ -205,7 +133,7 @@ func deploy(location, name, configPath string, exec commands.Executor) (*supabas
 
 	fmt.Println("Waiting on Supabase Kong Load Balancer to be ready...")
 	// Wait for the Supabase stack to be ready
-	lbHostname, err := stackops.WaitForLoadBalancer(kubeClient, clusterName, clusterName+"-supabase-kong", 60, 20*time.Second)
+	lbHostname, err := core.WaitForLoadBalancer(kubeClient, clusterName, clusterName+"-supabase-kong", 60, 20*time.Second)
 
 	// Adding the cluster name and lbHostname to the config for reporting purposes
 	config.LbHostname = lbHostname
@@ -222,7 +150,7 @@ func deploy(location, name, configPath string, exec commands.Executor) (*supabas
 
 	dnsPrefix := strings.TrimSuffix(lbHostname, ".upcloudlb.com")
 
-	err = supabase.UpdateDNS(valuesPath, updatedValuesFile, dnsPrefix)
+	err = updateDNS(valuesPath, updatedValuesFile, dnsPrefix)
 	if err != nil {
 		return nil, fmt.Errorf("failed to update DNS entries in values file: %w", err)
 	}
@@ -232,14 +160,14 @@ func deploy(location, name, configPath string, exec commands.Executor) (*supabas
 		securePath,
 	}
 
-	supabase.DeployHelmRelease(kubeClient, clusterName, filepath.Join(chartDir, "charts/supabase"), files, true)
+	core.DeployHelmRelease(kubeClient, clusterName, filepath.Join(chartDir, "charts/supabase"), files, true)
 
 	fmt.Println("Supabase stack deployed successfully with updated DNS entries")
 
 	return config, nil
 }
 
-func summaryOutput(config *supabaseconfig.SupabaseConfig) []byte {
+func summaryOutput(config *SupabaseConfig) []byte {
 	builder := &strings.Builder{}
 
 	fmt.Fprintln(builder, "Supabase deployed successfully!")
@@ -269,4 +197,90 @@ func orNotSet(val string) string {
 		return "not set"
 	}
 	return val
+}
+
+// updateDNS updates the DNS entries in the values file with the provided dnsPrefix.
+func updateDNS(valuesFile, updatedValuesFile, dnsPrefix string) error {
+	input, err := os.ReadFile(valuesFile)
+	if err != nil {
+		return fmt.Errorf("failed to read values file: %w", err)
+	}
+
+	var root yaml.Node
+	if err := yaml.Unmarshal(input, &root); err != nil {
+		return fmt.Errorf("failed to parse YAML: %w", err)
+	}
+
+	// List of keys to update
+	targetFields := [][][]string{
+		{{"studio", "environment", "SUPABASE_PUBLIC_URL"}},
+		{{"auth", "environment", "GOTRUE_SITE_URL"}},
+		{{"auth", "environment", "API_EXTERNAL_URL"}},
+		{{"rest", "environment", "POSTGREST_SITE_URL"}},
+		{{"realtime", "environment", "PORTAL_URL"}},
+		{{"storage", "environment", "FILE_STORAGE_BACKEND_URL"}},
+		{{"kong", "environment", "SUPABASE_PUBLIC_URL"}},
+		{{"kong", "environment", "SUPABASE_STUDIO_URL"}},
+	}
+
+	updated := false
+	for _, path := range targetFields {
+		if updateValueAtPath(&root, path[0], dnsPrefix) {
+			updated = true
+		}
+	}
+
+	if !updated {
+		return fmt.Errorf("no DNS entries were updated")
+	}
+
+	output, err := yaml.Marshal(&root)
+	if err != nil {
+		return fmt.Errorf("failed to marshal YAML: %w", err)
+	}
+
+	if err := os.WriteFile(updatedValuesFile, output, 0644); err != nil {
+		return fmt.Errorf("failed to write updated values file: %w", err)
+	}
+
+	return nil
+}
+
+// updateValueAtPath updates the value at the specified path in the YAML node with the given dnsPrefix.
+// It returns true if the value was updated, false otherwise.
+func updateValueAtPath(node *yaml.Node, path []string, dnsPrefix string) bool {
+	if node.Kind != yaml.DocumentNode || len(node.Content) == 0 {
+		return false
+	}
+
+	current := node.Content[0]
+	for _, key := range path[:len(path)-1] {
+		found := false
+		for i := 0; i < len(current.Content); i += 2 {
+			k := current.Content[i]
+			v := current.Content[i+1]
+			if k.Value == key {
+				current = v
+				found = true
+				break
+			}
+		}
+		if !found {
+			return false
+		}
+	}
+
+	lastKey := path[len(path)-1]
+	for i := 0; i < len(current.Content); i += 2 {
+		k := current.Content[i]
+		v := current.Content[i+1]
+		if k.Value == lastKey {
+			originalValue := v.Value
+			newValue := strings.Replace(originalValue, "REPLACEME.upcloudlb.com", dnsPrefix+".upcloudlb.com", -1)
+			v.Value = newValue
+			return true
+		}
+	}
+
+	return false
 }
