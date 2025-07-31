@@ -5,13 +5,16 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"os"
+	"path/filepath"
 	"time"
 
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
+	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 	"helm.sh/helm/v3/pkg/cli"
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -31,21 +34,15 @@ import (
 
 // WaitForLoadBalancer waits for a Kubernetes LoadBalancer service to become available and returns its hostname.
 func WaitForLoadBalancer(kubeClient *kubernetes.Clientset, namespace, serviceName string, maxRetries int, sleepInterval time.Duration) (string, error) {
-	fmt.Println("Waiting for LoadBalancer external hostname...")
-
 	for i := 1; i <= maxRetries; i++ {
 		svc, err := kubeClient.CoreV1().Services(namespace).Get(context.Background(), serviceName, v1.GetOptions{})
-		if err != nil {
-			fmt.Printf("Error getting service %s/%s: %v\n", namespace, serviceName, err)
-		} else if len(svc.Status.LoadBalancer.Ingress) > 0 {
+		if err == nil && len(svc.Status.LoadBalancer.Ingress) > 0 {
 			hostname := svc.Status.LoadBalancer.Ingress[0].Hostname
 			if hostname != "" {
-				fmt.Println("Found LoadBalancer Hostname:", hostname)
 				return hostname, nil
 			}
 		}
 
-		fmt.Printf("⏳ Waiting for LoadBalancer... (%d/%d)\n", i, maxRetries)
 		time.Sleep(sleepInterval)
 	}
 
@@ -71,23 +68,20 @@ func GetKubernetesClient(kubeconfigPath string) (*kubernetes.Clientset, error) {
 func WaitForAPIServer(kubeClient *kubernetes.Clientset) error {
 	for i := 1; i <= 30; i++ {
 		if _, err := kubeClient.Discovery().ServerVersion(); err == nil {
-			fmt.Printf("API ready after %d attempts\n", i)
 			return nil
 		} else {
-			fmt.Printf("⏳ [%2d/30] still waiting for API… %v\n", i, err)
 			time.Sleep(5 * time.Second)
 		}
 	}
 	return fmt.Errorf("timed out waiting for API server")
 }
 
+// CreateNamespace creates a Kubernetes namespace if it does not already exist.
 func CreateNamespace(kubeClient *kubernetes.Clientset, namespace string) error {
-	fmt.Printf("Ensuring namespace %q exists...\n", namespace)
 	_, err := kubeClient.CoreV1().Namespaces().Get(context.Background(), namespace, v1.GetOptions{})
 	if err != nil {
 		// Check for StatusError and StatusReasonNotFound
 		if apierrors.IsNotFound(err) {
-			fmt.Printf("Namespace %q not found, creating...\n", namespace)
 			_, createErr := kubeClient.CoreV1().Namespaces().Create(context.Background(), &corev1.Namespace{
 				ObjectMeta: v1.ObjectMeta{
 					Name: namespace,
@@ -96,12 +90,9 @@ func CreateNamespace(kubeClient *kubernetes.Clientset, namespace string) error {
 			if createErr != nil {
 				return fmt.Errorf("failed to create namespace %q: %w", namespace, createErr)
 			}
-			fmt.Printf("Namespace %q created successfully.\n", namespace)
 		} else {
 			return fmt.Errorf("error getting namespace %q: %w", namespace, err)
 		}
-	} else {
-		fmt.Printf("Namespace %q already exists.\n", namespace)
 	}
 	return nil
 }
@@ -109,7 +100,6 @@ func CreateNamespace(kubeClient *kubernetes.Clientset, namespace string) error {
 // ApplyKustomize builds the kustomization at `dir` and applies
 // all resulting resources server-side (using server-side apply).
 func ApplyKustomize(dir string) error {
-	// Build with kustomize
 	fsys := filesys.MakeFsOnDisk()
 	kustomizer := krusty.MakeKustomizer(krusty.MakeDefaultOptions())
 	resMap, err := kustomizer.Run(fsys, dir)
@@ -179,7 +169,7 @@ func ApplyKustomize(dir string) error {
 		// Apply to the cluster via server-side apply
 		name := obj.GetName()
 		// Use “upctl” as the field manager
-		_, err = dr.Apply(context.Background(), name, &obj, metav1.ApplyOptions{
+		_, err = dr.Apply(context.Background(), name, &obj, v1.ApplyOptions{
 			FieldManager: "upctl",
 			Force:        true,
 		})
@@ -204,7 +194,7 @@ func ExecInPod(
 ) (stdout, stderr []byte, err error) {
 	// Auto-detect container if not provided
 	if containerName == "" {
-		pod, err := kubeClient.CoreV1().Pods(namespace).Get(context.Background(), podName, metav1.GetOptions{})
+		pod, err := kubeClient.CoreV1().Pods(namespace).Get(context.Background(), podName, v1.GetOptions{})
 		if err != nil {
 			return nil, nil, fmt.Errorf("failed to get pod %s: %w", podName, err)
 		}
@@ -258,7 +248,7 @@ func ExecInPod(
 func GetNodeExternalIP(kubeClient *kubernetes.Clientset) (string, error) {
 	nodes, err := kubeClient.CoreV1().
 		Nodes().
-		List(context.Background(), metav1.ListOptions{})
+		List(context.Background(), v1.ListOptions{})
 	if err != nil {
 		return "", fmt.Errorf("listing nodes: %w", err)
 	}
@@ -271,4 +261,22 @@ func GetNodeExternalIP(kubeClient *kubernetes.Clientset) (string, error) {
 		}
 	}
 	return "", fmt.Errorf("no external IP found for node %s", nodes.Items[0].Name)
+}
+
+// writeKubeconfigToFile retrieves the kubeconfig for the given cluster and writes it to a file
+func WriteKubeconfigToFile(exec commands.Executor, clusterId string, configDir string) (string, error) {
+	kubeconfig, err := exec.All().GetKubernetesKubeconfig(exec.Context(), &request.GetKubernetesKubeconfigRequest{
+		UUID: clusterId,
+	})
+
+	if err != nil {
+		return "", fmt.Errorf("failed to get kubeconfig for cluster %s: %w", clusterId, err)
+	}
+
+	kubeconfigPath := filepath.Join(configDir, "kubeconfig.yaml")
+	if err := os.WriteFile(kubeconfigPath, []byte(kubeconfig), 0600); err != nil {
+		return "", fmt.Errorf("failed to write kubeconfig: %w", err)
+	}
+
+	return kubeconfigPath, nil
 }

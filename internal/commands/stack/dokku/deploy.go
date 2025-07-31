@@ -9,7 +9,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/stack/core"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
-	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 	"github.com/spf13/pflag"
 )
 
@@ -75,9 +74,6 @@ func (s *deployDokkuCommand) InitCommand() {
 }
 
 func (s *deployDokkuCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
-	msg := fmt.Sprintf("Creating dokku stack %v", s.name)
-	exec.PushProgressStarted(msg)
-
 	// Create a tmp dir for this deployment
 	configDir, err := os.MkdirTemp("", fmt.Sprintf("dokku-%s-%s", s.name, s.zone))
 	if err != nil {
@@ -95,25 +91,5 @@ func (s *deployDokkuCommand) ExecuteWithoutArguments(exec commands.Executor) (ou
 		return nil, fmt.Errorf("failed to deploy dokku stack: %w", err)
 	}
 
-	exec.PushProgressSuccess(msg)
-
 	return output.Raw([]byte("Command executed successfully")), nil
-}
-
-// writeKubeconfigToFile retrieves the kubeconfig for the given cluster and writes it to a file
-func writeKubeconfigToFile(exec commands.Executor, clusterId string, configDir string) (string, error) {
-	kubeconfig, err := exec.All().GetKubernetesKubeconfig(exec.Context(), &request.GetKubernetesKubeconfigRequest{
-		UUID: clusterId,
-	})
-
-	if err != nil {
-		return "", fmt.Errorf("failed to get kubeconfig for cluster %s: %w", clusterId, err)
-	}
-
-	kubeconfigPath := filepath.Join(configDir, "kubeconfig.yaml")
-	if err := os.WriteFile(kubeconfigPath, []byte(kubeconfig), 0600); err != nil {
-		return "", fmt.Errorf("failed to write kubeconfig: %w", err)
-	}
-
-	return kubeconfigPath, nil
 }

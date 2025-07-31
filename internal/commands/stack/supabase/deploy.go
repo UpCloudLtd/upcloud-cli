@@ -53,9 +53,6 @@ func (s *deploySupabaseCommand) InitCommand() {
 }
 
 func (s *deploySupabaseCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
-	msg := fmt.Sprintf("Creating supabase stack %v in zone %v", s.name, s.zone)
-	exec.PushProgressStarted(msg)
-
 	// Create a tmp dir for this deployment
 	chartDir, err := os.MkdirTemp("", fmt.Sprintf("supabase-%s-%s", s.name, s.zone))
 	if err != nil {
@@ -70,14 +67,11 @@ func (s *deploySupabaseCommand) ExecuteWithoutArguments(exec commands.Executor) 
 	// Command implementation for deploying a Supabase stack
 	config, err := s.deploy(exec, chartDir)
 	if err != nil {
-		fmt.Printf("Error deploying Supabase stack: %+v\n", err)
-		return commands.HandleError(exec, msg, err)
+		return commands.HandleError(exec, "Deploying Supabase stack", err)
 	}
 
 	// clean up at the end
 	//defer os.RemoveAll(chartDir)
-
-	exec.PushProgressSuccess(msg)
 
 	return output.Raw(summaryOutput(config)), nil
 }

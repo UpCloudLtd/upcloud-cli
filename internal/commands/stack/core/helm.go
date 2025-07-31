@@ -134,7 +134,6 @@ func DeployHelmRelease(kubeClient *kubernetes.Clientset, releaseName string, cha
 
 	// Install if not found
 	if errors.Is(err, driver.ErrReleaseNotFound) && !upgrade {
-		fmt.Printf("Release %q not found: installing into namespace %q\n", releaseName, releaseName)
 		installClient := action.NewInstall(actionConfig)
 		installClient.ReleaseName = releaseName
 		installClient.Namespace = releaseName
@@ -145,13 +144,12 @@ func DeployHelmRelease(kubeClient *kubernetes.Clientset, releaseName string, cha
 		if _, err := installClient.Run(ch, mergedVals); err != nil {
 			return fmt.Errorf("helm install failed: %w", err)
 		}
-		fmt.Printf("Helm release %q successfully installed\n", releaseName)
+
 		return nil
 	}
 
 	// Upgrade if it exists
 	if upgrade {
-		fmt.Printf("Release %q already exists: upgrading in namespace %q\n", releaseName, releaseName)
 		upgradeClient := action.NewUpgrade(actionConfig)
 		upgradeClient.Namespace = releaseName
 		upgradeClient.Atomic = true
@@ -161,7 +159,6 @@ func DeployHelmRelease(kubeClient *kubernetes.Clientset, releaseName string, cha
 		if _, err := upgradeClient.Run(releaseName, ch, mergedVals); err != nil {
 			return fmt.Errorf("helm upgrade failed: %w", err)
 		}
-		fmt.Printf("Helm release %q successfully upgraded\n", releaseName)
 	}
 	return nil
 }

@@ -25,13 +25,14 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 		return nil, fmt.Errorf("failed to get Kubernetes clusters: %w", err)
 	}
 
-	// TODO: We need to include the upgrade option when the cluster already exists
-	// For now we are not supporting upgrades or updates
+	// This command will not update an existing cluster, it will create a new one
 	if core.ClusterExists(clusterName, clusters) {
 		return nil, fmt.Errorf("a cluster with the name '%s' already exists", clusterName)
 	}
 
-	fmt.Println("Creating Kubernetes cluster:", clusterName)
+	msg := fmt.Sprintf("Creating Kubernetes cluster %s in zone %s", clusterName, s.zone)
+	exec.PushProgressStarted(msg)
+
 	// Check if the network already exists
 	networks, err := exec.Network().GetNetworks(exec.Context())
 	if err != nil {
@@ -42,7 +43,6 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 
 	// Create the network if it does not exist
 	if network == nil {
-		fmt.Println("Network does NOT exist, creating:", networkName)
 		network, err = core.CreateNetwork(exec, networkName, s.zone)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create network: %w for kubernetes deployment", err)
@@ -56,7 +56,6 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 		}
 	}
 
-	fmt.Println(("Creating Kubernetes cluster..."))
 	cluster, err := exec.All().CreateKubernetesCluster(exec.Context(), &request.CreateKubernetesClusterRequest{
 		Name:        clusterName,
 		Network:     network.UUID,
@@ -81,23 +80,13 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 		return nil, fmt.Errorf("failed to create Kubernetes cluster: %w", err)
 	}
 
-	fmt.Println("Kubernetes cluster created successfully:", cluster.Name, "with UUID", cluster.UUID)
+	exec.PushProgressSuccess(msg)
 
-	fmt.Println("Requesting kubeconfig for the cluster...")
-	kubeconfig, err := exec.All().GetKubernetesKubeconfig(exec.Context(), &request.GetKubernetesKubeconfigRequest{
-		UUID: cluster.UUID,
-	})
-
+	exec.PushProgressStarted("Setting up environment for Supabase stack deployment")
+	// Get kubeconfig file for the cluster
+	kubeconfigPath, err := core.WriteKubeconfigToFile(exec, cluster.UUID, chartDir)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get kubeconfig for cluster %s: %w", cluster.UUID, err)
-	}
-
-	fmt.Println("Kubeconfig received successfully for cluster:", cluster.Name)
-
-	// Save kubeconfig to temp file
-	kubeconfigPath := filepath.Join(chartDir, "kubeconfig.yaml")
-	if err := os.WriteFile(kubeconfigPath, []byte(kubeconfig), 0600); err != nil {
-		return nil, fmt.Errorf("failed to write kubeconfig: %w", err)
+		return nil, fmt.Errorf("failed to write kubeconfig to file: %w", err)
 	}
 
 	// Create a Kubernetes client from the kubeconfig
@@ -107,8 +96,9 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 		return nil, fmt.Errorf("failed to create Kubernetes client: %w", err)
 	}
 
-	fmt.Println("Kubeconfig received successfully and saved to:", kubeconfigPath)
+	exec.PushProgressSuccess("Setting up environment for Supabase stack deployment")
 
+	exec.PushProgressStarted("Generating configuration files for Supabase stack deployment")
 	// Generate configuration for the Supabase stack from input config file
 	config, err := Generate(s.configPath)
 	if err != nil {
@@ -123,31 +113,26 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 		return nil, fmt.Errorf("failed to write secrets file: %w", err)
 	}
 
+	exec.PushProgressSuccess("Generating configuration files for Supabase stack deployment")
+
+	msg = fmt.Sprintf("Deploying Supabase stack in cluster %s in zone %s", clusterName, s.zone)
+	exec.PushProgressStarted(msg)
+
 	// Deploy the Helm release
 	err = core.DeployHelmRelease(kubeClient, clusterName, filepath.Join(chartDir, "charts/supabase"), []string{valuesPath, securePath}, false)
 	if err != nil {
 		return nil, fmt.Errorf("failed to deploy Supabase Helm release: %w", err)
 	}
 
-	fmt.Println("Supabase Helm release deployed successfully")
-
-	fmt.Println("Waiting on Supabase Kong Load Balancer to be ready...")
 	// Wait for the Supabase stack to be ready
 	lbHostname, err := core.WaitForLoadBalancer(kubeClient, clusterName, clusterName+"-supabase-kong", 60, 20*time.Second)
-
-	// Adding the cluster name and lbHostname to the config for reporting purposes
-	config.LbHostname = lbHostname
-	config.ClusterName = clusterName
-
 	if err != nil {
 		return nil, fmt.Errorf("failed to wait for Supabase Kong Load Balancer: %w", err)
 	}
 
-	fmt.Println("Supabase Kong Load Balancer ", lbHostname, " is ready")
-
-	// Update the DNS entries in the values file with the provided dnsPrefix
-	fmt.Println("Updating deployment DNS entries with prefix:", lbHostname)
-
+	// Adding the cluster name and lbHostname to the config for reporting purposes
+	config.LbHostname = lbHostname
+	config.ClusterName = clusterName
 	dnsPrefix := strings.TrimSuffix(lbHostname, ".upcloudlb.com")
 
 	err = updateDNS(valuesPath, updatedValuesFile, dnsPrefix)
@@ -162,7 +147,7 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 
 	core.DeployHelmRelease(kubeClient, clusterName, filepath.Join(chartDir, "charts/supabase"), files, true)
 
-	fmt.Println("Supabase stack deployed successfully with updated DNS entries")
+	exec.PushProgressSuccess(msg)
 
 	return config, nil
 }

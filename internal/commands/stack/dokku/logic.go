@@ -24,9 +24,6 @@ func (s *deployDokkuCommand) deploy(exec commands.Executor, configDir string) er
 	networkName := fmt.Sprintf("stack-dokku-net-%s-%s", s.name, s.zone)
 	var network *upcloud.Network
 
-	msg := fmt.Sprintf("Setting up kubernetes cluster:%s in location '%s'\n", clusterName, s.zone)
-	exec.PushProgressStarted(msg)
-
 	// Check if the cluster already exists
 	clusters, err := exec.All().GetKubernetesClusters(exec.Context(), &request.GetKubernetesClustersRequest{})
 
@@ -39,7 +36,8 @@ func (s *deployDokkuCommand) deploy(exec commands.Executor, configDir string) er
 		return fmt.Errorf("a cluster with the name '%s' already exists", clusterName)
 	}
 
-	exec.PushProgressUpdateMessage(msg, "Creating Kubernetes cluster...")
+	msg := fmt.Sprintf("Creating Kubernetes cluster %s in zone %s", clusterName, s.zone)
+	exec.PushProgressStarted(msg)
 
 	// Check if the network already exists
 	networks, err := exec.Network().GetNetworks(exec.Context())
@@ -51,7 +49,6 @@ func (s *deployDokkuCommand) deploy(exec commands.Executor, configDir string) er
 
 	// Create the network if it does not exist
 	if network == nil {
-		exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Network does NOT exist, creating: %s", networkName))
 		network, err = core.CreateNetwork(exec, networkName, s.zone)
 		if err != nil {
 			return fmt.Errorf("failed to create network: %w", err)
@@ -90,8 +87,11 @@ func (s *deployDokkuCommand) deploy(exec commands.Executor, configDir string) er
 		return fmt.Errorf("failed to create Kubernetes cluster: %w", err)
 	}
 
+	exec.PushProgressSuccess(msg)
+	exec.PushProgressStarted("Setting up environment for Dokku stack deployment")
+
 	// Get kubeconfig file for the cluster
-	kubeconfigPath, err := writeKubeconfigToFile(exec, cluster.UUID, configDir)
+	kubeconfigPath, err := core.WriteKubeconfigToFile(exec, cluster.UUID, configDir)
 	if err != nil {
 		return fmt.Errorf("failed to write kubeconfig to file: %w", err)
 	}
@@ -106,6 +106,8 @@ func (s *deployDokkuCommand) deploy(exec commands.Executor, configDir string) er
 	// Wait for the Kubernetes API server to be ready
 	core.WaitForAPIServer(kubeClient)
 
+	exec.PushProgressSuccess("Setting up environment for Dokku stack deployment")
+	exec.PushProgressStarted("Deploying Dokku stack")
 	// Deploy nginx ingress controller
 	ingressValuesFilePath := filepath.Join(configDir, "config/ingress/values.yaml")
 	err = core.DeployHelmReleaseFromRepo(
@@ -178,11 +180,10 @@ func (s *deployDokkuCommand) deploy(exec commands.Executor, configDir string) er
 		return fmt.Errorf("failed to configure Dokku: %w", err)
 	}
 
+	exec.PushProgressSuccess("Deploying Dokku stack")
+
 	// Print final instructions for the user
 	printFinalInstructions(kubeconfigPath, s.globalDomain, s.sshPath, lbHostName, nodeIp)
-
-	//msg = fmt.Sprintln("Kubernetes cluster created successfully:", cluster.Name, "with UUID", cluster.UUID)
-	exec.PushProgressSuccess(msg)
 
 	return nil
 }
