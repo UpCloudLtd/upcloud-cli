@@ -73,6 +73,8 @@ func (s *modifyCommand) InitCommand() {
 	flags.StringVar(&s.params.RemoteAccessPassword, "remote-access-password", defaultModifyParams.RemoteAccessPassword, "The remote access password.")
 
 	s.AddFlags(flags)
+
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("remote-access-type", cobra.FixedCompletions(remoteAccessTypes, cobra.ShellCompDirectiveNoFileComp)))
 }
 
 func (s *modifyCommand) InitCommandWithConfig(cfg *config.Config) {

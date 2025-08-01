@@ -285,7 +285,7 @@ Note that the default template, Ubuntu Server 24.04 LTS (Noble Numbat), only sup
 	fs.StringVar(&s.params.PasswordDelivery, "password-delivery", def.PasswordDelivery, "Defines how password is delivered. Available: "+strings.Join(passwordDeliveries, ", "))
 	fs.StringVar(&s.params.Plan, "plan", def.Plan, "Server plan name. See \"server plans\" command for valid plans. Set to \"custom\" and use `cores` and `memory` options for flexible plan.")
 	fs.StringVar(&s.params.RemoteAccessPassword, "remote-access-password", def.RemoteAccessPassword, "Defines the remote access password.")
-	fs.StringVar(&s.params.RemoteAccessType, "remote-access-type", def.RemoteAccessType, "Set a remote access type. Available: vnc, spice")
+	fs.StringVar(&s.params.RemoteAccessType, "remote-access-type", def.RemoteAccessType, "Set a remote access type. Available: "+strings.Join(remoteAccessTypes, ", "))
 	fs.StringVar(&s.params.ServerGroup, "server-group", def.ServerGroup, "UUID of a server group for the server. To remove the server from the group, see `servergroup modify")
 	fs.StringVar(&s.params.SimpleBackup, "simple-backup", def.SimpleBackup, simpleBackupDescription)
 	fs.StringSliceVar(&s.params.sshKeys, "ssh-keys", def.sshKeys, "Add one or more SSH keys to the admin account. Accepted values are SSH public keys or filenames from where to read the keys.")
@@ -305,6 +305,7 @@ Note that the default template, Ubuntu Server 24.04 LTS (Noble Numbat), only sup
 	commands.Must(s.Cobra().MarkFlagRequired("hostname"))
 	commands.Must(s.Cobra().MarkFlagRequired("zone"))
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("password-delivery", cobra.FixedCompletions(passwordDeliveries, cobra.ShellCompDirectiveNoFileComp)))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("remote-access-type", cobra.FixedCompletions(remoteAccessTypes, cobra.ShellCompDirectiveNoFileComp)))
 }
 
 func (s *createCommand) InitCommandWithConfig(cfg *config.Config) {
