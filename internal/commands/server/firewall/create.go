@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/ipaddress"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
@@ -64,7 +65,7 @@ To edit the default rule of the firewall, set only ` + "`" + `--direction` + "`"
 
 	flagSet.StringVar(&s.direction, "direction", "", "Rule direction. Available: in, out")
 	flagSet.StringVar(&s.action, "action", "", "Rule action. Available: accept, drop")
-	flagSet.StringVar(&s.family, "family", "", "IP family. Available: IPv4, IPv6")
+	flagSet.StringVar(&s.family, "family", "", "IP family. Available: "+strings.Join(ipaddress.Families, ", "))
 	flagSet.IntVar(&s.position, "position", 0, "Position in relation to other rules. Available: 1-1000")
 	flagSet.StringVar(&s.protocol, "protocol", "", "Protocol. Available: "+strings.Join(protocols, ", "))
 	flagSet.StringVar(&s.icmpType, "icmp-type", "", "ICMP type. Available: 0-255")
@@ -81,6 +82,7 @@ To edit the default rule of the firewall, set only ` + "`" + `--direction` + "`"
 	commands.Must(s.Cobra().MarkFlagRequired("action"))
 	s.Cobra().MarkFlagsRequiredTogether("destination-port-start", "destination-port-end")
 	s.Cobra().MarkFlagsRequiredTogether("source-port-start", "source-port-end")
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("family", cobra.FixedCompletions(ipaddress.Families, cobra.ShellCompDirectiveNoFileComp)))
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("protocol", cobra.FixedCompletions(protocols, cobra.ShellCompDirectiveNoFileComp)))
 }
 
