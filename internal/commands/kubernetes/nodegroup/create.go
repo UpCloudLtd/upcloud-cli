@@ -9,6 +9,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/labels"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/namedargs"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 
@@ -46,7 +47,6 @@ func GetCreateNodeGroupFlagSet(p *CreateNodeGroupParams) *pflag.FlagSet {
 	commands.Must(fs.SetAnnotation("kubelet-arg", commands.FlagAnnotationNoFileCompletions, nil))
 	commands.Must(fs.SetAnnotation("label", commands.FlagAnnotationNoFileCompletions, nil))
 	commands.Must(fs.SetAnnotation("name", commands.FlagAnnotationNoFileCompletions, nil))
-	commands.Must(fs.SetAnnotation("plan", commands.FlagAnnotationNoFileCompletions, nil))
 	commands.Must(fs.SetAnnotation("storage", commands.FlagAnnotationNoFileCompletions, nil))
 	commands.Must(fs.SetAnnotation("taint", commands.FlagAnnotationNoFileCompletions, nil))
 
@@ -153,6 +153,10 @@ func (s *createCommand) InitCommand() {
 	commands.Must(s.Cobra().MarkFlagRequired("name"))
 	commands.Must(s.Cobra().MarkFlagRequired("count"))
 	commands.Must(s.Cobra().MarkFlagRequired("plan"))
+}
+
+func (s *createCommand) InitCommandWithConfig(cfg *config.Config) {
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("plan", namedargs.CompletionFunc(completion.KubernetesPlan{}, cfg)))
 }
 
 // ExecuteSingleArgument implements commands.SingleArgumentCommand
