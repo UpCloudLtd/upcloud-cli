@@ -5,6 +5,8 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/namedargs"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 	"github.com/spf13/pflag"
@@ -44,6 +46,10 @@ func (s *relocateCommand) InitCommand() {
 	fs.StringVar(&s.zone, "zone", "", "The zone where the server should be relocated to.")
 	s.AddFlags(fs)
 	commands.Must(s.Cobra().MarkFlagRequired("zone"))
+}
+
+func (s *relocateCommand) InitCommandWithConfig(cfg *config.Config) {
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("zone", namedargs.CompletionFunc(completion.Zone{}, cfg)))
 }
 
 // Execute implements commands.MultipleArgumentCommand

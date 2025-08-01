@@ -55,7 +55,9 @@ func (c *modifyCommand) InitCommand() {
 
 	c.AddFlags(fs)
 	c.Cobra().MarkFlagsMutuallyExclusive("label", "clear-labels")
-	commands.Must(c.Cobra().RegisterFlagCompletionFunc("label", cobra.NoFileCompletions))
+	for _, flag := range []string{"kubernetes-api-allow-ip", "label"} {
+		commands.Must(c.Cobra().RegisterFlagCompletionFunc(flag, cobra.NoFileCompletions))
+	}
 }
 
 // Execute implements commands.MultipleArgumentCommand

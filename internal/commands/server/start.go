@@ -5,6 +5,8 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/namedargs"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 	"github.com/spf13/pflag"
@@ -41,6 +43,11 @@ func (s *startCommand) InitCommand() {
 	fs.IntVar(&s.host, "host", 0, hostDescription)
 
 	s.AddFlags(fs)
+}
+
+func (s *startCommand) InitCommandWithConfig(cfg *config.Config) {
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("avoid-host", namedargs.CompletionFunc(completion.HostID{}, cfg)))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("host", namedargs.CompletionFunc(completion.HostID{}, cfg)))
 }
 
 // Execute implements commands.MultipleArgumentCommand

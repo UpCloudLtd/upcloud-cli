@@ -12,6 +12,12 @@ import (
 
 const maxNetworkActions = 10
 
+var Types = []string{
+	upcloud.NetworkTypePublic,
+	upcloud.NetworkTypeUtility,
+	upcloud.NetworkTypePrivate,
+}
+
 // BaseNetworkCommand creates the base "network" command
 func BaseNetworkCommand() commands.Command {
 	return &networkCommand{

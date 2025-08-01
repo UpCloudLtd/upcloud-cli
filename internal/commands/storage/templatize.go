@@ -12,6 +12,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -55,6 +56,7 @@ func (s *templatizeCommand) InitCommand() {
 
 	s.AddFlags(flagSet)
 	commands.Must(s.Cobra().MarkFlagRequired("title"))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("title", cobra.NoFileCompletions))
 }
 
 // Execute implements commands.MultipleArgumentCommand
