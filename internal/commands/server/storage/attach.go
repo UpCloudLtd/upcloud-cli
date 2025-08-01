@@ -2,6 +2,7 @@ package serverstorage
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/storage"
@@ -10,7 +11,9 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 
+	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -49,16 +52,18 @@ var defaultAttachParams = &attachParams{
 
 // InitCommand implements Command.InitCommand
 func (s *attachCommand) InitCommand() {
+	types := []string{upcloud.StorageTypeDisk, upcloud.StorageTypeCDROM}
 	s.params = attachParams{AttachStorageRequest: request.AttachStorageRequest{}}
 
 	flagSet := &pflag.FlagSet{}
-	flagSet.StringVar(&s.params.Type, "type", defaultAttachParams.Type, "Type of the attached storage. Available: disk, cdrom")
+	flagSet.StringVar(&s.params.Type, "type", defaultAttachParams.Type, "Type of the attached storage. Available: "+strings.Join(types, ", "))
 	flagSet.StringVar(&s.params.Address, "address", defaultAttachParams.Address, "Address where the storage device is attached on the server. \nAddress is of the form busname:deviceindex where busname can be ide/scsi/virtio. (example: 'virtio:1')\nSpecify only the bus name to auto-select next available device index from that bus. (example: 'virtio')")
 	flagSet.StringVar(&s.params.StorageUUID, "storage", defaultAttachParams.StorageUUID, "UUID of the storage to attach.")
 	config.AddToggleFlag(flagSet, &s.params.bootable, "boot-disk", false, "Set attached device as the server's boot disk.")
 
 	s.AddFlags(flagSet)
 	commands.Must(s.Cobra().MarkFlagRequired("storage"))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("type", cobra.FixedCompletions(types, cobra.ShellCompDirectiveNoFileComp)))
 }
 
 // MaximumExecutions implements command.Command
