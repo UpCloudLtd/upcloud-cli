@@ -17,6 +17,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 	"github.com/jedib0t/go-pretty/v6/text"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -257,6 +258,8 @@ type createCommand struct {
 
 // InitCommand implements Command.InitCommand
 func (s *createCommand) InitCommand() {
+	passwordDeliveries := []string{request.PasswordDeliveryNone, request.PasswordDeliveryEmail, request.PasswordDeliverySMS}
+
 	s.Cobra().Long = commands.WrapLongDescription(`Create a new server
 
 Note that the default template, Ubuntu Server 24.04 LTS (Noble Numbat), only supports SSH key based authentication. Use ` + "`" + `--ssh-keys` + "`" + ` option to provide the keys when creating a server with the default template. The examples below use public key from the ` + "`" + `~/.ssh` + "`" + ` directory. If you want to use different authentication method, use ` + "`" + `--os` + "`" + ` parameter to specify a different template.`)
@@ -279,7 +282,7 @@ Note that the default template, Ubuntu Server 24.04 LTS (Noble Numbat), only sup
 	fs.StringVar(&s.params.os, "os", def.os, "Server OS to use (will be the first storage device). The value should be title or UUID of an either public or private template. Set to empty to fully customise the storages.")
 	fs.IntVar(&s.params.osStorageSize, "os-storage-size", def.osStorageSize, "OS storage size in GiB. This is only applicable if `os` is also set. Zero value makes the disk equal to the minimum size of the template.")
 	config.AddToggleFlag(fs, &s.params.osStorageEncrypted, "os-storage-encrypt", false, "Encrypt the OS storage. This is only applicable if `os` is also set.")
-	fs.StringVar(&s.params.PasswordDelivery, "password-delivery", def.PasswordDelivery, "Defines how password is delivered. Available: email, sms")
+	fs.StringVar(&s.params.PasswordDelivery, "password-delivery", def.PasswordDelivery, "Defines how password is delivered. Available: "+strings.Join(passwordDeliveries, ", "))
 	fs.StringVar(&s.params.Plan, "plan", def.Plan, "Server plan name. See \"server plans\" command for valid plans. Set to \"custom\" and use `cores` and `memory` options for flexible plan.")
 	fs.StringVar(&s.params.RemoteAccessPassword, "remote-access-password", def.RemoteAccessPassword, "Defines the remote access password.")
 	fs.StringVar(&s.params.RemoteAccessType, "remote-access-type", def.RemoteAccessType, "Set a remote access type. Available: vnc, spice")
@@ -301,6 +304,7 @@ Note that the default template, Ubuntu Server 24.04 LTS (Noble Numbat), only sup
 
 	commands.Must(s.Cobra().MarkFlagRequired("hostname"))
 	commands.Must(s.Cobra().MarkFlagRequired("zone"))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("password-delivery", cobra.FixedCompletions(passwordDeliveries, cobra.ShellCompDirectiveNoFileComp)))
 }
 
 func (s *createCommand) InitCommandWithConfig(cfg *config.Config) {
