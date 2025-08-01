@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
-	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/stack/core"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/stack"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/spf13/pflag"
 )
@@ -14,7 +14,7 @@ import (
 //go:embed charts/supabase/*
 //go:embed charts/supabase/templates/*
 //go:embed charts/supabase/templates/*/*
-var ChartFS embed.FS
+var chartFS embed.FS
 
 func DeploySupabaseCommand() commands.Command {
 	return &deploySupabaseCommand{
@@ -60,7 +60,7 @@ func (s *deploySupabaseCommand) ExecuteWithoutArguments(exec commands.Executor) 
 	}
 
 	// unpack the supabase charts into that temp dir
-	if err := core.ExtractFolder(ChartFS, chartDir); err != nil {
+	if err := stack.ExtractFolder(chartFS, chartDir); err != nil {
 		return nil, fmt.Errorf("failed to extract supabase chart: %w", err)
 	}
 
