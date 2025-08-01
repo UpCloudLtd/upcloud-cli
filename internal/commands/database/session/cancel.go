@@ -11,6 +11,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -42,7 +43,7 @@ func (s *cancelCommand) InitCommand() {
 
 	s.AddFlags(flagSet)
 	commands.Must(s.Cobra().MarkFlagRequired("pid"))
-	commands.Must(flagSet.SetAnnotation("pid", commands.FlagAnnotationNoFileCompletions, nil))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("pid", cobra.NoFileCompletions))
 }
 
 // Execute implements commands.MultipleArgumentCommand

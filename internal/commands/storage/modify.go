@@ -70,6 +70,9 @@ func (s *modifyCommand) InitCommand() {
 	config.AddEnableOrDisableFlag(flagSet, &s.autoresizePartitionFilesystem, false, "filesystem-autoresize", "automatic resize of partition and filesystem when modifying storage size. Note that before the resize attempt is made, backup of the storage will be taken. If the resize attempt fails, the backup will be used to restore the storage and then deleted. If the resize attempt succeeds, backup will be kept. Taking and keeping backups incur costs.")
 
 	s.AddFlags(flagSet)
+	for _, flag := range []string{"title", "size", "backup-time", "backup-retention"} {
+		commands.Must(flagSet.SetAnnotation(flag, commands.FlagAnnotationNoFileCompletions, nil))
+	}
 }
 
 func setBackupFields(storageUUID string, p modifyParams, exec commands.Executor, req *request.ModifyStorageRequest) error {

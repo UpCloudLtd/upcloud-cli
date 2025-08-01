@@ -11,6 +11,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -59,6 +60,7 @@ func (s *attachCommand) InitCommand() {
 
 	s.AddFlags(flagSet)
 	commands.Must(s.Cobra().MarkFlagRequired("storage"))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("address", cobra.NoFileCompletions))
 }
 
 // MaximumExecutions implements command.Command

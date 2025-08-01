@@ -17,6 +17,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 	"github.com/jedib0t/go-pretty/v6/text"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -301,6 +302,12 @@ Note that the default template, Ubuntu Server 24.04 LTS (Noble Numbat), only sup
 
 	commands.Must(s.Cobra().MarkFlagRequired("hostname"))
 	commands.Must(s.Cobra().MarkFlagRequired("zone"))
+	for _, flag := range []string{
+		"boot-order", "cores", "hostname", "label", "memory", "network", "os", "os-storage-size", "remote-access-password",
+		"simple-backup", "storage", "title", "user-data", "username",
+	} {
+		commands.Must(s.Cobra().RegisterFlagCompletionFunc(flag, cobra.NoFileCompletions))
+	}
 }
 
 func (s *createCommand) InitCommandWithConfig(cfg *config.Config) {

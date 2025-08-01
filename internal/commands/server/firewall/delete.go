@@ -8,6 +8,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -36,6 +37,7 @@ func (s *deleteCommand) InitCommand() {
 	s.AddFlags(flagSet)
 
 	commands.Must(s.Cobra().MarkFlagRequired("position"))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("position", cobra.NoFileCompletions))
 }
 
 // Execute implements commands.MultipleArgumentCommand

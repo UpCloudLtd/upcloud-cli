@@ -10,6 +10,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 	"github.com/m7shapan/cidr"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -77,6 +78,12 @@ To edit the default rule of the firewall, set only ` + "`" + `--direction` + "`"
 	commands.Must(s.Cobra().MarkFlagRequired("action"))
 	s.Cobra().MarkFlagsRequiredTogether("destination-port-start", "destination-port-end")
 	s.Cobra().MarkFlagsRequiredTogether("source-port-start", "source-port-end")
+	for _, flag := range []string{
+		"position", "icmp-type", "dest-ipaddress-block", "destination-port-start", "destination-port-end",
+		"src-ipaddress-block", "source-port-start", "source-port-end", "comment",
+	} {
+		commands.Must(s.Cobra().RegisterFlagCompletionFunc(flag, cobra.NoFileCompletions))
+	}
 }
 
 // Execute implements commands.MultipleArgumentCommand
