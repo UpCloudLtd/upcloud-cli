@@ -11,6 +11,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -43,6 +44,7 @@ func (s *stopCommand) InitCommand() {
 	flags.StringVar(&s.StopType, "type", defaultStopType, "The type of stop operation. Available: soft, hard")
 	config.AddToggleFlag(flags, &s.wait, "wait", false, "Wait for server to be in stopped state before returning.")
 	s.AddFlags(flags)
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("type", cobra.FixedCompletions(stopTypes, cobra.ShellCompDirectiveNoFileComp)))
 }
 
 func stop(exec commands.Executor, uuid, stopType string, wait bool) (output.Output, error) {
