@@ -312,6 +312,7 @@ Note that the default template, Ubuntu Server 24.04 LTS (Noble Numbat), only sup
 func (s *createCommand) InitCommandWithConfig(cfg *config.Config) {
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("avoid-host", namedargs.CompletionFunc(completion.HostID{}, cfg)))
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("host", namedargs.CompletionFunc(completion.HostID{}, cfg)))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("plan", namedargs.CompletionFunc(completion.ServerPlan{}, cfg)))
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("time-zone", namedargs.CompletionFunc(completion.TimeZone{}, cfg)))
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("zone", namedargs.CompletionFunc(completion.Zone{}, cfg)))
 }
