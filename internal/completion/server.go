@@ -54,3 +54,23 @@ func completeServers(ctx context.Context, svc service.AllServices, toComplete st
 	}
 	return MatchStringPrefix(vals, toComplete, true), cobra.ShellCompDirectiveNoFileComp
 }
+
+// ServerPlan implements argument completion for ServerPlan plans.
+type ServerPlan struct{}
+
+// make sure ServerPlan implements the interface.
+var _ Provider = ServerPlan{}
+
+// CompleteArgument implements completion.Provider.
+func (s ServerPlan) CompleteArgument(ctx context.Context, svc service.AllServices, toComplete string) ([]string, cobra.ShellCompDirective) {
+	plans, err := svc.GetPlans(ctx)
+	if err != nil {
+		return None(toComplete)
+	}
+	var vals []string
+	for _, plan := range plans.Plans {
+		vals = append(vals, plan.Name)
+	}
+
+	return MatchStringPrefix(vals, toComplete, true), cobra.ShellCompDirectiveNoFileComp
+}
