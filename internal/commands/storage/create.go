@@ -2,6 +2,7 @@ package storage
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
@@ -83,9 +84,10 @@ func applyCreateFlags(fs *pflag.FlagSet, dst, def *createParams) {
 	fs.StringVar(&dst.Tier, "tier", def.Tier, "Storage tier.")
 	config.AddToggleFlag(fs, &dst.encrypted, "encrypt", false, "Encrypt the storage.")
 	fs.StringVar(&dst.backupTime, "backup-time", def.backupTime, "The time when to create a backup in HH:MM. Empty value means no backups.")
-	fs.StringVar(&dst.BackupRule.Interval, "backup-interval", def.BackupRule.Interval, "The interval of the backup.\nAvailable: daily, mon, tue, wed, thu, fri, sat, sun")
+	fs.StringVar(&dst.BackupRule.Interval, "backup-interval", def.BackupRule.Interval, "The interval of the backup.\nAvailable: "+strings.Join(backupIntervals, ", "))
 	fs.IntVar(&dst.BackupRule.Retention, "backup-retention", def.BackupRule.Retention, "How long to store the backups in days. The accepted range is 1-1095")
 	commands.Must(fs.SetAnnotation("tier", commands.FlagAnnotationFixedCompletions, tiers))
+	commands.Must(fs.SetAnnotation("backup-interval", commands.FlagAnnotationFixedCompletions, backupIntervals))
 }
 
 // InitCommand implements Command.InitCommand
