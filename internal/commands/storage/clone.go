@@ -12,6 +12,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -59,6 +60,7 @@ func (s *cloneCommand) InitCommand() {
 	s.AddFlags(flagSet)
 	commands.Must(s.Cobra().MarkFlagRequired("title"))
 	commands.Must(s.Cobra().MarkFlagRequired("zone"))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("tier", cobra.FixedCompletions(tiers, cobra.ShellCompDirectiveNoFileComp)))
 }
 
 func (s *cloneCommand) InitCommandWithConfig(cfg *config.Config) {

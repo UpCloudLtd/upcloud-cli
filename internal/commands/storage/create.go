@@ -85,6 +85,7 @@ func applyCreateFlags(fs *pflag.FlagSet, dst, def *createParams) {
 	fs.StringVar(&dst.backupTime, "backup-time", def.backupTime, "The time when to create a backup in HH:MM. Empty value means no backups.")
 	fs.StringVar(&dst.BackupRule.Interval, "backup-interval", def.BackupRule.Interval, "The interval of the backup.\nAvailable: daily, mon, tue, wed, thu, fri, sat, sun")
 	fs.IntVar(&dst.BackupRule.Retention, "backup-retention", def.BackupRule.Retention, "How long to store the backups in days. The accepted range is 1-1095")
+	commands.Must(fs.SetAnnotation("tier", commands.FlagAnnotationFixedCompletions, tiers))
 }
 
 // InitCommand implements Command.InitCommand
