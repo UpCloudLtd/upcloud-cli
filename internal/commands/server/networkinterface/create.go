@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/ipaddress"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/network"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
@@ -67,6 +68,7 @@ func (s *createCommand) InitCommand() {
 		commands.Must(s.Cobra().RegisterFlagCompletionFunc(flag, cobra.NoFileCompletions))
 	}
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("type", cobra.FixedCompletions(network.Types, cobra.ShellCompDirectiveNoFileComp)))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("family", cobra.FixedCompletions(ipaddress.Families, cobra.ShellCompDirectiveNoFileComp)))
 }
 
 func (s *createCommand) InitCommandWithConfig(cfg *config.Config) {
