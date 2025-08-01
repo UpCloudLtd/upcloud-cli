@@ -39,7 +39,11 @@ type deleteCommand struct {
 func (s *deleteCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 
-	backupsOptions := []string{"keep", "keep_latest", "delete"}
+	backupsOptions := []string{
+		string(request.DeleteStorageBackupsModeKeep),
+		string(request.DeleteStorageBackupsModeKeepLatest),
+		string(request.DeleteStorageBackupsModeDelete),
+	}
 	fs.StringVar(&s.backups, "backups", "", "Controls what to do with backups related to the storage. Valid values are "+namedargs.ValidValuesHelp(backupsOptions...)+".")
 
 	s.AddFlags(fs)
