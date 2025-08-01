@@ -48,3 +48,25 @@ func (s KubernetesVersion) CompleteArgument(ctx context.Context, svc service.All
 
 	return MatchStringPrefix(vals, toComplete, true), cobra.ShellCompDirectiveNoFileComp
 }
+
+// KubernetesPlan implements argument completion for Kubernetes plans.
+type KubernetesPlan struct{}
+
+// make sure KubernetesPlan implements the interface.
+var _ Provider = KubernetesPlan{}
+
+// CompleteArgument implements completion.Provider.
+func (s KubernetesPlan) CompleteArgument(ctx context.Context, svc service.AllServices, toComplete string) ([]string, cobra.ShellCompDirective) {
+	plans, err := svc.GetKubernetesPlans(ctx, &request.GetKubernetesPlansRequest{})
+	if err != nil {
+		return None(toComplete)
+	}
+	var vals []string
+	for _, plan := range plans {
+		if !plan.Deprecated {
+			vals = append(vals, plan.Name)
+		}
+	}
+
+	return MatchStringPrefix(vals, toComplete, true), cobra.ShellCompDirectiveNoFileComp
+}
