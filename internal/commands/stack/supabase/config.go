@@ -1,7 +1,6 @@
 package supabase
 
 import (
-	"bufio"
 	"crypto/hmac"
 	"crypto/rand"
 	"crypto/sha256"
@@ -12,6 +11,8 @@ import (
 	"html/template"
 	"os"
 	"strings"
+
+	"github.com/joho/godotenv"
 )
 
 type SupabaseConfig struct {
@@ -76,7 +77,7 @@ func Generate(configPath string) (*SupabaseConfig, error) {
 	}
 
 	if configPath != "" {
-		config, err = loadConfigFromFile(configPath)
+		err = loadConfigFromFile(configPath, config)
 	}
 
 	if err != nil {
@@ -145,71 +146,42 @@ func signJWT(role string, jwtSecret string, iat int64, exp int64) (string, error
 	return fmt.Sprintf("%s.%s", toSign, sig), nil
 }
 
-func loadConfigFromFile(path string) (*SupabaseConfig, error) {
-	file, err := os.Open(path)
+func setIfNotEmpty(val string, setter func(string)) {
+	if strings.TrimSpace(val) != "" {
+		setter(val)
+	}
+}
+
+func loadConfigFromFile(path string, config *SupabaseConfig) error {
+	envMap, err := godotenv.Read(path)
 	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-
-	config := &SupabaseConfig{}
-	scanner := bufio.NewScanner(file)
-
-	for scanner.Scan() {
-		line := scanner.Text()
-
-		// Skip empty lines and comments
-		if strings.TrimSpace(line) == "" || strings.HasPrefix(line, "#") {
-			continue
-		}
-
-		kv := strings.SplitN(line, "=", 2)
-		if len(kv) != 2 {
-			continue // Or return error if format must be strict
-		}
-
-		key := strings.TrimSpace(kv[0])
-		val := strings.TrimSpace(kv[1])
-
-		switch key {
-		case "DASHBOARD_USERNAME":
-			config.DashboardUsername = val
-		case "DASHBOARD_PASSWORD":
-			config.DashboardPassword = val
-		case "POSTGRES_PASSWORD":
-			config.PostgresPassword = val
-		case "ENABLE_S3":
-			config.S3Enabled = strings.ToLower(val) == "true"
-		case "S3_KEY_ID":
-			config.S3KeyID = val
-		case "S3_ACCESS_KEY":
-			config.S3AccessKey = val
-		case "S3_BUCKET":
-			config.S3BucketName = val
-		case "S3_ENDPOINT":
-			config.S3Endpoint = val
-		case "S3_REGION":
-			config.S3Region = val
-		case "ENABLE_SMTP":
-			config.SmtpEnabled = strings.ToLower(val) == "true"
-		case "SMTP_HOST":
-			config.SmtpHost = val
-		case "SMTP_PORT":
-			config.SmtpPort = val
-		case "SMTP_USER":
-			config.SmtpUsername = val
-		case "SMTP_PASS":
-			config.SmtpPassword = val
-		case "SMTP_SENDER_NAME":
-			config.SmtpSenderName = val
-		}
+		return err
 	}
 
-	if err := scanner.Err(); err != nil {
-		return nil, err
+	// String fields
+	setIfNotEmpty(envMap["DASHBOARD_USERNAME"], func(v string) { config.DashboardUsername = v })
+	setIfNotEmpty(envMap["DASHBOARD_PASSWORD"], func(v string) { config.DashboardPassword = v })
+	setIfNotEmpty(envMap["POSTGRES_PASSWORD"], func(v string) { config.PostgresPassword = v })
+	setIfNotEmpty(envMap["S3_KEY_ID"], func(v string) { config.S3KeyID = v })
+	setIfNotEmpty(envMap["S3_ACCESS_KEY"], func(v string) { config.S3AccessKey = v })
+	setIfNotEmpty(envMap["S3_BUCKET"], func(v string) { config.S3BucketName = v })
+	setIfNotEmpty(envMap["S3_ENDPOINT"], func(v string) { config.S3Endpoint = v })
+	setIfNotEmpty(envMap["S3_REGION"], func(v string) { config.S3Region = v })
+	setIfNotEmpty(envMap["SMTP_HOST"], func(v string) { config.SmtpHost = v })
+	setIfNotEmpty(envMap["SMTP_PORT"], func(v string) { config.SmtpPort = v })
+	setIfNotEmpty(envMap["SMTP_USER"], func(v string) { config.SmtpUsername = v })
+	setIfNotEmpty(envMap["SMTP_PASS"], func(v string) { config.SmtpPassword = v })
+	setIfNotEmpty(envMap["SMTP_SENDER_NAME"], func(v string) { config.SmtpSenderName = v })
+
+	// Boolean flags — convert only if the value is not empty
+	if v := strings.TrimSpace(envMap["ENABLE_S3"]); v != "" {
+		config.S3Enabled = strings.ToLower(v) == "true"
+	}
+	if v := strings.TrimSpace(envMap["ENABLE_SMTP"]); v != "" {
+		config.SmtpEnabled = strings.ToLower(v) == "true"
 	}
 
-	return config, nil
+	return nil
 }
 
 const valuesTemplate = `# values.secure.yaml — overrides for rotating Supabase secrets
