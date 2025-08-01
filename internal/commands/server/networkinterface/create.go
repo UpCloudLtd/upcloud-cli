@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/ipaddress"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/network"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
@@ -64,6 +65,7 @@ func (s *createCommand) InitCommand() {
 	fs.StringSliceVar(&s.ipAddresses, "ip-addresses", []string{}, "A comma-separated list of IP addresses")
 	s.AddFlags(fs)
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("type", cobra.FixedCompletions(network.Types, cobra.ShellCompDirectiveNoFileComp)))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("family", cobra.FixedCompletions(ipaddress.Families, cobra.ShellCompDirectiveNoFileComp)))
 }
 
 func (s *createCommand) InitCommandWithConfig(cfg *config.Config) {

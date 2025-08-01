@@ -10,6 +10,11 @@ import (
 
 const maxIPAddressActions = 10
 
+var Families = []string{
+	upcloud.IPAddressFamilyIPv4,
+	upcloud.IPAddressFamilyIPv6,
+}
+
 // BaseIPAddressCommand creates the base 'ip-address' command
 func BaseIPAddressCommand() commands.Command {
 	return &ipAddressCommand{
