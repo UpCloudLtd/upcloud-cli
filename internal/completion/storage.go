@@ -24,6 +24,21 @@ func (s Storage) CompleteArgument(ctx context.Context, svc service.AllServices, 
 	return MatchStringPrefix(vals, toComplete, true), cobra.ShellCompDirectiveNoFileComp
 }
 
+// StorageUUID implements argument completion for storage UUIDs.
+type StorageUUID struct{}
+
+// make sure StorageUUID implements the interface
+var _ Provider = StorageUUID{}
+
+// CompleteArgument implements completion.Provider
+func (s StorageUUID) CompleteArgument(ctx context.Context, svc service.AllServices, toComplete string) ([]string, cobra.ShellCompDirective) {
+	vals, err := storageCompletions(ctx, svc, &request.GetStoragesRequest{}, false)
+	if err != nil {
+		return None(toComplete)
+	}
+	return MatchStringPrefix(vals, toComplete, true), cobra.ShellCompDirectiveNoFileComp
+}
+
 // StorageCDROMUUID implements argument completion for cd-rom storage UUIDs.
 type StorageCDROMUUID struct{}
 

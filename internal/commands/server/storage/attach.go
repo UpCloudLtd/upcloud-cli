@@ -8,6 +8,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/storage"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/namedargs"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 
@@ -64,6 +65,10 @@ func (s *attachCommand) InitCommand() {
 	s.AddFlags(flagSet)
 	commands.Must(s.Cobra().MarkFlagRequired("storage"))
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("type", cobra.FixedCompletions(types, cobra.ShellCompDirectiveNoFileComp)))
+}
+
+func (s *attachCommand) InitCommandWithConfig(cfg *config.Config) {
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("storage", namedargs.CompletionFunc(completion.StorageUUID{}, cfg)))
 }
 
 // MaximumExecutions implements command.Command
