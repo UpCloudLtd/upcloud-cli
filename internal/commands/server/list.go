@@ -7,12 +7,14 @@ import (
 	"sync"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/network"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/format"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 	"github.com/jedib0t/go-pretty/v6/text"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -52,10 +54,12 @@ type listCommand struct {
 
 // InitCommand implements Command.InitCommand
 func (ls *listCommand) InitCommand() {
+	accessTypes := append(append(make([]string, 0, len(network.Types)), network.Types...), "all")
 	flags := &pflag.FlagSet{}
 	flags.StringVar(&ls.showIPAddresses, "show-ip-addresses", "none", "Show servers IP addresses of specified access type in the output or all ip addresses if argument value is \"all\" or no argument is specified.")
 	flags.Lookup("show-ip-addresses").NoOptDefVal = "all"
 	ls.AddFlags(flags)
+	commands.Must(ls.Cobra().RegisterFlagCompletionFunc("show-ip-addresses", cobra.FixedCompletions(accessTypes, cobra.ShellCompDirectiveNoFileComp)))
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
