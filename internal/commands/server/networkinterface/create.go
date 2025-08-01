@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/network"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/namedargs"
@@ -15,6 +16,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -54,13 +56,14 @@ const (
 func (s *createCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.networkArg, "network", "", "Private network name or UUID to join.")
-	fs.StringVar(&s.networkType, "type", defaultNetworkType, "Set the type of the network. Available: public, utility, private")
+	fs.StringVar(&s.networkType, "type", defaultNetworkType, "Set the type of the network. Available: "+strings.Join(network.Types, ", "))
 	fs.StringVar(&s.family, "family", defaultIPAddressFamily, "The address family of new IP address.")
 	fs.IntVar(&s.interfaceIndex, "index", 0, "Interface index.")
 	config.AddEnableDisableFlags(fs, &s.bootable, "bootable", "Whether to try booting through the interface.")
 	config.AddEnableDisableFlags(fs, &s.sourceIPFiltering, "source-ip-filtering", "Whether source IP filtering is enabled on the interface. Disabling it is allowed only for SDN private interfaces.")
 	fs.StringSliceVar(&s.ipAddresses, "ip-addresses", []string{}, "A comma-separated list of IP addresses")
 	s.AddFlags(fs)
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("type", cobra.FixedCompletions(network.Types, cobra.ShellCompDirectiveNoFileComp)))
 }
 
 func (s *createCommand) InitCommandWithConfig(cfg *config.Config) {
