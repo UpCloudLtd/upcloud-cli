@@ -55,6 +55,7 @@ func (s *createCommand) MaximumExecutions() int {
 
 // InitCommand implements Command.InitCommand
 func (s *createCommand) InitCommand() {
+	actions := []string{upcloud.FirewallRuleActionAccept, upcloud.FirewallRuleActionDrop}
 	protocols := []string{upcloud.FirewallRuleProtocolTCP, upcloud.FirewallRuleProtocolUDP, upcloud.FirewallRuleProtocolICMP}
 
 	s.Cobra().Long = commands.WrapLongDescription(`Create a new firewall rule
@@ -64,7 +65,7 @@ To edit the default rule of the firewall, set only ` + "`" + `--direction` + "`"
 	flagSet := &pflag.FlagSet{}
 
 	flagSet.StringVar(&s.direction, "direction", "", "Rule direction. Available: in, out")
-	flagSet.StringVar(&s.action, "action", "", "Rule action. Available: accept, drop")
+	flagSet.StringVar(&s.action, "action", "", "Rule action. Available: "+strings.Join(actions, ", "))
 	flagSet.StringVar(&s.family, "family", "", "IP family. Available: "+strings.Join(ipaddress.Families, ", "))
 	flagSet.IntVar(&s.position, "position", 0, "Position in relation to other rules. Available: 1-1000")
 	flagSet.StringVar(&s.protocol, "protocol", "", "Protocol. Available: "+strings.Join(protocols, ", "))
@@ -82,6 +83,7 @@ To edit the default rule of the firewall, set only ` + "`" + `--direction` + "`"
 	commands.Must(s.Cobra().MarkFlagRequired("action"))
 	s.Cobra().MarkFlagsRequiredTogether("destination-port-start", "destination-port-end")
 	s.Cobra().MarkFlagsRequiredTogether("source-port-start", "source-port-end")
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("action", cobra.FixedCompletions(actions, cobra.ShellCompDirectiveNoFileComp)))
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("family", cobra.FixedCompletions(ipaddress.Families, cobra.ShellCompDirectiveNoFileComp)))
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("protocol", cobra.FixedCompletions(protocols, cobra.ShellCompDirectiveNoFileComp)))
 }
