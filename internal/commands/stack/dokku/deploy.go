@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
-	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/stack/core"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/stack"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/spf13/pflag"
 )
@@ -83,7 +83,7 @@ func (s *deployDokkuCommand) ExecuteWithoutArguments(exec commands.Executor) (ou
 	//defer os.RemoveAll(configDir)
 
 	// unpack the dokku charts and config files into that temp dir
-	if err := core.ExtractFolder(dokkuChartFS, configDir); err != nil {
+	if err := stack.ExtractFolder(dokkuChartFS, configDir); err != nil {
 		return nil, fmt.Errorf("failed to extract dokku charts and configuration files: %w", err)
 	}
 

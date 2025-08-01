@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
-	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/stack/core"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/stack"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 	"helm.sh/helm/v3/pkg/cli"
@@ -32,7 +32,7 @@ func (s *deployDokkuCommand) deploy(exec commands.Executor, configDir string) er
 	}
 
 	// Return if the cluster already exists
-	if core.ClusterExists(clusterName, clusters) {
+	if stack.ClusterExists(clusterName, clusters) {
 		return fmt.Errorf("a cluster with the name '%s' already exists", clusterName)
 	}
 
@@ -45,11 +45,11 @@ func (s *deployDokkuCommand) deploy(exec commands.Executor, configDir string) er
 		return fmt.Errorf("failed to get networks: %w", err)
 	}
 
-	network = core.GetNetworkFromName(networkName, networks.Networks)
+	network = stack.GetNetworkFromName(networkName, networks.Networks)
 
 	// Create the network if it does not exist
 	if network == nil {
-		network, err = core.CreateNetwork(exec, networkName, s.zone)
+		network, err = stack.CreateNetwork(exec, networkName, s.zone)
 		if err != nil {
 			return fmt.Errorf("failed to create network: %w", err)
 		}
@@ -91,26 +91,26 @@ func (s *deployDokkuCommand) deploy(exec commands.Executor, configDir string) er
 	exec.PushProgressStarted("Setting up environment for Dokku stack deployment")
 
 	// Get kubeconfig file for the cluster
-	kubeconfigPath, err := core.WriteKubeconfigToFile(exec, cluster.UUID, configDir)
+	kubeconfigPath, err := stack.WriteKubeconfigToFile(exec, cluster.UUID, configDir)
 	if err != nil {
 		return fmt.Errorf("failed to write kubeconfig to file: %w", err)
 	}
 
 	// Create a Kubernetes client from the kubeconfig
 	os.Setenv("KUBECONFIG", kubeconfigPath)
-	kubeClient, err := core.GetKubernetesClient(kubeconfigPath)
+	kubeClient, err := stack.GetKubernetesClient(kubeconfigPath)
 	if err != nil {
 		return fmt.Errorf("failed to create Kubernetes client: %w", err)
 	}
 
 	// Wait for the Kubernetes API server to be ready
-	core.WaitForAPIServer(kubeClient)
+	stack.WaitForAPIServer(kubeClient)
 
 	exec.PushProgressSuccess("Setting up environment for Dokku stack deployment")
 	exec.PushProgressStarted("Deploying Dokku stack")
 	// Deploy nginx ingress controller
 	ingressValuesFilePath := filepath.Join(configDir, "config/ingress/values.yaml")
-	err = core.DeployHelmReleaseFromRepo(
+	err = stack.DeployHelmReleaseFromRepo(
 		kubeClient,
 		"ingress-nginx",
 		"https://kubernetes.github.io/ingress-nginx",
@@ -124,7 +124,7 @@ func (s *deployDokkuCommand) deploy(exec commands.Executor, configDir string) er
 	}
 
 	// Wait for the ingress controller to be ready
-	lbHostname, err := core.WaitForLoadBalancer(kubeClient, "ingress-nginx", "ingress-nginx-controller", 30, 10*time.Second)
+	lbHostname, err := stack.WaitForLoadBalancer(kubeClient, "ingress-nginx", "ingress-nginx-controller", 30, 10*time.Second)
 	if err != nil {
 		return fmt.Errorf("failed to wait for ingress-nginx load balancer: %w", err)
 	}
@@ -144,7 +144,7 @@ func (s *deployDokkuCommand) deploy(exec commands.Executor, configDir string) er
 	override.WriteString("installCRDs: true\n")
 	override.Close()
 
-	err = core.DeployHelmReleaseFromRepo(
+	err = stack.DeployHelmReleaseFromRepo(
 		kubeClient,
 		"cert-manager",
 		"https://charts.jetstack.io",
@@ -160,7 +160,7 @@ func (s *deployDokkuCommand) deploy(exec commands.Executor, configDir string) er
 
 	// Deploy Dokku
 	dokkuConfigPath := filepath.Join(configDir, "config/dokku")
-	err = core.ApplyKustomize(dokkuConfigPath)
+	err = stack.ApplyKustomize(dokkuConfigPath)
 	if err != nil {
 		return fmt.Errorf("failed to apply Dokku kustomize configuration: %w", err)
 	}
@@ -267,7 +267,7 @@ func configureDokku(
 	}
 
 	// Check SSH keys locally
-	if err := core.CheckSSHKeys(privateKeyPath, publicKeyPath); err != nil {
+	if err := stack.CheckSSHKeys(privateKeyPath, publicKeyPath); err != nil {
 		return "", "", err
 	}
 
@@ -282,7 +282,7 @@ func configureDokku(
 	if err != nil {
 		return "", "", fmt.Errorf("opening public key: %w", err)
 	}
-	if _, _, err := core.ExecInPod(restConfig, kubeClient,
+	if _, _, err := stack.ExecInPod(restConfig, kubeClient,
 		"dokku", podName, "dokku",
 		[]string{"dokku", "ssh-keys:add", "admin"},
 		pub,
@@ -292,7 +292,7 @@ func configureDokku(
 
 	// Registry login
 	patReader := bytes.NewBufferString(githubPAT)
-	if _, _, err := core.ExecInPod(restConfig, kubeClient,
+	if _, _, err := stack.ExecInPod(restConfig, kubeClient,
 		"dokku", podName, "dokku",
 		[]string{"dokku", "registry:login", registryURL, githubUser, "--password-stdin"},
 		patReader,
@@ -307,12 +307,12 @@ func configureDokku(
 			"--type=kubernetes.io/dockerconfigjson --dry-run=client -o yaml | " +
 			"kubectl apply -n dokku -f -",
 	}
-	if _, _, err := core.ExecInPod(restConfig, kubeClient, "dokku", podName, "dokku", cmd, nil); err != nil {
+	if _, _, err := stack.ExecInPod(restConfig, kubeClient, "dokku", podName, "dokku", cmd, nil); err != nil {
 		return "", "", fmt.Errorf("creating registry-credential: %w", err)
 	}
 
 	// Dokku config:set --global CERT_MANAGER_EMAIL=…
-	if _, _, err := core.ExecInPod(restConfig, kubeClient,
+	if _, _, err := stack.ExecInPod(restConfig, kubeClient,
 		"dokku", podName, "dokku",
 		[]string{"dokku", "config:set", "--global", "CERT_MANAGER_EMAIL=" + certManagerEmail},
 		nil,
@@ -321,7 +321,7 @@ func configureDokku(
 	}
 
 	// dokku domains:set-global
-	if _, _, err := core.ExecInPod(restConfig, kubeClient,
+	if _, _, err := stack.ExecInPod(restConfig, kubeClient,
 		"dokku", podName, "dokku",
 		[]string{"dokku", "domains:set-global", globalDomain},
 		nil,
@@ -330,7 +330,7 @@ func configureDokku(
 	}
 
 	// registry:set server & image-repo-template
-	if _, _, err := core.ExecInPod(restConfig, kubeClient,
+	if _, _, err := stack.ExecInPod(restConfig, kubeClient,
 		"dokku", podName, "dokku",
 		[]string{"dokku", "registry:set", "--global", "server", registryURL},
 		nil,
@@ -339,7 +339,7 @@ func configureDokku(
 	}
 
 	imageTemplate := fmt.Sprintf("%s/{{ .AppName }}", githubUser)
-	if _, _, err := core.ExecInPod(restConfig, kubeClient,
+	if _, _, err := stack.ExecInPod(restConfig, kubeClient,
 		"dokku", podName, "dokku",
 		[]string{"dokku", "registry:set", "--global", "image-repo-template", imageTemplate},
 		nil,
@@ -348,7 +348,7 @@ func configureDokku(
 	}
 
 	// builder:set herokuish
-	if _, _, err := core.ExecInPod(restConfig, kubeClient,
+	if _, _, err := stack.ExecInPod(restConfig, kubeClient,
 		"dokku", podName, "dokku",
 		[]string{"dokku", "builder:set", "--global", "selected", "herokuish"},
 		nil,
@@ -357,13 +357,13 @@ func configureDokku(
 	}
 
 	// Wait for ingress load-balancer up to 10m
-	lb, err := core.WaitForLoadBalancer(kubeClient, "ingress-nginx", "ingress-nginx-controller", 60, 10*time.Second)
+	lb, err := stack.WaitForLoadBalancer(kubeClient, "ingress-nginx", "ingress-nginx-controller", 60, 10*time.Second)
 	if err != nil {
 		return "", "", fmt.Errorf("waiting ingress loadbalancer: %w", err)
 	}
 
 	// Node external IP
-	nip, err := core.GetNodeExternalIP(kubeClient)
+	nip, err := stack.GetNodeExternalIP(kubeClient)
 	if err != nil {
 		return lb, "", fmt.Errorf("getting node external IP: %w", err)
 	}

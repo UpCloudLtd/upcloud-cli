@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
-	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/stack/core"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/stack"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 	"gopkg.in/yaml.v3"
@@ -26,7 +26,7 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 	}
 
 	// This command will not update an existing cluster, it will create a new one
-	if core.ClusterExists(clusterName, clusters) {
+	if stack.ClusterExists(clusterName, clusters) {
 		return nil, fmt.Errorf("a cluster with the name '%s' already exists", clusterName)
 	}
 
@@ -39,11 +39,11 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 		return nil, fmt.Errorf("failed to get networks: %w", err)
 	}
 
-	network = core.GetNetworkFromName(networkName, networks.Networks)
+	network = stack.GetNetworkFromName(networkName, networks.Networks)
 
 	// Create the network if it does not exist
 	if network == nil {
-		network, err = core.CreateNetwork(exec, networkName, s.zone)
+		network, err = stack.CreateNetwork(exec, networkName, s.zone)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create network: %w for kubernetes deployment", err)
 		}
@@ -84,14 +84,14 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 
 	exec.PushProgressStarted("Setting up environment for Supabase stack deployment")
 	// Get kubeconfig file for the cluster
-	kubeconfigPath, err := core.WriteKubeconfigToFile(exec, cluster.UUID, chartDir)
+	kubeconfigPath, err := stack.WriteKubeconfigToFile(exec, cluster.UUID, chartDir)
 	if err != nil {
 		return nil, fmt.Errorf("failed to write kubeconfig to file: %w", err)
 	}
 
 	// Create a Kubernetes client from the kubeconfig
 	os.Setenv("KUBECONFIG", kubeconfigPath)
-	kubeClient, err := core.GetKubernetesClient(kubeconfigPath)
+	kubeClient, err := stack.GetKubernetesClient(kubeconfigPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create Kubernetes client: %w", err)
 	}
@@ -119,13 +119,13 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 	exec.PushProgressStarted(msg)
 
 	// Deploy the Helm release
-	err = core.DeployHelmRelease(kubeClient, clusterName, filepath.Join(chartDir, "charts/supabase"), []string{valuesPath, securePath}, false)
+	err = stack.DeployHelmRelease(kubeClient, clusterName, filepath.Join(chartDir, "charts/supabase"), []string{valuesPath, securePath}, false)
 	if err != nil {
 		return nil, fmt.Errorf("failed to deploy Supabase Helm release: %w", err)
 	}
 
 	// Wait for the Supabase stack to be ready
-	lbHostname, err := core.WaitForLoadBalancer(kubeClient, clusterName, clusterName+"-supabase-kong", 60, 20*time.Second)
+	lbHostname, err := stack.WaitForLoadBalancer(kubeClient, clusterName, clusterName+"-supabase-kong", 60, 20*time.Second)
 	if err != nil {
 		return nil, fmt.Errorf("failed to wait for Supabase Kong Load Balancer: %w", err)
 	}
@@ -145,7 +145,7 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 		securePath,
 	}
 
-	core.DeployHelmRelease(kubeClient, clusterName, filepath.Join(chartDir, "charts/supabase"), files, true)
+	stack.DeployHelmRelease(kubeClient, clusterName, filepath.Join(chartDir, "charts/supabase"), files, true)
 
 	exec.PushProgressSuccess(msg)
 
