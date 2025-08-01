@@ -61,6 +61,7 @@ func (s *createCommand) InitCommand() {
 }
 
 func (s *createCommand) InitCommandWithConfig(cfg *config.Config) {
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("router", namedargs.CompletionFunc(completion.Router{}, cfg)))
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("zone", namedargs.CompletionFunc(completion.Zone{}, cfg)))
 }
 
