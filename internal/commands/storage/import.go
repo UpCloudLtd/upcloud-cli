@@ -76,6 +76,7 @@ func (s *importCommand) InitCommand() {
 
 	s.AddFlags(flagSet)
 	commands.Must(s.Cobra().MarkFlagRequired("source-location"))
+	commands.Must(s.Cobra().MarkFlagFilename("source-location", "raw", "img", "iso", "gz", "xz"))
 }
 
 type storageImportStatus struct {
