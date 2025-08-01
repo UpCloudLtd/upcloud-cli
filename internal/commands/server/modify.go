@@ -7,10 +7,12 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/labels"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/namedargs"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -71,6 +73,10 @@ func (s *modifyCommand) InitCommand() {
 	flags.StringVar(&s.params.RemoteAccessPassword, "remote-access-password", defaultModifyParams.RemoteAccessPassword, "The remote access password.")
 
 	s.AddFlags(flags)
+}
+
+func (s *modifyCommand) InitCommandWithConfig(cfg *config.Config) {
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("time-zone", namedargs.CompletionFunc(completion.TimeZone{}, cfg)))
 }
 
 // Execute implements commands.MultipleArgumentCommand
