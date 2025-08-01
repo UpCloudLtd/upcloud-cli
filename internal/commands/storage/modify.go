@@ -13,6 +13,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -73,6 +74,7 @@ func (s *modifyCommand) InitCommand() {
 	for _, flag := range []string{"title", "size", "backup-time", "backup-retention"} {
 		commands.Must(flagSet.SetAnnotation(flag, commands.FlagAnnotationNoFileCompletions, nil))
 	}
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("backup-interval", cobra.FixedCompletions(backupIntervals, cobra.ShellCompDirectiveNoFileComp)))
 }
 
 func setBackupFields(storageUUID string, p modifyParams, exec commands.Executor, req *request.ModifyStorageRequest) error {

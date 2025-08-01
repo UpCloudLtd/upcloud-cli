@@ -19,6 +19,16 @@ var (
 		upcloud.StorageTierStandard,
 		upcloud.StorageTierHDD,
 	}
+	backupIntervals = []string{
+		upcloud.BackupRuleIntervalDaily,
+		upcloud.BackupRuleIntervalMonday,
+		upcloud.BackupRuleIntervalTuesday,
+		upcloud.BackupRuleIntervalWednesday,
+		upcloud.BackupRuleIntervalThursday,
+		upcloud.BackupRuleIntervalFriday,
+		upcloud.BackupRuleIntervalSaturday,
+		upcloud.BackupRuleIntervalSunday,
+	}
 	// CachedStorages stores the cached list of storages in order to not hit the service more than once
 	// TODO: refactor
 	CachedStorages []upcloud.Storage
