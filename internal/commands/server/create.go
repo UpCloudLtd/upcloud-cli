@@ -294,7 +294,7 @@ Note that the default template, Ubuntu Server 24.04 LTS (Noble Numbat), only sup
 	fs.StringVar(&s.params.Title, "title", def.Title, "A short, informational description.")
 	fs.StringVar(&s.params.UserData, "user-data", def.UserData, "Defines URL for a server setup script, or the script body itself.")
 	fs.StringVar(&s.params.username, "username", def.username, "Admin account username.")
-	fs.StringVar(&s.params.VideoModel, "video-model", def.VideoModel, "Video interface model of the server. Available: vga, cirrus")
+	fs.StringVar(&s.params.VideoModel, "video-model", def.VideoModel, "Video interface model of the server. Available: "+strings.Join(videoModels, ", "))
 	config.AddToggleFlag(fs, &s.wait, "wait", false, "Wait for server to be in started state before returning.")
 	fs.StringVar(&s.params.Zone, "zone", def.Zone, namedargs.ZoneDescription("server"))
 	// fs.BoolVar(&s.params.firewall, "firewall", def.firewall, "Enables the firewall. You can manage firewall rules with the firewall command.")
@@ -306,6 +306,7 @@ Note that the default template, Ubuntu Server 24.04 LTS (Noble Numbat), only sup
 	commands.Must(s.Cobra().MarkFlagRequired("zone"))
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("password-delivery", cobra.FixedCompletions(passwordDeliveries, cobra.ShellCompDirectiveNoFileComp)))
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("remote-access-type", cobra.FixedCompletions(remoteAccessTypes, cobra.ShellCompDirectiveNoFileComp)))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("video-model", cobra.FixedCompletions(videoModels, cobra.ShellCompDirectiveNoFileComp)))
 }
 
 func (s *createCommand) InitCommandWithConfig(cfg *config.Config) {

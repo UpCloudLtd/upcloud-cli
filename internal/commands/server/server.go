@@ -28,6 +28,7 @@ const (
 var (
 	remoteAccessTypes = []string{upcloud.RemoteAccessTypeVNC}
 	stopTypes         = []string{request.ServerStopTypeSoft, request.ServerStopTypeHard}
+	videoModels       = []string{upcloud.VideoModelVGA, upcloud.VideoModelCirrus}
 )
 
 // BaseServerCommand creates the base "server" command
