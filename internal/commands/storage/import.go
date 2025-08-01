@@ -12,6 +12,7 @@ import (
 
 	"github.com/UpCloudLtd/progress/messages"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/namedargs"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
@@ -77,6 +78,10 @@ func (s *importCommand) InitCommand() {
 	s.AddFlags(flagSet)
 	commands.Must(s.Cobra().MarkFlagRequired("source-location"))
 	commands.Must(s.Cobra().MarkFlagFilename("source-location", "raw", "img", "iso", "gz", "xz"))
+}
+
+func (s *importCommand) InitCommandWithConfig(cfg *config.Config) {
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("storage", namedargs.CompletionFunc(completion.Storage{}, cfg)))
 }
 
 type storageImportStatus struct {
