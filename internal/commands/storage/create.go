@@ -88,6 +88,9 @@ func applyCreateFlags(fs *pflag.FlagSet, dst, def *createParams) {
 	fs.IntVar(&dst.BackupRule.Retention, "backup-retention", def.BackupRule.Retention, "How long to store the backups in days. The accepted range is 1-1095")
 	commands.Must(fs.SetAnnotation("tier", commands.FlagAnnotationFixedCompletions, tiers))
 	commands.Must(fs.SetAnnotation("backup-interval", commands.FlagAnnotationFixedCompletions, backupIntervals))
+	for _, flag := range []string{"title", "size", "backup-time", "backup-retention"} {
+		commands.Must(fs.SetAnnotation(flag, commands.FlagAnnotationNoFileCompletions, nil))
+	}
 }
 
 // InitCommand implements Command.InitCommand

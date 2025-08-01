@@ -88,6 +88,12 @@ To edit the default rule of the firewall, set only ` + "`" + `--direction` + "`"
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("action", cobra.FixedCompletions(actions, cobra.ShellCompDirectiveNoFileComp)))
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("family", cobra.FixedCompletions(ipaddress.Families, cobra.ShellCompDirectiveNoFileComp)))
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("protocol", cobra.FixedCompletions(protocols, cobra.ShellCompDirectiveNoFileComp)))
+	for _, flag := range []string{
+		"position", "icmp-type", "dest-ipaddress-block", "destination-port-start", "destination-port-end",
+		"src-ipaddress-block", "source-port-start", "source-port-end", "comment",
+	} {
+		commands.Must(s.Cobra().RegisterFlagCompletionFunc(flag, cobra.NoFileCompletions))
+	}
 }
 
 // Execute implements commands.MultipleArgumentCommand

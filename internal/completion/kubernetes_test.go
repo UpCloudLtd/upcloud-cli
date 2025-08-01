@@ -48,5 +48,5 @@ func TestKubernetes_CompleteArgumentServiceFail(t *testing.T) {
 	mService.On("GetKubernetesClusters", mock.Anything).Return(nil, fmt.Errorf("MOCKFAIL"))
 	completions, directive := completion.Kubernetes{}.CompleteArgument(context.TODO(), mService, "asd")
 	assert.Nil(t, completions)
-	assert.Equal(t, cobra.ShellCompDirectiveDefault, directive)
+	assert.Equal(t, cobra.ShellCompDirectiveNoFileComp, directive)
 }

@@ -10,6 +10,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -47,6 +48,9 @@ func (s *modifyCommand) InitCommand() {
 
 	s.AddFlags(fs) // TODO(ana): replace usage with examples once the refactor is done.
 	commands.Must(s.Cobra().MarkFlagRequired("index"))
+	for _, flag := range []string{"index", "new-index", "bootable", "source-ip-filtering", "ip-addresses"} {
+		commands.Must(s.Cobra().RegisterFlagCompletionFunc(flag, cobra.NoFileCompletions))
+	}
 }
 
 // MaximumExecutions implements Command.MaximumExecutions

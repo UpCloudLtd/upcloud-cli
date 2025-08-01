@@ -12,6 +12,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -58,6 +59,9 @@ func (s *createCommand) InitCommand() {
 	commands.Must(s.Cobra().MarkFlagRequired("name"))
 	commands.Must(s.Cobra().MarkFlagRequired("zone"))
 	commands.Must(s.Cobra().MarkFlagRequired("ip-network"))
+	for _, flag := range []string{"name", "ip-network"} {
+		commands.Must(s.Cobra().RegisterFlagCompletionFunc(flag, cobra.NoFileCompletions))
+	}
 }
 
 func (s *createCommand) InitCommandWithConfig(cfg *config.Config) {

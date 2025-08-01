@@ -8,6 +8,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -37,6 +38,9 @@ func (s *modifyCommand) InitCommand() {
 	fs.StringVar(&s.mac, "mac", "", "MAC address of server interface to attach floating IP to.")
 	fs.StringVar(&s.ptrrecord, "ptr-record", "", "New fully qualified domain name to set as the PTR record for the IP address.")
 	s.AddFlags(fs)
+	for _, flag := range []string{"mac", "ptr-record"} {
+		commands.Must(s.Cobra().RegisterFlagCompletionFunc(flag, cobra.NoFileCompletions))
+	}
 }
 
 // MaximumExecutions implements Command.MaximumExecutions

@@ -47,5 +47,5 @@ func TestLoadBalancer_CompleteArgumentServiceFail(t *testing.T) {
 	mService.On("GetLoadBalancers", mock.Anything).Return(nil, fmt.Errorf("MOCKFAIL"))
 	completions, directive := completion.LoadBalancer{}.CompleteArgument(context.TODO(), mService, "asd")
 	assert.Nil(t, completions)
-	assert.Equal(t, cobra.ShellCompDirectiveDefault, directive)
+	assert.Equal(t, cobra.ShellCompDirectiveNoFileComp, directive)
 }
