@@ -79,6 +79,7 @@ func (s *modifyCommand) InitCommand() {
 	} {
 		commands.Must(s.Cobra().RegisterFlagCompletionFunc(flag, cobra.NoFileCompletions))
 	}
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("remote-access-type", cobra.FixedCompletions(remoteAccessTypes, cobra.ShellCompDirectiveNoFileComp)))
 }
 
 func (s *modifyCommand) InitCommandWithConfig(cfg *config.Config) {
