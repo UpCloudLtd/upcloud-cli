@@ -11,6 +11,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/namedargs"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 )
@@ -56,6 +57,10 @@ func (s *modifyCommand) InitCommand() {
 	for _, flag := range []string{"name", "ip-network"} {
 		commands.Must(s.Cobra().RegisterFlagCompletionFunc(flag, cobra.NoFileCompletions))
 	}
+}
+
+func (s *modifyCommand) InitCommandWithConfig(cfg *config.Config) {
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("router", namedargs.CompletionFunc(completion.Router{}, cfg)))
 }
 
 // ExecuteSingleArgument implements commands.SingleArgumentCommand
