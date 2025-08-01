@@ -10,6 +10,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -46,6 +47,7 @@ func (s *restartCommand) InitCommand() {
 	flags.StringVar(&s.StopType, "stop-type", defaultStopType, "The type of stop operation. Available: soft, hard")
 	flags.IntVar(&s.Host, "host", 0, hostDescription)
 	s.AddFlags(flags)
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("stop-type", cobra.FixedCompletions(stopTypes, cobra.ShellCompDirectiveNoFileComp)))
 }
 
 // MaximumExecutions implements Command.MaximumExecutions
