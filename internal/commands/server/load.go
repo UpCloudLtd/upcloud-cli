@@ -6,6 +6,8 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/storage"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/namedargs"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 
@@ -49,6 +51,10 @@ func (s *loadCommand) InitCommand() {
 	s.AddFlags(flagSet)
 
 	commands.Must(s.Cobra().MarkFlagRequired("storage"))
+}
+
+func (s *loadCommand) InitCommandWithConfig(cfg *config.Config) {
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("storage", namedargs.CompletionFunc(completion.StorageCDROMUUID{}, cfg)))
 }
 
 // Execute implements commands.MultipleArgumentCommand
