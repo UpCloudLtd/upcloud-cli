@@ -14,6 +14,11 @@ import (
 
 var (
 	maxStorageActions = 10
+	tiers             = []string{
+		upcloud.StorageTierMaxIOPS,
+		upcloud.StorageTierStandard,
+		upcloud.StorageTierHDD,
+	}
 	// CachedStorages stores the cached list of storages in order to not hit the service more than once
 	// TODO: refactor
 	CachedStorages []upcloud.Storage

@@ -88,6 +88,7 @@ func applyCreateFlags(fs *pflag.FlagSet, dst, def *createParams) {
 	for _, flag := range []string{"title", "size", "backup-time", "backup-retention"} {
 		commands.Must(fs.SetAnnotation(flag, commands.FlagAnnotationNoFileCompletions, nil))
 	}
+	commands.Must(fs.SetAnnotation("tier", commands.FlagAnnotationFixedCompletions, tiers))
 }
 
 // InitCommand implements Command.InitCommand

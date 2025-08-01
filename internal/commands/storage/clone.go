@@ -61,6 +61,7 @@ func (s *cloneCommand) InitCommand() {
 	commands.Must(s.Cobra().MarkFlagRequired("title"))
 	commands.Must(s.Cobra().MarkFlagRequired("zone"))
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("title", cobra.NoFileCompletions))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("tier", cobra.FixedCompletions(tiers, cobra.ShellCompDirectiveNoFileComp)))
 }
 
 func (s *cloneCommand) InitCommandWithConfig(cfg *config.Config) {
