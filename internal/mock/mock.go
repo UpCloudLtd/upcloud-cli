@@ -1528,3 +1528,27 @@ func (m *Service) GetDevicesAvailability(ctx context.Context) (*upcloud.DevicesA
 	}
 	return args[0].(*upcloud.DevicesAvailability), args.Error(1)
 }
+
+// AssignIPAddressToNetworkInterface implements service.Network.AssignIPAddressToNetworkInterface
+func (m *Service) AssignIPAddressToNetworkInterface(_ context.Context, r *request.AssignIPAddressToNetworkInterfaceRequest) (*upcloud.IPAddress, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.IPAddress), args.Error(1)
+}
+
+// DeleteIPAddressFromNetworkInterface implements service.Network.DeleteIPAddressFromNetworkInterface
+func (m *Service) DeleteIPAddressFromNetworkInterface(_ context.Context, r *request.DeleteIPAddressFromNetworkInterfaceRequest) error {
+	args := m.Called(r)
+	return args.Error(0)
+}
+
+// GetBillingSummary implements service.Account.GetBillingSummary
+func (m *Service) GetBillingSummary(_ context.Context, r *request.GetBillingSummaryRequest) (*upcloud.BillingSummary, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.BillingSummary), args.Error(1)
+}

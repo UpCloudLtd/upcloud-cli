@@ -33,6 +33,7 @@ const expectedJSONOutput = `
         {
           "access": "public",
           "address": "10.0.97.4",
+		  "dhcp_provided": "no",
           "family": "",
           "part_of_plan": "no",
           "ptr_record": "",
@@ -44,6 +45,7 @@ const expectedJSONOutput = `
         {
           "access": "public",
           "address": "10.0.98.3",
+		  "dhcp_provided": "no",
           "family": "",
           "part_of_plan": "no",
           "ptr_record": "",
@@ -55,6 +57,7 @@ const expectedJSONOutput = `
         {
           "access": "private",
           "address": "10.0.99.2",
+		  "dhcp_provided": "no",
           "family": "",
           "part_of_plan": "no",
           "ptr_record": "",
@@ -66,6 +69,7 @@ const expectedJSONOutput = `
         {
           "access": "utility",
           "address": "10.0.100.1",
+		  "dhcp_provided": "no",
           "family": "",
           "part_of_plan": "no",
           "ptr_record": "",
