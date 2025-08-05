@@ -50,6 +50,8 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 			p.StorageSize,
 			p.StorageTier,
 			p.PublicTrafficOut,
+			p.GPUModel,
+			p.GPUAmount,
 		})
 	}
 
@@ -97,6 +99,8 @@ func planSection(key, title string, rows []output.TableRow) output.CombinedSecti
 				{Key: "storage", Header: "Storage size"},
 				{Key: "storage_tier", Header: "Storage tier"},
 				{Key: "egress_transfer", Header: "Transfer out (GiB/month)"},
+				{Key: "gpu_model", Header: "GPU model"},
+				{Key: "gpu_amount", Header: "GPU amount"},
 			},
 			Rows: rows,
 		},
