@@ -23,7 +23,6 @@ source=("https://github.com/UpCloudLtd/\${pkgname}/releases/download/v\${pkgver}
 sha256sums=('${PKG_HASH}')
 
 package() {
-    cd "\$pkgname_\$pkgver_linux_x86_64"
     install -Dm755 upctl "\$pkgdir/usr/local/bin/upctl"
 }
 EOF
