@@ -1388,6 +1388,10 @@ func (m *Service) GetGatewayPlans(ctx context.Context) ([]upcloud.GatewayPlan, e
 	return nil, nil
 }
 
+func (m *Service) GetGatewayMetrics(ctx context.Context, r *request.GetGatewayMetricsRequest) (*upcloud.GatewayMetrics, error) {
+	return nil, nil
+}
+
 func (m *Service) GetGatewayConnections(ctx context.Context, r *request.GetGatewayConnectionsRequest) ([]upcloud.GatewayConnection, error) {
 	return nil, nil
 }
