@@ -103,6 +103,15 @@ using a package manager, Docker image, or from sources with `go install`:
     - name: UpCloudLtd/upcloud-cli@{{ latest_release }}
     ```
 
+=== "AUR"
+
+    Install from the [Arch User Repository](https://aur.archlinux.org/packages/upcloud-cli):
+
+    ```sh
+    yay -S upcloud-cli
+    ```
+
+
 ---
 
 After installing `upctl`, you can run `upctl version` command to verify that the tool was installed successfully.
