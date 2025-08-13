@@ -28,12 +28,6 @@ Create a new bucket:
 upctl object-storage bucket create ${prefix}service --name ${prefix}bucket
 ```
 
-Show details of the created bucket:
-
-```sh
-upctl object-storage bucket show ${prefix}service
-```
-
 Create a user and an access key for S3-compatible access:
 
 ```sh
