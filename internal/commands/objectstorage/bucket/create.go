@@ -54,6 +54,5 @@ func (s *createCommand) ExecuteSingleArgument(exec commands.Executor, serviceUUI
 
 	return output.MarshaledWithHumanDetails{Value: res, Details: []output.DetailRow{
 		{Title: "Name", Value: res.Name},
-		{Title: "Total Size Bytes", Value: res.TotalSizeBytes},
 	}}, nil
 }
