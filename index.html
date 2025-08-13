@@ -5414,7 +5414,7 @@ to control your resources from the command line or any compatible interface.</p>
 <h2 id="install-upctl">Install upctl</h2>
 <p><code>upctl</code> can be installed from a pre-built package in the repositories <a href="https://github.com/UpCloudLtd/upcloud-cli/releases">GitHub releases</a>,
 using a package manager, Docker image, or from sources with <code>go install</code>:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:7"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><input id="__tabbed_1_6" name="__tabbed_1" type="radio" /><input id="__tabbed_1_7" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Linux</label><label for="__tabbed_1_2">macOS</label><label for="__tabbed_1_3">Windows</label><label for="__tabbed_1_4"><code>go install</code></label><label for="__tabbed_1_5">Docker</label><label for="__tabbed_1_6">mise</label><label for="__tabbed_1_7">aqua</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:8"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><input id="__tabbed_1_6" name="__tabbed_1" type="radio" /><input id="__tabbed_1_7" name="__tabbed_1" type="radio" /><input id="__tabbed_1_8" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Linux</label><label for="__tabbed_1_2">macOS</label><label for="__tabbed_1_3">Windows</label><label for="__tabbed_1_4"><code>go install</code></label><label for="__tabbed_1_5">Docker</label><label for="__tabbed_1_6">mise</label><label for="__tabbed_1_7">aqua</label><label for="__tabbed_1_8">AUR</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Download pre-built package from GitHub releases and install it with your package manager.</p>
@@ -5481,11 +5481,16 @@ using a package manager, Docker image, or from sources with <code>go install</co
 </span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">UpCloudLtd/upcloud-cli@3.21.0</span>
 </span></code></pre></div>
 </div>
+<div class="tabbed-block">
+<p>Install from the <a href="https://aur.archlinux.org/packages/upcloud-cli">Arch User Repository</a>:</p>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>yay<span class="w"> </span>-S<span class="w"> </span>upcloud-cli
+</span></code></pre></div>
+</div>
 </div>
 </div>
 <hr />
 <p>After installing <code>upctl</code>, you can run <code>upctl version</code> command to verify that the tool was installed successfully.</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>upctl<span class="w"> </span>version
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>upctl<span class="w"> </span>version
 </span></code></pre></div>
 <h3 id="sboms">SBOMs</h3>
 <p><a href="https://spdx.dev/use/specifications/">SPDX SBOM</a> documents (<code>*.spdx.json</code>) are available alongside release archives.</p>
@@ -5498,24 +5503,24 @@ and plain old checksum files are available for verifying release assets.</p>
 <p><a href="https://github.com/UpCloudLtd/upcloud-cli/attestations">Release asset artifact attestations</a>
 can be verified for example with the <a href="https://github.com/cli/cli">GitHub CLI</a>,
 using the Linux x86_64 asset as an example:</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>gh<span class="w"> </span>attestation<span class="w"> </span>verify<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">    </span>/path/to/locally/downloaded/upcloud-cli_3.21.0_linux_x86_64.tar.gz<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">    </span>--repo<span class="w"> </span>UpCloudLtd/upcloud-cli
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>gh<span class="w"> </span>attestation<span class="w"> </span>verify<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">    </span>/path/to/locally/downloaded/upcloud-cli_3.21.0_linux_x86_64.tar.gz<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">    </span>--repo<span class="w"> </span>UpCloudLtd/upcloud-cli
 </span></code></pre></div>
 <p>Attestations are available starting from version 3.16.0.</p>
 </div>
 <div class="tabbed-block">
 <p>Release assets' SHA-256 digests are available in releases,
 in asset named <code>checksums.txt</code>. They can be checked for example with:</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># make sure at least one downloaded asset and checksums.txt are in the current directory</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>sha256sum<span class="w"> </span>-c<span class="w"> </span>--ignore-missing<span class="w"> </span>checksums.txt
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># make sure at least one downloaded asset and checksums.txt are in the current directory</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>sha256sum<span class="w"> </span>-c<span class="w"> </span>--ignore-missing<span class="w"> </span>checksums.txt
 </span></code></pre></div>
 </div>
 </div>
 </div>
 <h3 id="configure-shell-completions">Configure shell completions</h3>
 <p><code>upctl</code> provides shell completions for multiple shells. Run <code>upctl completion --help</code> to list the supported shells.</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>upctl<span class="w"> </span>completion<span class="w"> </span>--help
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>upctl<span class="w"> </span>completion<span class="w"> </span>--help
 </span></code></pre></div>
 <p>To configure the shell completions, follow the instructions provided in the help output of the command matching the shell you are using. For example, if you are using zsh, run <code>upctl completion zsh --help</code> to print the configuration instructions.</p>
 <h4 id="bash-completions">Bash completions</h4>
@@ -5525,34 +5530,34 @@ in asset named <code>checksums.txt</code>. They can be checked for example with:
 <div class="tabbed-block">
 <p>First, install <code>bash-completion</code> package, if it has not been installed already.</p>
 <p>On Ubuntu or Debian, use <code>apt</code> command to install the package:</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>bash-completion
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>bash-completion
 </span></code></pre></div>
 <p>On RHEL and Fedora based distributions, use <code>dnf</code> command to install the package.</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>bash-completion
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>bash-completion
 </span></code></pre></div>
 <p>Most distributions' packages enable bash-completion automatically.
 If not, something like this can be done to accomplish that:</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="nb">printf</span><span class="w"> </span><span class="s2">&quot;%s\n&quot;</span><span class="w"> </span><span class="s2">&quot;[[ -f /usr/share/bash-completion/bash-completion ]] &amp;&amp; . /usr/share/bash-completion/bash-completion&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.bashrc
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="nb">printf</span><span class="w"> </span><span class="s2">&quot;%s\n&quot;</span><span class="w"> </span><span class="s2">&quot;[[ -f /usr/share/bash-completion/bash-completion ]] &amp;&amp; . /usr/share/bash-completion/bash-completion&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.bashrc
 </span></code></pre></div>
 <p>If your bash-completion version is 2.12 or newer, no further steps are needed,
 upctl completion will load automatically on demand. With older bash-completion versions,
 the autoloading needs to be set up. Something like this will accomplish that:</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="c1"># Either system wide:</span>
-</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="nb">printf</span><span class="w"> </span><span class="s2">&quot;%s\n&quot;</span><span class="w"> </span><span class="s1">&#39;eval -- &quot;$(&quot;$1&quot; completion bash 2&gt;/dev/null)&quot;&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>/usr/share/bash-completion/completions/upctl
-</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>
-</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="c1"># ...or per user:</span>
-</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>~/.local/share/bash-completion/completions
-</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="nb">printf</span><span class="w"> </span><span class="s2">&quot;%s\n&quot;</span><span class="w"> </span><span class="s1">&#39;eval -- &quot;$(&quot;$1&quot; completion bash 2&gt;/dev/null)&quot;&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>~/.local/share/bash-completion/completions/upctl
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># Either system wide:</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="nb">printf</span><span class="w"> </span><span class="s2">&quot;%s\n&quot;</span><span class="w"> </span><span class="s1">&#39;eval -- &quot;$(&quot;$1&quot; completion bash 2&gt;/dev/null)&quot;&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>/usr/share/bash-completion/completions/upctl
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="c1"># ...or per user:</span>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>~/.local/share/bash-completion/completions
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="nb">printf</span><span class="w"> </span><span class="s2">&quot;%s\n&quot;</span><span class="w"> </span><span class="s1">&#39;eval -- &quot;$(&quot;$1&quot; completion bash 2&gt;/dev/null)&quot;&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>~/.local/share/bash-completion/completions/upctl
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
 <p>First, install <code>bash-completion</code> package, if it has not been installed already, and add command to source the completions to your <code>.bash_profile</code>.</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>brew<span class="w"> </span>install<span class="w"> </span>bash-completion
-</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;[ -f &quot;$(brew --prefix)/etc/bash_completion&quot; ] &amp;&amp; . &quot;$(brew --prefix)/etc/bash_completion&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.bash_profile
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>brew<span class="w"> </span>install<span class="w"> </span>bash-completion
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;[ -f &quot;$(brew --prefix)/etc/bash_completion&quot; ] &amp;&amp; . &quot;$(brew --prefix)/etc/bash_completion&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.bash_profile
 </span></code></pre></div>
 <p>Then configure the shell completions for <code>upctl</code> by saving the output of <code>upctl completion bash</code> in <code>upctl</code> file under <code>/etc/bash_completion.d/</code>:</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>upctl<span class="w"> </span>completion<span class="w"> </span>bash<span class="w"> </span>&gt;<span class="w"> </span><span class="k">$(</span>brew<span class="w"> </span>--prefix<span class="k">)</span>/etc/bash_completion.d/upctl
-</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>.<span class="w"> </span><span class="k">$(</span>brew<span class="w"> </span>--prefix<span class="k">)</span>/etc/bash_completion
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>upctl<span class="w"> </span>completion<span class="w"> </span>bash<span class="w"> </span>&gt;<span class="w"> </span><span class="k">$(</span>brew<span class="w"> </span>--prefix<span class="k">)</span>/etc/bash_completion.d/upctl
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>.<span class="w"> </span><span class="k">$(</span>brew<span class="w"> </span>--prefix<span class="k">)</span>/etc/bash_completion
 </span></code></pre></div>
 </div>
 </div>
@@ -5563,7 +5568,7 @@ the autoloading needs to be set up. Something like this will accomplish that:</p
 <p>API access can be configured in the UpCloud Hub on <a href="https://hub.upcloud.com/account/overview">Account page</a> for the main-account and on the <a href="https://hub.upcloud.com/people/permissions">Permissions tab</a> of the People page for sub-accounts. We recommend you to set up a sub-account specifically for the API usage with its own username and password, as it allows you to assign specific permissions for increased security.</p>
 <h2 id="execute-commands">Execute commands</h2>
 <p>To verify you are able to access the UpCloud API, you can, for example, run <code>upctl account show</code> command to print your current balance and resource limits.</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>upctl<span class="w"> </span>account<span class="w"> </span>show
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>upctl<span class="w"> </span>account<span class="w"> </span>show
 </span></code></pre></div>
 <p>For usage examples, see the <em>Examples</em> section of the documentation.</p>
 <p>For reference on how to use each sub-command, see the <em>Commands reference</em> section of the documentation. The same information is also available in <code>--help</code> output of each command.</p>
