@@ -77,6 +77,8 @@ func (s *addCommand) Execute(exec commands.Executor, serviceUUID string) (output
 		return commands.HandleError(exec, msg, err)
 	}
 
+	exec.PushProgressSuccess(msg)
+
 	combined := output.Combined{
 		output.CombinedSection{
 			Contents: output.Details{
