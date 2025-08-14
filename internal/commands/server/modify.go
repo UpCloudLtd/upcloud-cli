@@ -2,15 +2,18 @@ package server
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/labels"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/namedargs"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -64,13 +67,21 @@ func (s *modifyCommand) InitCommand() {
 	flags.StringVar(&s.params.SimpleBackup, "simple-backup", defaultModifyParams.SimpleBackup, simpleBackupDescription)
 	flags.StringVar(&s.params.Title, "title", defaultModifyParams.Title, "A short, informational description.")
 	flags.StringVar(&s.params.TimeZone, "time-zone", defaultModifyParams.TimeZone, "Time zone to set the RTC to.")
-	flags.StringVar(&s.params.VideoModel, "video-model", defaultModifyParams.VideoModel, "Video interface model of the server.\nAvailable: vga,cirrus")
+	flags.StringVar(&s.params.VideoModel, "video-model", defaultModifyParams.VideoModel, "Video interface model of the server.\nAvailable: "+strings.Join(videoModels, ", "))
 	config.AddEnableDisableFlags(flags, &s.remoteAccess, "remote-access", "remote access")
 	// flags.StringVar(&s.params.remoteAccessEnabled, "remote-access-enabled", defaultModifyParams.remoteAccessEnabled, "Enables or disables the remote access.\nAvailable: true, false")
 	flags.StringVar(&s.params.RemoteAccessType, "remote-access-type", defaultModifyParams.RemoteAccessType, "The remote access type.")
 	flags.StringVar(&s.params.RemoteAccessPassword, "remote-access-password", defaultModifyParams.RemoteAccessPassword, "The remote access password.")
 
 	s.AddFlags(flags)
+
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("remote-access-type", cobra.FixedCompletions(remoteAccessTypes, cobra.ShellCompDirectiveNoFileComp)))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("video-model", cobra.FixedCompletions(videoModels, cobra.ShellCompDirectiveNoFileComp)))
+}
+
+func (s *modifyCommand) InitCommandWithConfig(cfg *config.Config) {
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("plan", namedargs.CompletionFunc(completion.ServerPlan{}, cfg)))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("time-zone", namedargs.CompletionFunc(completion.TimeZone{}, cfg)))
 }
 
 // Execute implements commands.MultipleArgumentCommand

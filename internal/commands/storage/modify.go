@@ -13,6 +13,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -70,6 +71,7 @@ func (s *modifyCommand) InitCommand() {
 	config.AddEnableOrDisableFlag(flagSet, &s.autoresizePartitionFilesystem, false, "filesystem-autoresize", "automatic resize of partition and filesystem when modifying storage size. Note that before the resize attempt is made, backup of the storage will be taken. If the resize attempt fails, the backup will be used to restore the storage and then deleted. If the resize attempt succeeds, backup will be kept. Taking and keeping backups incur costs.")
 
 	s.AddFlags(flagSet)
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("backup-interval", cobra.FixedCompletions(backupIntervals, cobra.ShellCompDirectiveNoFileComp)))
 }
 
 func setBackupFields(storageUUID string, p modifyParams, exec commands.Executor, req *request.ModifyStorageRequest) error {

@@ -2,14 +2,17 @@ package serverfirewall
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/ipaddress"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 	"github.com/m7shapan/cidr"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -52,17 +55,21 @@ func (s *createCommand) MaximumExecutions() int {
 
 // InitCommand implements Command.InitCommand
 func (s *createCommand) InitCommand() {
+	directions := []string{upcloud.FirewallRuleDirectionIn, upcloud.FirewallRuleDirectionOut}
+	actions := []string{upcloud.FirewallRuleActionAccept, upcloud.FirewallRuleActionDrop}
+	protocols := []string{upcloud.FirewallRuleProtocolTCP, upcloud.FirewallRuleProtocolUDP, upcloud.FirewallRuleProtocolICMP}
+
 	s.Cobra().Long = commands.WrapLongDescription(`Create a new firewall rule
 
 To edit the default rule of the firewall, set only ` + "`" + `--direction` + "`" + ` and ` + "`" + `--action` + "`" + ` parameters. This creates catch-all rule that will take effect when no other rule matches. Note that the default rule must be positioned after all other rules. Use ` + "`" + `--position` + "`" + ` parameter or create default rule after other rules.`)
 
 	flagSet := &pflag.FlagSet{}
 
-	flagSet.StringVar(&s.direction, "direction", "", "Rule direction. Available: in, out")
-	flagSet.StringVar(&s.action, "action", "", "Rule action. Available: accept, drop")
-	flagSet.StringVar(&s.family, "family", "", "IP family. Available: IPv4, IPv6")
+	flagSet.StringVar(&s.direction, "direction", "", "Rule direction. Available: "+strings.Join(directions, ", "))
+	flagSet.StringVar(&s.action, "action", "", "Rule action. Available: "+strings.Join(actions, ", "))
+	flagSet.StringVar(&s.family, "family", "", "IP family. Available: "+strings.Join(ipaddress.Families, ", "))
 	flagSet.IntVar(&s.position, "position", 0, "Position in relation to other rules. Available: 1-1000")
-	flagSet.StringVar(&s.protocol, "protocol", "", "Protocol. Available: tcp, udp, icmp")
+	flagSet.StringVar(&s.protocol, "protocol", "", "Protocol. Available: "+strings.Join(protocols, ", "))
 	flagSet.StringVar(&s.icmpType, "icmp-type", "", "ICMP type. Available: 0-255")
 	flagSet.StringVar(&s.destinationIPBlock, "dest-ipaddress-block", "", "Destination IP address block.")
 	flagSet.StringVar(&s.destinationPortStart, "destination-port-start", "", "Destination port range start. Available: 1-65535")
@@ -77,6 +84,10 @@ To edit the default rule of the firewall, set only ` + "`" + `--direction` + "`"
 	commands.Must(s.Cobra().MarkFlagRequired("action"))
 	s.Cobra().MarkFlagsRequiredTogether("destination-port-start", "destination-port-end")
 	s.Cobra().MarkFlagsRequiredTogether("source-port-start", "source-port-end")
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("direction", cobra.FixedCompletions(directions, cobra.ShellCompDirectiveNoFileComp)))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("action", cobra.FixedCompletions(actions, cobra.ShellCompDirectiveNoFileComp)))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("family", cobra.FixedCompletions(ipaddress.Families, cobra.ShellCompDirectiveNoFileComp)))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("protocol", cobra.FixedCompletions(protocols, cobra.ShellCompDirectiveNoFileComp)))
 }
 
 // Execute implements commands.MultipleArgumentCommand

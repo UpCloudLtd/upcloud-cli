@@ -7,6 +7,7 @@ import (
 
 	"github.com/UpCloudLtd/progress/messages"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
+	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 )
 
@@ -22,6 +23,12 @@ const (
 	avoidHostDescription    = "Host to avoid when scheduling the server. Use this to make sure VMs do not reside on specific host. Refers to value from `host` attribute. Useful when building HA-environments."
 	hostDescription         = "Schedule the server on a specific host. Refers to value from `host` attribute. Only available in private clouds."
 	simpleBackupDescription = "Simple backup rule in `HHMM,{daily,dailies,weeklies,monthlies}` format or `no`. For example: `2300,dailies`."
+)
+
+var (
+	remoteAccessTypes = []string{upcloud.RemoteAccessTypeVNC}
+	stopTypes         = []string{request.ServerStopTypeSoft, request.ServerStopTypeHard}
+	videoModels       = []string{upcloud.VideoModelVGA, upcloud.VideoModelCirrus}
 )
 
 // BaseServerCommand creates the base "server" command

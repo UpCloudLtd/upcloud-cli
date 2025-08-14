@@ -17,6 +17,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 	"github.com/jedib0t/go-pretty/v6/text"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -257,6 +258,8 @@ type createCommand struct {
 
 // InitCommand implements Command.InitCommand
 func (s *createCommand) InitCommand() {
+	passwordDeliveries := []string{request.PasswordDeliveryNone, request.PasswordDeliveryEmail, request.PasswordDeliverySMS}
+
 	s.Cobra().Long = commands.WrapLongDescription(`Create a new server
 
 Note that the default template, Ubuntu Server 24.04 LTS (Noble Numbat), only supports SSH key based authentication. Use ` + "`" + `--ssh-keys` + "`" + ` option to provide the keys when creating a server with the default template. The examples below use public key from the ` + "`" + `~/.ssh` + "`" + ` directory. If you want to use different authentication method, use ` + "`" + `--os` + "`" + ` parameter to specify a different template.`)
@@ -279,10 +282,10 @@ Note that the default template, Ubuntu Server 24.04 LTS (Noble Numbat), only sup
 	fs.StringVar(&s.params.os, "os", def.os, "Server OS to use (will be the first storage device). The value should be title or UUID of an either public or private template. Set to empty to fully customise the storages.")
 	fs.IntVar(&s.params.osStorageSize, "os-storage-size", def.osStorageSize, "OS storage size in GiB. This is only applicable if `os` is also set. Zero value makes the disk equal to the minimum size of the template.")
 	config.AddToggleFlag(fs, &s.params.osStorageEncrypted, "os-storage-encrypt", false, "Encrypt the OS storage. This is only applicable if `os` is also set.")
-	fs.StringVar(&s.params.PasswordDelivery, "password-delivery", def.PasswordDelivery, "Defines how password is delivered. Available: email, sms")
+	fs.StringVar(&s.params.PasswordDelivery, "password-delivery", def.PasswordDelivery, "Defines how password is delivered. Available: "+strings.Join(passwordDeliveries, ", "))
 	fs.StringVar(&s.params.Plan, "plan", def.Plan, "Server plan name. See \"server plans\" command for valid plans. Set to \"custom\" and use `cores` and `memory` options for flexible plan.")
 	fs.StringVar(&s.params.RemoteAccessPassword, "remote-access-password", def.RemoteAccessPassword, "Defines the remote access password.")
-	fs.StringVar(&s.params.RemoteAccessType, "remote-access-type", def.RemoteAccessType, "Set a remote access type. Available: vnc, spice")
+	fs.StringVar(&s.params.RemoteAccessType, "remote-access-type", def.RemoteAccessType, "Set a remote access type. Available: "+strings.Join(remoteAccessTypes, ", "))
 	fs.StringVar(&s.params.ServerGroup, "server-group", def.ServerGroup, "UUID of a server group for the server. To remove the server from the group, see `servergroup modify")
 	fs.StringVar(&s.params.SimpleBackup, "simple-backup", def.SimpleBackup, simpleBackupDescription)
 	fs.StringSliceVar(&s.params.sshKeys, "ssh-keys", def.sshKeys, "Add one or more SSH keys to the admin account. Accepted values are SSH public keys or filenames from where to read the keys.")
@@ -291,7 +294,7 @@ Note that the default template, Ubuntu Server 24.04 LTS (Noble Numbat), only sup
 	fs.StringVar(&s.params.Title, "title", def.Title, "A short, informational description.")
 	fs.StringVar(&s.params.UserData, "user-data", def.UserData, "Defines URL for a server setup script, or the script body itself.")
 	fs.StringVar(&s.params.username, "username", def.username, "Admin account username.")
-	fs.StringVar(&s.params.VideoModel, "video-model", def.VideoModel, "Video interface model of the server. Available: vga, cirrus")
+	fs.StringVar(&s.params.VideoModel, "video-model", def.VideoModel, "Video interface model of the server. Available: "+strings.Join(videoModels, ", "))
 	config.AddToggleFlag(fs, &s.wait, "wait", false, "Wait for server to be in started state before returning.")
 	fs.StringVar(&s.params.Zone, "zone", def.Zone, namedargs.ZoneDescription("server"))
 	// fs.BoolVar(&s.params.firewall, "firewall", def.firewall, "Enables the firewall. You can manage firewall rules with the firewall command.")
@@ -301,9 +304,17 @@ Note that the default template, Ubuntu Server 24.04 LTS (Noble Numbat), only sup
 
 	commands.Must(s.Cobra().MarkFlagRequired("hostname"))
 	commands.Must(s.Cobra().MarkFlagRequired("zone"))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("password-delivery", cobra.FixedCompletions(passwordDeliveries, cobra.ShellCompDirectiveNoFileComp)))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("remote-access-type", cobra.FixedCompletions(remoteAccessTypes, cobra.ShellCompDirectiveNoFileComp)))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("video-model", cobra.FixedCompletions(videoModels, cobra.ShellCompDirectiveNoFileComp)))
 }
 
 func (s *createCommand) InitCommandWithConfig(cfg *config.Config) {
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("avoid-host", namedargs.CompletionFunc(completion.HostID{}, cfg)))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("host", namedargs.CompletionFunc(completion.HostID{}, cfg)))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("plan", namedargs.CompletionFunc(completion.ServerPlan{}, cfg)))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("server-group", namedargs.CompletionFunc(completion.ServerGroupUUID{}, cfg)))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("time-zone", namedargs.CompletionFunc(completion.TimeZone{}, cfg)))
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("zone", namedargs.CompletionFunc(completion.Zone{}, cfg)))
 }
 
