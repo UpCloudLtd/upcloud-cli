@@ -2,9 +2,9 @@ package storage
 
 import (
 	"io"
+	"io/fs"
 	"net/url"
 	"os"
-	"runtime"
 	"slices"
 	"strings"
 	"testing"
@@ -59,17 +59,12 @@ func TestImportCommand(t *testing.T) {
 		State: upcloud.StorageImportStateCompleted,
 	}
 
-	fileNotFoundErr := "cannot get file size: stat testfile: no such file or directory"
-	if runtime.GOOS == "windows" {
-		fileNotFoundErr = "cannot get file size: CreateFile testfile: The system cannot find the file specified."
-	}
-
 	for _, test := range []struct {
-		name         string
-		args         []string
-		error        string
-		request      request.CreateStorageImportRequest
-		windowsError string
+		name               string
+		args               []string
+		error              string
+		expectFileNotExist bool
+		request            request.CreateStorageImportRequest
 	}{
 		{
 			name: "source is missing",
@@ -127,7 +122,7 @@ func TestImportCommand(t *testing.T) {
 				"--zone", "fi-hel1",
 				"--title", "test-2",
 			},
-			error: fileNotFoundErr,
+			expectFileNotExist: true,
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
@@ -146,8 +141,13 @@ func TestImportCommand(t *testing.T) {
 			c.Cobra().SetArgs(test.args)
 			_, err := mockexecute.MockExecute(c, mService, conf)
 
-			if test.error != "" {
-				assert.EqualError(t, err, test.error)
+			if test.error != "" || test.expectFileNotExist {
+				assert.Error(t, err)
+				if test.expectFileNotExist {
+					assert.ErrorIs(t, err, fs.ErrNotExist)
+				} else {
+					assert.EqualError(t, err, test.error)
+				}
 			} else {
 				assert.NoError(t, err)
 
@@ -169,7 +169,7 @@ func TestParseSource(t *testing.T) {
 		name                    string
 		input                   string
 		expectedError           string
-		expectedWindowsError    string
+		expectFileNotExist      bool
 		expectedSourceType      string
 		expectedFileSize        int64
 		expectedParsedURLScheme string
@@ -191,10 +191,9 @@ func TestParseSource(t *testing.T) {
 			expectedParsedURLPath: "tempfile",
 		},
 		{
-			name:                 "local non-existent file",
-			input:                "foobar",
-			expectedError:        "cannot get file size: stat foobar: no such file or directory",
-			expectedWindowsError: "cannot get file size: CreateFile foobar: The system cannot find the file specified.",
+			name:               "local non-existent file",
+			input:              "foobar",
+			expectFileNotExist: true,
 		},
 		{
 			name:                    "remote http url",
@@ -240,9 +239,10 @@ func TestParseSource(t *testing.T) {
 			} else {
 				purl, stype, fsize, err = parseSource(test.input)
 			}
-			if test.expectedError != "" {
-				if test.expectedWindowsError != "" && runtime.GOOS == "windows" {
-					assert.EqualError(t, err, test.expectedWindowsError)
+			if test.expectedError != "" || test.expectFileNotExist {
+				assert.Error(t, err)
+				if test.expectFileNotExist {
+					assert.ErrorIs(t, err, fs.ErrNotExist)
 				} else {
 					assert.EqualError(t, err, test.expectedError)
 				}
