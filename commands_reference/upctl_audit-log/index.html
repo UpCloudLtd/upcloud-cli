@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_zone/">
+        <link rel="canonical" href="https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_audit-log/">
       
       
-        <link rel="prev" href="../upctl_version/">
+        <link rel="prev" href="../upctl_account/token/show/">
       
       
-        <link rel="next" href="devices/">
+        <link rel="next" href="export/">
       
       
       <link rel="icon" href="../../favicon.svg">
@@ -24,7 +24,7 @@
     
     
       
-        <title>upctl zone - UpCloud command-line client</title>
+        <title>upctl audit-log - UpCloud command-line client</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#upctl-zone" class="md-skip">
+        <a href="#upctl-audit-log" class="md-skip">
           Skip to content
         </a>
       
@@ -128,7 +128,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              upctl zone
+              upctl audit-log
             
           </span>
         </div>
@@ -760,18 +760,20 @@
                 
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" checked>
         
           
           <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
@@ -787,7 +789,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2_3">
             <span class="md-nav__icon md-icon"></span>
             upctl audit-log
@@ -798,10 +800,32 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../upctl_audit-log/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    audit-log 
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -812,6 +836,44 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#options" class="md-nav__link"> Options </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#global-options" class="md-nav__link"> Global options </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#related-commands" class="md-nav__link"> Related commands </a>
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -824,7 +886,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../upctl_audit-log/export/" class="md-nav__link">
+      <a href="export/" class="md-nav__link">
         
   
   
@@ -5728,20 +5790,18 @@
                 
   
   
-    
   
   
-  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_19" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_19" >
         
           
           <label class="md-nav__link" for="__nav_2_19" id="__nav_2_19_label" tabindex="0">
@@ -5757,7 +5817,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_19_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_19_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2_19">
             <span class="md-nav__icon md-icon"></span>
             upctl zone
@@ -5768,32 +5828,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    zone 
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../upctl_zone/" class="md-nav__link">
         
   
   
@@ -5804,44 +5842,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <!-- Limit TOC depth to 1 -->
-
-<li class="md-nav__item">
-  <a href="#options" class="md-nav__link"> Options </a>
-</li>
-      
-        <!-- Limit TOC depth to 1 -->
-
-<li class="md-nav__item">
-  <a href="#global-options" class="md-nav__link"> Global options </a>
-</li>
-      
-        <!-- Limit TOC depth to 1 -->
-
-<li class="md-nav__item">
-  <a href="#related-commands" class="md-nav__link"> Related commands </a>
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -5892,7 +5892,7 @@
   
   
     <li class="md-nav__item">
-      <a href="devices/" class="md-nav__link">
+      <a href="../upctl_zone/devices/" class="md-nav__link">
         
   
   
@@ -5915,7 +5915,7 @@
   
   
     <li class="md-nav__item">
-      <a href="devices/show/" class="md-nav__link">
+      <a href="../upctl_zone/devices/show/" class="md-nav__link">
         
   
   
@@ -5946,7 +5946,7 @@
   
   
     <li class="md-nav__item">
-      <a href="list/" class="md-nav__link">
+      <a href="../upctl_zone/list/" class="md-nav__link">
         
   
   
@@ -6242,9 +6242,9 @@
 
 <!-- Hide edit button as command reference and changelog do not exist on main branch -->
 
-<h1 id="upctl-zone">upctl zone</h1>
-<p>Display zone information</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>upctl zone [flags]
+<h1 id="upctl-audit-log">upctl audit-log</h1>
+<p>Manage audit logs</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>upctl audit-log [flags]
 </span></code></pre></div>
 <h2 id="options">Options</h2>
 <table>
@@ -6257,7 +6257,7 @@
 <tbody>
 <tr>
 <td><code>--help</code>, <code>-h</code></td>
-<td>help for zone<br/>Default: <code>false</code></td>
+<td>help for audit-log<br/>Default: <code>false</code></td>
 </tr>
 </tbody>
 </table>
@@ -6310,12 +6310,8 @@
 <td>UpCloud command-line interface</td>
 </tr>
 <tr>
-<td><a href="devices/">upctl zone devices</a></td>
-<td>List available devices for each zone</td>
-</tr>
-<tr>
-<td><a href="list/">upctl zone list</a></td>
-<td>List available zones</td>
+<td><a href="export/">upctl audit-log export</a></td>
+<td>Export audit logs</td>
 </tr>
 </tbody>
 </table>
