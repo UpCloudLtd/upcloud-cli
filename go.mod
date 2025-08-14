@@ -19,7 +19,7 @@ require (
 	golang.org/x/crypto v0.41.0
 	golang.org/x/term v0.34.0
 	gopkg.in/yaml.v3 v3.0.1
-	k8s.io/client-go v0.33.3
+	k8s.io/client-go v0.33.4
 )
 
 require (
@@ -61,7 +61,7 @@ require (
 	golang.org/x/text v0.28.0 // indirect
 	golang.org/x/time v0.9.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
-	k8s.io/apimachinery v0.33.3 // indirect
+	k8s.io/apimachinery v0.33.4 // indirect
 	k8s.io/klog/v2 v2.130.1 // indirect
 	k8s.io/utils v0.0.0-20241104100929-3ea5e8cea738 // indirect
 	sigs.k8s.io/json v0.0.0-20241010143419-9aa6b5e7a4b3 // indirect
