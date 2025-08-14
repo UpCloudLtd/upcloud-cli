@@ -33,6 +33,7 @@ func TestShowCommand(t *testing.T) {
 			StorageMaxIOPS:        10240,
 			StorageSSD:            10240,
 			LoadBalancers:         50,
+			GPUs:                  10,
 		},
 	}
 
@@ -54,6 +55,7 @@ func TestShowCommand(t *testing.T) {
     Storage HDD:              10240 
     Storage MaxIOPS:          10240 
     Storage SSD:              10240 
+    GPUs:                        10 
 
 `
 

@@ -103,6 +103,11 @@ func (s *showCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 						Key:   "storage_ssd",
 						Value: account.ResourceLimits.StorageSSD,
 					},
+					{
+						Title: "GPUs:",
+						Key:   "gpus",
+						Value: account.ResourceLimits.GPUs,
+					},
 				},
 			},
 		},

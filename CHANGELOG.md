@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Object storage bucket management with `object-storage bucket create`, `object-storage bucket delete`, and `object-storage bucket list` commands
 - Object storage user management with `object-storage user create`, `object-storage user delete`, and `object-storage user list` commands
 - Object storage user access key management with `object-storage create-access-key`, `object-storage delete-access-key`, and `object-storage list-access-keys` commands
+- Expose GPU limits in `account show` command
+- Expose GPU model and amount in `server plans` command
 
 ## [3.21.0] - 2025-07-15
 

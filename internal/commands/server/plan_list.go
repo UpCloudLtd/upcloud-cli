@@ -43,14 +43,21 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 	rows := make(map[string][]output.TableRow)
 	for _, p := range plans {
 		key := planType(p)
-		rows[key] = append(rows[key], output.TableRow{
+		row := output.TableRow{
 			p.Name,
 			p.CoreNumber,
 			p.MemoryAmount,
 			p.StorageSize,
 			p.StorageTier,
 			p.PublicTrafficOut,
-		})
+		}
+
+		// Add GPU fields only for GPU plans
+		if key == "gpu" {
+			row = append(row, p.GPUModel, p.GPUAmount)
+		}
+
+		rows[key] = append(rows[key], row)
 	}
 
 	return output.MarshaledWithHumanOutput{
@@ -86,19 +93,28 @@ func planType(p upcloud.Plan) string {
 }
 
 func planSection(key, title string, rows []output.TableRow) output.CombinedSection {
+	columns := []output.TableColumn{
+		{Key: "name", Header: "Name"},
+		{Key: "cores", Header: "Cores"},
+		{Key: "memory", Header: "Memory"},
+		{Key: "storage", Header: "Storage size"},
+		{Key: "storage_tier", Header: "Storage tier"},
+		{Key: "egress_transfer", Header: "Transfer out (GiB/month)"},
+	}
+
+	if key == "gpu" {
+		columns = append(columns,
+			output.TableColumn{Key: "gpu_model", Header: "GPU model"},
+			output.TableColumn{Key: "gpu_amount", Header: "GPU amount"},
+		)
+	}
+
 	return output.CombinedSection{
 		Key:   key,
 		Title: title,
 		Contents: output.Table{
-			Columns: []output.TableColumn{
-				{Key: "name", Header: "Name"},
-				{Key: "cores", Header: "Cores"},
-				{Key: "memory", Header: "Memory"},
-				{Key: "storage", Header: "Storage size"},
-				{Key: "storage_tier", Header: "Storage tier"},
-				{Key: "egress_transfer", Header: "Transfer out (GiB/month)"},
-			},
-			Rows: rows,
+			Columns: columns,
+			Rows:    rows,
 		},
 	}
 }
