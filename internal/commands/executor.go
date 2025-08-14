@@ -48,10 +48,11 @@ type executeResult struct {
 }
 
 type executorImpl struct {
-	Config   *config.Config
-	progress *progress.Progress
-	service  internal.AllServices
-	logger   flume.Logger
+	Config     *config.Config
+	progress   *progress.Progress
+	service    internal.AllServices
+	logger     flume.Logger
+	sigIntChan chan os.Signal
 }
 
 func (e executorImpl) WithLogger(args ...interface{}) Executor {
@@ -115,6 +116,7 @@ func (e *executorImpl) PushProgressSuccess(key string) {
 }
 
 func (e *executorImpl) StopProgressLog() {
+	signal.Stop(e.sigIntChan) // prevent progress.Stop() from being called multiple times and panicking
 	e.progress.Stop()
 }
 
@@ -153,18 +155,18 @@ func (e executorImpl) All() internal.AllServices {
 // NewExecutor creates the default Executor
 func NewExecutor(cfg *config.Config, svc internal.AllServices, logger flume.Logger) Executor {
 	executor := &executorImpl{
-		Config:   cfg,
-		progress: progress.NewProgress(config.GetProgressOutputConfig()),
-		logger:   logger,
-		service:  svc,
+		Config:     cfg,
+		progress:   progress.NewProgress(config.GetProgressOutputConfig()),
+		logger:     logger,
+		service:    svc,
+		sigIntChan: make(chan os.Signal, 1),
 	}
 	executor.progress.Start()
 
 	// Handle possible interrupts during execution
-	sigintChan := make(chan os.Signal, 1)
-	signal.Notify(sigintChan, os.Interrupt)
+	signal.Notify(executor.sigIntChan, os.Interrupt)
 	go func() {
-		<-sigintChan
+		<-executor.sigIntChan
 
 		// Cancel the app context
 		cfg.Cancel()
