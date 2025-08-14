@@ -323,12 +323,6 @@
   <a href="#configure-credentials" class="md-nav__link"> Configure credentials </a>
 </li>
       
-        <!-- Limit TOC depth to 1 -->
-
-<li class="md-nav__item">
-  <a href="#execute-commands" class="md-nav__link"> Execute commands </a>
-</li>
-      
     </ul>
   
 </nav>
@@ -6122,12 +6116,6 @@
   <a href="#configure-credentials" class="md-nav__link"> Configure credentials </a>
 </li>
       
-        <!-- Limit TOC depth to 1 -->
-
-<li class="md-nav__item">
-  <a href="#execute-commands" class="md-nav__link"> Execute commands </a>
-</li>
-      
     </ul>
   
 </nav>
@@ -6300,11 +6288,21 @@ the autoloading needs to be set up. Something like this will accomplish that:</p
 </div>
 <h2 id="configure-credentials">Configure credentials</h2>
 <p>To be able to manage your UpCloud resources, you need to configure credentials for <code>upctl</code> and enable API access for these credentials.</p>
-<p>Define the credentials by setting <code>UPCLOUD_USERNAME</code> and <code>UPCLOUD_PASSWORD</code> environment variables.</p>
-<p>API access can be configured in the UpCloud Hub on <a href="https://hub.upcloud.com/account/overview">Account page</a> for the main-account and on the <a href="https://hub.upcloud.com/people/permissions">Permissions tab</a> of the People page for sub-accounts. We recommend you to set up a sub-account specifically for the API usage with its own username and password, as it allows you to assign specific permissions for increased security.</p>
-<h2 id="execute-commands">Execute commands</h2>
-<p>To verify you are able to access the UpCloud API, you can, for example, run <code>upctl account show</code> command to print your current balance and resource limits.</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>upctl<span class="w"> </span>account<span class="w"> </span>show
+<p>Define the credentials either by setting <code>UPCLOUD_USERNAME</code> and <code>UPCLOUD_PASSWORD</code> environmental variables or <code>UPCLOUD_TOKEN</code> environment variable,
+or in the <code>upctl</code> config file (default <code>~/.config/upctl.yaml</code>, overridable with <code>--config /path/to/upctl.yaml</code>):</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;your-username&quot;</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;your-password&quot;</span>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="c1"># alternatively, you can use token</span>
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="nt">token</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;your-token&quot;</span>
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>
+</span><span id="__span-20-6"><a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="l l-Scalar l-Scalar-Plain">API access can be configured in the UpCloud Hub on [Account page](https://hub.upcloud.com/account/overview) for the main-account and on the [Permissions tab](https://hub.upcloud.com/people/permissions) of the People page for sub-accounts. We recommend you to set up a sub-account specifically for the API usage with its own username and password, as it allows you to assign specific permissions for increased security.</span>
+</span><span id="__span-20-7"><a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a>
+</span><span id="__span-20-8"><a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a><span class="c1">## Execute commands</span>
+</span><span id="__span-20-9"><a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a>
+</span><span id="__span-20-10"><a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a><span class="l l-Scalar l-Scalar-Plain">To verify you are able to access the UpCloud API, you can, for example, run `upctl account show` command to print your current balance and resource limits.</span>
+</span><span id="__span-20-11"><a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a>
+</span><span id="__span-20-12"><a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a><span class="err">```</span><span class="l l-Scalar l-Scalar-Plain">sh</span>
+</span><span id="__span-20-13"><a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a><span class="l l-Scalar l-Scalar-Plain">upctl account show</span>
 </span></code></pre></div>
 <p>For usage examples, see the <em>Examples</em> section of the documentation.</p>
 <p>For reference on how to use each sub-command, see the <em>Commands reference</em> section of the documentation. The same information is also available in <code>--help</code> output of each command.</p>
