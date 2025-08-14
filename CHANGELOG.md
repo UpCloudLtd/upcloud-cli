@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Object storage user access key management with `object-storage create-access-key`, `object-storage delete-access-key`, and `object-storage list-access-keys` commands
 - Expose GPU limits in `account show` command
 - Expose GPU model and amount in `server plans` command
+- Add `audit-log export` command.
 
 ## [3.21.0] - 2025-07-15
 

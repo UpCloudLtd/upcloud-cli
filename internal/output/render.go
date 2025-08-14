@@ -3,6 +3,7 @@ package output
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 
@@ -28,9 +29,13 @@ func Render(writer io.Writer, outputFormat string, commandOutputs ...Output) (er
 	var b []byte
 	switch outputFormat {
 	case formatHuman:
-		b, err = withNewline(toHuman(commandOutputs...))
+		if b, err = toHuman(commandOutputs...); err == nil && len(b) != 0 {
+			b = append(b, '\n')
+		}
 	case formatJSON:
-		b, err = withNewline(toJSON(commandOutputs...))
+		if b, err = toJSON(commandOutputs...); err == nil && len(b) != 0 {
+			b = append(b, '\n')
+		}
 	case formatYAML:
 		b, err = toYAML(commandOutputs...)
 	default:
@@ -45,14 +50,20 @@ func Render(writer io.Writer, outputFormat string, commandOutputs ...Output) (er
 		return err
 	}
 
-	// Count failed outputs
+	// Render streaming outputs and count failed ones
 	failedCount := 0
 	for _, commandOutput := range commandOutputs {
-		if _, ok := commandOutput.(Error); ok {
+		if rawOutput, ok := commandOutput.(Raw); ok {
+			_, cErr := io.Copy(writer, rawOutput)
+			err = errors.Join(err, cErr, rawOutput.Close())
+		} else if _, ok := commandOutput.(Error); ok {
 			failedCount++
 		}
 	}
 
+	if err != nil {
+		return err
+	}
 	if failedCount > 0 {
 		return &clierrors.CommandFailedError{
 			FailedCount: failedCount,
@@ -84,7 +95,9 @@ func toJSON(commandOutputs ...Output) ([]byte, error) {
 			if err != nil {
 				return nil, err
 			}
-			jsonOutput = append(jsonOutput, outBytes)
+			if len(outBytes) > 0 {
+				jsonOutput = append(jsonOutput, outBytes)
+			}
 		}
 	}
 
@@ -108,8 +121,4 @@ func toYAML(commandOutputs ...Output) ([]byte, error) {
 	}
 
 	return JSONToYAML(b)
-}
-
-func withNewline(b []byte, err error) ([]byte, error) {
-	return append(b, "\n"...), err
 }
