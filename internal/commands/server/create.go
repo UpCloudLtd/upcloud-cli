@@ -307,6 +307,12 @@ Note that the default template, Ubuntu Server 24.04 LTS (Noble Numbat), only sup
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("password-delivery", cobra.FixedCompletions(passwordDeliveries, cobra.ShellCompDirectiveNoFileComp)))
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("remote-access-type", cobra.FixedCompletions(remoteAccessTypes, cobra.ShellCompDirectiveNoFileComp)))
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("video-model", cobra.FixedCompletions(videoModels, cobra.ShellCompDirectiveNoFileComp)))
+	for _, flag := range []string{
+		"boot-order", "cores", "hostname", "label", "memory", "network", "os", "os-storage-size", "remote-access-password",
+		"simple-backup", "storage", "title", "user-data", "username",
+	} {
+		commands.Must(s.Cobra().RegisterFlagCompletionFunc(flag, cobra.NoFileCompletions))
+	}
 }
 
 func (s *createCommand) InitCommandWithConfig(cfg *config.Config) {

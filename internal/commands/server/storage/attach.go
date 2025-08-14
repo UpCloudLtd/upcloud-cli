@@ -65,6 +65,7 @@ func (s *attachCommand) InitCommand() {
 	s.AddFlags(flagSet)
 	commands.Must(s.Cobra().MarkFlagRequired("storage"))
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("type", cobra.FixedCompletions(types, cobra.ShellCompDirectiveNoFileComp)))
+	commands.Must(s.Cobra().RegisterFlagCompletionFunc("address", cobra.NoFileCompletions))
 }
 
 func (s *attachCommand) InitCommandWithConfig(cfg *config.Config) {

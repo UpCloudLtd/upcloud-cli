@@ -77,6 +77,11 @@ func (s *modifyCommand) InitCommand() {
 
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("remote-access-type", cobra.FixedCompletions(remoteAccessTypes, cobra.ShellCompDirectiveNoFileComp)))
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("video-model", cobra.FixedCompletions(videoModels, cobra.ShellCompDirectiveNoFileComp)))
+	for _, flag := range []string{
+		"boot-order", "cores", "hostname", "label", "memory", "remote-access-password", "simple-backup", "title",
+	} {
+		commands.Must(s.Cobra().RegisterFlagCompletionFunc(flag, cobra.NoFileCompletions))
+	}
 }
 
 func (s *modifyCommand) InitCommandWithConfig(cfg *config.Config) {

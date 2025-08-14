@@ -47,5 +47,5 @@ func TestDatabase_CompleteArgumentServiceFail(t *testing.T) {
 	mService.On("GetManagedDatabases", mock.Anything).Return(nil, fmt.Errorf("MOCKFAIL"))
 	completions, directive := completion.Database{}.CompleteArgument(context.TODO(), mService, "asd")
 	assert.Nil(t, completions)
-	assert.Equal(t, cobra.ShellCompDirectiveDefault, directive)
+	assert.Equal(t, cobra.ShellCompDirectiveNoFileComp, directive)
 }

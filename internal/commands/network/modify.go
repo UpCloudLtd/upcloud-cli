@@ -5,6 +5,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
@@ -53,6 +54,9 @@ func (s *modifyCommand) InitCommand() {
 		"  dhcp-default-route: true/false \n"+
 		"  dhcp-dns: array of strings")
 	s.AddFlags(fs)
+	for _, flag := range []string{"name", "ip-network"} {
+		commands.Must(s.Cobra().RegisterFlagCompletionFunc(flag, cobra.NoFileCompletions))
+	}
 }
 
 func (s *modifyCommand) InitCommandWithConfig(cfg *config.Config) {

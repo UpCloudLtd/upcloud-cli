@@ -49,5 +49,5 @@ func TestRouter_CompleteArgumentServiceFail(t *testing.T) {
 	mService.On("GetRouters", mock.Anything).Return(nil, fmt.Errorf("MOCKFAIL"))
 	ips, directive := completion.Router{}.CompleteArgument(context.TODO(), mService, "127")
 	assert.Nil(t, ips)
-	assert.Equal(t, cobra.ShellCompDirectiveDefault, directive)
+	assert.Equal(t, cobra.ShellCompDirectiveNoFileComp, directive)
 }

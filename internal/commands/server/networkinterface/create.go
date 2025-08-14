@@ -66,6 +66,9 @@ func (s *createCommand) InitCommand() {
 	s.AddFlags(fs)
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("type", cobra.FixedCompletions(network.Types, cobra.ShellCompDirectiveNoFileComp)))
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("family", cobra.FixedCompletions(ipaddress.Families, cobra.ShellCompDirectiveNoFileComp)))
+	for _, flag := range []string{"index", "ip-addresses"} {
+		commands.Must(s.Cobra().RegisterFlagCompletionFunc(flag, cobra.NoFileCompletions))
+	}
 }
 
 func (s *createCommand) InitCommandWithConfig(cfg *config.Config) {

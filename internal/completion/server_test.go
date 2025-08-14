@@ -66,5 +66,5 @@ func TestServer_CompleteArgumentServiceFail(t *testing.T) {
 	mService.On("GetServers", mock.Anything).Return(nil, fmt.Errorf("MOCKFAIL"))
 	ips, directive := completion.Server{}.CompleteArgument(context.TODO(), mService, "127")
 	assert.Nil(t, ips)
-	assert.Equal(t, cobra.ShellCompDirectiveDefault, directive)
+	assert.Equal(t, cobra.ShellCompDirectiveNoFileComp, directive)
 }

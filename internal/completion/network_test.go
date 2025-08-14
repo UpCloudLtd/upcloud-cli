@@ -53,5 +53,5 @@ func TestNetwork_CompleteArgumentServiceFail(t *testing.T) {
 	mService.On("GetNetworks", mock.Anything).Return(nil, fmt.Errorf("MOCKFAIL"))
 	ips, directive := completion.Network{}.CompleteArgument(context.TODO(), mService, "127")
 	assert.Nil(t, ips)
-	assert.Equal(t, cobra.ShellCompDirectiveDefault, directive)
+	assert.Equal(t, cobra.ShellCompDirectiveNoFileComp, directive)
 }

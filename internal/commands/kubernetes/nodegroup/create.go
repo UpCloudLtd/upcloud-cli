@@ -47,6 +47,7 @@ func GetCreateNodeGroupFlagSet(p *CreateNodeGroupParams) *pflag.FlagSet {
 	commands.Must(fs.SetAnnotation("kubelet-arg", commands.FlagAnnotationNoFileCompletions, nil))
 	commands.Must(fs.SetAnnotation("label", commands.FlagAnnotationNoFileCompletions, nil))
 	commands.Must(fs.SetAnnotation("name", commands.FlagAnnotationNoFileCompletions, nil))
+	commands.Must(fs.SetAnnotation("ssh-key", commands.FlagAnnotationNoFileCompletions, nil))
 	commands.Must(fs.SetAnnotation("storage", commands.FlagAnnotationNoFileCompletions, nil))
 	commands.Must(fs.SetAnnotation("taint", commands.FlagAnnotationNoFileCompletions, nil))
 

@@ -53,5 +53,5 @@ func TestToken_CompleteArgumentServiceFail(t *testing.T) {
 	mService.On("GetTokens", mock.Anything).Return(nil, fmt.Errorf("MOCKFAIL"))
 	tokens, directive := completion.Token{}.CompleteArgument(context.TODO(), mService, "FOO")
 	assert.Nil(t, tokens)
-	assert.Equal(t, cobra.ShellCompDirectiveDefault, directive)
+	assert.Equal(t, cobra.ShellCompDirectiveNoFileComp, directive)
 }

@@ -47,5 +47,5 @@ func TestIPAddress_CompleteArgumentServiceFail(t *testing.T) {
 	mService.On("GetIPAddresses", mock.Anything).Return(nil, fmt.Errorf("MOCKFAIL"))
 	ips, directive := completion.IPAddress{}.CompleteArgument(context.TODO(), mService, "127")
 	assert.Nil(t, ips)
-	assert.Equal(t, cobra.ShellCompDirectiveDefault, directive)
+	assert.Equal(t, cobra.ShellCompDirectiveNoFileComp, directive)
 }
