@@ -127,6 +127,66 @@ func TestCreateKubernetesNodeGroup(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "GPU plan with storage customization",
+			args: []string{clusterUUID, "--count", "2", "--name", "gpu-nodes", "--plan", "GPU-8xCPU-64GB-1xL40S", "--storage-size", "1024", "--storage-tier", "maxiops"},
+			expected: request.CreateKubernetesNodeGroupRequest{
+				ClusterUUID: clusterUUID,
+				NodeGroup: request.KubernetesNodeGroup{
+					Count:                2,
+					Name:                 "gpu-nodes",
+					Plan:                 "GPU-8xCPU-64GB-1xL40S",
+					Labels:               []upcloud.Label{},
+					KubeletArgs:          []upcloud.KubernetesKubeletArg{},
+					Taints:               []upcloud.KubernetesTaint{},
+					UtilityNetworkAccess: upcloud.BoolPtr(true),
+					GPUPlan: &upcloud.KubernetesNodeGroupGPUPlan{
+						StorageSize: 1024,
+						StorageTier: upcloud.StorageTierMaxIOPS,
+					},
+				},
+			},
+		},
+		{
+			name: "Cloud Native plan with storage customization",
+			args: []string{clusterUUID, "--count", "3", "--name", "cloud-native-nodes", "--plan", "CLOUDNATIVE-4xCPU-8GB", "--storage-size", "50", "--storage-tier", "standard"},
+			expected: request.CreateKubernetesNodeGroupRequest{
+				ClusterUUID: clusterUUID,
+				NodeGroup: request.KubernetesNodeGroup{
+					Count:                3,
+					Name:                 "cloud-native-nodes",
+					Plan:                 "CLOUDNATIVE-4xCPU-8GB",
+					Labels:               []upcloud.Label{},
+					KubeletArgs:          []upcloud.KubernetesKubeletArg{},
+					Taints:               []upcloud.KubernetesTaint{},
+					UtilityNetworkAccess: upcloud.BoolPtr(true),
+					CloudNativePlan: &upcloud.KubernetesNodeGroupCloudNativePlan{
+						StorageSize: 50,
+						StorageTier: upcloud.StorageTierStandard,
+					},
+				},
+			},
+		},
+		{
+			name:     "storage customization with unsupported plan",
+			args:     []string{clusterUUID, "--count", "2", "--name", "regular-nodes", "--plan", "2xCPU-4GB", "--storage-size", "100"},
+			errorMsg: "storage customization (--storage-size, --storage-tier) is only supported for Cloud Native (CLOUDNATIVE-*) and GPU (GPU-*) plans, got plan: 2xCPU-4GB",
+		},
+		{
+			name:     "invalid storage tier",
+			args:     []string{clusterUUID, "--count", "2", "--name", "gpu-nodes", "--plan", "GPU-8xCPU-64GB-1xL40S", "--storage-tier", "invalid"},
+			errorMsg: "invalid storage tier \"invalid\", must be one of: maxiops, standard, hdd",
+		},
+		{
+			name:     "invalid storage size too small",
+			args:     []string{clusterUUID, "--count", "2", "--name", "gpu-nodes", "--plan", "GPU-8xCPU-64GB-1xL40S", "--storage-size", "20"},
+			errorMsg: "storage size must be at least 25 GiB, got 20",
+		},
+		{
+			name:     "invalid storage size too large",
+			args:     []string{clusterUUID, "--count", "2", "--name", "gpu-nodes", "--plan", "GPU-8xCPU-64GB-1xL40S", "--storage-size", "5000"},
+			errorMsg: "storage size cannot exceed 4096 GiB, got 5000",
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			conf := config.New()
@@ -147,6 +207,57 @@ func TestCreateKubernetesNodeGroup(t *testing.T) {
 			} else {
 				require.NoError(t, err)
 				mService.AssertNumberOfCalls(t, "CreateKubernetesNodeGroup", 1)
+			}
+		})
+	}
+}
+
+func TestSupportStorageCustomization(t *testing.T) {
+	tests := []struct {
+		planName string
+		expected bool
+	}{
+		{"2xCPU-4GB", false},
+		{"4xCPU-8GB", false},
+		{"HICPU-8xCPU-16GB", false},
+		{"HIMEM-4xCPU-32GB", false},
+		{"DEV-1xCPU-1GB", false},
+		{"CLOUDNATIVE-2xCPU-4GB", true},
+		{"CLOUDNATIVE-4xCPU-8GB", true},
+		{"GPU-8xCPU-64GB-1xL40S", true},
+		{"", false},
+	}
+
+	for _, test := range tests {
+		t.Run(test.planName, func(t *testing.T) {
+			result := supportStorageCustomization(test.planName)
+			assert.Equal(t, test.expected, result)
+		})
+	}
+}
+
+func TestValidateStorageTier(t *testing.T) {
+	tests := []struct {
+		tier     string
+		hasError bool
+	}{
+		{"", false},
+		{"maxiops", false},
+		{"standard", false},
+		{"hdd", false},
+		{"archive", true},
+		{"invalid", true},
+		{"MAXIOPS", true},
+		{"Standard", true},
+	}
+
+	for _, test := range tests {
+		t.Run(test.tier, func(t *testing.T) {
+			err := validateStorageTier(test.tier)
+			if test.hasError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
 			}
 		})
 	}

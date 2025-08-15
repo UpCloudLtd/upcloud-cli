@@ -35,6 +35,12 @@ func CreateCommand() commands.Command {
 				--network 03e5ca07-f36c-4957-a676-e001e40441eb \
 				--node-group count=4,kubelet-arg="log-flush-frequency=5s",label="owner=devteam",label="env=dev",name=my-node-group,plan=4xCPU-8GB,ssh-key="ssh-ed25519 AAAAo admin@user.com",ssh-key="/path/to/your/public/ssh/key.pub",storage=01000000-0000-4000-8000-000160010100,taint="env=dev:NoSchedule",taint="env=dev2:NoSchedule" \
 				--zone de-fra1`,
+			`upctl kubernetes create \
+				--name gpu-cluster \
+				--network 03e5ca07-f36c-4957-a676-e001e40441eb \
+				--node-group count=2,name=gpu-workers,plan=GPU-8xCPU-64GB-1xL40S,storage-size=1024,storage-tier=maxiops,label="gpu=NVIDIA-L40S" \
+				--node-group count=3,name=cloud-native-workers,plan=CLOUDNATIVE-4xCPU-8GB,storage-size=100,storage-tier=standard \
+				--zone fi-hel2`,
 		),
 	}
 }
@@ -134,8 +140,11 @@ func (c *createCommand) InitCommand() {
 			"ssh-key=\"ssh-ed25519 AAAAo admin@user.com\","+
 			"ssh-key=\"/path/to/your/public/ssh/key.pub\","+
 			"storage=01000000-0000-4000-8000-000160010100,"+
+			"storage-size=100,"+
+			"storage-tier=maxiops,"+
 			"taint=\"env=dev:NoSchedule\","+
-			"taint=\"env=dev2:NoSchedule\"`",
+			"taint=\"env=dev2:NoSchedule\"`\n"+
+			"Note: storage-size and storage-tier are only supported for Cloud Native (CLOUDNATIVE-*) and GPU (GPU-*) plans. Valid storage tiers: maxiops, standard, hdd.",
 	)
 	fs.StringArrayVar(
 		&c.params.ControlPlaneIPFilter,

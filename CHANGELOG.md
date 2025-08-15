@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Expose GPU limits in `account show` command
 - Expose GPU model and amount in `server plans` command
 - Add `audit-log export` command.
+- Add support for customising storage tier and size for Kubernetes node groups utilising GPU and Cloud Native plans.
 
 ## [3.21.0] - 2025-07-15
 
