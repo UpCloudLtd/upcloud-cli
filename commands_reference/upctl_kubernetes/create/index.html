@@ -6270,6 +6270,12 @@
 </span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>                --network 03e5ca07-f36c-4957-a676-e001e40441eb \
 </span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>                --node-group count=4,kubelet-arg=&quot;log-flush-frequency=5s&quot;,label=&quot;owner=devteam&quot;,label=&quot;env=dev&quot;,name=my-node-group,plan=4xCPU-8GB,ssh-key=&quot;ssh-ed25519 AAAAo admin@user.com&quot;,ssh-key=&quot;/path/to/your/public/ssh/key.pub&quot;,storage=01000000-0000-4000-8000-000160010100,taint=&quot;env=dev:NoSchedule&quot;,taint=&quot;env=dev2:NoSchedule&quot; \
 </span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>                --zone de-fra1
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>upctl kubernetes create \
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>                --name gpu-cluster \
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>                --network 03e5ca07-f36c-4957-a676-e001e40441eb \
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>                --node-group count=2,name=gpu-workers,plan=GPU-8xCPU-64GB-1xL40S,storage-size=1024,storage-tier=maxiops,label=&quot;gpu=NVIDIA-L40S&quot; \
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>                --node-group count=3,name=cloud-native-workers,plan=CLOUDNATIVE-4xCPU-8GB,storage-size=100,storage-tier=standard \
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>                --zone fi-hel2
 </span></code></pre></div>
 <h2 id="options">Options</h2>
 <table>
@@ -6302,7 +6308,7 @@
 </tr>
 <tr>
 <td><code>--node-group</code></td>
-<td>Node group(s) for running workloads, multiple can be declared.<br/>Usage: <code>--node-group count=8,kubelet-arg="log-flush-frequency=5s",label="owner=devteam",label="env=dev",name=my-node-group,plan=2xCPU-4GB,ssh-key="ssh-ed25519 AAAAo admin@user.com",ssh-key="/path/to/your/public/ssh/key.pub",storage=01000000-0000-4000-8000-000160010100,taint="env=dev:NoSchedule",taint="env=dev2:NoSchedule"</code><br/>Default: <code>[]</code></td>
+<td>Node group(s) for running workloads, multiple can be declared.<br/>Usage: <code>--node-group count=8,kubelet-arg="log-flush-frequency=5s",label="owner=devteam",label="env=dev",name=my-node-group,plan=2xCPU-4GB,ssh-key="ssh-ed25519 AAAAo admin@user.com",ssh-key="/path/to/your/public/ssh/key.pub",storage=01000000-0000-4000-8000-000160010100,storage-size=100,storage-tier=maxiops,taint="env=dev:NoSchedule",taint="env=dev2:NoSchedule"</code><br/>Note: storage-size and storage-tier are only supported for Cloud Native (CLOUDNATIVE-<em>) and GPU (GPU-</em>) plans. Valid storage tiers: maxiops, standard, hdd.<br/>Default: <code>[]</code></td>
 </tr>
 <tr>
 <td><code>--kubernetes-api-allow-ip</code></td>

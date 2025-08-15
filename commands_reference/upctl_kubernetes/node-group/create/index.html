@@ -6262,6 +6262,8 @@
 </span></code></pre></div>
 <h2 id="examples">Examples</h2>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>upctl kubernetes nodegroup create 55199a44-4751-4e27-9394-7c7661910be3 --name secondary-node-group --count 3 --plan 2xCPU-4GB
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>upctl kubernetes nodegroup create 55199a44-4751-4e27-9394-7c7661910be3 --name gpu-nodes --count 2 --plan GPU-8xCPU-64GB-1xL40S --storage-size 1024 --storage-tier maxiops --label gpu=NVIDIA-L40S
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>upctl kubernetes nodegroup create 55199a44-4751-4e27-9394-7c7661910be3 --name cloud-native-nodes --count 4 --plan CLOUDNATIVE-4xCPU-8GB --storage-size 50 --storage-tier standard
 </span></code></pre></div>
 <h2 id="options">Options</h2>
 <table>
@@ -6299,6 +6301,14 @@
 <tr>
 <td><code>--storage</code></td>
 <td>Storage template to use when creating the nodes. Defaults to <code>UpCloud K8s</code> public template.</td>
+</tr>
+<tr>
+<td><code>--storage-size</code></td>
+<td>Custom storage size in GiB. Only applicable for Cloud Native (CLOUDNATIVE-<em>) and GPU (GPU-</em>) plans. If not specified, uses plan default.<br/>Default: <code>0</code></td>
+</tr>
+<tr>
+<td><code>--storage-tier</code></td>
+<td>Storage tier (maxiops, standard, hdd). Only applicable for Cloud Native (CLOUDNATIVE-<em>) and GPU (GPU-</em>) plans. If not specified, uses plan default.</td>
 </tr>
 <tr>
 <td><code>--taint</code></td>
