@@ -30,17 +30,18 @@ const (
 	includeHelp = "Include resources matching the given name. If defined multiple times, resource is included if it matches any of the given names. `*` matches all resources."
 	excludeHelp = "Exclude resources matching the given name. If defined multiple times, resource is included if it matches any of the given names."
 
-	typeKubernetes     = "kubernetes-cluster"
-	typeLoadBalancer   = "load-balancer"
-	typeNetwork        = "network"
-	typeNetworkPeering = "network-peering"
-	typeRouter         = "router"
-	typeObjectStorage  = "object-storage"
-	typeDatabase       = "database"
-	typeServer         = "server"
-	typeServerGroup    = "server-group"
-	typeStorage        = "storage"
-	typeTag            = "tag"
+	typeKubernetes        = "kubernetes-cluster"
+	typeLoadBalancer      = "load-balancer"
+	typeCertificateBundle = "certificate-bundle"
+	typeNetwork           = "network"
+	typeNetworkPeering    = "network-peering"
+	typeRouter            = "router"
+	typeObjectStorage     = "object-storage"
+	typeDatabase          = "database"
+	typeServer            = "server"
+	typeServerGroup       = "server-group"
+	typeStorage           = "storage"
+	typeTag               = "tag"
 )
 
 type Resource struct {
@@ -148,7 +149,7 @@ func findResources[T any](exec commands.Executor, wg *sync.WaitGroup, returnChan
 
 func listResources(exec commands.Executor, include, exclude []string) ([]Resource, error) {
 	var resources []Resource
-	returnChan := make(chan findResult, 11)
+	returnChan := make(chan findResult, 12)
 
 	var wg sync.WaitGroup
 
@@ -163,6 +164,7 @@ func listResources(exec commands.Executor, include, exclude []string) ([]Resourc
 	findResources(exec, &wg, returnChan, &resolver.CachingServerGroup{}, include, exclude)
 	findResources(exec, &wg, returnChan, &resolver.CachingStorage{Access: "private"}, include, exclude)
 	findResources(exec, &wg, returnChan, &cachingTag{}, include, exclude)
+	findResources(exec, &wg, returnChan, &cachingCertificateBundle{}, include, exclude)
 
 	wg.Wait()
 	close(returnChan)
@@ -191,6 +193,12 @@ func getResource(val any) (Resource, error) {
 		return Resource{
 			Name: v.Name,
 			Type: typeLoadBalancer,
+			UUID: v.UUID,
+		}, nil
+	case upcloud.LoadBalancerCertificateBundle:
+		return Resource{
+			Name: v.Name,
+			Type: typeCertificateBundle,
 			UUID: v.UUID,
 		}, nil
 	case upcloud.KubernetesCluster:
@@ -281,6 +289,8 @@ func deleteResource(exec commands.Executor, resource Resource) (err error) {
 		_, err = storage.Delete(exec, resource.UUID, "delete")
 	case typeTag:
 		_, err = deleteTag(exec, resource.Name)
+	case typeCertificateBundle:
+		_, err = deleteCertificateBundle(exec, resource.UUID)
 	}
 	return
 }
