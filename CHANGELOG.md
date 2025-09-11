@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Support certificate-bundle resources in `all list` and `all purge` commands.
+
 ## [3.22.0] - 2025-08-15
 
 ### Added
