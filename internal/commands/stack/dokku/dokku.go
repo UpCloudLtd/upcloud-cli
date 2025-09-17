@@ -49,7 +49,7 @@ func (s *deployDokkuCommand) deploy(exec commands.Executor, configDir string) er
 
 	// Create the network if it does not exist
 	if network == nil {
-		network, err = stack.CreateNetwork(exec, networkName, s.zone)
+		network, err = stack.CreateNetwork(exec, networkName, s.zone, stack.StackTypeDokku)
 		if err != nil {
 			return fmt.Errorf("failed to create network: %w", err)
 		}
@@ -70,8 +70,8 @@ func (s *deployDokkuCommand) deploy(exec commands.Executor, configDir string) er
 		Labels: []upcloud.Label{
 			{Key: "stacks.upcloud.com/stack", Value: "dokku"},
 			{Key: "stacks.upcloud.com/created-by", Value: "upctl"},
-			{Key: "stacks.upcloud.com/dokku-version", Value: "0.1.3"},
-			{Key: "stacks.upcloud.com/version", Value: "1.0.0"},
+			{Key: "stacks.upcloud.com/dokku-version", Value: "0.1.3"}, // Dokku chart version
+			{Key: "stacks.upcloud.com/version", Value: string(stack.VersionV0_1_0_0)},
 			{Key: "stacks.upcloud.com/name", Value: clusterName},
 		},
 		NodeGroups: []request.KubernetesNodeGroup{

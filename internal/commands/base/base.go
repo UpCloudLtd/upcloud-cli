@@ -36,6 +36,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/servergroup"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/stack"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/stack/dokku"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/stack/starterkit"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/stack/supabase"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/storage"
 	storagebackup "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/storage/backup"
@@ -286,6 +287,7 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	stackDeployCommand := commands.BuildCommand(stack.DeployCommand(), stackCommand.Cobra(), conf)
 	commands.BuildCommand(supabase.DeploySupabaseCommand(), stackDeployCommand.Cobra(), conf)
 	commands.BuildCommand(dokku.DeployDokkuCommand(), stackDeployCommand.Cobra(), conf)
+	commands.BuildCommand(starterkit.DeployStarterKitCommand(), stackDeployCommand.Cobra(), conf)
 
 	// Misc
 	commands.BuildCommand(

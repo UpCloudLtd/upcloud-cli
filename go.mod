@@ -7,7 +7,7 @@ toolchain go1.24.2
 require (
 	dario.cat/mergo v1.0.1
 	github.com/UpCloudLtd/progress v1.0.3
-	github.com/UpCloudLtd/upcloud-go-api/v8 v8.21.0
+	github.com/UpCloudLtd/upcloud-go-api/v8 v8.26.1-0.20250911151758-b62a1ed4c464
 	github.com/adrg/xdg v0.3.2
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
 	github.com/gemalto/flume v0.12.0
@@ -17,7 +17,7 @@ require (
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/pflag v1.0.6
 	github.com/spf13/viper v1.7.1
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.1
 	github.com/zalando/go-keyring v0.2.6
 	golang.org/x/crypto v0.40.0
 	golang.org/x/term v0.33.0

@@ -1,16 +1,33 @@
 package stack
 
 import (
+	"context"
 	"embed"
 	"fmt"
 	"io/fs"
 	"math/rand"
 	"os"
 	"path/filepath"
+	"time"
 
+	"github.com/UpCloudLtd/progress/messages"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+)
+
+type StackType string
+
+const (
+	StackTypeDokku      StackType = "dokku"
+	StackTypeSupabase   StackType = "supabase"
+	StackTypeStarterKit StackType = "starter-kit"
+)
+
+type Version string
+
+const (
+	VersionV0_1_0_0 Version = "v0.1.0.0"
 )
 
 // GetNetworkFromName retrieves the network from the net name, returns nil if it does not exist
@@ -36,7 +53,7 @@ func ClusterExists(clusterName string, clusters []upcloud.KubernetesCluster) boo
 // createNetwork creates a network with a random 10.0.X.0/24 subnet
 // It will try 10 times to create a network with a random subnet
 // If it fails to create a network after 10 attempts, it returns an error
-func CreateNetwork(exec commands.Executor, networkName, location string) (*upcloud.Network, error) {
+func CreateNetwork(exec commands.Executor, networkName, location string, stackType StackType) (*upcloud.Network, error) {
 	var networkCreated = false
 	var network *upcloud.Network
 
@@ -50,9 +67,9 @@ func CreateNetwork(exec commands.Executor, networkName, location string) (*upclo
 			Zone:   location,
 			Router: "",
 			Labels: []upcloud.Label{
-				{Key: "stacks.upcloud.com/stack", Value: "supabase"},
+				{Key: "stacks.upcloud.com/stack", Value: string(stackType)},
 				{Key: "stacks.upcloud.com/created-by", Value: "upctl"},
-				{Key: "stacks.upcloud.com/chart-version", Value: "0.1.3"},
+				{Key: "stacks.upcloud.com/version", Value: string(VersionV0_1_0_0)},
 				{Key: "stacks.upcloud.com/name", Value: networkName},
 			},
 			IPNetworks: []upcloud.IPNetwork{{Address: cidr, DHCP: upcloud.True, Family: upcloud.IPAddressFamilyIPv4}},
@@ -108,4 +125,51 @@ func CheckSSHKeys(privateKeyPath, publicKeyPath string) error {
 		}
 	}
 	return nil
+}
+
+// Retrieve the object storage region for the selected zone. First occurance is returned
+func GetObjectStorageRegionFromZone(exec commands.Executor, zone string) (string, error) {
+	regions, err := exec.All().GetManagedObjectStorageRegions(exec.Context(), &request.GetManagedObjectStorageRegionsRequest{})
+	if err != nil {
+		return "", fmt.Errorf("failed to get object storage regions: %w", err)
+	}
+
+	// find the region that contains the zone
+	for i := range regions {
+		// check primary zone
+		if regions[i].PrimaryZone == zone {
+			return regions[i].Name, nil
+		}
+		// check secondary zones
+		for _, z := range regions[i].Zones {
+			if z.Name == zone {
+				return regions[i].Name, nil
+			}
+		}
+	}
+	return "", fmt.Errorf("zone %s not found in any object storage region", zone)
+}
+
+// waitForManagedObjectState waits for database to reach given state and updates progress message with key matching given msg. Finally, progress message is updated back to given msg and either done state or timeout warning.
+func WaitForManagedObjectStorageState(uuid string, state upcloud.ManagedObjectStorageOperationalState, exec commands.Executor, msg string) {
+	exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Waiting for object storage %s to be in %s state", uuid, state))
+
+	ctx, cancel := context.WithTimeout(exec.Context(), 15*time.Minute)
+	defer cancel()
+
+	if _, err := exec.All().WaitForManagedObjectStorageOperationalState(ctx, &request.WaitForManagedObjectStorageOperationalStateRequest{
+		UUID:         uuid,
+		DesiredState: state,
+	}); err != nil {
+		exec.PushProgressUpdate(messages.Update{
+			Key:     msg,
+			Message: msg,
+			Status:  messages.MessageStatusWarning,
+			Details: "Error: " + err.Error(),
+		})
+		return
+	}
+
+	exec.PushProgressUpdateMessage(msg, msg)
+	exec.PushProgressSuccess(msg)
 }

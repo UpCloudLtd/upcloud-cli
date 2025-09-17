@@ -21,8 +21,8 @@ func DeploySupabaseCommand() commands.Command {
 		BaseCommand: commands.New(
 			"supabase",
 			"Deploy a Supabase stack",
-			"upctl stack deploy supabase <project-name>",
-			"upctl stack deploy supabase my-new-project",
+			"upctl stack deploy supabase --name <project-name> --zone <zone-name>",
+			"upctl stack deploy supabase --name my-new-project --zone es-mad1",
 		),
 	}
 }

@@ -14,6 +14,12 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+type ChartVersion string
+
+const (
+	ChartVersionV0_1_3 ChartVersion = "v0.1.3"
+)
+
 func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) (*SupabaseConfig, error) {
 	clusterName := fmt.Sprintf("stack-supabase-cluster-%s-%s", s.name, s.zone)
 	networkName := fmt.Sprintf("stack-supabase-net-%s-%s", s.name, s.zone)
@@ -25,7 +31,7 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 		return nil, fmt.Errorf("failed to get Kubernetes clusters: %w", err)
 	}
 
-	// This command will not update an existing cluster, it will create a new one
+	// Code will not update an existing cluster, it will create a new one
 	if stack.ClusterExists(clusterName, clusters) {
 		return nil, fmt.Errorf("a cluster with the name '%s' already exists", clusterName)
 	}
@@ -43,7 +49,7 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 
 	// Create the network if it does not exist
 	if network == nil {
-		network, err = stack.CreateNetwork(exec, networkName, s.zone)
+		network, err = stack.CreateNetwork(exec, networkName, s.zone, stack.StackTypeSupabase)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create network: %w for kubernetes deployment", err)
 		}
@@ -64,7 +70,8 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 		Labels: []upcloud.Label{
 			{Key: "stacks.upcloud.com/stack", Value: "supabase"},
 			{Key: "stacks.upcloud.com/created-by", Value: "upctl"},
-			{Key: "stacks.upcloud.com/chart-version", Value: "0.1.3"},
+			{Key: "stacks.upcloud.com/chart-version", Value: string(ChartVersionV0_1_3)},
+			{Key: "stacks.upcloud.com/version", Value: string(stack.VersionV0_1_0_0)},
 			{Key: "stacks.upcloud.com/name", Value: clusterName},
 		},
 		NodeGroups: []request.KubernetesNodeGroup{

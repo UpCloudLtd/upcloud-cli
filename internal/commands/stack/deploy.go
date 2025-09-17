@@ -9,7 +9,7 @@ func DeployCommand() commands.Command {
 			"deploy",
 			"Deploy a stack (EXPERIMENTAL)",
 			"upctl stack deploy <stack-name>",
-			"upctl stack deploy (supabase|dokku)",
+			"upctl stack deploy (supabase|dokku|starter-kit)",
 		),
 	}
 }
