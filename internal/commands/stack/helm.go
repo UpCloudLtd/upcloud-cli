@@ -21,7 +21,7 @@ import (
 func CreateHelmLogFile(chartPath string) (*os.File, error) {
 	timestamp := time.Now().Format("20060102-150405")
 	logDir := filepath.Join(chartPath, "logs-"+timestamp)
-	logFileName := "deploy.log"
+	logFileName := "helm-deploy.log"
 	logFilePath := filepath.Join(logDir, logFileName)
 
 	if err := os.MkdirAll(logDir, 0755); err != nil {
@@ -211,11 +211,6 @@ func DeployHelmReleaseFromRepo(
 	upgrade bool,
 ) error {
 	os.Setenv("HELM_NAMESPACE", releaseName)
-
-	// Wait for the API server
-	if err := WaitForAPIServer(kubeClient); err != nil {
-		return fmt.Errorf("waiting for API server: %w", err)
-	}
 
 	// Ensure the target namespace exists
 	err := CreateNamespace(kubeClient, releaseName)

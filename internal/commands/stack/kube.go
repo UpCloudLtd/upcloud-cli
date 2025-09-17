@@ -80,7 +80,7 @@ func WaitForAPIServer(kubeClient *kubernetes.Clientset) error {
 func CreateNamespace(kubeClient *kubernetes.Clientset, namespace string) error {
 	_, err := kubeClient.CoreV1().Namespaces().Get(context.Background(), namespace, v1.GetOptions{})
 	if err != nil {
-		// Check for StatusError and StatusReasonNotFound
+		// Create the namespace if it does not exist
 		if apierrors.IsNotFound(err) {
 			_, createErr := kubeClient.CoreV1().Namespaces().Create(context.Background(), &corev1.Namespace{
 				ObjectMeta: v1.ObjectMeta{

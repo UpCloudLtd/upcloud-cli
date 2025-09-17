@@ -104,7 +104,10 @@ func (s *deployDokkuCommand) deploy(exec commands.Executor, configDir string) er
 	}
 
 	// Wait for the Kubernetes API server to be ready
-	stack.WaitForAPIServer(kubeClient)
+	exec.All().WaitForKubernetesClusterState(exec.Context(), &request.WaitForKubernetesClusterStateRequest{
+		UUID:         cluster.UUID,
+		DesiredState: upcloud.KubernetesClusterStateRunning,
+	})
 
 	exec.PushProgressSuccess("Setting up environment for Dokku stack deployment")
 	exec.PushProgressStarted("Deploying Dokku stack")

@@ -22,7 +22,7 @@ func DeployDokkuCommand() commands.Command {
 			"Deploy a Dokku Builder stack",
 			"upctl stack deploy dokku --zone <zone-name> --name <project-name> --github-pat <github-personal-access-token> --github-user <github-username>",
 			"upctl stack deploy dokku --zone pl-waw1 --name my-dokku-project --github-pat ghp_Uiej1N1fA1W... --github-user dokkumaster",
-			"upctl stack deploy dokku my-new-project",
+			"upctl stack deploy dokku --name my-new-project --zone es-mad1 --github-pat ghp_Uiej1N1fA1W... --github-user dokkumaster",
 		),
 	}
 }
@@ -80,15 +80,13 @@ func (s *deployDokkuCommand) ExecuteWithoutArguments(exec commands.Executor) (ou
 		return nil, fmt.Errorf("failed to make temp dir for deployment: %w", err)
 	}
 
-	//defer os.RemoveAll(configDir)
-
 	// unpack the dokku charts and config files into that temp dir
 	if err := stack.ExtractFolder(dokkuChartFS, configDir); err != nil {
 		return nil, fmt.Errorf("failed to extract dokku charts and configuration files: %w", err)
 	}
 
 	if err = s.deploy(exec, configDir); err != nil {
-		return nil, fmt.Errorf("failed to deploy dokku stack: %w", err)
+		return nil, fmt.Errorf("failed to deploy dokku stack: %w , if the issue persist contact us at: %s", err, stack.SupportEmail)
 	}
 
 	return output.Raw([]byte("Command executed successfully")), nil

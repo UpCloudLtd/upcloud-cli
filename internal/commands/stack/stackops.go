@@ -28,6 +28,7 @@ type Version string
 
 const (
 	VersionV0_1_0_0 Version = "v0.1.0.0"
+	SupportEmail    string  = "support@upcloud.com"
 )
 
 // GetNetworkFromName retrieves the network from the net name, returns nil if it does not exist
