@@ -2,7 +2,9 @@ package starterkit
 
 import (
 	"fmt"
+	"io"
 	"os"
+	"strings"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/database"
@@ -49,7 +51,9 @@ func (s *deployStarterKitCommand) ExecuteWithoutArguments(exec commands.Executor
 		return nil, fmt.Errorf("deploying Starter Kit stack: %w", err)
 	}
 
-	return output.Raw(summary), nil
+	return output.Raw{
+		Source: io.NopCloser(strings.NewReader(summary)),
+	}, nil
 }
 
 func (s *deployStarterKitCommand) deploy(exec commands.Executor) (string, error) {

@@ -3,7 +3,9 @@ package supabase
 import (
 	"embed"
 	"fmt"
+	"io"
 	"os"
+	"strings"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/stack"
@@ -73,5 +75,7 @@ func (s *deploySupabaseCommand) ExecuteWithoutArguments(exec commands.Executor) 
 	// clean up at the end
 	//defer os.RemoveAll(chartDir)
 
-	return output.Raw(summaryOutput(config)), nil
+	return output.Raw{
+		Source: io.NopCloser(strings.NewReader(summaryOutput(config))),
+	}, nil
 }

@@ -5,6 +5,7 @@ go 1.25.0
 require (
 	dario.cat/mergo v1.0.2
 	github.com/UpCloudLtd/progress v1.0.3
+	github.com/UpCloudLtd/upcloud-go-api/credentials v0.1.1
 	github.com/UpCloudLtd/upcloud-go-api/v8 v8.28.0
 	github.com/adrg/xdg v0.5.3
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2

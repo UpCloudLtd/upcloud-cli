@@ -3,8 +3,10 @@ package dokku
 import (
 	"embed"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/stack"
@@ -89,5 +91,7 @@ func (s *deployDokkuCommand) ExecuteWithoutArguments(exec commands.Executor) (ou
 		return nil, fmt.Errorf("failed to deploy dokku stack: %w , if the issue persist contact us at: %s", err, stack.SupportEmail)
 	}
 
-	return output.Raw([]byte("Command executed successfully")), nil
+	return output.Raw{
+		Source: io.NopCloser(strings.NewReader("Command executed successfully")),
+	}, nil
 }

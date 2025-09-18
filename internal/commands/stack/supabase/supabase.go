@@ -159,7 +159,7 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 	return config, nil
 }
 
-func summaryOutput(config *SupabaseConfig) []byte {
+func summaryOutput(config *SupabaseConfig) string {
 	builder := &strings.Builder{}
 
 	fmt.Fprintln(builder, "Supabase deployed successfully!")
@@ -181,7 +181,7 @@ func summaryOutput(config *SupabaseConfig) []byte {
 	fmt.Fprintf(builder, "SMTP_USER:            %s\n", orNotSet(config.SmtpUsername))
 	fmt.Fprintf(builder, "SMTP_SENDER_NAME:     %s\n", orNotSet(config.SmtpSenderName))
 
-	return []byte(builder.String())
+	return builder.String()
 }
 
 func orNotSet(val string) string {
