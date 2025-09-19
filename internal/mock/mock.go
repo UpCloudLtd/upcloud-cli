@@ -18,17 +18,17 @@ type Service struct {
 
 // AttachLoadBalancerIPAddress implements service.LoadBalancer.
 func (m *Service) AttachLoadBalancerIPAddress(ctx context.Context, r *request.AttachLoadBalancerIPAddressRequest) (upcloud.LoadBalancerFloatingIPAddress, error) {
-	panic("unimplemented")
+	return nil, nil
 }
 
 // GetLoadBalancerIPAddresses implements service.LoadBalancer.
 func (m *Service) GetLoadBalancerIPAddresses(ctx context.Context, r *request.GetLoadBalancerIPAddressesRequest) ([]upcloud.LoadBalancerFloatingIPAddress, error) {
-	panic("unimplemented")
+	return nil, nil
 }
 
 // RemoveLoadBalancerIPAddress implements service.LoadBalancer.
 func (m *Service) RemoveLoadBalancerIPAddress(ctx context.Context, r *request.RemoveLoadBalancerIPAddressRequest) error {
-	panic("unimplemented")
+	return nil
 }
 
 func (m *Service) CreateToken(_ context.Context, r *request.CreateTokenRequest) (*upcloud.Token, error) {
