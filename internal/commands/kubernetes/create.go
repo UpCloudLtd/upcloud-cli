@@ -196,7 +196,7 @@ func (c *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	}
 
 	if c.params.wait.Value() {
-		waitForClusterState(res.UUID, upcloud.KubernetesClusterStateRunning, exec, msg)
+		WaitForClusterState(res.UUID, upcloud.KubernetesClusterStateRunning, exec, msg)
 	} else {
 		exec.PushProgressSuccess(msg)
 	}

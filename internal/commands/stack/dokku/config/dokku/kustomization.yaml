@@ -1,0 +1,8 @@
+namespace: dokku
+
+resources:
+  - namespace.yaml
+  - pvc.yaml
+  - deployment.yaml
+  - service.yaml
+  - service-account.yaml

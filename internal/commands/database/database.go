@@ -28,7 +28,7 @@ func (db *databaseCommand) InitCommand() {
 }
 
 // waitForManagedDatabaseState waits for database to reach given state and updates progress message with key matching given msg. Finally, progress message is updated back to given msg and either done state or timeout warning.
-func waitForManagedDatabaseState(uuid string, state upcloud.ManagedDatabaseState, exec commands.Executor, msg string) {
+func WaitForManagedDatabaseState(uuid string, state upcloud.ManagedDatabaseState, exec commands.Executor, msg string) {
 	exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Waiting for database %s to be in %s state", uuid, state))
 
 	ctx, cancel := context.WithTimeout(exec.Context(), 15*time.Minute)

@@ -11,7 +11,7 @@ import (
 )
 
 // waitForClusterState waits for cluster to reach given state and updates progress message with key matching given msg. Finally, progress message is updated back to given msg and either done state or timeout warning.
-func waitForClusterState(uuid string, state upcloud.KubernetesClusterState, exec commands.Executor, msg string) {
+func WaitForClusterState(uuid string, state upcloud.KubernetesClusterState, exec commands.Executor, msg string) {
 	exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Waiting for cluster %s to be in %s state", uuid, state))
 
 	if _, err := exec.All().WaitForKubernetesClusterState(exec.Context(), &request.WaitForKubernetesClusterStateRequest{
