@@ -31,6 +31,15 @@ func (m *Service) RemoveLoadBalancerIPAddress(ctx context.Context, r *request.Re
 	return nil
 }
 
+// GetAllManagedDatabases implements service.AllServices (or the interface that declares it).
+func (m *Service) GetAllManagedDatabases(_ context.Context) ([]upcloud.ManagedDatabase, error) {
+	args := m.Called()
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].([]upcloud.ManagedDatabase), args.Error(1)
+}
+
 func (m *Service) CreateToken(_ context.Context, r *request.CreateTokenRequest) (*upcloud.Token, error) {
 	args := m.Called(r)
 	if args[0] == nil {
