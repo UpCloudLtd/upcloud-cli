@@ -18,12 +18,12 @@ type Service struct {
 
 // AttachLoadBalancerIPAddress implements service.LoadBalancer.
 func (m *Service) AttachLoadBalancerIPAddress(ctx context.Context, r *request.AttachLoadBalancerIPAddressRequest) (upcloud.LoadBalancerFloatingIPAddress, error) {
-	return nil, nil
+	return upcloud.LoadBalancerFloatingIPAddress{}, nil
 }
 
 // GetLoadBalancerIPAddresses implements service.LoadBalancer.
 func (m *Service) GetLoadBalancerIPAddresses(ctx context.Context, r *request.GetLoadBalancerIPAddressesRequest) ([]upcloud.LoadBalancerFloatingIPAddress, error) {
-	return nil, nil
+	return []upcloud.LoadBalancerFloatingIPAddress{}, nil
 }
 
 // RemoveLoadBalancerIPAddress implements service.LoadBalancer.
