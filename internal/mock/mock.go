@@ -16,6 +16,21 @@ type Service struct {
 	mock.Mock
 }
 
+// AttachLoadBalancerIPAddress implements service.LoadBalancer.
+func (m *Service) AttachLoadBalancerIPAddress(ctx context.Context, r *request.AttachLoadBalancerIPAddressRequest) (upcloud.LoadBalancerFloatingIPAddress, error) {
+	panic("unimplemented")
+}
+
+// GetLoadBalancerIPAddresses implements service.LoadBalancer.
+func (m *Service) GetLoadBalancerIPAddresses(ctx context.Context, r *request.GetLoadBalancerIPAddressesRequest) ([]upcloud.LoadBalancerFloatingIPAddress, error) {
+	panic("unimplemented")
+}
+
+// RemoveLoadBalancerIPAddress implements service.LoadBalancer.
+func (m *Service) RemoveLoadBalancerIPAddress(ctx context.Context, r *request.RemoveLoadBalancerIPAddressRequest) error {
+	panic("unimplemented")
+}
+
 func (m *Service) CreateToken(_ context.Context, r *request.CreateTokenRequest) (*upcloud.Token, error) {
 	args := m.Called(r)
 	if args[0] == nil {
