@@ -44,7 +44,7 @@ func TestCreateCommand(t *testing.T) {
 				"--vat-number", testPartnerAccount.VATNumber,
 			)
 		}
-		return
+		return args
 	}
 
 	generateRequest := func(country string, state string, fullDetails bool) (req request.CreatePartnerAccountRequest) {
@@ -69,7 +69,7 @@ func TestCreateCommand(t *testing.T) {
 			}
 			req.ContactDetails = cd
 		}
-		return
+		return req
 	}
 
 	for _, test := range []struct {

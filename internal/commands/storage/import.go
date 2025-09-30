@@ -46,7 +46,7 @@ type readerCounter struct {
 func (s *readerCounter) Read(p []byte) (n int, err error) {
 	n, err = s.source.Read(p)
 	atomic.AddInt64(&s.read, int64(n))
-	return
+	return n, err
 }
 
 func (s *readerCounter) counter() int {

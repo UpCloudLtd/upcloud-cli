@@ -108,7 +108,7 @@ func prefixLines(marshaled []byte, s string) (out []byte) {
 			out = append(out, b)
 		}
 	}
-	return
+	return out
 }
 
 // MarshalRawMap implements output.Output
