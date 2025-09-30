@@ -24,7 +24,7 @@ func CreateHelmLogFile(chartPath string) (*os.File, error) {
 	logFileName := "helm-deploy.log"
 	logFilePath := filepath.Join(logDir, logFileName)
 
-	if err := os.MkdirAll(logDir, 0755); err != nil {
+	if err := os.MkdirAll(logDir, 0o755); err != nil {
 		return nil, fmt.Errorf("failed to create log directory %q: %w", logDir, err)
 	}
 
@@ -167,10 +167,10 @@ func DeployHelmRelease(kubeClient *kubernetes.Clientset, releaseName string, cha
 func loadHelmChartsFromRepo(actionConfig *action.Configuration, repoURL, chartName, version string) (*chart.Chart, error) {
 	settings := cli.New()
 	installClient := action.NewInstall(actionConfig)
-	installClient.ChartPathOptions.RepoURL = repoURL
-	installClient.ChartPathOptions.Version = version
+	installClient.RepoURL = repoURL
+	installClient.Version = version
 
-	chartPath, err := installClient.ChartPathOptions.LocateChart(chartName, settings)
+	chartPath, err := installClient.LocateChart(chartName, settings)
 	if err != nil {
 		return nil, fmt.Errorf("locating chart %q in repo %q: %w", chartName, repoURL, err)
 	}

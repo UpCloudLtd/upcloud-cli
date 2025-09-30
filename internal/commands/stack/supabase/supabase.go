@@ -32,7 +32,7 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate default configuration for this deployment: %w", err)
 	}
-	config.Name = string(s.name)
+	config.Name = s.name
 	config.Zone = s.zone
 
 	// Validate early input config file if it exists
@@ -51,7 +51,6 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 	exec.PushProgressSuccess(msg)
 
 	clusters, err := exec.All().GetKubernetesClusters(exec.Context(), &request.GetKubernetesClustersRequest{})
-
 	if err != nil {
 		return nil, fmt.Errorf("failed to get Kubernetes clusters: %w", err)
 	}
@@ -107,7 +106,6 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 			},
 		},
 	})
-
 	if err != nil {
 		return nil, fmt.Errorf("failed to create Kubernetes cluster: %w", err)
 	}
@@ -181,11 +179,14 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 			return nil, fmt.Errorf("failed to create user for the object storage: %w", err)
 		}
 
-		exec.All().AttachManagedObjectStorageUserPolicy(exec.Context(), &request.AttachManagedObjectStorageUserPolicyRequest{
+		err = exec.All().AttachManagedObjectStorageUserPolicy(exec.Context(), &request.AttachManagedObjectStorageUserPolicyRequest{
 			ServiceUUID: objStorage.UUID,
 			Username:    user.Username,
 			Name:        "ECSS3FullAccess",
 		})
+		if err != nil {
+			return nil, fmt.Errorf("failed to attach user policy to object storage: %w", err)
+		}
 
 		// Create an access key for the object storage
 		userAccessKey, err := exec.All().CreateManagedObjectStorageUserAccessKey(exec.Context(), &request.CreateManagedObjectStorageUserAccessKeyRequest{
@@ -246,7 +247,7 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 	// Wait for the Supabase stack to be ready
 	lbHostname, err := stack.WaitForLoadBalancer(kubeClient, clusterName, clusterName+"-supabase-kong", 60, 20*time.Second)
 	if err != nil {
-		return nil, fmt.Errorf("Supabase Kong Load Balancer timed out: %w", err)
+		return nil, fmt.Errorf("timeout: Supabase Kong Load Balancer: %w", err)
 	}
 
 	// Adding the cluster name and lbHostname to the config for reporting purposes
@@ -272,7 +273,6 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 	exec.PushProgressSuccess(msg)
 
 	return config, nil
-
 }
 
 func summaryOutput(config *SupabaseConfig) string {
@@ -304,13 +304,13 @@ func summaryOutput(config *SupabaseConfig) string {
 	}
 
 	// SMTP section
-	if config.SmtpEnabled {
+	if config.SMTPEnabled {
 		fmt.Fprintf(builder, "SMTP ENABLED:         true\n")
-		fmt.Fprintf(builder, "SMTP_HOST:            %s\n", orNotSet(config.SmtpHost))
-		fmt.Fprintf(builder, "SMTP_PORT:            %s\n", orNotSet(config.SmtpPort))
-		fmt.Fprintf(builder, "SMTP_USER:            %s\n", orNotSet(config.SmtpUsername))
-		fmt.Fprintf(builder, "SMTP_SENDER_NAME:     %s\n", orNotSet(config.SmtpSenderName))
-		fmt.Fprintf(builder, "SMTP_SENDER_EMAIL:    %s\n", orNotSet(config.SmtpAdminEmail))
+		fmt.Fprintf(builder, "SMTP_HOST:            %s\n", orNotSet(config.SMTPHost))
+		fmt.Fprintf(builder, "SMTP_PORT:            %s\n", orNotSet(config.SMTPPort))
+		fmt.Fprintf(builder, "SMTP_USER:            %s\n", orNotSet(config.SMTPUsername))
+		fmt.Fprintf(builder, "SMTP_SENDER_NAME:     %s\n", orNotSet(config.SMTPSenderName))
+		fmt.Fprintf(builder, "SMTP_SENDER_EMAIL:    %s\n", orNotSet(config.SMTPAdminEmail))
 	} else {
 		fmt.Fprintf(builder, "SMTP ENABLED:         false\n")
 		fmt.Fprintf(builder, "SMTP CONFIG:          Not available (SMTP is disabled)\n")
@@ -366,7 +366,7 @@ func updateDNS(valuesFile, updatedValuesFile, dnsPrefix string) error {
 		return fmt.Errorf("failed to marshal YAML: %w", err)
 	}
 
-	if err := os.WriteFile(updatedValuesFile, output, 0644); err != nil {
+	if err := os.WriteFile(updatedValuesFile, output, 0o600); err != nil {
 		return fmt.Errorf("failed to write updated values file: %w", err)
 	}
 
@@ -403,7 +403,7 @@ func updateValueAtPath(node *yaml.Node, path []string, dnsPrefix string) bool {
 		v := current.Content[i+1]
 		if k.Value == lastKey {
 			originalValue := v.Value
-			newValue := strings.Replace(originalValue, "REPLACEME.upcloudlb.com", dnsPrefix+".upcloudlb.com", -1)
+			newValue := strings.ReplaceAll(originalValue, "REPLACEME.upcloudlb.com", dnsPrefix+".upcloudlb.com")
 			v.Value = newValue
 			return true
 		}

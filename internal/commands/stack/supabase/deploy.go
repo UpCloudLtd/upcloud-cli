@@ -70,7 +70,7 @@ func (s *deploySupabaseCommand) ExecuteWithoutArguments(exec commands.Executor) 
 	// Command implementation for deploying a Supabase stack
 	config, err := s.deploy(exec, chartDir)
 	if err != nil {
-		return nil, fmt.Errorf("Deploying Supabase stack: %w", err)
+		return nil, fmt.Errorf("deploying Supabase stack: %w", err)
 	}
 
 	// Build summary text
@@ -78,7 +78,7 @@ func (s *deploySupabaseCommand) ExecuteWithoutArguments(exec commands.Executor) 
 
 	// Save summary to file
 	filename := fmt.Sprintf("supabase-%s-%s-%s.cfg", s.name, s.zone, time.Now().Format("20060102-150405"))
-	if err := os.WriteFile(filename, []byte(summary), 0644); err != nil {
+	if err := os.WriteFile(filename, []byte(summary), 0o600); err != nil {
 		return nil, fmt.Errorf("failed to write summary file: %w", err)
 	}
 

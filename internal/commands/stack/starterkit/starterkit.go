@@ -77,7 +77,6 @@ func (c *StarterKitConfig) Validate(exec commands.Executor) error {
 
 	// Check if a kubernetes cluster with the name clusterName already exists
 	clusters, err := exec.All().GetKubernetesClusters(exec.Context(), &request.GetKubernetesClustersRequest{})
-
 	if err != nil {
 		return fmt.Errorf("failed to get Kubernetes clusters: %w", err)
 	}
@@ -201,7 +200,6 @@ func buildSummary(
 			fmt.Fprintf(&b, "  IAMURL:    %s\n", obj.Endpoints[0].IAMURL)
 			fmt.Fprintf(&b, "  STSURL:    %s\n", obj.Endpoints[0].STSURL)
 		}
-
 	} else {
 		fmt.Fprintf(&b, "  (not created)\n")
 	}
@@ -257,7 +255,6 @@ func createKubernetes(ctx context.Context, exec commands.Executor, config *Start
 			},
 		},
 	})
-
 	if err != nil {
 		return nil, "", fmt.Errorf("failed to create Kubernetes cluster: %w", err)
 	}
@@ -294,7 +291,6 @@ func createDatabase(ctx context.Context, exec commands.Executor, config *Starter
 			{Key: "stacks.upcloud.com/name", Value: config.DBName},
 		},
 	})
-
 	if err != nil {
 		return nil, fmt.Errorf("failed to create managed database: %w", err)
 	}
@@ -304,7 +300,6 @@ func createDatabase(ctx context.Context, exec commands.Executor, config *Starter
 
 func createObjectStorage(ctx context.Context, exec commands.Executor, config *StarterKitConfig, network *upcloud.Network) (*upcloud.ManagedObjectStorage, error) {
 	exec.PushProgressStarted("Deploying Object Storage")
-	stack.GetObjectStorageRegionFromZone(exec, config.Zone)
 	region, err := stack.GetObjectStorageRegionFromZone(exec, config.Zone)
 	if err != nil {
 		return nil, fmt.Errorf("failed to validate object storage region from zone %q: %w, contact support because you might be using a new zone not supported by the deploy command", config.Zone, err)
@@ -329,7 +324,6 @@ func createObjectStorage(ctx context.Context, exec commands.Executor, config *St
 			{Key: "stacks.upcloud.com/name", Value: config.ObjectStorageName},
 		},
 	})
-
 	if err != nil {
 		return nil, fmt.Errorf("failed to create object storage: %w", err)
 	}

@@ -263,18 +263,17 @@ func GetNodeExternalIP(kubeClient *kubernetes.Clientset) (string, error) {
 	return "", fmt.Errorf("no external IP found for node %s", nodes.Items[0].Name)
 }
 
-// writeKubeconfigToFile retrieves the kubeconfig for the given cluster and writes it to a file
-func WriteKubeconfigToFile(exec commands.Executor, clusterId string, configDir string) (string, error) {
+// WriteKubeconfigToFile retrieves the kubeconfig for the given cluster and writes it to a file
+func WriteKubeconfigToFile(exec commands.Executor, clusterID string, configDir string) (string, error) {
 	kubeconfig, err := exec.All().GetKubernetesKubeconfig(exec.Context(), &request.GetKubernetesKubeconfigRequest{
-		UUID: clusterId,
+		UUID: clusterID,
 	})
-
 	if err != nil {
-		return "", fmt.Errorf("failed to get kubeconfig for cluster %s: %w", clusterId, err)
+		return "", fmt.Errorf("failed to get kubeconfig for cluster %s: %w", clusterID, err)
 	}
 
 	kubeconfigPath := filepath.Join(configDir, "kubeconfig.yaml")
-	if err := os.WriteFile(kubeconfigPath, []byte(kubeconfig), 0600); err != nil {
+	if err := os.WriteFile(kubeconfigPath, []byte(kubeconfig), 0o600); err != nil {
 		return "", fmt.Errorf("failed to write kubeconfig: %w", err)
 	}
 

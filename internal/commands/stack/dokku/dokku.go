@@ -26,7 +26,6 @@ func (s *deployDokkuCommand) deploy(exec commands.Executor, configDir string) er
 
 	// Check if the cluster already exists
 	clusters, err := exec.All().GetKubernetesClusters(exec.Context(), &request.GetKubernetesClustersRequest{})
-
 	if err != nil {
 		return fmt.Errorf("failed to get Kubernetes clusters: %w", err)
 	}
@@ -82,7 +81,6 @@ func (s *deployDokkuCommand) deploy(exec commands.Executor, configDir string) er
 			},
 		},
 	})
-
 	if err != nil {
 		return fmt.Errorf("failed to create Kubernetes cluster: %w", err)
 	}
@@ -104,10 +102,13 @@ func (s *deployDokkuCommand) deploy(exec commands.Executor, configDir string) er
 	}
 
 	// Wait for the Kubernetes API server to be ready
-	exec.All().WaitForKubernetesClusterState(exec.Context(), &request.WaitForKubernetesClusterStateRequest{
+	_, err = exec.All().WaitForKubernetesClusterState(exec.Context(), &request.WaitForKubernetesClusterStateRequest{
 		UUID:         cluster.UUID,
 		DesiredState: upcloud.KubernetesClusterStateRunning,
 	})
+	if err != nil {
+		return err
+	}
 
 	exec.PushProgressSuccess("Setting up environment for Dokku stack deployment")
 	exec.PushProgressStarted("Deploying Dokku stack")
@@ -121,7 +122,6 @@ func (s *deployDokkuCommand) deploy(exec commands.Executor, configDir string) er
 		"4.13.0",
 		[]string{ingressValuesFilePath},
 		false)
-
 	if err != nil {
 		return fmt.Errorf("failed to deploy ingress-nginx: %w", err)
 	}
@@ -142,10 +142,21 @@ func (s *deployDokkuCommand) deploy(exec commands.Executor, configDir string) er
 	if err != nil {
 		return err
 	}
-	defer os.Remove(override.Name())
+	defer func(name string) {
+		errRemove := os.Remove(name)
+		if errRemove != nil {
+			fmt.Printf("failed to remove temp file %s: %v\n", name, errRemove)
+		}
+	}(override.Name())
 
-	override.WriteString("installCRDs: true\n")
-	override.Close()
+	_, err = override.WriteString("installCRDs: true\n")
+	if err != nil {
+		return err
+	}
+	err = override.Close()
+	if err != nil {
+		return err
+	}
 
 	err = stack.DeployHelmReleaseFromRepo(
 		kubeClient,
@@ -156,7 +167,6 @@ func (s *deployDokkuCommand) deploy(exec commands.Executor, configDir string) er
 		[]string{override.Name()},
 		false,
 	)
-
 	if err != nil {
 		return fmt.Errorf("failed to deploy cert-manager: %w", err)
 	}
@@ -169,16 +179,15 @@ func (s *deployDokkuCommand) deploy(exec commands.Executor, configDir string) er
 	}
 
 	// Configure Dokku with the provided parameters
-	lbHostName, nodeIp, err := configureDokku(
+	lbHostName, nodeIP, err := configureDokku(
 		kubeClient,
 		s.sshPath,
 		s.sshPubPath,
 		s.githubPAT,
 		s.githubUser,
-		s.githubPackageUrl,
+		s.githubPackageURL,
 		s.globalDomain,
 		s.certManagerEmail)
-
 	if err != nil {
 		return fmt.Errorf("failed to configure Dokku: %w", err)
 	}
@@ -186,7 +195,7 @@ func (s *deployDokkuCommand) deploy(exec commands.Executor, configDir string) er
 	exec.PushProgressSuccess("Deploying Dokku stack")
 
 	// Print final instructions for the user
-	printFinalInstructions(kubeconfigPath, s.globalDomain, s.sshPath, lbHostName, nodeIp)
+	printFinalInstructions(kubeconfigPath, s.globalDomain, s.sshPath, lbHostName, nodeIP)
 
 	return nil
 }
@@ -304,7 +313,8 @@ func configureDokku(
 	}
 
 	// Create registry-credential secret in dokku namespace
-	cmd := []string{"sh", "-c",
+	cmd := []string{
+		"sh", "-c",
 		"kubectl create secret generic registry-credential " +
 			"--from-file=.dockerconfigjson=/home/dokku/.docker/config.json " +
 			"--type=kubernetes.io/dockerconfigjson --dry-run=client -o yaml | " +

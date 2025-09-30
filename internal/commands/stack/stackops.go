@@ -2,10 +2,11 @@ package stack
 
 import (
 	"context"
+	"crypto/rand"
 	"embed"
 	"fmt"
 	"io/fs"
-	"math/rand"
+	"math/big"
 	"os"
 	"path/filepath"
 	"time"
@@ -51,16 +52,17 @@ func ClusterExists(clusterName string, clusters []upcloud.KubernetesCluster) boo
 	return false
 }
 
-// createNetwork creates a network with a random 10.0.X.0/24 subnet
+// CreateNetwork creates a network with a random 10.0.X.0/24 subnet
 // It will try 10 times to create a network with a random subnet
 // If it fails to create a network after 10 attempts, it returns an error
 func CreateNetwork(exec commands.Executor, networkName, location string, stackType StackType) (*upcloud.Network, error) {
-	var networkCreated = false
+	networkCreated := false
 	var network *upcloud.Network
 
 	for range 10 {
 		// Generate random 10.0.X.0/24 subnet
-		x := rand.Intn(254) + 1
+		r, _ := rand.Int(rand.Reader, big.NewInt(254))
+		x := r.Int64() + 1
 		cidr := fmt.Sprintf("10.0.%d.0/24", x)
 		var err error
 		network, err = exec.Network().CreateNetwork(exec.Context(), &request.CreateNetworkRequest{
@@ -99,11 +101,11 @@ func ExtractFolder(fsys embed.FS, targetDir string) error {
 		targetPath := filepath.Join(targetDir, path)
 
 		if d.IsDir() {
-			return os.MkdirAll(targetPath, 0755)
+			return os.MkdirAll(targetPath, 0o755)
 		}
 
 		// Make sure the parent directory exists before writing the file
-		if err := os.MkdirAll(filepath.Dir(targetPath), 0755); err != nil {
+		if err := os.MkdirAll(filepath.Dir(targetPath), 0o755); err != nil {
 			return err
 		}
 
@@ -112,7 +114,7 @@ func ExtractFolder(fsys embed.FS, targetDir string) error {
 			return err
 		}
 
-		return os.WriteFile(targetPath, data, 0644)
+		return os.WriteFile(targetPath, data, 0o600)
 	})
 }
 
@@ -128,7 +130,7 @@ func CheckSSHKeys(privateKeyPath, publicKeyPath string) error {
 	return nil
 }
 
-// Retrieve the object storage region for the selected zone. First occurance is returned
+// GetObjectStorageRegionFromZone retrieves the object storage region for the selected zone. First occurrence is returned
 func GetObjectStorageRegionFromZone(exec commands.Executor, zone string) (string, error) {
 	regions, err := exec.All().GetManagedObjectStorageRegions(exec.Context(), &request.GetManagedObjectStorageRegionsRequest{})
 	if err != nil {

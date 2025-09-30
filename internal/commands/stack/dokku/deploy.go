@@ -40,7 +40,7 @@ type deployDokkuCommand struct {
 	numNodes         int
 	sshPath          string
 	sshPubPath       string
-	githubPackageUrl string
+	githubPackageURL string
 }
 
 func getHomeDir() string {
@@ -66,7 +66,7 @@ func (s *deployDokkuCommand) InitCommand() {
 	fs.IntVar(&s.numNodes, "num-nodes", 3, "Number of nodes in the Dokku cluster (default: 3)")
 	fs.StringVar(&s.sshPath, "ssh-path", defaultSSH, "Path to your private SSH key (default: ~/.ssh/id_rsa). Needed to be able to ‘git push dokku@<host>:<app>’ when deploying apps with git push")
 	fs.StringVar(&s.sshPubPath, "ssh-path-pub", defaultSSHPub, "Path to your public SSH key (default: ~/.ssh/id_rsa.pub)")
-	fs.StringVar(&s.githubPackageUrl, "github-package-url", "ghcr.io", "Container registry hostname (default: ghcr.io)")
+	fs.StringVar(&s.githubPackageURL, "github-package-url", "ghcr.io", "Container registry hostname (default: ghcr.io)")
 	s.AddFlags(fs)
 
 	commands.Must(s.Cobra().MarkFlagRequired("zone"))

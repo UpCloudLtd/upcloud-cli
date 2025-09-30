@@ -37,13 +37,13 @@ type SupabaseConfig struct {
 	S3Region     string
 	S3Endpoint   string
 
-	SmtpEnabled    bool
-	SmtpHost       string
-	SmtpPort       string
-	SmtpUsername   string
-	SmtpPassword   string
-	SmtpSenderName string
-	SmtpAdminEmail string
+	SMTPEnabled    bool
+	SMTPHost       string
+	SMTPPort       string
+	SMTPUsername   string
+	SMTPPassword   string
+	SMTPSenderName string
+	SMTPAdminEmail string
 }
 
 func GenerateDefaultConfig() (*SupabaseConfig, error) {
@@ -76,7 +76,7 @@ func GenerateDefaultConfig() (*SupabaseConfig, error) {
 		PostgresPassword:  generateRandomString(20),
 		PoolerTenantID:    generateRandomString(20),
 		S3Enabled:         true,
-		SmtpEnabled:       false,
+		SMTPEnabled:       false,
 	}
 
 	return config, nil
@@ -102,7 +102,7 @@ func validateConfig(config *SupabaseConfig) error {
 		return err
 	}
 
-	err = validateSmtpConfig(config)
+	err = validateSMTPConfig(config)
 	if err != nil {
 		return err
 	}
@@ -135,7 +135,7 @@ func validateS3Config(config *SupabaseConfig) error {
 		}
 	}
 
-	if !(allEmpty || allSet) {
+	if !allEmpty && !allSet {
 		return fmt.Errorf("when ENABLE_S3 is true, either all S3 fields must be set or all must be empty: %v", fields)
 	}
 
@@ -164,10 +164,10 @@ func validateS3Config(config *SupabaseConfig) error {
 	return nil
 }
 
-func validateSmtpConfig(config *SupabaseConfig) error {
-	if config.SmtpEnabled {
-		if config.SmtpHost == "" || config.SmtpPort == "" || config.SmtpUsername == "" ||
-			config.SmtpPassword == "" || config.SmtpSenderName == "" || config.SmtpAdminEmail == "" {
+func validateSMTPConfig(config *SupabaseConfig) error {
+	if config.SMTPEnabled {
+		if config.SMTPHost == "" || config.SMTPPort == "" || config.SMTPUsername == "" ||
+			config.SMTPPassword == "" || config.SMTPSenderName == "" || config.SMTPAdminEmail == "" {
 			return fmt.Errorf("when ENABLE_SMTP is true, SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_SENDER_NAME, and SMTP_ADMIN_EMAIL must all be set")
 		}
 	}
@@ -254,19 +254,19 @@ func loadConfigFromFile(path string, config *SupabaseConfig) error {
 	setIfNotEmpty(envMap["S3_BUCKET"], func(v string) { config.S3BucketName = v })
 	setIfNotEmpty(envMap["S3_ENDPOINT"], func(v string) { config.S3Endpoint = v })
 	setIfNotEmpty(envMap["S3_REGION"], func(v string) { config.S3Region = v })
-	setIfNotEmpty(envMap["SMTP_HOST"], func(v string) { config.SmtpHost = v })
-	setIfNotEmpty(envMap["SMTP_PORT"], func(v string) { config.SmtpPort = v })
-	setIfNotEmpty(envMap["SMTP_USER"], func(v string) { config.SmtpUsername = v })
-	setIfNotEmpty(envMap["SMTP_PASS"], func(v string) { config.SmtpPassword = v })
-	setIfNotEmpty(envMap["SMTP_SENDER_NAME"], func(v string) { config.SmtpSenderName = v })
-	setIfNotEmpty(envMap["SMTP_ADMIN_EMAIL"], func(v string) { config.SmtpAdminEmail = v })
+	setIfNotEmpty(envMap["SMTP_HOST"], func(v string) { config.SMTPHost = v })
+	setIfNotEmpty(envMap["SMTP_PORT"], func(v string) { config.SMTPPort = v })
+	setIfNotEmpty(envMap["SMTP_USER"], func(v string) { config.SMTPUsername = v })
+	setIfNotEmpty(envMap["SMTP_PASS"], func(v string) { config.SMTPPassword = v })
+	setIfNotEmpty(envMap["SMTP_SENDER_NAME"], func(v string) { config.SMTPSenderName = v })
+	setIfNotEmpty(envMap["SMTP_ADMIN_EMAIL"], func(v string) { config.SMTPAdminEmail = v })
 
 	// Boolean flags — convert only if the value is not empty
 	if v := strings.TrimSpace(envMap["ENABLE_S3"]); v != "" {
 		config.S3Enabled = strings.ToLower(v) == "true"
 	}
 	if v := strings.TrimSpace(envMap["ENABLE_SMTP"]); v != "" {
-		config.SmtpEnabled = strings.ToLower(v) == "true"
+		config.SMTPEnabled = strings.ToLower(v) == "true"
 	}
 
 	return nil
@@ -301,10 +301,10 @@ secret:
       accessKey: accessKey
   {{- end }}
 
-  {{- if .SmtpEnabled }}
+  {{- if .SMTPEnabled }}
   smtp:
-    username: "{{.SmtpUsername}}"
-    password: "{{.SmtpPassword}}"	
+    username: "{{.SMTPUsername}}"
+    password: "{{.SMTPPassword}}"	
   {{- end }}
 
 pooler:
@@ -322,12 +322,12 @@ storage:
     AWS_DEFAULT_REGION: "{{.S3Region}}"
 
 auth:
-  enabled: {{.SmtpEnabled}}
+  enabled: {{.SMTPEnabled}}
   environment:
-    GOTRUE_SMTP_HOST:        "{{.SmtpHost}}"
-    GOTRUE_SMTP_PORT:        "{{.SmtpPort}}"
-    GOTRUE_SMTP_SENDER_NAME: "{{.SmtpSenderName}}"
-    GOTRUE_SMTP_ADMIN_EMAIL: "{{.SmtpAdminEmail}}"
+    GOTRUE_SMTP_HOST:        "{{.SMTPHost}}"
+    GOTRUE_SMTP_PORT:        "{{.SMTPPort}}"
+    GOTRUE_SMTP_SENDER_NAME: "{{.SMTPSenderName}}"
+    GOTRUE_SMTP_ADMIN_EMAIL: "{{.SMTPAdminEmail}}"
 `
 
 // WriteSecureValues writes the secure values to a specified file using the provided SupabaseSecrets.
