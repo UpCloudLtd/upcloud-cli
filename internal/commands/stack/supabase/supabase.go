@@ -25,6 +25,31 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 	networkName := fmt.Sprintf("stack-supabase-net-%s-%s", s.name, s.zone)
 	var network *upcloud.Network
 
+	msg := "Generating configuration files for Supabase stack deployment"
+	exec.PushProgressStarted(msg)
+
+	config, err := GenerateDefaultConfig()
+	if err != nil {
+		return nil, fmt.Errorf("failed to generate default configuration for this deployment: %w", err)
+	}
+	config.Name = string(s.name)
+	config.Zone = s.zone
+
+	// Validate early input config file if it exists
+	if s.configPath != "" {
+		err := loadConfigFromFile(s.configPath, config)
+		if err != nil {
+			return nil, fmt.Errorf("failed to load configuration from file: %w", err)
+		}
+
+		err = validateConfig(config)
+		if err != nil {
+			return nil, fmt.Errorf("failed to validate configuration file: %w", err)
+		}
+	}
+
+	exec.PushProgressSuccess(msg)
+
 	clusters, err := exec.All().GetKubernetesClusters(exec.Context(), &request.GetKubernetesClustersRequest{})
 
 	if err != nil {
@@ -36,7 +61,7 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 		return nil, fmt.Errorf("a cluster with the name '%s' already exists", clusterName)
 	}
 
-	msg := fmt.Sprintf("Creating Kubernetes cluster %s in zone %s", clusterName, s.zone)
+	msg = fmt.Sprintf("Creating Kubernetes cluster %s in zone %s", clusterName, s.zone)
 	exec.PushProgressStarted(msg)
 
 	// Check if the network already exists
@@ -89,7 +114,9 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 
 	exec.PushProgressSuccess(msg)
 
-	exec.PushProgressStarted("Setting up environment for Supabase stack deployment")
+	msg = "Getting Kubernetes cluster details"
+	exec.PushProgressStarted(msg)
+
 	// Get kubeconfig file for the cluster
 	kubeconfigPath, err := stack.WriteKubeconfigToFile(exec, cluster.UUID, chartDir)
 	if err != nil {
@@ -103,13 +130,100 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 		return nil, fmt.Errorf("failed to create Kubernetes client: %w", err)
 	}
 
-	exec.PushProgressSuccess("Setting up environment for Supabase stack deployment")
+	exec.PushProgressSuccess(msg)
 
-	exec.PushProgressStarted("Generating configuration files for Supabase stack deployment")
-	// Generate configuration for the Supabase stack from input config file
-	config, err := Generate(s.configPath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to generate secrets: %w", err)
+	if shouldCreateObjectStorage(config) {
+		objStorageMsg := "Generating object storage for Supabase stack deployment"
+		exec.PushProgressStarted(objStorageMsg)
+		objStorageName := fmt.Sprintf("stack-supabase-os-%s-%s", s.name, s.zone)
+		objStorageRegion, err := stack.GetObjectStorageRegionFromZone(exec, s.zone)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get object storage region from zone: %w", err)
+		}
+
+		objStorage, err := exec.All().CreateManagedObjectStorage(exec.Context(), &request.CreateManagedObjectStorageRequest{
+			ConfiguredStatus: upcloud.ManagedObjectStorageConfiguredStatusStarted,
+			Region:           objStorageRegion,
+			Name:             objStorageName,
+			Labels: []upcloud.Label{
+				{Key: "stacks.upcloud.com/stack", Value: string(stack.StackTypeSupabase)},
+				{Key: "stacks.upcloud.com/created-by", Value: "upctl"},
+				{Key: "stacks.upcloud.com/version", Value: string(stack.VersionV0_1_0_0)},
+				{Key: "stacks.upcloud.com/name", Value: objStorageName},
+			},
+			Networks: []upcloud.ManagedObjectStorageNetwork{
+				{
+					UUID:   &network.UUID,
+					Type:   upcloud.NetworkTypePrivate,
+					Name:   network.Name,
+					Family: upcloud.IPAddressFamilyIPv4,
+				},
+			},
+		})
+		if err != nil {
+			return nil, fmt.Errorf("failed to create object storage for this deployment: %w", err)
+		}
+
+		objStorage, err = exec.All().WaitForManagedObjectStorageOperationalState(exec.Context(), &request.WaitForManagedObjectStorageOperationalStateRequest{
+			DesiredState: upcloud.ManagedObjectStorageOperationalStateRunning,
+			UUID:         objStorage.UUID,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("error while waiting for the object storage to become online: %w", err)
+		}
+
+		// Create user for the object storage
+		user, err := exec.All().CreateManagedObjectStorageUser(exec.Context(), &request.CreateManagedObjectStorageUserRequest{
+			Username:    "supabase-user",
+			ServiceUUID: objStorage.UUID,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("failed to create user for the object storage: %w", err)
+		}
+
+		exec.All().AttachManagedObjectStorageUserPolicy(exec.Context(), &request.AttachManagedObjectStorageUserPolicyRequest{
+			ServiceUUID: objStorage.UUID,
+			Username:    user.Username,
+			Name:        "ECSS3FullAccess",
+		})
+
+		// Create an access key for the object storage
+		userAccessKey, err := exec.All().CreateManagedObjectStorageUserAccessKey(exec.Context(), &request.CreateManagedObjectStorageUserAccessKeyRequest{
+			Username:    user.Username,
+			ServiceUUID: objStorage.UUID,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("failed to create access key for the object storage: %w", err)
+		}
+
+		// Create a bucket for the object storage
+		bucketName := "supabase-storage"
+		_, err = exec.All().CreateManagedObjectStorageBucket(exec.Context(), &request.CreateManagedObjectStorageBucketRequest{
+			Name:        bucketName,
+			ServiceUUID: objStorage.UUID,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("failed to create bucket for the object storage: %w", err)
+		}
+
+		// Update the config with the object storage details
+		config.S3Enabled = true
+		config.S3KeyID = userAccessKey.AccessKeyID
+		config.S3AccessKey = *userAccessKey.SecretAccessKey
+		config.S3BucketName = bucketName
+		config.S3Region = objStorage.Region
+		if len(objStorage.Endpoints) > 0 {
+			config.S3Endpoint = fmt.Sprintf("https://%s", objStorage.Endpoints[0].DomainName)
+		} else {
+			return nil, fmt.Errorf("object storage has no endpoints")
+		}
+
+		err = validateConfig(config)
+		if err != nil {
+			return nil, fmt.Errorf("invalid configuration: %w", err)
+		}
+
+		exec.PushProgressSuccess(objStorageMsg)
 	}
 
 	valuesPath := filepath.Join(chartDir, "charts/supabase/values.example.yaml")
@@ -120,21 +234,19 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 		return nil, fmt.Errorf("failed to write secrets file: %w", err)
 	}
 
-	exec.PushProgressSuccess("Generating configuration files for Supabase stack deployment")
-
 	msg = fmt.Sprintf("Deploying Supabase stack in cluster %s in zone %s", clusterName, s.zone)
 	exec.PushProgressStarted(msg)
 
 	// Deploy the Helm release
 	err = stack.DeployHelmRelease(kubeClient, clusterName, filepath.Join(chartDir, "charts/supabase"), []string{valuesPath, securePath}, false)
 	if err != nil {
-		return nil, fmt.Errorf("failed to deploy Supabase Helm release: %w", err)
+		return nil, fmt.Errorf("failed to deploy Supabase: %w", err)
 	}
 
 	// Wait for the Supabase stack to be ready
 	lbHostname, err := stack.WaitForLoadBalancer(kubeClient, clusterName, clusterName+"-supabase-kong", 60, 20*time.Second)
 	if err != nil {
-		return nil, fmt.Errorf("failed to wait for Supabase Kong Load Balancer: %w", err)
+		return nil, fmt.Errorf("Supabase Kong Load Balancer timed out: %w", err)
 	}
 
 	// Adding the cluster name and lbHostname to the config for reporting purposes
@@ -152,17 +264,23 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 		securePath,
 	}
 
-	stack.DeployHelmRelease(kubeClient, clusterName, filepath.Join(chartDir, "charts/supabase"), files, true)
+	err = stack.DeployHelmRelease(kubeClient, clusterName, filepath.Join(chartDir, "charts/supabase"), files, true)
+	if err != nil {
+		return nil, fmt.Errorf("failed to update endpoints in Supabase: %w", err)
+	}
 
 	exec.PushProgressSuccess(msg)
 
 	return config, nil
+
 }
 
 func summaryOutput(config *SupabaseConfig) string {
 	builder := &strings.Builder{}
 
 	fmt.Fprintln(builder, "Supabase deployed successfully!")
+	fmt.Fprintf(builder, "Project Name:            %s\n", config.Name)
+	fmt.Fprintf(builder, "Project Zone:            %s\n", config.Zone)
 	fmt.Fprintf(builder, "Public endpoint:      http://%s:8000\n", config.LbHostname)
 	fmt.Fprintf(builder, "Namespace:            %s\n", config.ClusterName)
 	fmt.Fprintf(builder, "ANON_KEY:             %s\n", config.AnonKey)
@@ -171,15 +289,32 @@ func summaryOutput(config *SupabaseConfig) string {
 	fmt.Fprintf(builder, "POOLER_TENANT_ID:     %s\n", config.PoolerTenantID)
 	fmt.Fprintf(builder, "DASHBOARD_USERNAME:   %s\n", config.DashboardUsername)
 	fmt.Fprintf(builder, "DASHBOARD_PASSWORD:   %s\n", config.DashboardPassword)
-	fmt.Fprintf(builder, "S3 ENABLED:           %t\n", config.S3Enabled)
-	fmt.Fprintf(builder, "S3_BUCKET:            %s\n", orNotSet(config.S3BucketName))
-	fmt.Fprintf(builder, "S3_ENDPOINT:          %s\n", orNotSet(config.S3Endpoint))
-	fmt.Fprintf(builder, "S3_REGION:            %s\n", orNotSet(config.S3Region))
-	fmt.Fprintf(builder, "SMTP ENABLED:         %t\n", config.SmtpEnabled)
-	fmt.Fprintf(builder, "SMTP_HOST:           %s\n", orNotSet(config.SmtpHost))
-	fmt.Fprintf(builder, "SMTP_PORT:            %s\n", orNotSet(config.SmtpPort))
-	fmt.Fprintf(builder, "SMTP_USER:            %s\n", orNotSet(config.SmtpUsername))
-	fmt.Fprintf(builder, "SMTP_SENDER_NAME:     %s\n", orNotSet(config.SmtpSenderName))
+
+	// S3 section
+	if config.S3Enabled {
+		fmt.Fprintf(builder, "S3 ENABLED:           true\n")
+		fmt.Fprintf(builder, "S3_KEY_ID:            %s\n", orNotSet(config.S3KeyID))
+		fmt.Fprintf(builder, "S3_ACCESS_KEY:        %s\n", orNotSet(config.S3AccessKey))
+		fmt.Fprintf(builder, "S3_BUCKET:            %s\n", orNotSet(config.S3BucketName))
+		fmt.Fprintf(builder, "S3_ENDPOINT:          %s\n", orNotSet(config.S3Endpoint))
+		fmt.Fprintf(builder, "S3_REGION:            %s\n", orNotSet(config.S3Region))
+	} else {
+		fmt.Fprintf(builder, "S3 ENABLED:           false\n")
+		fmt.Fprintf(builder, "S3 CONFIG:            Not available (S3 is disabled)\n")
+	}
+
+	// SMTP section
+	if config.SmtpEnabled {
+		fmt.Fprintf(builder, "SMTP ENABLED:         true\n")
+		fmt.Fprintf(builder, "SMTP_HOST:            %s\n", orNotSet(config.SmtpHost))
+		fmt.Fprintf(builder, "SMTP_PORT:            %s\n", orNotSet(config.SmtpPort))
+		fmt.Fprintf(builder, "SMTP_USER:            %s\n", orNotSet(config.SmtpUsername))
+		fmt.Fprintf(builder, "SMTP_SENDER_NAME:     %s\n", orNotSet(config.SmtpSenderName))
+		fmt.Fprintf(builder, "SMTP_SENDER_EMAIL:    %s\n", orNotSet(config.SmtpAdminEmail))
+	} else {
+		fmt.Fprintf(builder, "SMTP ENABLED:         false\n")
+		fmt.Fprintf(builder, "SMTP CONFIG:          Not available (SMTP is disabled)\n")
+	}
 
 	return builder.String()
 }

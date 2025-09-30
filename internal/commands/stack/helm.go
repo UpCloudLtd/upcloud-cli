@@ -125,7 +125,7 @@ func DeployHelmRelease(kubeClient *kubernetes.Clientset, releaseName string, cha
 		return fmt.Errorf("merging values files: %w", err)
 	}
 
-	// Check for existing release in the *correct* namespace
+	// Check for existing release in the correct namespace
 	statusClient := action.NewStatus(actionConfig)
 	_, err = statusClient.Run(releaseName)
 	if err != nil && !errors.Is(err, driver.ErrReleaseNotFound) {
@@ -139,7 +139,7 @@ func DeployHelmRelease(kubeClient *kubernetes.Clientset, releaseName string, cha
 		installClient.Namespace = releaseName
 		installClient.CreateNamespace = false
 		installClient.Wait = true
-		installClient.Timeout = 10 * time.Minute
+		installClient.Timeout = 15 * time.Minute
 
 		if _, err := installClient.Run(ch, mergedVals); err != nil {
 			return fmt.Errorf("helm install failed: %w", err)

@@ -11,11 +11,14 @@ import (
 	"html/template"
 	"os"
 	"strings"
+	"unicode"
 
 	"github.com/joho/godotenv"
 )
 
 type SupabaseConfig struct {
+	Name        string
+	Zone        string
 	LbHostname  string
 	ClusterName string
 
@@ -40,9 +43,10 @@ type SupabaseConfig struct {
 	SmtpUsername   string
 	SmtpPassword   string
 	SmtpSenderName string
+	SmtpAdminEmail string
 }
 
-func Generate(configPath string) (*SupabaseConfig, error) {
+func GenerateDefaultConfig() (*SupabaseConfig, error) {
 	// Generate a random JWT secret and API keys
 	jwtSecret, err := generateJWTSecret()
 	if err != nil {
@@ -63,7 +67,6 @@ func Generate(configPath string) (*SupabaseConfig, error) {
 		return nil, err
 	}
 
-	// Read configuration from the provided configPath
 	config := &SupabaseConfig{
 		JWTSecret:         jwtSecret,
 		AnonKey:           anonKey,
@@ -72,19 +75,103 @@ func Generate(configPath string) (*SupabaseConfig, error) {
 		DashboardPassword: generateRandomString(20),
 		PostgresPassword:  generateRandomString(20),
 		PoolerTenantID:    generateRandomString(20),
-		S3Enabled:         false,
+		S3Enabled:         true,
 		SmtpEnabled:       false,
 	}
 
-	if configPath != "" {
-		err = loadConfigFromFile(configPath, config)
-	}
-
-	if err != nil {
-		return nil, fmt.Errorf("failed to load configuration from file: %w", err)
-	}
-
 	return config, nil
+}
+
+func shouldCreateObjectStorage(config *SupabaseConfig) bool {
+	if !config.S3Enabled {
+		return false
+	}
+
+	// check if all S3 fields are empty
+	return config.S3KeyID == "" &&
+		config.S3AccessKey == "" &&
+		config.S3BucketName == "" &&
+		config.S3Region == "" &&
+		config.S3Endpoint == ""
+}
+
+func validateConfig(config *SupabaseConfig) error {
+	// If ENABLE_S3 is true, ensure all S3-related fields are set
+	err := validateS3Config(config)
+	if err != nil {
+		return err
+	}
+
+	err = validateSmtpConfig(config)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// validateS3Config checks that when ENABLE_S3 is true, either all S3 fields must be set or all must be empty
+// If ENABLE_S3 is false, no checks are performed
+func validateS3Config(config *SupabaseConfig) error {
+	if !config.S3Enabled {
+		return nil
+	}
+
+	fields := map[string]string{
+		"S3_KEY_ID":     config.S3KeyID,
+		"S3_ACCESS_KEY": config.S3AccessKey,
+		"S3_BUCKET":     config.S3BucketName,
+		"S3_REGION":     config.S3Region,
+		"S3_ENDPOINT":   config.S3Endpoint,
+	}
+
+	allEmpty := true
+	allSet := true
+	for _, val := range fields {
+		if val != "" {
+			allEmpty = false
+		} else {
+			allSet = false
+		}
+	}
+
+	if !(allEmpty || allSet) {
+		return fmt.Errorf("when ENABLE_S3 is true, either all S3 fields must be set or all must be empty: %v", fields)
+	}
+
+	// config.DashboardPassword must be a combination of letters and numbers, at least 8 characters long
+	// Note: This looks like another bug. If password is all numbers it will end up as a number in
+	// charts/supabase/kong/config.yaml and the deployment will fail.
+	if len(config.DashboardPassword) < 8 {
+		return fmt.Errorf("DASHBOARD_PASSWORD must be at least 8 characters long")
+	}
+
+	hasLetter := false
+	hasNumber := false
+	for _, c := range config.DashboardPassword {
+		switch {
+		case unicode.IsLetter(c):
+			hasLetter = true
+		case unicode.IsDigit(c):
+			hasNumber = true
+		}
+	}
+
+	if !hasLetter || !hasNumber {
+		return fmt.Errorf("DASHBOARD_PASSWORD must contain both letters and numbers")
+	}
+
+	return nil
+}
+
+func validateSmtpConfig(config *SupabaseConfig) error {
+	if config.SmtpEnabled {
+		if config.SmtpHost == "" || config.SmtpPort == "" || config.SmtpUsername == "" ||
+			config.SmtpPassword == "" || config.SmtpSenderName == "" || config.SmtpAdminEmail == "" {
+			return fmt.Errorf("when ENABLE_SMTP is true, SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_SENDER_NAME, and SMTP_ADMIN_EMAIL must all be set")
+		}
+	}
+	return nil
 }
 
 func generateJWTSecret() (string, error) {
@@ -172,6 +259,7 @@ func loadConfigFromFile(path string, config *SupabaseConfig) error {
 	setIfNotEmpty(envMap["SMTP_USER"], func(v string) { config.SmtpUsername = v })
 	setIfNotEmpty(envMap["SMTP_PASS"], func(v string) { config.SmtpPassword = v })
 	setIfNotEmpty(envMap["SMTP_SENDER_NAME"], func(v string) { config.SmtpSenderName = v })
+	setIfNotEmpty(envMap["SMTP_ADMIN_EMAIL"], func(v string) { config.SmtpAdminEmail = v })
 
 	// Boolean flags — convert only if the value is not empty
 	if v := strings.TrimSpace(envMap["ENABLE_S3"]); v != "" {
@@ -203,6 +291,7 @@ secret:
     username: "{{.DashboardUsername}}"
     password: "{{.DashboardPassword}}"
 
+  {{- if .S3Enabled }}
   s3:
     keyId: "{{.S3KeyID}}"
     accessKey: "{{.S3AccessKey}}"
@@ -210,29 +299,35 @@ secret:
     secretRefKey:
       keyId: keyId
       accessKey: accessKey
+  {{- end }}
 
-    # SMTP configuration (if your chart references these)
-    smtp:
-        host:   "{{.SmtpHost}}"
-        port:   "{{.SmtpPort}}"
-        user:   "{{.SmtpUsername}}"
-        pass:   "{{.SmtpPassword}}"
-        sender: "{{.SmtpSenderName}}"
+  {{- if .SmtpEnabled }}
+  smtp:
+    username: "{{.SmtpUsername}}"
+    password: "{{.SmtpPassword}}"	
+  {{- end }}
 
-# POOLER (Supavisor) tenant ID
 pooler:
   tenantId: "{{.PoolerTenantID}}"
 
 storage:
-  enabled: "{{.S3Enabled}}"               
+  enabled: {{.S3Enabled}}
   environment:
-    STORAGE_BACKEND:            "s3"
-    GLOBAL_S3_BUCKET:           "{{.S3BucketName}}"
-    TENANT_ID:                  "supabase"
-    GLOBAL_S3_ENDPOINT:         "{{.S3Endpoint}}"  
-    GLOBAL_S3_PROTOCOL:         "https"  
-    GLOBAL_S3_FORCE_PATH_STYLE: "true"  
-    AWS_DEFAULT_REGION:         "{{.S3Region}}" 
+    STORAGE_BACKEND: "s3"
+    GLOBAL_S3_BUCKET: "{{.S3BucketName}}"
+    TENANT_ID: "supabase"
+    GLOBAL_S3_ENDPOINT: "{{.S3Endpoint}}"
+    GLOBAL_S3_PROTOCOL: "https"
+    GLOBAL_S3_FORCE_PATH_STYLE: true
+    AWS_DEFAULT_REGION: "{{.S3Region}}"
+
+auth:
+  enabled: {{.SmtpEnabled}}
+  environment:
+    GOTRUE_SMTP_HOST:        "{{.SmtpHost}}"
+    GOTRUE_SMTP_PORT:        "{{.SmtpPort}}"
+    GOTRUE_SMTP_SENDER_NAME: "{{.SmtpSenderName}}"
+    GOTRUE_SMTP_ADMIN_EMAIL: "{{.SmtpAdminEmail}}"
 `
 
 // WriteSecureValues writes the secure values to a specified file using the provided SupabaseSecrets.

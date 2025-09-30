@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/stack"
@@ -69,13 +70,22 @@ func (s *deploySupabaseCommand) ExecuteWithoutArguments(exec commands.Executor) 
 	// Command implementation for deploying a Supabase stack
 	config, err := s.deploy(exec, chartDir)
 	if err != nil {
-		return commands.HandleError(exec, "Deploying Supabase stack", err)
+		return nil, fmt.Errorf("Deploying Supabase stack: %w", err)
 	}
 
-	// clean up at the end
-	//defer os.RemoveAll(chartDir)
+	// Build summary text
+	summary := summaryOutput(config)
+
+	// Save summary to file
+	filename := fmt.Sprintf("supabase-%s-%s-%s.cfg", s.name, s.zone, time.Now().Format("20060102-150405"))
+	if err := os.WriteFile(filename, []byte(summary), 0644); err != nil {
+		return nil, fmt.Errorf("failed to write summary file: %w", err)
+	}
+
+	// Add info about file to screen output
+	summaryWithFileNotice := summary + fmt.Sprintf("\nConfiguration details also saved to: %s\n", filename)
 
 	return output.Raw{
-		Source: io.NopCloser(strings.NewReader(summaryOutput(config))),
+		Source: io.NopCloser(strings.NewReader(summaryWithFileNotice)),
 	}, nil
 }
