@@ -272,7 +272,7 @@ func parseSource(location string) (parsedLocation *url.URL, sourceType string, f
 		// we managed to open a local file with this path, so use that
 		sourceType = upcloud.StorageImportSourceDirectUpload
 		parsedLocation = &url.URL{Path: location}
-		return
+		return parsedLocation, sourceType, fileSize, err
 	}
 	parsedLocation, err = url.Parse(location)
 	switch {
@@ -293,7 +293,7 @@ func parseSource(location string) (parsedLocation *url.URL, sourceType string, f
 			return nil, "", 0, fmt.Errorf("unsupported URL scheme '%v'", parsedLocation.Scheme)
 		}
 	}
-	return
+	return parsedLocation, sourceType, fileSize, err
 }
 
 func createStorage(exec commands.Executor, params *createParams) (upcloud.Storage, error) {
