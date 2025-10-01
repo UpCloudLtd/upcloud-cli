@@ -292,7 +292,7 @@ func deleteResource(exec commands.Executor, resource Resource) (err error) {
 	case typeCertificateBundle:
 		_, err = deleteCertificateBundle(exec, resource.UUID)
 	}
-	return
+	return err
 }
 
 type deleteResult struct {

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- stack deploy supabase command (Experimental support)
+- stack deploy dokku command (Experimental support)
+- stack deploy starter-kit command (Experimental support)
+
 ## [3.23.0] - 2025-09-12
 
 ### Added

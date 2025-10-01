@@ -1,0 +1,141 @@
+{{- if .Values.kong.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "supabase.kong.fullname" . }}
+  labels:
+    {{- include "supabase.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.kong.autoscaling.enabled }}
+  replicas: {{ .Values.kong.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "supabase.kong.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.kong.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "supabase.kong.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.kong.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "supabase.kong.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.kong.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ include "supabase.kong.name" $ }}
+          securityContext:
+            {{- toYaml .Values.kong.securityContext | nindent 12 }}
+          image: "{{ .Values.kong.image.repository }}:{{ .Values.kong.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.kong.image.pullPolicy }}
+          command: ["/bin/bash"]
+          args: ["/scripts/wrapper.sh"]
+          env:
+            {{- range $key, $value := .Values.kong.environment }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            - name: SUPABASE_ANON_KEY
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.secret.jwt.secretRef }}
+                  name: {{ .Values.secret.jwt.secretRef }}
+                  key: {{ .Values.secret.jwt.secretRefKey.anonKey | default "anonKey" }}
+                  {{- else }}
+                  name: {{ include "supabase.secret.jwt" . }}
+                  key: anonKey
+                  {{- end }}
+            - name: SUPABASE_SERVICE_KEY
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.secret.jwt.secretRef }}
+                  name: {{ .Values.secret.jwt.secretRef }}
+                  key: {{ .Values.secret.jwt.secretRefKey.serviceKey | default "serviceKey" }}
+                  {{- else }}
+                  name: {{ include "supabase.secret.jwt" . }}
+                  key: serviceKey
+                  {{- end }}
+            {{- if .Values.secret.dashboard }}
+            - name: DASHBOARD_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.secret.dashboard.secretRef }}
+                  name: {{ .Values.secret.dashboard.secretRef }}
+                  key: {{ .Values.secret.dashboard.secretRefKey.username | default "username" }}
+                  {{- else }}
+                  name: {{ include "supabase.secret.dashboard" . }}
+                  key: username
+                  {{- end }}
+            - name: DASHBOARD_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.secret.dashboard.secretRef }}
+                  name: {{ .Values.secret.dashboard.secretRef }}
+                  key: {{ .Values.secret.dashboard.secretRefKey.password | default "password" }}
+                  {{- else }}
+                  name: {{ include "supabase.secret.dashboard" . }}
+                  key: password
+                  {{- end }}
+            {{- end }}
+          {{- with .Values.kong.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.kong.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          {{- with .Values.kong.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - mountPath: /usr/local/kong/template.yml
+              name: config
+              subPath: template.yml
+            - mountPath: /scripts
+              name: wrapper
+            {{- with .Values.kong.volumeMounts }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+      {{- with .Values.kong.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.kong.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.kong.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "supabase.kong.fullname" $ }}
+            defaultMode: 0777
+            items:
+            - key: template.yml
+              path: template.yml
+        - name: wrapper
+          configMap:
+            name: {{ include "supabase.kong.fullname" $ }}
+            defaultMode: 0777
+            items:
+            - key: wrapper.sh
+              path: wrapper.sh
+        {{- with .Values.kong.volumes }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+{{- end }}

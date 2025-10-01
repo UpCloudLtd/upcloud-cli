@@ -234,7 +234,7 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	}
 
 	if s.wait.Value() {
-		waitForManagedDatabaseState(res.UUID, upcloud.ManagedDatabaseStateRunning, exec, msg)
+		WaitForManagedDatabaseState(res.UUID, upcloud.ManagedDatabaseStateRunning, exec, msg)
 	} else {
 		exec.PushProgressSuccess(msg)
 	}

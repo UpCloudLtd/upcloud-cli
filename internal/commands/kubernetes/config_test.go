@@ -86,7 +86,6 @@ contexts:
       name: yaml-output
 current-context: yaml-output-admin@yaml-output
 kind: Config
-preferences: {}
 users:
     - name: yaml-output
       user:
