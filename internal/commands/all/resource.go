@@ -147,7 +147,7 @@ func findResources[T any](exec commands.Executor, wg *sync.WaitGroup, returnChan
 	}()
 }
 
-func listResources(exec commands.Executor, include, exclude []string) ([]Resource, error) {
+func ListResources(exec commands.Executor, include, exclude []string) ([]Resource, error) {
 	var resources []Resource
 	returnChan := make(chan findResult, 12)
 
@@ -292,7 +292,7 @@ func deleteResource(exec commands.Executor, resource Resource) (err error) {
 	case typeCertificateBundle:
 		_, err = deleteCertificateBundle(exec, resource.UUID)
 	}
-	return err
+	return
 }
 
 type deleteResult struct {
@@ -301,7 +301,7 @@ type deleteResult struct {
 	Error    error
 }
 
-func deleteResources(exec commands.Executor, resources []Resource, workerCount int) error {
+func DeleteResources(exec commands.Executor, resources []Resource, workerCount int) error {
 	if len(resources) == 0 {
 		return nil
 	}

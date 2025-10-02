@@ -283,11 +283,16 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	commands.BuildCommand(all.PurgeCommand(), allCommand.Cobra(), conf)
 	commands.BuildCommand(all.ListCommand(), allCommand.Cobra(), conf)
 
+	// Stack operations
 	stackCommand := commands.BuildCommand(stack.BaseStackCommand(), rootCmd, conf)
 	stackDeployCommand := commands.BuildCommand(stack.DeployCommand(), stackCommand.Cobra(), conf)
+	stackDestroyCommand := commands.BuildCommand(stack.DestroyCommand(), stackCommand.Cobra(), conf)
 	commands.BuildCommand(supabase.DeploySupabaseCommand(), stackDeployCommand.Cobra(), conf)
 	commands.BuildCommand(dokku.DeployDokkuCommand(), stackDeployCommand.Cobra(), conf)
 	commands.BuildCommand(starterkit.DeployStarterKitCommand(), stackDeployCommand.Cobra(), conf)
+	commands.BuildCommand(supabase.DestroySupabaseCommand(), stackDestroyCommand.Cobra(), conf)
+	commands.BuildCommand(dokku.DestroyDokkuCommand(), stackDestroyCommand.Cobra(), conf)
+	//commands.BuildCommand(starterkit.DestroyStarterKitCommand(), stackDestroyCommand.Cobra(), conf)
 
 	// Misc
 	commands.BuildCommand(
