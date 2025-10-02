@@ -21,8 +21,8 @@ const (
 )
 
 func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) (*SupabaseConfig, error) {
-	clusterName := fmt.Sprintf("stack-supabase-cluster-%s-%s", s.name, s.zone)
-	networkName := fmt.Sprintf("stack-supabase-net-%s-%s", s.name, s.zone)
+	clusterName := fmt.Sprintf("%s-%s-%s", stack.SupabaseResourceRootNameCluster, s.name, s.zone)
+	networkName := fmt.Sprintf("%s-%s-%s", stack.SupabaseResourceRootNameNetwork, s.name, s.zone)
 	var network *upcloud.Network
 
 	clusters, err := exec.All().GetKubernetesClusters(exec.Context(), &request.GetKubernetesClustersRequest{})

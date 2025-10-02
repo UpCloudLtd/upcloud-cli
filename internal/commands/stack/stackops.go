@@ -12,8 +12,12 @@ import (
 
 	"github.com/UpCloudLtd/progress/messages"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/all"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/kubernetes"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/network"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 type StackType string
@@ -21,7 +25,7 @@ type StackType string
 const (
 	StackTypeDokku      StackType = "dokku"
 	StackTypeSupabase   StackType = "supabase"
-	StackTypeStarterKit StackType = "starter-kit"
+	StackTypeStarterKit StackType = "starter"
 )
 
 type Version string
@@ -29,6 +33,22 @@ type Version string
 const (
 	VersionV0_1_0_0 Version = "v0.1.0.0"
 	SupportEmail    string  = "support@upcloud.com"
+)
+
+type SupabaseResourceRootName string
+type DokkuResourceRootName string
+type StarterKitResourceRootName string
+
+var (
+	SupabaseResourceRootNameCluster      SupabaseResourceRootName   = SupabaseResourceRootName(fmt.Sprintf("stack-%s-cluster", StackTypeSupabase))
+	SupabaseResourceRootNameNetwork      SupabaseResourceRootName   = SupabaseResourceRootName(fmt.Sprintf("stack-%s-net", StackTypeSupabase))
+	DokkuResourceRootNameCluster         DokkuResourceRootName      = DokkuResourceRootName(fmt.Sprintf("stack-%s-cluster", StackTypeDokku))
+	DokkuResourceRootNameNetwork         DokkuResourceRootName      = DokkuResourceRootName(fmt.Sprintf("stack-%s-net", StackTypeDokku))
+	StarterKitResourceRootNameCluster    StarterKitResourceRootName = StarterKitResourceRootName(fmt.Sprintf("stack-%s-cluster", StackTypeStarterKit))
+	StarterKitResourceRootNameNetwork    StarterKitResourceRootName = StarterKitResourceRootName(fmt.Sprintf("stack-%s-net", StackTypeStarterKit))
+	StarterKitResourceRootNameObjStorage StarterKitResourceRootName = StarterKitResourceRootName(fmt.Sprintf("stack-%s-obj-sto", StackTypeStarterKit))
+	StarterKitResourceRootNameDatabase   StarterKitResourceRootName = StarterKitResourceRootName(fmt.Sprintf("stack-%s-db", StackTypeStarterKit))
+	StarterKitResourceRootNameRouter     StarterKitResourceRootName = StarterKitResourceRootName(fmt.Sprintf("stack-%s-router", StackTypeStarterKit))
 )
 
 // GetNetworkFromName retrieves the network from the net name, returns nil if it does not exist
@@ -173,4 +193,205 @@ func WaitForManagedObjectStorageState(uuid string, state upcloud.ManagedObjectSt
 
 	exec.PushProgressUpdateMessage(msg, msg)
 	exec.PushProgressSuccess(msg)
+}
+
+func DestroyStack(exec commands.Executor, name, zone string, deleteStorage, deleteObjectStorage bool, stackType StackType) error {
+	switch stackType {
+	case StackTypeSupabase:
+		logDir := os.TempDir()
+		clusterName := fmt.Sprintf("%s-%s-%s", SupabaseResourceRootNameCluster, name, zone)
+		msg := fmt.Sprintf("Searching cluster %s in zone %s", clusterName, zone)
+		exec.PushProgressStarted(msg)
+		clusters, err := exec.All().GetKubernetesClusters(exec.Context(), &request.GetKubernetesClustersRequest{})
+		if err != nil {
+			return fmt.Errorf("failed to get kubernetes clusters: %w", err)
+		}
+
+		var cluster *upcloud.KubernetesCluster
+		for _, cl := range clusters {
+			if cl.Name == clusterName {
+				msg := fmt.Sprintf("Deleting Kubernetes cluster %s in zone %s", clusterName, zone)
+				exec.PushProgressStarted(msg)
+				cluster = &cl
+				break
+			}
+		}
+
+		if cluster == nil {
+			return fmt.Errorf("a cluster with the name '%s' was not found", clusterName)
+		}
+
+		exec.PushProgressSuccess(msg)
+
+		msg = fmt.Sprintln("Preparing to start deleting resources")
+		exec.PushProgressStarted(msg)
+
+		kubeconfigPath, err := WriteKubeconfigToFile(exec, cluster.UUID, logDir)
+		if err != nil {
+			return fmt.Errorf("failed to write kubeconfig to file: %w", err)
+		}
+
+		if err := os.Setenv("KUBECONFIG", kubeconfigPath); err != nil {
+			return fmt.Errorf("set KUBECONFIG: %w", err)
+		}
+
+		exec.PushProgressSuccess(msg)
+
+		kubeClient, err := GetKubernetesClient(kubeconfigPath)
+		if err != nil {
+			return fmt.Errorf("failed to create Kubernetes client: %w", err)
+		}
+
+		var uuids []string
+		// Collect PVC volume UUIDs for deletion if deleteStorage is true
+		// This is done before uninstalling the helm release to ensure we get all PVCs
+		// associated with the Supabase stack
+		// If deleteStorage is false, we skip this step and leave the PVCs intact
+		if deleteStorage {
+			msg = fmt.Sprintln("Collecting PVC volume UUIDs for deletion")
+			exec.PushProgressStarted(msg)
+
+			uuids, err = CollectPVCVolumeUUIDs(exec.Context(), exec, kubeClient, clusterName)
+			if err != nil {
+				return fmt.Errorf("failed to retrieve PVC volume UUIDs: %w", err)
+			}
+
+			exec.PushProgressSuccess(msg)
+		}
+
+		msg = fmt.Sprintf("Uninstalling Supabase helm release: %s", clusterName)
+		exec.PushProgressStarted(msg)
+
+		err = UninstallHelmRelease(clusterName, logDir)
+		if err != nil {
+			return fmt.Errorf("failed to uninstall helm release: %w", err)
+		}
+
+		exec.PushProgressSuccess(msg)
+
+		if deleteStorage && len(uuids) == 0 {
+			msg = fmt.Sprintln("Deleting PVC volumes")
+			exec.PushProgressStarted(msg)
+
+			err = DeletePVCVolumesByUUIDs(exec, uuids)
+			if err != nil {
+				return fmt.Errorf("failed to delete PVC volumes: %w", err)
+			}
+			exec.PushProgressSuccess(msg)
+		}
+
+		msg = fmt.Sprintf("Deleting namespace: %s", clusterName)
+		exec.PushProgressStarted(msg)
+
+		kubeClient.CoreV1().Namespaces().Delete(exec.Context(), clusterName, v1.DeleteOptions{})
+
+		// Wait until namespace is deleted
+		err = WaitForNamespaceDeletion(exec.Context(), kubeClient, clusterName, 10*time.Minute)
+		if err != nil {
+			return fmt.Errorf("failed to wait for namespace deletion: %w", err)
+		}
+
+		exec.PushProgressSuccess(msg)
+
+		msg = fmt.Sprintf("Deleting Kubernetes cluster %s in zone %s", clusterName, zone)
+		exec.PushProgressStarted(msg)
+
+		_, err = kubernetes.Delete(exec, cluster.UUID, true)
+		if err != nil {
+			return fmt.Errorf("failed to delete kubernetes cluster: %w", err)
+		}
+
+		exec.PushProgressSuccess(msg)
+
+		// Delete the object storage if it exists
+		if deleteObjectStorage {
+			objectStorageName := fmt.Sprintf("%s-%s-%s", SupabaseResourceRootNameCluster, name, zone)
+			msg = fmt.Sprintf("Searching object storage %s in zone %s", objectStorageName, zone)
+			exec.PushProgressStarted(msg)
+
+			storages, err := exec.All().GetManagedObjectStorages(exec.Context(), &request.GetManagedObjectStoragesRequest{})
+			if err != nil {
+				return fmt.Errorf("failed to get object storages: %w", err)
+			}
+
+			var storageUUID string
+			for _, sto := range storages {
+				if sto.Name == objectStorageName {
+					storageUUID = sto.UUID
+					msg := fmt.Sprintf("Deleting object storage %s in zone %s", objectStorageName, zone)
+					exec.PushProgressStarted(msg)
+					break
+				}
+			}
+
+			if storageUUID != "" {
+				err = exec.All().DeleteManagedObjectStorage(exec.Context(), &request.DeleteManagedObjectStorageRequest{
+					UUID: storageUUID,
+				})
+				if err != nil {
+					return fmt.Errorf("failed to delete object storage: %w", err)
+				}
+
+				WaitForManagedObjectStorageState(storageUUID, upcloud.ManagedObjectStorageOperationalStateDeleted, exec, msg)
+			} else {
+				exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Object storage %s not found, skipping deletion", objectStorageName))
+				exec.PushProgressSuccess(msg)
+			}
+		}
+
+		msg = fmt.Sprintf("Deleting network %s in zone %s", clusterName, zone)
+		exec.PushProgressStarted(msg)
+
+		networkName := fmt.Sprintf("%s-%s-%s", SupabaseResourceRootNameNetwork, name, zone)
+		networks, err := exec.All().GetNetworks(exec.Context())
+		if err != nil {
+			return fmt.Errorf("failed to get networks: %w", err)
+		}
+
+		for _, net := range networks.Networks {
+			if net.Name == networkName {
+				msg := fmt.Sprintf("Deleting network %s in zone %s", networkName, zone)
+				exec.PushProgressStarted(msg)
+				_, err = network.Delete(exec, net.UUID)
+				if err != nil {
+					return fmt.Errorf("failed to delete network: %w", err)
+				}
+				exec.PushProgressSuccess(msg)
+				break
+			}
+		}
+		exec.PushProgressSuccess(msg)
+	case StackTypeDokku:
+		clusterName := fmt.Sprintf("%s-%s-%s", DokkuResourceRootNameCluster, name, zone)
+		networkName := fmt.Sprintf("%s-%s-%s", DokkuResourceRootNameNetwork, name, zone)
+
+		resources, err := all.ListResources(exec, []string{clusterName, networkName}, []string{})
+		if err != nil {
+			return err
+		}
+
+		err = all.DeleteResources(exec, resources, 16)
+		if err != nil {
+			return err
+		}
+	case StackTypeStarterKit:
+		clusterName := fmt.Sprintf("%s-%s-%s", StarterKitResourceRootNameCluster, name, zone)
+		networkName := fmt.Sprintf("%s-%s-%s", StarterKitResourceRootNameNetwork, name, zone)
+		objectStorageName := fmt.Sprintf("%s-%s-%s", StarterKitResourceRootNameObjStorage, name, zone)
+		dbName := fmt.Sprintf("%s-%s-%s", StarterKitResourceRootNameDatabase, name, zone)
+		routerName := fmt.Sprintf("%s-%s-%s", StarterKitResourceRootNameRouter, name, zone)
+
+		resources, err := all.ListResources(exec, []string{clusterName, networkName, objectStorageName, dbName, routerName}, []string{})
+		if err != nil {
+			return err
+		}
+
+		err = all.DeleteResources(exec, resources, 16)
+		if err != nil {
+			return err
+		}
+	default:
+		return fmt.Errorf("unsupported stack type: %s", stackType)
+	}
+	return nil
 }

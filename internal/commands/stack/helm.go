@@ -284,3 +284,45 @@ func DeployHelmReleaseFromRepo(
 
 	return nil
 }
+
+// UninstallHelmRelease uninstalls a Helm release in namespace=releaseName.
+func UninstallHelmRelease(releaseName, logDir string) error {
+	// return error if KUBECONFIG is not set
+	if os.Getenv("KUBECONFIG") == "" {
+		return errors.New("KUBECONFIG environment variable is not set")
+	}
+
+	if err := os.Setenv("HELM_NAMESPACE", releaseName); err != nil {
+		return fmt.Errorf("set HELM_NAMESPACE: %w", err)
+	}
+
+	// Ensure logs are written to the same chartPath dir
+	logFile, err := CreateHelmLogFile(logDir)
+	if err != nil {
+		return fmt.Errorf("creating Helm log file: %w", err)
+	}
+	defer logFile.Close()
+
+	// Initialize Helm action config
+	actionConfig, err := InitHelmActionConfig(releaseName, logFile)
+	if err != nil {
+		return fmt.Errorf("initializing Helm action config: %w", err)
+	}
+
+	// Prepare uninstall client
+	uninstall := action.NewUninstall(actionConfig)
+	uninstall.Wait = true
+	uninstall.Timeout = 15 * time.Minute
+
+	// Run uninstall
+	resp, err := uninstall.Run(releaseName)
+	if err != nil {
+		return fmt.Errorf("uninstalling release %q: %w", releaseName, err)
+	}
+
+	if resp != nil {
+		fmt.Fprintf(logFile, "Uninstalled release %q: %s\n", releaseName, resp.Info)
+	}
+
+	return nil
+}
