@@ -24,11 +24,11 @@ type StarterKitConfig struct {
 }
 
 func GenerateStarterKitConfig(projectName, zone string) *StarterKitConfig {
-	clusterName := fmt.Sprintf("starter-kit-cluster-%s-%s", projectName, zone)
-	networkName := fmt.Sprintf("starter-kit-network-%s-%s", projectName, zone)
-	objectStorageName := fmt.Sprintf("starter-kit-object-storage-%s-%s", projectName, zone)
-	dbName := fmt.Sprintf("starter-kit-db-%s-%s", projectName, zone)
-	routerName := fmt.Sprintf("starter-kit-router-%s-%s", projectName, zone)
+	clusterName := fmt.Sprintf("%s-%s-%s", stack.StarterKitResourceRootNameCluster, projectName, zone)
+	networkName := fmt.Sprintf("%s-%s-%s", stack.StarterKitResourceRootNameNetwork, projectName, zone)
+	objectStorageName := fmt.Sprintf("%s-%s-%s", stack.StarterKitResourceRootNameObjStorage, projectName, zone)
+	dbName := fmt.Sprintf("%s-%s-%s", stack.StarterKitResourceRootNameDatabase, projectName, zone)
+	routerName := fmt.Sprintf("%s-%s-%s", stack.StarterKitResourceRootNameRouter, projectName, zone)
 
 	return &StarterKitConfig{
 		ProjectName:       projectName,
@@ -73,13 +73,14 @@ func (c *StarterKitConfig) Validate(exec commands.Executor) error {
 
 	// Check if a kubernetes cluster with the name clusterName already exists
 	clusters, err := exec.All().GetKubernetesClusters(exec.Context(), &request.GetKubernetesClustersRequest{})
+
 	if err != nil {
 		return fmt.Errorf("failed to get Kubernetes clusters: %w", err)
 	}
 
 	if stack.ClusterExists(c.ClusterName, clusters) {
 		return fmt.Errorf(
-			"a cluster with the name %q already exists. Names are generated as 'starter-kit-cluster-<project>-<zone>' (got project=%q, zone=%q)",
+			"a cluster with the name %q already exists. Names are generated as 'stack-starter-cluster-<project>-<zone>' (got project=%q, zone=%q)",
 			c.ClusterName, c.ProjectName, c.Zone,
 		)
 	}
@@ -93,7 +94,7 @@ func (c *StarterKitConfig) Validate(exec commands.Executor) error {
 	for _, db := range dbs {
 		if db.Name == c.DBName {
 			return fmt.Errorf(
-				"a database with the name %q already exists. Names are generated as 'starter-kit-db-<project>-<zone>'",
+				"a database with the name %q already exists. Names are generated as 'stack-starter-db-<project>-<zone>'",
 				c.DBName,
 			)
 		}
@@ -107,7 +108,7 @@ func (c *StarterKitConfig) Validate(exec commands.Executor) error {
 	for _, objsto := range objectstorages {
 		if objsto.Name == c.ObjectStorageName {
 			return fmt.Errorf(
-				"an object storage with the name %q already exists. Names are generated as 'starter-kit-object-storage-<project>-<zone>'",
+				"an object storage with the name %q already exists. Names are generated as 'stack-starter-obj-sto-<project>-<zone>'",
 				c.ObjectStorageName,
 			)
 		}

@@ -36,12 +36,12 @@ func (c *purgeCommand) InitCommand() {
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (c *purgeCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
-	resources, err := listResources(exec, c.include, c.exclude)
+	resources, err := ListResources(exec, c.include, c.exclude)
 	if err != nil {
 		return nil, err
 	}
 
-	err = deleteResources(exec, resources, 16)
+	err = DeleteResources(exec, resources, 16)
 	if err != nil {
 		return nil, err
 	}

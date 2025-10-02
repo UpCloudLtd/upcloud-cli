@@ -20,12 +20,13 @@ import (
 )
 
 func (s *deployDokkuCommand) deploy(exec commands.Executor, configDir string) error {
-	clusterName := fmt.Sprintf("stack-dokku-cluster-%s-%s", s.name, s.zone)
-	networkName := fmt.Sprintf("stack-dokku-net-%s-%s", s.name, s.zone)
+	clusterName := fmt.Sprintf("%s-%s-%s", stack.DokkuResourceRootNameCluster, s.name, s.zone)
+	networkName := fmt.Sprintf("%s-%s-%s", stack.DokkuResourceRootNameNetwork, s.name, s.zone)
 	var network *upcloud.Network
 
 	// Check if the cluster already exists
 	clusters, err := exec.All().GetKubernetesClusters(exec.Context(), &request.GetKubernetesClustersRequest{})
+
 	if err != nil {
 		return fmt.Errorf("failed to get Kubernetes clusters: %w", err)
 	}
