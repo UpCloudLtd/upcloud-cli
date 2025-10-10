@@ -13,10 +13,6 @@ import (
 
 type Version string
 
-const (
-	VersionV1 Version = "v1.0.0"
-)
-
 type StarterKitConfig struct {
 	ProjectName       string
 	Zone              string
