@@ -135,108 +135,107 @@ func buildSummary(
 	var b strings.Builder
 
 	// Header
-	fmt.Fprintf(&b, "Starter Kit deployed successfully!\n\n")
+	b.WriteString("Starter Kit deployed successfully!\n\n")
 
 	// Kubernetes
-	fmt.Fprintf(&b, "KUBERNETES CLUSTER\n")
+	b.WriteString("KUBERNETES CLUSTER\n")
 	if cluster != nil {
-		fmt.Fprintf(&b, "  Name:        %s\n", cluster.Name)
-		fmt.Fprintf(&b, "  UUID:        %s\n", cluster.UUID)
-		fmt.Fprintf(&b, "  Zone:        %s\n", cluster.Zone)
-		fmt.Fprintf(&b, "  Network:     %s\n", cluster.Network)
+		b.WriteString(fmt.Sprintf("  Name:        %s\n", cluster.Name))
+		b.WriteString(fmt.Sprintf("  UUID:        %s\n", cluster.UUID))
+		b.WriteString(fmt.Sprintf("  Zone:        %s\n", cluster.Zone))
+		b.WriteString(fmt.Sprintf("  Network:     %s\n", cluster.Network))
 		if kubeconfigPath != "" {
-			fmt.Fprintf(&b, "  Kubeconfig:  %s\n", kubeconfigPath)
-			fmt.Fprintf(&b, "  Set env:     export KUBECONFIG=%s\n", kubeconfigPath)
-			fmt.Fprintf(&b, "  Test:        kubectl get nodes\n")
-			fmt.Fprintf(&b, "  Ingress LB:  kubectl -n ingress-nginx get svc ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].hostname}{\"\\n\"}'\n")
+			b.WriteString(fmt.Sprintf("  Kubeconfig:  %s\n", kubeconfigPath))
+			b.WriteString(fmt.Sprintf("  Set env:     export KUBECONFIG=%s\n", kubeconfigPath))
+			b.WriteString("  Test:        kubectl get nodes\n")
+			b.WriteString("  Ingress LB:  kubectl -n ingress-nginx get svc ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].hostname}{\"\\n\"}'\n")
 		}
 	}
 	b.WriteString("\n")
 
 	// Network & Router
-	fmt.Fprintf(&b, "NETWORKING\n")
+	b.WriteString("NETWORKING\n")
 	if network != nil {
-		fmt.Fprintf(&b, "  Network:     %s (UUID: %s)\n", network.Name, network.UUID)
+		b.WriteString(fmt.Sprintf("  Network:     %s (UUID: %s)\n", network.Name, network.UUID))
 		if len(network.IPNetworks) > 0 {
-			fmt.Fprintf(&b, "  CIDR:        %s\n", network.IPNetworks[0].Address)
+			b.WriteString(fmt.Sprintf("  CIDR:        %s\n", network.IPNetworks[0].Address))
 			if network.IPNetworks[0].DHCP == upcloud.True {
-				fmt.Fprintf(&b, "  DHCP:        enabled\n")
+				b.WriteString("  DHCP:        enabled\n")
 			} else {
-				fmt.Fprintf(&b, "  DHCP:        disabled\n")
+				b.WriteString("  DHCP:        disabled\n")
 			}
 		}
 	}
 	if router != nil {
-		fmt.Fprintf(&b, "  Router:      %s (UUID: %s)\n", router.Name, router.UUID)
+		b.WriteString(fmt.Sprintf("  Router:      %s (UUID: %s)\n", router.Name, router.UUID))
 	}
 	b.WriteString("\n")
 
 	// Managed Database
-	fmt.Fprintf(&b, "MANAGED DATABASE\n")
+	b.WriteString("MANAGED DATABASE\n")
 	if db != nil {
-		fmt.Fprintf(&b, "  Name:        %s (UUID: %s)\n", db.Title, db.UUID)
-		fmt.Fprintf(&b, "  Type/Plan:   %s / %s\n", db.Type, db.Plan)
-		fmt.Fprintf(&b, "  State:       %s\n", db.State)
-		// TODO: We are showing the password in clear text here. Is that ok?
-		fmt.Fprintf(&b, "  ServiceURI:  %s\n", db.ServiceURI)
+		b.WriteString(fmt.Sprintf("  Name:        %s (UUID: %s)\n", db.Title, db.UUID))
+		b.WriteString(fmt.Sprintf("  Type/Plan:   %s / %s\n", db.Type, db.Plan))
+		b.WriteString(fmt.Sprintf("  State:       %s\n", db.State))
+		b.WriteString(fmt.Sprintf("  ServiceURI:  %s\n", db.ServiceURI))
 	} else {
-		fmt.Fprintf(&b, "  (not created)\n")
+		b.WriteString("  (not created)\n")
 	}
 	b.WriteString("\n")
 
 	// Managed Object Storage
-	fmt.Fprintf(&b, "OBJECT STORAGE\n")
+	b.WriteString("OBJECT STORAGE\n")
 	if obj != nil {
-		fmt.Fprintf(&b, "  Name:        %s (UUID: %s)\n", obj.Name, obj.UUID)
-		fmt.Fprintf(&b, "  Region:      %s\n", obj.Region)
-		fmt.Fprintf(&b, "  State:       %s\n", obj.OperationalState)
+		b.WriteString(fmt.Sprintf("  Name:        %s (UUID: %s)\n", obj.Name, obj.UUID))
+		b.WriteString(fmt.Sprintf("  Region:      %s\n", obj.Region))
+		b.WriteString(fmt.Sprintf("  State:       %s\n", obj.OperationalState))
 
 		// If API provides endpoint(s)
 		if len(obj.Endpoints) > 0 {
-			fmt.Fprintf(&b, "  DomainName:  %s\n", obj.Endpoints[0].DomainName)
-			fmt.Fprintf(&b, "  Type:        %s\n", obj.Endpoints[0].Type)
-			fmt.Fprintf(&b, "  IAMURL:      %s\n", obj.Endpoints[0].IAMURL)
-			fmt.Fprintf(&b, "  STSURL:      %s\n", obj.Endpoints[0].STSURL)
+			b.WriteString(fmt.Sprintf("  DomainName:  %s\n", obj.Endpoints[0].DomainName))
+			b.WriteString(fmt.Sprintf("  Type:        %s\n", obj.Endpoints[0].Type))
+			b.WriteString(fmt.Sprintf("  IAMURL:      %s\n", obj.Endpoints[0].IAMURL))
+			b.WriteString(fmt.Sprintf("  STSURL:      %s\n", obj.Endpoints[0].STSURL))
 		}
 		// If bucket was created
 		if objBucket != "" {
-			fmt.Fprintf(&b, "  Bucket:      %s\n", objBucket)
+			b.WriteString(fmt.Sprintf("  Bucket:      %s\n", objBucket))
 		}
 		// If access key was created
 		if objAcc != nil {
-			fmt.Fprintf(&b, "  AccessKey:   %s\n", objAcc.AccessKeyID)
-			fmt.Fprintf(&b, "  SecretKey:   %s\n", *objAcc.SecretAccessKey)
+			b.WriteString(fmt.Sprintf("  AccessKey:   %s\n", objAcc.AccessKeyID))
+			b.WriteString(fmt.Sprintf("  SecretKey:   %s\n", *objAcc.SecretAccessKey))
 		}
 	} else {
-		fmt.Fprintf(&b, "  (not created)\n")
+		b.WriteString("  (not created)\n")
 	}
 	b.WriteString("\n")
 
 	// ACCESS without any Load Balancer
-	fmt.Fprintf(&b, "ACCESS (no load balancer created)\n")
-	fmt.Fprintf(&b, "  1) Local dev via port-forward (recommended for quick testing):\n")
-	fmt.Fprintf(&b, "     kubectl -n <namespace> port-forward svc/<your-service> 8080:80\n")
-	fmt.Fprintf(&b, "     # then open http://localhost:8080\n\n")
+	b.WriteString("ACCESS (no load balancer created)\n")
+	b.WriteString("  1) Local dev via port-forward (recommended for quick testing):\n")
+	b.WriteString("     kubectl -n <namespace> port-forward svc/<your-service> 8080:80\n")
+	b.WriteString("     # then open http://localhost:8080\n\n")
 
-	fmt.Fprintf(&b, "  2) NodePort (reachable inside the private network):\n")
-	fmt.Fprintf(&b, "     # switch your Service to NodePort\n")
-	fmt.Fprintf(&b, "     kubectl -n <namespace> patch svc <your-service> -p '{\"spec\":{\"type\":\"NodePort\"}}'\n")
-	fmt.Fprintf(&b, "     # find the assigned nodePort and a node's private IP\n")
-	fmt.Fprintf(&b, "     kubectl -n <namespace> get svc <your-service> -o jsonpath='{.spec.ports[0].nodePort}{\"\\n\"}'\n")
-	fmt.Fprintf(&b, "     kubectl get nodes -o wide\n")
-	fmt.Fprintf(&b, "     # then browse: http://<node-private-ip>:<nodePort>\n")
-	fmt.Fprintf(&b, "     (for external access: use a VPN/bastion into this private network)\n\n")
+	b.WriteString("  2) NodePort (reachable inside the private network):\n")
+	b.WriteString("     # switch your Service to NodePort\n")
+	b.WriteString("     kubectl -n <namespace> patch svc <your-service> -p '{\"spec\":{\"type\":\"NodePort\"}}'\n")
+	b.WriteString("     # find the assigned nodePort and a node's private IP\n")
+	b.WriteString("     kubectl -n <namespace> get svc <your-service> -o jsonpath='{.spec.ports[0].nodePort}{\"\\n\"}'\n")
+	b.WriteString("     kubectl get nodes -o wide\n")
+	b.WriteString("     # then browse: http://<node-private-ip>:<nodePort>\n")
+	b.WriteString("     (for external access: use a VPN/bastion into this private network)\n\n")
 
-	fmt.Fprintf(&b, "  3) Private-only options:\n")
-	fmt.Fprintf(&b, "     - VPN/peering to the VPC and use ClusterIP/NodePort directly\n")
-	fmt.Fprintf(&b, "     - Bastion host with SSH tunnels (e.g., ssh -L 8080:<node-ip>:<nodePort> ...)\n\n")
+	b.WriteString("  3) Private-only options:\n")
+	b.WriteString("     - VPN/peering to the VPC and use ClusterIP/NodePort directly\n")
+	b.WriteString("     - Bastion host with SSH tunnels (e.g., ssh -L 8080:<node-ip>:<nodePort> ...)\n\n")
 
 	// Final tips
-	fmt.Fprintf(&b, "NEXT STEPS\n")
+	b.WriteString("NEXT STEPS\n")
 	if kubeconfigPath != "" {
-		fmt.Fprintf(&b, "  export KUBECONFIG=%s\n", kubeconfigPath)
+		b.WriteString(fmt.Sprintf("  export KUBECONFIG=%s\n", kubeconfigPath))
 	}
-	fmt.Fprintf(&b, "  Deploy ingress-nginx and your app, then point DNS (CNAME) to the LB hostname shown above.\n")
+	b.WriteString("  Deploy ingress-nginx and your app, then point DNS (CNAME) to the LB hostname shown above.\n")
 
 	return b.String()
 }
