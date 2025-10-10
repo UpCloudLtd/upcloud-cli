@@ -116,6 +116,8 @@ func (s *deployStarterKitCommand) deploy(exec commands.Executor) (string, error)
 	var cluster *upcloud.KubernetesCluster
 	var db *upcloud.ManagedDatabase
 	var objStorage *upcloud.ManagedObjectStorage
+	var objStorageAccessKey *upcloud.ManagedObjectStorageUserAccessKey
+	var objStorageBucket string
 	var kubeconfigPath string
 
 	// Create kubernetes cluster
@@ -138,7 +140,7 @@ func (s *deployStarterKitCommand) deploy(exec commands.Executor) (string, error)
 
 	// Create object storage
 	eg.Go(func() error {
-		objStorage, err = createObjectStorage(ctx, exec, config, network)
+		objStorage, objStorageAccessKey, objStorageBucket, err = createObjectStorage(ctx, exec, config, network)
 		if err != nil {
 			return fmt.Errorf("failed to create object storage: %w", err)
 		}
@@ -192,5 +194,5 @@ func (s *deployStarterKitCommand) deploy(exec commands.Executor) (string, error)
 	exec.PushProgressSuccess(msg)
 
 	// Create summary and return
-	return buildSummary(cluster, kubeconfigPath, network, router, db, objStorage), nil
+	return buildSummary(cluster, kubeconfigPath, network, router, db, objStorage, objStorageAccessKey, objStorageBucket), nil
 }

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- starter-kit stack to create also bucket and user for managed object storage
+
 ## [3.24.0] - 2025-10-01
 
 ### Added

@@ -133,6 +133,8 @@ func buildSummary(
 	router *upcloud.Router,
 	db *upcloud.ManagedDatabase,
 	obj *upcloud.ManagedObjectStorage,
+	objAcc *upcloud.ManagedObjectStorageUserAccessKey,
+	objBucket string,
 ) string {
 	var b strings.Builder
 
@@ -180,7 +182,7 @@ func buildSummary(
 		fmt.Fprintf(&b, "  Type/Plan:   %s / %s\n", db.Type, db.Plan)
 		fmt.Fprintf(&b, "  State:       %s\n", db.State)
 		// TODO: We are showing the password in clear text here. Is that ok?
-		fmt.Fprintf(&b, "  ServiceURI :        %s\n", db.ServiceURI)
+		fmt.Fprintf(&b, "  ServiceURI:  %s\n", db.ServiceURI)
 	} else {
 		fmt.Fprintf(&b, "  (not created)\n")
 	}
@@ -191,14 +193,23 @@ func buildSummary(
 	if obj != nil {
 		fmt.Fprintf(&b, "  Name:        %s (UUID: %s)\n", obj.Name, obj.UUID)
 		fmt.Fprintf(&b, "  Region:      %s\n", obj.Region)
-		fmt.Fprintf(&b, "  State:      %s\n", obj.OperationalState)
+		fmt.Fprintf(&b, "  State:       %s\n", obj.OperationalState)
 
 		// If API provides endpoint(s)
 		if len(obj.Endpoints) > 0 {
-			fmt.Fprintf(&b, "  DomainName:    %s\n", obj.Endpoints[0].DomainName)
-			fmt.Fprintf(&b, "  Type:    %s\n", obj.Endpoints[0].Type)
-			fmt.Fprintf(&b, "  IAMURL:    %s\n", obj.Endpoints[0].IAMURL)
-			fmt.Fprintf(&b, "  STSURL:    %s\n", obj.Endpoints[0].STSURL)
+			fmt.Fprintf(&b, "  DomainName:  %s\n", obj.Endpoints[0].DomainName)
+			fmt.Fprintf(&b, "  Type:        %s\n", obj.Endpoints[0].Type)
+			fmt.Fprintf(&b, "  IAMURL:      %s\n", obj.Endpoints[0].IAMURL)
+			fmt.Fprintf(&b, "  STSURL:      %s\n", obj.Endpoints[0].STSURL)
+		}
+		// If bucket was created
+		if objBucket != "" {
+			fmt.Fprintf(&b, "  Bucket:      %s\n", objBucket)
+		}
+		// If access key was created
+		if objAcc != nil {
+			fmt.Fprintf(&b, "  AccessKey:   %s\n", objAcc.AccessKeyID)
+			fmt.Fprintf(&b, "  SecretKey:   %s\n", *objAcc.SecretAccessKey)
 		}
 	} else {
 		fmt.Fprintf(&b, "  (not created)\n")
@@ -298,11 +309,11 @@ func createDatabase(ctx context.Context, exec commands.Executor, config *Starter
 	return db, nil
 }
 
-func createObjectStorage(ctx context.Context, exec commands.Executor, config *StarterKitConfig, network *upcloud.Network) (*upcloud.ManagedObjectStorage, error) {
+func createObjectStorage(ctx context.Context, exec commands.Executor, config *StarterKitConfig, network *upcloud.Network) (*upcloud.ManagedObjectStorage, *upcloud.ManagedObjectStorageUserAccessKey, string, error) {
 	exec.PushProgressStarted("Deploying Object Storage")
 	region, err := stack.GetObjectStorageRegionFromZone(exec, config.Zone)
 	if err != nil {
-		return nil, fmt.Errorf("failed to validate object storage region from zone %q: %w, contact support because you might be using a new zone not supported by the deploy command", config.Zone, err)
+		return nil, nil, "", fmt.Errorf("failed to validate object storage region from zone %q: %w, contact support because you might be using a new zone not supported by the deploy command", config.Zone, err)
 	}
 
 	objStorage, err := exec.All().CreateManagedObjectStorage(ctx, &request.CreateManagedObjectStorageRequest{
@@ -325,8 +336,54 @@ func createObjectStorage(ctx context.Context, exec commands.Executor, config *St
 		},
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to create object storage: %w", err)
+		return nil, nil, "", fmt.Errorf("failed to create object storage: %w", err)
 	}
 	exec.PushProgressSuccess("Deploying Object Storage")
-	return objStorage, nil
+
+	objStorage, err = exec.All().WaitForManagedObjectStorageOperationalState(exec.Context(), &request.WaitForManagedObjectStorageOperationalStateRequest{
+		DesiredState: upcloud.ManagedObjectStorageOperationalStateRunning,
+		UUID:         objStorage.UUID,
+	})
+	if err != nil {
+		return nil, nil, "", fmt.Errorf("error while waiting for the object storage to become online: %w", err)
+	}
+
+	// Create user for the object storage
+	user, err := exec.All().CreateManagedObjectStorageUser(exec.Context(), &request.CreateManagedObjectStorageUserRequest{
+		Username:    "starter-kit-user",
+		ServiceUUID: objStorage.UUID,
+	})
+	if err != nil {
+		return nil, nil, "", fmt.Errorf("failed to create user for the object storage: %w", err)
+	}
+
+	err = exec.All().AttachManagedObjectStorageUserPolicy(exec.Context(), &request.AttachManagedObjectStorageUserPolicyRequest{
+		ServiceUUID: objStorage.UUID,
+		Username:    user.Username,
+		Name:        "ECSS3FullAccess",
+	})
+	if err != nil {
+		return nil, nil, "", fmt.Errorf("failed to attach user policy to object storage: %w", err)
+	}
+
+	// Create an access key for the object storage
+	userAccessKey, err := exec.All().CreateManagedObjectStorageUserAccessKey(exec.Context(), &request.CreateManagedObjectStorageUserAccessKeyRequest{
+		Username:    user.Username,
+		ServiceUUID: objStorage.UUID,
+	})
+	if err != nil {
+		return nil, nil, "", fmt.Errorf("failed to create access key for the object storage: %w", err)
+	}
+
+	// Create a bucket for the object storage
+	bucketName := "starter-kit-storage"
+	_, err = exec.All().CreateManagedObjectStorageBucket(exec.Context(), &request.CreateManagedObjectStorageBucketRequest{
+		Name:        bucketName,
+		ServiceUUID: objStorage.UUID,
+	})
+	if err != nil {
+		return nil, nil, "", fmt.Errorf("failed to create bucket for the object storage: %w", err)
+	}
+
+	return objStorage, userAccessKey, bucketName, nil
 }
