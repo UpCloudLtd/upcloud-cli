@@ -38,9 +38,11 @@ const (
 	SupportEmail    string  = "support@upcloud.com"
 )
 
-type SupabaseResourceRootName string
-type DokkuResourceRootName string
-type StarterKitResourceRootName string
+type (
+	SupabaseResourceRootName   string
+	DokkuResourceRootName      string
+	StarterKitResourceRootName string
+)
 
 var (
 	SupabaseResourceRootNameCluster      SupabaseResourceRootName   = SupabaseResourceRootName(fmt.Sprintf("stack-%s-cluster", StackTypeSupabase))
