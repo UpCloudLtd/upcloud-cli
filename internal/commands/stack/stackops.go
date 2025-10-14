@@ -286,7 +286,10 @@ func DestroyStack(exec commands.Executor, name, zone string, deleteStorage, dele
 		msg = fmt.Sprintf("Deleting namespace: %s", clusterName)
 		exec.PushProgressStarted(msg)
 
-		kubeClient.CoreV1().Namespaces().Delete(exec.Context(), clusterName, v1.DeleteOptions{})
+		err = kubeClient.CoreV1().Namespaces().Delete(exec.Context(), clusterName, v1.DeleteOptions{})
+		if err != nil {
+			return fmt.Errorf("failed to delete namespace: %w", err)
+		}
 
 		// Wait until namespace is deleted
 		err = WaitForNamespaceDeletion(exec.Context(), kubeClient, clusterName, 10*time.Minute)
