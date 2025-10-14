@@ -76,7 +76,6 @@ func (c *StarterKitConfig) Validate(exec commands.Executor) error {
 	}
 	// Check if a kubernetes cluster with the name clusterName already exists
 	clusters, err := exec.All().GetKubernetesClusters(exec.Context(), &request.GetKubernetesClustersRequest{})
-
 	if err != nil {
 		return fmt.Errorf("failed to get Kubernetes clusters: %w", err)
 	}
