@@ -361,6 +361,12 @@ func DeletePVCVolumesByUUIDs(exec commands.Executor, uuids []string) error {
 		deleteMsg := fmt.Sprintf("Deleting UpCloud storage %s", storageUUID)
 		exec.PushProgressStarted(deleteMsg)
 
+		// Wait for the storage to be detached (in case the PVC was recently deleted)
+		if err := waitForStorageToBeDetached(exec, storageUUID, 5*time.Minute); err != nil {
+			exec.PushProgressUpdateMessage(fmt.Sprintf("storage %s", storageUUID), fmt.Sprintf("waiting failed: %v", err))
+			continue
+		}
+
 		req := &request.DeleteStorageRequest{UUID: storageUUID}
 		if err := exec.All().DeleteStorage(exec.Context(), req); err != nil {
 			exec.PushProgressStarted(fmt.Sprintf("Failed to delete UpCloud storage %s: %v", storageUUID, err))

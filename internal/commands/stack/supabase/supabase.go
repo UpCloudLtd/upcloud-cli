@@ -133,7 +133,7 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 	if shouldCreateObjectStorage(config) {
 		objStorageMsg := "Generating object storage for Supabase stack deployment"
 		exec.PushProgressStarted(objStorageMsg)
-		objStorageName := fmt.Sprintf("stack-supabase-os-%s-%s", s.name, s.zone)
+		objStorageName := fmt.Sprintf("%s-%s-%s", stack.SupabaseResourceRootNameObjStorage, s.name, s.zone)
 		objStorageRegion, err := stack.GetObjectStorageRegionFromZone(exec, s.zone)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get object storage region from zone: %w", err)

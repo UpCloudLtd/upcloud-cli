@@ -16,8 +16,10 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/all"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/kubernetes"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/network"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/objectstorage"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	"golang.org/x/sync/errgroup"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -43,6 +45,7 @@ type StarterKitResourceRootName string
 var (
 	SupabaseResourceRootNameCluster      SupabaseResourceRootName   = SupabaseResourceRootName(fmt.Sprintf("stack-%s-cluster", StackTypeSupabase))
 	SupabaseResourceRootNameNetwork      SupabaseResourceRootName   = SupabaseResourceRootName(fmt.Sprintf("stack-%s-net", StackTypeSupabase))
+	SupabaseResourceRootNameObjStorage   SupabaseResourceRootName   = SupabaseResourceRootName(fmt.Sprintf("stack-%s-os", StackTypeSupabase))
 	DokkuResourceRootNameCluster         DokkuResourceRootName      = DokkuResourceRootName(fmt.Sprintf("stack-%s-cluster", StackTypeDokku))
 	DokkuResourceRootNameNetwork         DokkuResourceRootName      = DokkuResourceRootName(fmt.Sprintf("stack-%s-net", StackTypeDokku))
 	StarterKitResourceRootNameCluster    StarterKitResourceRootName = StarterKitResourceRootName(fmt.Sprintf("stack-%s-cluster", StackTypeStarterKit))
@@ -212,8 +215,6 @@ func DestroyStack(exec commands.Executor, name, zone string, deleteStorage, dele
 		var cluster *upcloud.KubernetesCluster
 		for _, cl := range clusters {
 			if cl.Name == clusterName {
-				msg := fmt.Sprintf("Deleting Kubernetes cluster %s in zone %s", clusterName, zone)
-				exec.PushProgressStarted(msg)
 				cluster = &cl
 				break
 			}
@@ -271,7 +272,7 @@ func DestroyStack(exec commands.Executor, name, zone string, deleteStorage, dele
 
 		exec.PushProgressSuccess(msg)
 
-		if deleteStorage && len(uuids) == 0 {
+		if deleteStorage && len(uuids) > 0 {
 			msg = fmt.Sprintln("Deleting PVC volumes")
 			exec.PushProgressStarted(msg)
 
@@ -295,22 +296,24 @@ func DestroyStack(exec commands.Executor, name, zone string, deleteStorage, dele
 
 		exec.PushProgressSuccess(msg)
 
-		msg = fmt.Sprintf("Deleting Kubernetes cluster %s in zone %s", clusterName, zone)
-		exec.PushProgressStarted(msg)
+		g, _ := errgroup.WithContext(exec.Context())
+		g.Go(func() error {
+			msg = fmt.Sprintf("Deleting Kubernetes cluster %s in zone %s", clusterName, zone)
+			exec.PushProgressStarted(msg)
 
-		_, err = kubernetes.Delete(exec, cluster.UUID, true)
-		if err != nil {
-			return fmt.Errorf("failed to delete kubernetes cluster: %w", err)
-		}
+			_, err = kubernetes.Delete(exec, cluster.UUID, true)
+			if err != nil {
+				return fmt.Errorf("failed to delete kubernetes cluster: %w", err)
+			}
 
-		exec.PushProgressSuccess(msg)
+			exec.PushProgressSuccess(msg)
+			return nil
+		})
 
 		// Delete the object storage if it exists
-		/*
-			if deleteObjectStorage {
-				objectStorageName := fmt.Sprintf("%s-%s-%s", SupabaseResourceRootNameCluster, name, zone)
-				msg = fmt.Sprintf("Searching object storage %s in zone %s", objectStorageName, zone)
-				exec.PushProgressStarted(msg)
+		if deleteObjectStorage {
+			g.Go(func() error {
+				objectStorageName := fmt.Sprintf("%s-%s-%s", SupabaseResourceRootNameObjStorage, name, zone)
 
 				storages, err := exec.All().GetManagedObjectStorages(exec.Context(), &request.GetManagedObjectStoragesRequest{})
 				if err != nil {
@@ -321,27 +324,26 @@ func DestroyStack(exec commands.Executor, name, zone string, deleteStorage, dele
 				for _, sto := range storages {
 					if sto.Name == objectStorageName {
 						storageUUID = sto.UUID
-						msg := fmt.Sprintf("Deleting object storage %s in zone %s", objectStorageName, zone)
-						exec.PushProgressStarted(msg)
 						break
 					}
 				}
 
 				if storageUUID != "" {
-					err = exec.All().DeleteManagedObjectStorage(exec.Context(), &request.DeleteManagedObjectStorageRequest{
-						UUID: storageUUID,
-					})
+					_, err = objectstorage.Delete(exec, storageUUID, true, true, true, true)
 					if err != nil {
 						return fmt.Errorf("failed to delete object storage: %w", err)
 					}
-
-					WaitForManagedObjectStorageState(storageUUID, upcloud.ManagedObjectStorageOperationalStateDeleted, exec, msg)
 				} else {
 					exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Object storage %s not found, skipping deletion", objectStorageName))
-					exec.PushProgressSuccess(msg)
 				}
-			}
-		*/
+
+				return nil
+			})
+		}
+
+		if err := g.Wait(); err != nil {
+			return err
+		}
 
 		msg = fmt.Sprintf("Deleting network %s in zone %s", clusterName, zone)
 		exec.PushProgressStarted(msg)
@@ -398,4 +400,28 @@ func DestroyStack(exec commands.Executor, name, zone string, deleteStorage, dele
 		return fmt.Errorf("unsupported stack type: %s", stackType)
 	}
 	return nil
+}
+
+func waitForStorageToBeDetached(exec commands.Executor, storageUUID string, timeout time.Duration) error {
+	start := time.Now()
+	for {
+		storage, err := exec.All().GetStorageDetails(exec.Context(), &request.GetStorageDetailsRequest{UUID: storageUUID})
+		if err != nil {
+			return fmt.Errorf("get storage details: %w", err)
+		}
+
+		// UpCloud storages can only be deleted when detached and in 'online' state
+		if storage.State == upcloud.StorageStateOnline && len(storage.ServerUUIDs) == 0 {
+			return nil
+		}
+
+		if time.Since(start) > timeout {
+			return fmt.Errorf(
+				"timeout waiting for storage %s to become deletable (state=%s, servers=%v)",
+				storageUUID, storage.State, storage.ServerUUIDs,
+			)
+		}
+
+		time.Sleep(5 * time.Second)
+	}
 }
