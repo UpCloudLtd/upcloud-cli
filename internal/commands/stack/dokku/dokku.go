@@ -26,7 +26,6 @@ func (s *deployDokkuCommand) deploy(exec commands.Executor, configDir string) er
 
 	// Check if the cluster already exists
 	clusters, err := exec.All().GetKubernetesClusters(exec.Context(), &request.GetKubernetesClustersRequest{})
-
 	if err != nil {
 		return fmt.Errorf("failed to get Kubernetes clusters: %w", err)
 	}

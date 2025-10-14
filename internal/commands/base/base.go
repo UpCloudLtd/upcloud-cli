@@ -292,7 +292,6 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	commands.BuildCommand(starterkit.DeployStarterKitCommand(), stackDeployCommand.Cobra(), conf)
 	commands.BuildCommand(supabase.DestroySupabaseCommand(), stackDestroyCommand.Cobra(), conf)
 	commands.BuildCommand(dokku.DestroyDokkuCommand(), stackDestroyCommand.Cobra(), conf)
-	//commands.BuildCommand(starterkit.DestroyStarterKitCommand(), stackDestroyCommand.Cobra(), conf)
 
 	// Misc
 	commands.BuildCommand(

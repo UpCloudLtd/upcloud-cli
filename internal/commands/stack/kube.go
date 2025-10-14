@@ -16,7 +16,6 @@ import (
 	"k8s.io/apimachinery/pkg/api/errors"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -288,7 +287,7 @@ func CollectPVCVolumeUUIDs(ctx context.Context, exec commands.Executor, kubeClie
 	var uuids []string
 
 	// List PVCs in the namespace
-	pvcs, err := kubeClient.CoreV1().PersistentVolumeClaims(namespace).List(ctx, metav1.ListOptions{})
+	pvcs, err := kubeClient.CoreV1().PersistentVolumeClaims(namespace).List(ctx, v1.ListOptions{})
 	if err != nil {
 		return nil, fmt.Errorf("listing PVCs in namespace %q: %w", namespace, err)
 	}
@@ -306,7 +305,7 @@ func CollectPVCVolumeUUIDs(ctx context.Context, exec commands.Executor, kubeClie
 	exec.PushProgressSuccess(msg)
 
 	// List PVs once
-	pvs, err := kubeClient.CoreV1().PersistentVolumes().List(ctx, metav1.ListOptions{})
+	pvs, err := kubeClient.CoreV1().PersistentVolumes().List(ctx, v1.ListOptions{})
 	if err != nil {
 		return nil, fmt.Errorf("listing PVs: %w", err)
 	}
