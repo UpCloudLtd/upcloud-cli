@@ -30,8 +30,8 @@ func (s *destroySupabaseCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.zone, "zone", s.zone, "Zone for the stack deployment")
 	fs.StringVar(&s.name, "name", s.name, "Supabase stack name")
-	fs.BoolVar(&s.deleteStorage, "delete-storage", true, "Delete associated UpCloud storage resources")
-	fs.BoolVar(&s.deleteObjectStorage, "delete-object-storage", true, "Delete associated UpCloud object storage resources")
+	fs.BoolVar(&s.deleteStorage, "delete-storage", false, "Delete associated UpCloud storage resources")
+	fs.BoolVar(&s.deleteObjectStorage, "delete-object-storage", false, "Delete associated UpCloud object storage resources")
 	s.AddFlags(fs)
 
 	commands.Must(s.Cobra().MarkFlagRequired("zone"))
