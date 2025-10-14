@@ -13,7 +13,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 	"helm.sh/helm/v3/pkg/cli"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -391,7 +390,7 @@ func WaitForNamespaceDeletion(ctx context.Context, kubeClient *kubernetes.Client
 		case <-ticker.C:
 			_, err := kubeClient.CoreV1().Namespaces().Get(ctx, name, v1.GetOptions{})
 			if err != nil {
-				if errors.IsNotFound(err) {
+				if apierrors.IsNotFound(err) {
 					// Namespace gone
 					return nil
 				}
