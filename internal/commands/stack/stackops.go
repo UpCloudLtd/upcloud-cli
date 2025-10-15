@@ -347,8 +347,6 @@ func DestroyStack(exec commands.Executor, name, zone string, deleteStorage, dele
 				objStorageNetworks, err := exec.All().GetManagedObjectStorageNetworks(exec.Context(), &request.GetManagedObjectStorageNetworksRequest{
 					ServiceUUID: storageUUID,
 				})
-
-				// Print networks
 				if err != nil {
 					return fmt.Errorf("failed to get object storage networks: %w", err)
 				}
@@ -368,7 +366,6 @@ func DestroyStack(exec commands.Executor, name, zone string, deleteStorage, dele
 					}
 				}
 			}
-
 			return nil
 		})
 
