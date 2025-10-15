@@ -279,3 +279,124 @@ func WriteKubeconfigToFile(exec commands.Executor, clusterID string, configDir s
 
 	return kubeconfigPath, nil
 }
+
+// CollectPVCVolumeUUIDs collects the UUIDs of any UpCloud storage volumes that were provisioned
+// by PVCs in the given namespace (typically the Helm release namespace).
+func CollectPVCVolumeUUIDs(ctx context.Context, exec commands.Executor, kubeClient *kubernetes.Clientset, namespace string) ([]string, error) {
+	var uuids []string
+
+	// List PVCs in the namespace
+	pvcs, err := kubeClient.CoreV1().PersistentVolumeClaims(namespace).List(ctx, v1.ListOptions{})
+	if err != nil {
+		return nil, fmt.Errorf("listing PVCs in namespace %q: %w", namespace, err)
+	}
+
+	if len(pvcs.Items) == 0 {
+		msg := fmt.Sprintf("No PVCs found in namespace %q", namespace)
+		exec.PushProgressStarted(msg)
+		exec.PushProgressSuccess(msg)
+		return nil, nil
+	}
+
+	// Announce PVC check
+	msg := fmt.Sprintf("Checking %d PVC(s) in namespace %q for backing volumes", len(pvcs.Items), namespace)
+	exec.PushProgressStarted(msg)
+	exec.PushProgressSuccess(msg)
+
+	// List PVs once
+	pvs, err := kubeClient.CoreV1().PersistentVolumes().List(ctx, v1.ListOptions{})
+	if err != nil {
+		return nil, fmt.Errorf("listing PVs: %w", err)
+	}
+
+	// Iterate over PVCs belonging to this namespace
+	for _, pvc := range pvcs.Items {
+		pvcMsg := fmt.Sprintf("PVC %s/%s", namespace, pvc.Name)
+		exec.PushProgressStarted(pvcMsg)
+
+		if pvc.Spec.VolumeName == "" {
+			exec.PushProgressStarted(fmt.Sprintf("%s → no bound PV, skipping", pvcMsg))
+			exec.PushProgressSuccess(fmt.Sprintf("%s → no bound PV, skipping", pvcMsg))
+			continue
+		}
+
+		// Find the matching PV
+		var matchedPV *corev1.PersistentVolume
+		for _, pv := range pvs.Items {
+			if pv.Name == pvc.Spec.VolumeName {
+				matchedPV = &pv
+				break
+			}
+		}
+		if matchedPV == nil {
+			exec.PushProgressStarted(fmt.Sprintf("%s → bound PV %q not found, skipping", pvcMsg, pvc.Spec.VolumeName))
+			exec.PushProgressSuccess(fmt.Sprintf("%s → bound PV %q not found, skipping", pvcMsg, pvc.Spec.VolumeName))
+			continue
+		}
+
+		if matchedPV.Spec.CSI == nil {
+			exec.PushProgressStarted(fmt.Sprintf("%s → PV %q has no CSI spec, skipping", pvcMsg, matchedPV.Name))
+			exec.PushProgressSuccess(fmt.Sprintf("%s → PV %q has no CSI spec, skipping", pvcMsg, matchedPV.Name))
+			continue
+		}
+
+		storageUUID := matchedPV.Spec.CSI.VolumeHandle
+		if storageUUID == "" {
+			exec.PushProgressStarted(fmt.Sprintf("%s → PV %q has empty VolumeHandle, skipping", pvcMsg, matchedPV.Name))
+			exec.PushProgressSuccess(fmt.Sprintf("%s → PV %q has empty VolumeHandle, skipping", pvcMsg, matchedPV.Name))
+			continue
+		}
+
+		uuids = append(uuids, storageUUID)
+		exec.PushProgressSuccess(pvcMsg)
+	}
+
+	return uuids, nil
+}
+
+func DeletePVCVolumesByUUIDs(exec commands.Executor, uuids []string) error {
+	for _, storageUUID := range uuids {
+		deleteMsg := fmt.Sprintf("Deleting UpCloud storage %s", storageUUID)
+		exec.PushProgressStarted(deleteMsg)
+
+		// Wait for the storage to be detached (in case the PVC was recently deleted)
+		if err := waitForStorageToBeDetached(exec, storageUUID, 5*time.Minute); err != nil {
+			exec.PushProgressUpdateMessage(fmt.Sprintf("storage %s", storageUUID), fmt.Sprintf("waiting failed: %v", err))
+			continue
+		}
+
+		req := &request.DeleteStorageRequest{UUID: storageUUID}
+		if err := exec.All().DeleteStorage(exec.Context(), req); err != nil {
+			exec.PushProgressStarted(fmt.Sprintf("Failed to delete UpCloud storage %s: %v", storageUUID, err))
+			exec.PushProgressSuccess(fmt.Sprintf("Failed to delete UpCloud storage %s: %v", storageUUID, err))
+			continue
+		}
+
+		exec.PushProgressSuccess(deleteMsg)
+	}
+	return nil
+}
+
+// WaitForNamespaceDeletion waits until the given namespace is deleted, or times out after the specified duration.
+func WaitForNamespaceDeletion(ctx context.Context, kubeClient *kubernetes.Clientset, name string, timeout time.Duration) error {
+	ticker := time.NewTicker(2 * time.Second)
+	defer ticker.Stop()
+	timeoutCh := time.After(timeout)
+
+	for {
+		select {
+		case <-timeoutCh:
+			return fmt.Errorf("namespace %q not deleted within %s", name, timeout)
+		case <-ticker.C:
+			_, err := kubeClient.CoreV1().Namespaces().Get(ctx, name, v1.GetOptions{})
+			if err != nil {
+				if apierrors.IsNotFound(err) {
+					// Namespace gone
+					return nil
+				}
+				return fmt.Errorf("error checking namespace %q: %w", name, err)
+			}
+			// still exists, keep waiting
+		}
+	}
+}

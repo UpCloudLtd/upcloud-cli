@@ -21,8 +21,8 @@ const (
 )
 
 func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) (*SupabaseConfig, error) {
-	clusterName := fmt.Sprintf("stack-supabase-cluster-%s-%s", s.name, s.zone)
-	networkName := fmt.Sprintf("stack-supabase-net-%s-%s", s.name, s.zone)
+	clusterName := fmt.Sprintf("%s-%s-%s", stack.SupabaseResourceRootNameCluster, s.name, s.zone)
+	networkName := fmt.Sprintf("%s-%s-%s", stack.SupabaseResourceRootNameNetwork, s.name, s.zone)
 	var network *upcloud.Network
 
 	msg := "Generating configuration files for Supabase stack deployment"
@@ -133,7 +133,7 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 	if shouldCreateObjectStorage(config) {
 		objStorageMsg := "Generating object storage for Supabase stack deployment"
 		exec.PushProgressStarted(objStorageMsg)
-		objStorageName := fmt.Sprintf("stack-supabase-os-%s-%s", s.name, s.zone)
+		objStorageName := fmt.Sprintf("%s-%s-%s", stack.SupabaseResourceRootNameObjStorage, s.name, s.zone)
 		objStorageRegion, err := stack.GetObjectStorageRegionFromZone(exec, s.zone)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get object storage region from zone: %w", err)
