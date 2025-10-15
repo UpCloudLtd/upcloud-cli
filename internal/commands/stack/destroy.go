@@ -9,7 +9,7 @@ func DestroyCommand() commands.Command {
 			"destroy",
 			"Destroy a stack (EXPERIMENTAL)",
 			"upctl stack destroy <stack-name>",
-			"upctl stack destroy (supabase|dokku|starterkit)",
+			"upctl stack destroy (supabase|dokku|starter-kit)",
 		),
 	}
 }

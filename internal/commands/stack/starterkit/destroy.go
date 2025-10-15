@@ -10,10 +10,10 @@ import (
 func DestroyStarterKitCommand() commands.Command {
 	return &destroyStarterKitCommand{
 		BaseCommand: commands.New(
-			"starterkit",
+			"starter-kit",
 			"Destroy a Starter Kit stack",
-			"upctl stack destroy starterkit --name <project-name> --zone <zone-name>",
-			"upctl stack destroy starterkit --name my-new-project --zone es-mad1",
+			"upctl stack destroy starter-kit --name <project-name> --zone <zone-name>",
+			"upctl stack destroy starter-kit --name my-new-project --zone es-mad1",
 		),
 	}
 }
