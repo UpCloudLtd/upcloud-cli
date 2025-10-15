@@ -316,35 +316,56 @@ func DestroyStack(exec commands.Executor, name, zone string, deleteStorage, dele
 		})
 
 		// Delete the object storage if it exists
-		if deleteObjectStorage {
-			g.Go(func() error {
-				objectStorageName := fmt.Sprintf("%s-%s-%s", SupabaseResourceRootNameObjStorage, name, zone)
+		g.Go(func() error {
+			objectStorageName := fmt.Sprintf("%s-%s-%s", SupabaseResourceRootNameObjStorage, name, zone)
+			storages, err := exec.All().GetManagedObjectStorages(exec.Context(), &request.GetManagedObjectStoragesRequest{})
+			if err != nil {
+				return fmt.Errorf("failed to get object storages: %w", err)
+			}
 
-				storages, err := exec.All().GetManagedObjectStorages(exec.Context(), &request.GetManagedObjectStoragesRequest{})
-				if err != nil {
-					return fmt.Errorf("failed to get object storages: %w", err)
+			var storageUUID string
+			for _, sto := range storages {
+				if sto.Name == objectStorageName {
+					storageUUID = sto.UUID
+					break
 				}
+			}
 
-				var storageUUID string
-				for _, sto := range storages {
-					if sto.Name == objectStorageName {
-						storageUUID = sto.UUID
-						break
-					}
-				}
-
-				if storageUUID != "" {
-					_, err = objectstorage.Delete(exec, storageUUID, true, true, true, true)
-					if err != nil {
-						return fmt.Errorf("failed to delete object storage: %w", err)
-					}
-				} else {
-					exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Object storage %s not found, skipping deletion", objectStorageName))
-				}
-
+			if storageUUID == "" {
+				exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Object storage %s not found, skipping deletion", objectStorageName))
 				return nil
-			})
-		}
+			}
+
+			if deleteObjectStorage {
+				_, err = objectstorage.Delete(exec, storageUUID, true, true, true, true)
+				if err != nil {
+					return fmt.Errorf("failed to delete object storage: %w", err)
+				}
+			} else {
+				exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Detaching Object Storage %s from network", objectStorageName))
+				objStorageNetworks, err := exec.All().GetManagedObjectStorageNetworks(exec.Context(), &request.GetManagedObjectStorageNetworksRequest{
+					ServiceUUID: storageUUID,
+				})
+				if err != nil {
+					return fmt.Errorf("failed to get object storage networks: %w", err)
+				}
+
+				for _, n := range objStorageNetworks {
+					if n.UUID != nil {
+						exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Detaching network %s with UUID: %s from object storage %s", n.Name, *n.UUID, objectStorageName))
+						err = exec.All().DeleteManagedObjectStorageNetwork(exec.Context(), &request.DeleteManagedObjectStorageNetworkRequest{
+							ServiceUUID: storageUUID,
+							NetworkName: n.Name,
+						})
+						if err != nil {
+							msg = "failed to delete object storage network"
+							return fmt.Errorf("failed to delete object storage networks: %w", err)
+						}
+					}
+				}
+			}
+			return nil
+		})
 
 		if err := g.Wait(); err != nil {
 			return err
@@ -392,7 +413,7 @@ func DestroyStack(exec commands.Executor, name, zone string, deleteStorage, dele
 		dbName := fmt.Sprintf("%s-%s-%s", StarterKitResourceRootNameDatabase, name, zone)
 		routerName := fmt.Sprintf("%s-%s-%s", StarterKitResourceRootNameRouter, name, zone)
 
-		resources, err := all.ListResources(exec, []string{clusterName, networkName, objectStorageName, dbName, routerName}, []string{})
+		resources, err := all.ListResources(exec, []string{clusterName, objectStorageName, dbName, routerName, networkName}, []string{})
 		if err != nil {
 			return err
 		}
