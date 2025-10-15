@@ -1,0 +1,49 @@
+package starterkit
+
+import (
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/stack"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
+	"github.com/spf13/pflag"
+)
+
+func DestroyStarterKitCommand() commands.Command {
+	return &destroyStarterKitCommand{
+		BaseCommand: commands.New(
+			"starterkit",
+			"Destroy a Starter Kit stack",
+			"upctl stack destroy starterkit --name <project-name> --zone <zone-name>",
+			"upctl stack destroy starterkit --name my-new-project --zone es-mad1",
+		),
+	}
+}
+
+type destroyStarterKitCommand struct {
+	*commands.BaseCommand
+	zone                string
+	name                string
+	deleteStorage       bool
+	deleteObjectStorage bool
+}
+
+func (s *destroyStarterKitCommand) InitCommand() {
+	fs := &pflag.FlagSet{}
+	fs.StringVar(&s.zone, "zone", s.zone, "Zone for the stack deployment")
+	fs.StringVar(&s.name, "name", s.name, "Supabase stack name")
+	fs.BoolVar(&s.deleteStorage, "delete-storage", true, "Delete associated UpCloud storage resources")
+	fs.BoolVar(&s.deleteObjectStorage, "delete-object-storage", true, "Delete associated UpCloud object storage resources")
+	s.AddFlags(fs)
+
+	commands.Must(s.Cobra().MarkFlagRequired("zone"))
+	commands.Must(s.Cobra().MarkFlagRequired("name"))
+}
+
+// ExecuteWithoutArguments implements commands.NoArgumentCommand
+func (c *destroyStarterKitCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
+	err := stack.DestroyStack(exec, c.name, c.zone, c.deleteStorage, c.deleteObjectStorage, stack.StackTypeStarterKit)
+	if err != nil {
+		return nil, err
+	}
+
+	return output.None{}, nil
+}
