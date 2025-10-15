@@ -341,26 +341,27 @@ func DestroyStack(exec commands.Executor, name, zone string, deleteStorage, dele
 				if err != nil {
 					return fmt.Errorf("failed to delete object storage: %w", err)
 				}
-			} else {
-				exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Detaching Object Storage %s from network", objectStorageName))
-				objStorageNetworks, err := exec.All().GetManagedObjectStorageNetworks(exec.Context(), &request.GetManagedObjectStorageNetworksRequest{
-					ServiceUUID: storageUUID,
-				})
-				if err != nil {
-					return fmt.Errorf("failed to get object storage networks: %w", err)
-				}
+				return nil
+			}
 
-				for _, n := range objStorageNetworks {
-					if n.UUID != nil {
-						exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Detaching network %s with UUID: %s from object storage %s", n.Name, *n.UUID, objectStorageName))
-						err = exec.All().DeleteManagedObjectStorageNetwork(exec.Context(), &request.DeleteManagedObjectStorageNetworkRequest{
-							ServiceUUID: storageUUID,
-							NetworkName: n.Name,
-						})
-						if err != nil {
-							msg = "failed to delete object storage network"
-							return fmt.Errorf("failed to delete object storage networks: %w", err)
-						}
+			exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Detaching Object Storage %s from network", objectStorageName))
+			objStorageNetworks, err := exec.All().GetManagedObjectStorageNetworks(exec.Context(), &request.GetManagedObjectStorageNetworksRequest{
+				ServiceUUID: storageUUID,
+			})
+			if err != nil {
+				return fmt.Errorf("failed to get object storage networks: %w", err)
+			}
+
+			for _, n := range objStorageNetworks {
+				if n.UUID != nil {
+					exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Detaching network %s with UUID: %s from object storage %s", n.Name, *n.UUID, objectStorageName))
+					err = exec.All().DeleteManagedObjectStorageNetwork(exec.Context(), &request.DeleteManagedObjectStorageNetworkRequest{
+						ServiceUUID: storageUUID,
+						NetworkName: n.Name,
+					})
+					if err != nil {
+						msg = "failed to delete object storage network"
+						return fmt.Errorf("failed to delete object storage networks: %w", err)
 					}
 				}
 			}
