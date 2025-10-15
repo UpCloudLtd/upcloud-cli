@@ -341,7 +341,6 @@ func DestroyStack(exec commands.Executor, name, zone string, deleteStorage, dele
 				if err != nil {
 					return fmt.Errorf("failed to delete object storage: %w", err)
 				}
-
 			} else {
 				exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Detaching Object Storage %s from network", objectStorageName))
 				objStorageNetworks, err := exec.All().GetManagedObjectStorageNetworks(exec.Context(), &request.GetManagedObjectStorageNetworksRequest{
@@ -362,7 +361,6 @@ func DestroyStack(exec commands.Executor, name, zone string, deleteStorage, dele
 							msg = "failed to delete object storage network"
 							return fmt.Errorf("failed to delete object storage networks: %w", err)
 						}
-
 					}
 				}
 			}
