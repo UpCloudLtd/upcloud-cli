@@ -39,7 +39,6 @@ func (s *destroySupabaseCommand) InitCommand() {
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
-// TODO: This is not deleting the LB that supabase creates. Need to find a way to identify it.
 func (c *destroySupabaseCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	err := stack.DestroyStack(exec, c.name, c.zone, c.deleteStorage, c.deleteObjectStorage, stack.StackTypeSupabase)
 	if err != nil {
