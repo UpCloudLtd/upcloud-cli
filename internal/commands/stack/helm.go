@@ -210,10 +210,16 @@ func DeployHelmReleaseFromRepo(
 	valsFiles []string,
 	upgrade bool,
 ) error {
+	// Wait for the Kubernetes API server to be ready
+	err := WaitForAPIServer(kubeClient)
+	if err != nil {
+		return fmt.Errorf("waiting for API server: %w", err)
+	}
+
 	os.Setenv("HELM_NAMESPACE", releaseName)
 
 	// Ensure the target namespace exists
-	err := CreateNamespace(kubeClient, releaseName)
+	err = CreateNamespace(kubeClient, releaseName)
 	if err != nil {
 		return fmt.Errorf("ensuring namespace %q exists: %w", releaseName, err)
 	}

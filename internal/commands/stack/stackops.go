@@ -248,10 +248,6 @@ func DestroyStack(exec commands.Executor, name, zone string, deleteStorage, dele
 		}
 
 		var uuids []string
-		// Collect PVC volume UUIDs for deletion if deleteStorage is true
-		// This is done before uninstalling the helm release to ensure we get all PVCs
-		// associated with the Supabase stack
-		// If deleteStorage is false, we skip this step and leave the PVCs intact
 		if deleteStorage {
 			msg = fmt.Sprintln("Collecting PVC volume UUIDs for deletion")
 			exec.PushProgressStarted(msg)
@@ -372,9 +368,6 @@ func DestroyStack(exec commands.Executor, name, zone string, deleteStorage, dele
 			return err
 		}
 
-		msg = fmt.Sprintf("Deleting network %s in zone %s", clusterName, zone)
-		exec.PushProgressStarted(msg)
-
 		networkName := fmt.Sprintf("%s-%s-%s", SupabaseResourceRootNameNetwork, name, zone)
 		networks, err := exec.All().GetNetworks(exec.Context())
 		if err != nil {
@@ -393,19 +386,110 @@ func DestroyStack(exec commands.Executor, name, zone string, deleteStorage, dele
 				break
 			}
 		}
-		exec.PushProgressSuccess(msg)
 	case StackTypeDokku:
+		logDir := os.TempDir()
 		clusterName := fmt.Sprintf("%s-%s-%s", DokkuResourceRootNameCluster, name, zone)
-		networkName := fmt.Sprintf("%s-%s-%s", DokkuResourceRootNameNetwork, name, zone)
-
-		resources, err := all.ListResources(exec, []string{clusterName, networkName}, []string{})
+		msg := fmt.Sprintf("Searching cluster %s in zone %s", clusterName, zone)
+		exec.PushProgressStarted(msg)
+		clusters, err := exec.All().GetKubernetesClusters(exec.Context(), &request.GetKubernetesClustersRequest{})
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to get kubernetes clusters: %w", err)
 		}
 
-		err = all.DeleteResources(exec, resources, 16)
+		var cluster *upcloud.KubernetesCluster
+		for _, cl := range clusters {
+			if cl.Name == clusterName {
+				cluster = &cl
+				break
+			}
+		}
+
+		if cluster == nil {
+			return fmt.Errorf("a cluster with the name '%s' was not found", clusterName)
+		}
+
+		exec.PushProgressSuccess(msg)
+
+		msg = fmt.Sprintln("Preparing to start deleting resources")
+		exec.PushProgressStarted(msg)
+
+		kubeconfigPath, err := WriteKubeconfigToFile(exec, cluster.UUID, logDir)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to write kubeconfig to file: %w", err)
+		}
+
+		if err := os.Setenv("KUBECONFIG", kubeconfigPath); err != nil {
+			return fmt.Errorf("set KUBECONFIG: %w", err)
+		}
+
+		exec.PushProgressSuccess(msg)
+
+		kubeClient, err := GetKubernetesClient(kubeconfigPath)
+		if err != nil {
+			return fmt.Errorf("failed to create Kubernetes client: %w", err)
+		}
+
+		var uuids []string
+		if deleteStorage {
+			msg = fmt.Sprintln("Collecting PVC volume UUIDs for deletion")
+			exec.PushProgressStarted(msg)
+
+			uuids, err = CollectPVCVolumeUUIDs(exec.Context(), exec, kubeClient, "dokku")
+			if err != nil {
+				return fmt.Errorf("failed to retrieve PVC volume UUIDs: %w", err)
+			}
+
+			exec.PushProgressSuccess(msg)
+		}
+
+		msg = fmt.Sprintf("Uninstalling ingress nginx helm release: %s", clusterName)
+		exec.PushProgressStarted(msg)
+
+		err = UninstallHelmRelease("ingress-nginx", logDir)
+		if err != nil {
+			exec.PushProgressUpdateMessage(msg, "failed to uninstall ingress-nginx. You might have to manually delete the load balancer")
+		}
+
+		exec.PushProgressSuccess(msg)
+
+		msg = fmt.Sprintf("Deleting Kubernetes cluster %s in zone %s", clusterName, zone)
+		exec.PushProgressStarted(msg)
+
+		_, err = kubernetes.Delete(exec, cluster.UUID, true)
+		if err != nil {
+			return fmt.Errorf("failed to delete kubernetes cluster: %w", err)
+		}
+
+		exec.PushProgressSuccess(msg)
+
+		if deleteStorage && len(uuids) > 0 {
+			msg = fmt.Sprintln("Deleting PVC volumes")
+			exec.PushProgressStarted(msg)
+
+			err = DeletePVCVolumesByUUIDs(exec, uuids)
+			if err != nil {
+				return fmt.Errorf("failed to delete PVC volumes: %w", err)
+			}
+			exec.PushProgressSuccess(msg)
+		}
+
+		networkName := fmt.Sprintf("%s-%s-%s", DokkuResourceRootNameNetwork, name, zone)
+		networks, err := exec.All().GetNetworks(exec.Context())
+		if err != nil {
+			return fmt.Errorf("failed to get networks: %w", err)
+		}
+
+		for _, net := range networks.Networks {
+			if net.Name == networkName {
+				msg := fmt.Sprintf("Deleting network %s in zone %s", networkName, zone)
+				exec.PushProgressStarted(msg)
+				_, err = network.Delete(exec, net.UUID)
+				if err != nil {
+					return fmt.Errorf("failed to delete network: %w", err)
+				}
+				exec.PushProgressSuccess(msg)
+				break
+			}
 		}
 	case StackTypeStarterKit:
 		clusterName := fmt.Sprintf("%s-%s-%s", StarterKitResourceRootNameCluster, name, zone)

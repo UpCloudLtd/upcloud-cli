@@ -63,7 +63,7 @@ func (s *deployDokkuCommand) InitCommand() {
 	fs.StringVar(&s.githubUser, "github-user", s.githubUser, "Used to allow Dokku to push your app images to your GitHub Container Registry")
 	fs.StringVar(&s.certManagerEmail, "cert-manager-email", "ops@example.com", "Email for TLS cert registration (default: ops@example.com)")
 	fs.StringVar(&s.globalDomain, "global-domain", s.globalDomain, "Example: example.com. If you do not have a domain name leave this empty and it will get the value of the ingress nginx load balancer automatically. Example: lb-0a39e6584…")
-	fs.IntVar(&s.numNodes, "num-nodes", 3, "Number of nodes in the Dokku cluster (default: 3)")
+	fs.IntVar(&s.numNodes, "num-nodes", 1, "Number of nodes in the Dokku cluster (default: 1)")
 	fs.StringVar(&s.sshPath, "ssh-path", defaultSSH, "Path to your private SSH key (default: ~/.ssh/id_rsa). Needed to be able to ‘git push dokku@<host>:<app>’ when deploying apps with git push")
 	fs.StringVar(&s.sshPubPath, "ssh-path-pub", defaultSSHPub, "Path to your public SSH key (default: ~/.ssh/id_rsa.pub)")
 	fs.StringVar(&s.githubPackageURL, "github-package-url", "ghcr.io", "Container registry hostname (default: ghcr.io)")

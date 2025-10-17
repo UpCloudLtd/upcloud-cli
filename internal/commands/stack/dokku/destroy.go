@@ -20,14 +20,16 @@ func DestroyDokkuCommand() commands.Command {
 
 type destroyDokkuCommand struct {
 	*commands.BaseCommand
-	zone string
-	name string
+	zone          string
+	name          string
+	deleteStorage bool
 }
 
 func (s *destroyDokkuCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 	fs.StringVar(&s.zone, "zone", s.zone, "Zone for the stack deployment")
 	fs.StringVar(&s.name, "name", s.name, "Supabase stack name")
+	fs.BoolVar(&s.deleteStorage, "delete-storage", false, "Delete associated UpCloud storage resources")
 	s.AddFlags(fs)
 
 	commands.Must(s.Cobra().MarkFlagRequired("zone"))
@@ -35,9 +37,8 @@ func (s *destroyDokkuCommand) InitCommand() {
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
-// TODO: This is not deleting the LB that dokku creates. Need to find a way to identify it.
 func (c *destroyDokkuCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
-	err := stack.DestroyStack(exec, c.name, c.zone, false, false, stack.StackTypeDokku)
+	err := stack.DestroyStack(exec, c.name, c.zone, c.deleteStorage, false, stack.StackTypeDokku)
 	if err != nil {
 		return nil, err
 	}
