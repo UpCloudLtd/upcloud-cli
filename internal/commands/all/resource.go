@@ -23,6 +23,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/servergroup"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/storage"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/utils"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 )
 
@@ -344,8 +345,9 @@ func DeleteResources(exec commands.Executor, resources []Resource, workerCount i
 				}
 			}(i)
 		case res := <-returnChan:
-			// Requeue failed deletes after 5 seconds
-			if res.Error != nil {
+			// Requeue failed deletes after 5 seconds.
+			// Assume resource has been deleted, if delete failed with HTTP 404 status.
+			if res.Error != nil && !utils.IsNotFoundError(res.Error) {
 				exec.PushProgressUpdate(messages.Update{
 					Key:     res.Resource.Key(),
 					Message: fmt.Sprintf("Waiting 5 seconds before retrying to delete %s %s", res.Resource.Type, res.Resource.Name),
