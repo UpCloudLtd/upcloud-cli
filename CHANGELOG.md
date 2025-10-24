@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - stack destroy command for supabase, dokku and starter-kit
 - Add devices list to `server show` output.
 
+### Fixed
+
+- In `upctl all purge`, if resource deletion fails with HTTP 404 status, consider the resource deleted.
+
 ## [3.24.1] - 2025-10-14
 
 ### Changed

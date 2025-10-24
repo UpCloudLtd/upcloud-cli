@@ -1,9 +1,7 @@
 package database
 
 import (
-	"errors"
 	"fmt"
-	"net/http"
 	"time"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
@@ -11,7 +9,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
-	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/utils"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 	"github.com/spf13/pflag"
 )
@@ -99,8 +97,7 @@ func waitUntilDatabaseDeleted(exec commands.Executor, uuid string) error {
 				UUID: uuid,
 			})
 			if err != nil {
-				var ucErr *upcloud.Problem
-				if errors.As(err, &ucErr) && ucErr.Status == http.StatusNotFound {
+				if utils.IsNotFoundError(err) {
 					return nil
 				}
 

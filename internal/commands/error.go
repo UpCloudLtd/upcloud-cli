@@ -24,6 +24,10 @@ func (h handledError) Error() string {
 	return h.err.Error()
 }
 
+func (h handledError) Unwrap() error {
+	return h.err
+}
+
 // outputError outputs given error to progress log, if the error has not been already handled by HandleError
 func outputError(arg string, err error, exec Executor) {
 	if err == nil {
