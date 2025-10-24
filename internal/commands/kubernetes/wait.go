@@ -2,6 +2,7 @@ package kubernetes
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 
@@ -18,6 +19,71 @@ func WaitForClusterState(uuid string, state upcloud.KubernetesClusterState, exec
 		UUID:         uuid,
 		DesiredState: state,
 	}); err != nil {
+		exec.PushProgressUpdate(messages.Update{
+			Key:     msg,
+			Message: msg,
+			Status:  messages.MessageStatusWarning,
+			Details: "Error: " + err.Error(),
+		})
+		return
+	}
+
+	exec.PushProgressUpdateMessage(msg, msg)
+	exec.PushProgressSuccess(msg)
+}
+
+func allNodeGroupsRunning(groups []upcloud.KubernetesNodeGroup) bool {
+	for _, group := range groups {
+		if group.State != upcloud.KubernetesNodeGroupStateRunning {
+			return false
+		}
+	}
+	return true
+}
+
+func waitUntilNodeGroupsRunning(uuid string, exec commands.Executor) error {
+	ticker := time.NewTicker(5 * time.Second)
+	defer ticker.Stop()
+
+	ctx := exec.Context()
+	svc := exec.All()
+
+	for i := 0; ; i++ {
+		select {
+		case <-ticker.C:
+			groups, err := svc.GetKubernetesNodeGroups(exec.Context(), &request.GetKubernetesNodeGroupsRequest{
+				ClusterUUID: uuid,
+			})
+			if err != nil {
+				return err
+			}
+			if allNodeGroupsRunning(groups) {
+				return nil
+			}
+		case <-ctx.Done():
+			return ctx.Err()
+		}
+	}
+}
+
+func waitUntilClusterAndNodeGroupsRunning(uuid string, exec commands.Executor, msg string) {
+	exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Waiting for cluster %s node-groups to be in running state", uuid))
+
+	if _, err := exec.All().WaitForKubernetesClusterState(exec.Context(), &request.WaitForKubernetesClusterStateRequest{
+		UUID:         uuid,
+		DesiredState: upcloud.KubernetesClusterStateRunning,
+	}); err != nil {
+		exec.PushProgressUpdate(messages.Update{
+			Key:     msg,
+			Message: msg,
+			Status:  messages.MessageStatusWarning,
+			Details: "Error: " + err.Error(),
+		})
+		return
+	}
+
+	exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Waiting for cluster %s node-groups to be in running state", uuid))
+	if err := waitUntilNodeGroupsRunning(uuid, exec); err != nil {
 		exec.PushProgressUpdate(messages.Update{
 			Key:     msg,
 			Message: msg,
