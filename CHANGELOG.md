@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.25.0] - 2025-10-24
+
 ### Added
 
 - stack destroy command for supabase, dokku and starter-kit
@@ -640,7 +642,8 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.24.1...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.25.0...HEAD
+[3.25.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.24.1...v3.25.0
 [3.24.1]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.24.0...v3.24.1
 [3.24.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.23.0...v3.24.0
 [3.23.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.22.0...v3.23.0
