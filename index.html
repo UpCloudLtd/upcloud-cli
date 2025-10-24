@@ -6580,14 +6580,14 @@ using a package manager, Docker image, or from sources with <code>go install</co
 <div class="tabbed-block">
 <p>Download pre-built package from GitHub releases and install it with your package manager.</p>
 <p>On Ubuntu or Debian, use the <code>.deb</code> package.</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>curl<span class="w"> </span>-Lo<span class="w"> </span>upcloud-cli_3.24.1_amd64.deb<span class="w"> </span>https://github.com/UpCloudLtd/upcloud-cli/releases/download/v3.24.1/upcloud-cli_3.24.1_amd64.deb
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>curl<span class="w"> </span>-Lo<span class="w"> </span>upcloud-cli_3.25.0_amd64.deb<span class="w"> </span>https://github.com/UpCloudLtd/upcloud-cli/releases/download/v3.25.0/upcloud-cli_3.25.0_amd64.deb
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1"># Preferably verify the asset before proceeding with install, see &quot;Verify assets&quot; below</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>./upcloud-cli_3.24.1_amd64.deb
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>./upcloud-cli_3.25.0_amd64.deb
 </span></code></pre></div>
 <p>On RHEL based distributions, use the <code>.rpm</code> package.</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>curl<span class="w"> </span>-Lo<span class="w"> </span>upcloud-cli-3.24.1-1.x86_64.rpm<span class="w"> </span>https://github.com/UpCloudLtd/upcloud-cli/releases/download/v3.24.1/upcloud-cli-3.24.1-1.x86_64.rpm
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>curl<span class="w"> </span>-Lo<span class="w"> </span>upcloud-cli-3.25.0-1.x86_64.rpm<span class="w"> </span>https://github.com/UpCloudLtd/upcloud-cli/releases/download/v3.25.0/upcloud-cli-3.25.0-1.x86_64.rpm
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c1"># Preferably verify the asset before proceeding with install, see &quot;Verify assets&quot; below</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>./upcloud-cli-3.24.1-1.x86_64.rpm
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>./upcloud-cli-3.25.0-1.x86_64.rpm
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
@@ -6598,9 +6598,9 @@ using a package manager, Docker image, or from sources with <code>go install</co
 </div>
 <div class="tabbed-block">
 <p>First, download the archived binary from GitHub releases to current folder and extract the binary from the archive.</p>
-<div class="language-pwsh highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nb">Invoke-WebRequest</span> <span class="n">-Uri</span> <span class="s2">&quot;https://github.com/UpCloudLtd/upcloud-cli/releases/download/v3.24.1/upcloud-cli_3.24.1_windows_x86_64.zip&quot;</span> <span class="n">-OutFile</span> <span class="s2">&quot;upcloud-cli_3.24.1_windows_x86_64.zip&quot;</span>
+<div class="language-pwsh highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nb">Invoke-WebRequest</span> <span class="n">-Uri</span> <span class="s2">&quot;https://github.com/UpCloudLtd/upcloud-cli/releases/download/v3.25.0/upcloud-cli_3.25.0_windows_x86_64.zip&quot;</span> <span class="n">-OutFile</span> <span class="s2">&quot;upcloud-cli_3.25.0_windows_x86_64.zip&quot;</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="c"># Preferably verify the asset before proceeding with install, see &quot;Verify assets&quot; below</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="nb">Expand-Archive</span> <span class="n">-Path</span> <span class="s2">&quot;upcloud-cli_3.24.1_windows_x86_64.zip&quot;</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="nb">Expand-Archive</span> <span class="n">-Path</span> <span class="s2">&quot;upcloud-cli_3.25.0_windows_x86_64.zip&quot;</span>
 </span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
 </span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="c"># Print current location</span>
 </span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="nb">Get-Location</span>
@@ -6610,7 +6610,7 @@ using a package manager, Docker image, or from sources with <code>go install</co
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="c"># Use Set-Location to change into folder that you used in previous step.</span>
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
 </span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nb">New-Item</span> <span class="n">-ItemType</span> <span class="n">Directory</span> <span class="nv">$env:ProgramFiles</span><span class="p">\</span><span class="n">upcloud-cli</span><span class="p">\</span> <span class="n">-Force</span>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nb">Move-Item</span> <span class="n">-Path</span> <span class="n">upcloud-cli_3</span><span class="p">.</span><span class="n">24</span><span class="p">.</span><span class="n">1_windows_x86_64</span><span class="p">\</span><span class="n">upctl</span><span class="p">.</span><span class="n">exe</span> <span class="n">-Destination</span> <span class="nv">$env:ProgramFiles</span><span class="p">\</span><span class="n">upcloud-cli</span><span class="p">\</span> <span class="n">-Force</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nb">Move-Item</span> <span class="n">-Path</span> <span class="n">upcloud-cli_3</span><span class="p">.</span><span class="n">25</span><span class="p">.</span><span class="n">0_windows_x86_64</span><span class="p">\</span><span class="n">upctl</span><span class="p">.</span><span class="n">exe</span> <span class="n">-Destination</span> <span class="nv">$env:ProgramFiles</span><span class="p">\</span><span class="n">upcloud-cli</span><span class="p">\</span> <span class="n">-Force</span>
 </span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
 </span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="c"># Setting the Path is required only on first install.</span>
 </span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="c"># Thus, this step can be skipped when updating to a more recent version.</span>
@@ -6639,7 +6639,7 @@ using a package manager, Docker image, or from sources with <code>go install</co
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nt">registries</span><span class="p">:</span>
 </span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">standard</span>
 </span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="nt">packages</span><span class="p">:</span>
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">UpCloudLtd/upcloud-cli@3.24.1</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">UpCloudLtd/upcloud-cli@3.25.0</span>
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
@@ -6665,7 +6665,7 @@ and plain old checksum files are available for verifying release assets.</p>
 can be verified for example with the <a href="https://github.com/cli/cli">GitHub CLI</a>,
 using the Linux x86_64 asset as an example:</p>
 <div class="language-sh highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>gh<span class="w"> </span>attestation<span class="w"> </span>verify<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">    </span>/path/to/locally/downloaded/upcloud-cli_3.24.1_linux_x86_64.tar.gz<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">    </span>/path/to/locally/downloaded/upcloud-cli_3.25.0_linux_x86_64.tar.gz<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">    </span>--repo<span class="w"> </span>UpCloudLtd/upcloud-cli
 </span></code></pre></div>
 <p>Attestations are available starting from version 3.16.0.</p>
