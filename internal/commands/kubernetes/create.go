@@ -51,7 +51,7 @@ type createParams struct {
 	networkArg        string
 	nodeGroups        []string
 	privateNodeGroups config.OptionalBoolean
-	wait              config.OptionalBoolean
+	wait              string
 }
 
 func (p *createParams) processParams(exec commands.Executor) error {
@@ -154,7 +154,8 @@ func (c *createCommand) InitCommand() {
 	)
 	config.AddToggleFlag(fs, &c.params.privateNodeGroups, "private-node-groups", false, "Do not assign public IPs to worker nodes. If set, the attached network should have a NAT gateway configured to provide internet access to the worker nodes.")
 	fs.StringVar(&c.params.Zone, "zone", "", namedargs.ZoneDescription("cluster"))
-	config.AddToggleFlag(fs, &c.params.wait, "wait", false, "Wait for cluster to be in running state before returning.")
+	fs.StringVar(&c.params.wait, "wait", "none", "Wait for resources to be in running state before returning. Use `--wait` to wait for cluster and `--wait=all` to also wait for all node groups to be in running state.")
+	fs.Lookup("wait").NoOptDefVal = "cluster"
 	c.AddFlags(fs)
 
 	commands.Must(c.Cobra().MarkFlagRequired("name"))
@@ -195,9 +196,12 @@ func (c *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		return commands.HandleError(exec, msg, err)
 	}
 
-	if c.params.wait.Value() {
+	switch c.params.wait {
+	case "cluster":
 		WaitForClusterState(res.UUID, upcloud.KubernetesClusterStateRunning, exec, msg)
-	} else {
+	case "all":
+		waitUntilClusterAndNodeGroupsRunning(res.UUID, exec, msg)
+	default:
 		exec.PushProgressSuccess(msg)
 	}
 
