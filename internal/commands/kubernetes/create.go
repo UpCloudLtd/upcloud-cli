@@ -196,11 +196,12 @@ func (c *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		return commands.HandleError(exec, msg, err)
 	}
 
-	if c.params.wait == "cluster" {
+	switch c.params.wait {
+	case "cluster":
 		WaitForClusterState(res.UUID, upcloud.KubernetesClusterStateRunning, exec, msg)
-	} else if c.params.wait == "all" {
+	case "all":
 		waitUntilClusterAndNodeGroupsRunning(res.UUID, exec, msg)
-	} else {
+	default:
 		exec.PushProgressSuccess(msg)
 	}
 

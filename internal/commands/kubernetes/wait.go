@@ -56,13 +56,13 @@ func waitUntilNodeGroupsRunning(uuid string, exec commands.Executor) error {
 			return &groups, nil
 		}
 
-		return nil, nil
+		return nil, nil //nolint:nilnil // Continue retrying
 	}, nil)
 	return err
 }
 
 func waitUntilClusterAndNodeGroupsRunning(uuid string, exec commands.Executor, msg string) {
-	exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Waiting for cluster %s node-groups to be in running state", uuid))
+	exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Waiting for cluster %s to be in running state", uuid))
 
 	if _, err := exec.All().WaitForKubernetesClusterState(exec.Context(), &request.WaitForKubernetesClusterStateRequest{
 		UUID:         uuid,
