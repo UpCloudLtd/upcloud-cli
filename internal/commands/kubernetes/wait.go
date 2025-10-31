@@ -1,14 +1,15 @@
 package kubernetes
 
 import (
+	"context"
 	"fmt"
-	"time"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 
 	"github.com/UpCloudLtd/progress/messages"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/service"
 )
 
 // waitForClusterState waits for cluster to reach given state and updates progress message with key matching given msg. Finally, progress message is updated back to given msg and either done state or timeout warning.
@@ -42,28 +43,22 @@ func allNodeGroupsRunning(groups []upcloud.KubernetesNodeGroup) bool {
 }
 
 func waitUntilNodeGroupsRunning(uuid string, exec commands.Executor) error {
-	ticker := time.NewTicker(5 * time.Second)
-	defer ticker.Stop()
-
-	ctx := exec.Context()
 	svc := exec.All()
 
-	for i := 0; ; i++ {
-		select {
-		case <-ticker.C:
-			groups, err := svc.GetKubernetesNodeGroups(exec.Context(), &request.GetKubernetesNodeGroupsRequest{
-				ClusterUUID: uuid,
-			})
-			if err != nil {
-				return err
-			}
-			if allNodeGroupsRunning(groups) {
-				return nil
-			}
-		case <-ctx.Done():
-			return ctx.Err()
+	_, err := service.Retry(exec.Context(), func(i int, ctx context.Context) (*[]upcloud.KubernetesNodeGroup, error) {
+		groups, err := svc.GetKubernetesNodeGroups(exec.Context(), &request.GetKubernetesNodeGroupsRequest{
+			ClusterUUID: uuid,
+		})
+		if err != nil {
+			return nil, err
 		}
-	}
+		if allNodeGroupsRunning(groups) {
+			return &groups, nil
+		}
+
+		return nil, nil
+	}, nil)
+	return err
 }
 
 func waitUntilClusterAndNodeGroupsRunning(uuid string, exec commands.Executor, msg string) {
