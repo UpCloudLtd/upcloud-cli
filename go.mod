@@ -10,7 +10,7 @@ require (
 	github.com/adrg/xdg v0.5.3
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
 	github.com/gemalto/flume v1.0.0
-	github.com/jedib0t/go-pretty/v6 v6.7.1
+	github.com/jedib0t/go-pretty/v6 v6.7.5
 	github.com/joho/godotenv v1.5.1
 	github.com/m7shapan/cidr v0.0.0-20200427124835-7eba0889a5d2
 	github.com/mattn/go-isatty v0.0.20
