@@ -321,6 +321,11 @@ func createObjectStorage(ctx context.Context, exec commands.Executor, config *St
 				Name:   config.NetworkName,
 				Family: upcloud.IPAddressFamilyIPv4,
 			},
+			{
+				Type:   "public",
+				Name:   config.NetworkName + "-p",
+				Family: upcloud.IPAddressFamilyIPv4,
+			},
 		},
 		Labels: []upcloud.Label{
 			{Key: "stacks.upcloud.com/stack", Value: string(stack.StackTypeStarterKit)},

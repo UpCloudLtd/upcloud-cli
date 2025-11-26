@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- stack - starter-kit: make object storage publicly available
+
 ## [3.25.0] - 2025-10-24
 
 ### Added
