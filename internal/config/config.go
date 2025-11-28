@@ -206,6 +206,8 @@ func (s *Config) CreateService() (internal.AllServices, error) {
 	password := s.GetString("password")
 	token := s.GetString("token")
 
+	apiLogger := flume.New("api")
+
 	if token == "" && (username == "" || password == "") {
 		// This might give silghtly unexpected results on OS X, as xdg.ConfigHome points to ~/Library/Application Support
 		// while we really use/prefer/document ~/.config - which does work on osx as well but won't be displayed here.
@@ -218,6 +220,9 @@ func (s *Config) CreateService() (internal.AllServices, error) {
 
 	configs := []client.ConfigFn{
 		client.WithTimeout(s.ClientTimeout()),
+		client.WithLogger(func(_ context.Context, msg string, args ...any) {
+			apiLogger.Debug(msg, args...)
+		}),
 	}
 	if token != "" {
 		configs = append(configs, client.WithBearerAuth(token))
