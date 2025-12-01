@@ -64,10 +64,7 @@ kubectl expose deployment hello-uks --port=80 --target-port=80 --type=$svc_type
 
 If using `NodePort` service type, we need to get the node IP and service port to access the service.
 
-```sh
-# Skip this code block if not using NodePort
-test "$svc_type" = "NodePort" || exit 0;
-
+```sh when='svc_type == "NodePort"'
 # Get node IP
 node_ip=$(kubectl get node -o json | jq -r '.items[0].status.addresses.[] | select(.type == "ExternalIP").address')
 # Get service port
@@ -81,10 +78,7 @@ done;
 
 If using `LoadBalancer` service type, we need to wait until the load balancer has been created and assigned a public hostname. Once the hostname is available, we can try to access the service.
 
-```sh
-# Skip this code block if not using LoadBalancer
-test "$svc_type" = "LoadBalancer" || exit 0;
-
+```sh when='svc_type == "LoadBalancer"'
 # Wait for hostname to be available in service status
 until kubectl get service hello-uks -o json | jq -re .status.loadBalancer.ingress[0].hostname; do
     sleep 15;
