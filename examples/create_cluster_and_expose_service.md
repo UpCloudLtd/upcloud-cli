@@ -20,7 +20,7 @@ ng_name=default
 ng_plan=2xCPU-4GB
 test_label=upctl-example
 
-KUBECONFIG=./${prefix}cluster.kubeconfig.yaml
+KUBECONFIG=./kubeconfig.yaml
 ```
 
 First, we will need a private network for the cluster.
@@ -49,7 +49,7 @@ Once the cluster is created, we can get the kubeconfig file to interact with the
 
 ```sh
 upctl kubernetes config ${prefix}cluster \
-    --write ${prefix}cluster.kubeconfig.yaml;
+    --write $KUBECONFIG;
 ```
 
 Now we can create a deployment and expose it using a `LoadBalancer` type service.
