@@ -69,8 +69,7 @@ If using `NodePort` service type, we need to get the node IP and service port to
 test "$svc_type" = "NodePort" || exit 0;
 
 # Get node IP
-node_ip=$(kubectl get node -o json | jq -r '.items[0].status.addresses.[] | select(.type == "ExternalIP
-    ").address')
+node_ip=$(kubectl get node -o json | jq -r '.items[0].status.addresses.[] | select(.type == "ExternalIP").address')
 # Get service port
 svc_port=$(kubectl get service hello-uks -o json | jq -r '.spec.ports[0].nodePort')
 
