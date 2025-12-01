@@ -2,7 +2,7 @@
 
 This example demonstrates how to create a Kubernetes cluster with `upctl`, create a deployment, and expose it to the internet using a service.
 
-To keep track of resources created during this example, we will use common prefix in all resource names.
+To keep track of resources created during this example, we will use common prefix in all resource names. The variable definitions also include configuration for the cluster, node-group, and service. By default, we will use `NodePort` service type (as it is faster to deploy), but you can change `svc_type` value to `LoadBalancer` if you want to use UpCloud Load Balancer to expose the service.
 
 ```env
 prefix=example-upctl-kubernetes-
@@ -21,7 +21,7 @@ ng_plan=2xCPU-4GB
 test_label=upctl-example
 
 # Service
-svc_type=NodePort # Change to LoadBalancer to use UpCloud Load Balancer to expose the service.
+svc_type=NodePort
 
 KUBECONFIG=./kubeconfig.yaml
 ```
