@@ -6,7 +6,7 @@ import (
 
 // MarshaledWithHumanDetails implements output.Command for a return value that is displayed as raw marshaled in JSON and YAML or as human details, such as UUID or IP address, eg. most create commands.
 type MarshaledWithHumanDetails struct {
-	Value   interface{}
+	Value   any
 	Details []DetailRow
 }
 
@@ -24,6 +24,6 @@ func (d MarshaledWithHumanDetails) MarshalHuman() ([]byte, error) {
 }
 
 // MarshalRawMap implements output.Output
-func (d MarshaledWithHumanDetails) MarshalRawMap() (map[string]interface{}, error) {
+func (d MarshaledWithHumanDetails) MarshalRawMap() (map[string]any, error) {
 	return nil, errors.New("MarshaledWithHumanDetails output should not be used as part of multiple output, raw output is undefined")
 }

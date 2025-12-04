@@ -129,21 +129,21 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 	}, nil
 }
 
-func protoFormat(val interface{}) (text.Colors, string, error) {
+func protoFormat(val any) (text.Colors, string, error) {
 	if fwp, ok := val.(fwProto); ok {
 		return nil, formatProto(fwp), nil
 	}
 	return nil, fmt.Sprint(val), nil
 }
 
-func addressFormat(val interface{}) (text.Colors, string, error) {
+func addressFormat(val any) (text.Colors, string, error) {
 	if fwa, ok := val.(fwRuleAddress); ok {
 		return ui.DefaultAddressColours, formatMatch(fwa), nil
 	}
 	return ui.DefaultAddressColours, fmt.Sprint(val), nil
 }
 
-func actionFormat(val interface{}) (text.Colors, string, error) {
+func actionFormat(val any) (text.Colors, string, error) {
 	if actStr, ok := val.(string); ok {
 		if actStr == "drop" {
 			return text.Colors{text.FgHiRed}, actStr, nil

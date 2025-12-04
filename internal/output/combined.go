@@ -23,8 +23,8 @@ func (m Combined) MarshalJSON() ([]byte, error) {
 	return json.MarshalIndent(flattenSections(m), "", "  ")
 }
 
-func flattenSections(m Combined) map[string]interface{} {
-	out := map[string]interface{}{}
+func flattenSections(m Combined) map[string]any {
+	out := map[string]any{}
 
 	for _, sec := range m {
 		if sec.Key != "" {
@@ -112,6 +112,6 @@ func prefixLines(marshaled []byte, s string) (out []byte) {
 }
 
 // MarshalRawMap implements output.Output
-func (m Combined) MarshalRawMap() (map[string]interface{}, error) {
+func (m Combined) MarshalRawMap() (map[string]any, error) {
 	return nil, errors.New("multiple output cannot nest, raw output is undefined")
 }

@@ -22,7 +22,7 @@ func databaseStateColour(state upcloud.ManagedDatabaseState) text.Colors {
 }
 
 // DatabaseState implements Format function for database states
-func DatabaseState(val interface{}) (text.Colors, string, error) {
+func DatabaseState(val any) (text.Colors, string, error) {
 	return usingColorFunction(databaseStateColour, val)
 }
 
@@ -41,7 +41,7 @@ func databaseIndexHealthColour(health string) text.Colors {
 }
 
 // DatabaseIndexHealth implements Format function for database index health
-func DatabaseIndexHealth(val interface{}) (text.Colors, string, error) {
+func DatabaseIndexHealth(val any) (text.Colors, string, error) {
 	return usingColorFunction(databaseIndexHealthColour, val)
 }
 
@@ -58,7 +58,7 @@ func databaseIndexStatusColour(status string) text.Colors {
 }
 
 // DatabaseIndexState implements Format function for database index states
-func DatabaseIndexState(val interface{}) (text.Colors, string, error) {
+func DatabaseIndexState(val any) (text.Colors, string, error) {
 	return usingColorFunction(databaseIndexStatusColour, val)
 }
 
@@ -75,12 +75,12 @@ func databaseSessionStatusColour(status string) text.Colors {
 }
 
 // DatabaseSessionState implements Format function for database session states
-func DatabaseSessionState(val interface{}) (text.Colors, string, error) {
+func DatabaseSessionState(val any) (text.Colors, string, error) {
 	return usingColorFunction(databaseSessionStatusColour, val)
 }
 
 // DatabaseSessionPID implements Format function for database session PID
-func DatabaseSessionPID(val interface{}) (text.Colors, string, error) {
+func DatabaseSessionPID(val any) (text.Colors, string, error) {
 	if s, ok := val.(string); ok {
 		return ui.DefaultUUUIDColours, strings.TrimPrefix(s, "pid_"), nil
 	}

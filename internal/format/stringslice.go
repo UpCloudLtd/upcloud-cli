@@ -8,19 +8,19 @@ import (
 	"github.com/jedib0t/go-pretty/v6/text"
 )
 
-func StringSliceOr(val interface{}) (text.Colors, string, error) {
+func StringSliceOr(val any) (text.Colors, string, error) {
 	return formatStringSlice(val, "or", false)
 }
 
-func StringSliceAnd(val interface{}) (text.Colors, string, error) {
+func StringSliceAnd(val any) (text.Colors, string, error) {
 	return formatStringSlice(val, "and", false)
 }
 
-func StringSliceSingleLineAnd(val interface{}) (text.Colors, string, error) {
+func StringSliceSingleLineAnd(val any) (text.Colors, string, error) {
 	return formatStringSlice(val, "and", true)
 }
 
-func formatStringSlice(val interface{}, andOrOr string, singleLine bool) (text.Colors, string, error) {
+func formatStringSlice(val any, andOrOr string, singleLine bool) (text.Colors, string, error) {
 	if val == nil {
 		return nil, "", nil
 	}
@@ -36,9 +36,9 @@ func formatStringSlice(val interface{}, andOrOr string, singleLine bool) (text.C
 	return nil, fmt.Sprintf("%+v", val), nil
 }
 
-func toIfaceSlice(val interface{}) ([]interface{}, bool) {
+func toIfaceSlice(val any) ([]any, bool) {
 	if reflect.TypeOf(val).Kind() == reflect.Slice {
-		ifaceSliceVal := []interface{}{}
+		ifaceSliceVal := []any{}
 		reflectedVal := reflect.ValueOf(val)
 		for i := 0; i < reflectedVal.Len(); i++ {
 			ifaceSliceVal = append(ifaceSliceVal, reflectedVal.Index(i).Interface())
@@ -58,7 +58,7 @@ func maxStringLen(strings []string) int {
 	return maxLen
 }
 
-func stringSliceString(values []interface{}, andOrOr string, singleLine bool) string {
+func stringSliceString(values []any, andOrOr string, singleLine bool) string {
 	if len(values) == 0 {
 		return ""
 	}
