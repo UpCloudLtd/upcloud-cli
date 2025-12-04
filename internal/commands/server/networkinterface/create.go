@@ -134,7 +134,7 @@ func (s *createCommand) ExecuteSingleArgument(exec commands.Executor, arg string
 	}}, nil
 }
 
-func formatIPAddresses(val interface{}) (text.Colors, string, error) {
+func formatIPAddresses(val any) (text.Colors, string, error) {
 	iface, ok := val.(*upcloud.Interface)
 	if !ok {
 		return nil, "", fmt.Errorf("cannot parse IP addresses from %T, expected *upcloud.Interface", val)

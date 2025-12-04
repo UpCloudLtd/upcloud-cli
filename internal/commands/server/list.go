@@ -213,7 +213,7 @@ func getServerIPAddresses(uuid, accessType string, exec commands.Executor) (upcl
 	return ipaddresses, nil
 }
 
-func formatListIPAddresses(val interface{}) (text.Colors, string, error) {
+func formatListIPAddresses(val any) (text.Colors, string, error) {
 	ipaddresses, ok := val.(upcloud.IPAddressSlice)
 	if !ok {
 		return nil, "", fmt.Errorf("cannot parse IP addresses from %T, expected upcloud.IPAddressSlice", val)

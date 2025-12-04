@@ -134,7 +134,7 @@ func execute(command Command, executor Executor, args []string, mode resolveMode
 	workerQueue := make(chan int, workerCount)
 
 	// push initial workers into the worker queue
-	for n := 0; n < workerCount; n++ {
+	for n := range workerCount {
 		workerQueue <- n
 	}
 

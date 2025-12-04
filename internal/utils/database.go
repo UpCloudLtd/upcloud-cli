@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"maps"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 )
@@ -19,9 +20,7 @@ func GetFlatDatabaseProperties(properties map[string]upcloud.ManagedDatabaseServ
 	for key, details := range properties {
 		keySlice := append(keyPrefix, key) //nolint:gocritic // Construct key slice from prefix set by parent and key from current property
 		flat[propertyKey(keySlice...)] = details
-		for k, v := range GetFlatDatabaseProperties(details.Properties, keySlice...) {
-			flat[k] = v
-		}
+		maps.Copy(flat, GetFlatDatabaseProperties(details.Properties, keySlice...))
 	}
 
 	return flat

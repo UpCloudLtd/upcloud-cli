@@ -46,16 +46,16 @@ func kubernetesNodeStateColour(state upcloud.KubernetesNodeState) text.Colors {
 }
 
 // KubernetesClusterState implements Format function for Kubernetes cluster states
-func KubernetesClusterState(val interface{}) (text.Colors, string, error) {
+func KubernetesClusterState(val any) (text.Colors, string, error) {
 	return usingColorFunction(kubernetesClusterStateColour, val)
 }
 
 // KubernetesNodeGroupState implements Format function for Kubernetes node-group states
-func KubernetesNodeGroupState(val interface{}) (text.Colors, string, error) {
+func KubernetesNodeGroupState(val any) (text.Colors, string, error) {
 	return usingColorFunction(kubernetesNodeGroupStateColour, val)
 }
 
 // KubernetesNodeState implements Format function for Kubernetes node states
-func KubernetesNodeState(val interface{}) (text.Colors, string, error) {
+func KubernetesNodeState(val any) (text.Colors, string, error) {
 	return usingColorFunction(kubernetesNodeStateColour, val)
 }
