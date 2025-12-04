@@ -315,7 +315,7 @@ func DeleteResources(exec commands.Executor, resources []Resource, workerCount i
 	}
 
 	workerQueue := make(chan int, workerCount)
-	for n := 0; n < workerCount; n++ {
+	for n := range workerCount {
 		workerQueue <- n
 	}
 
