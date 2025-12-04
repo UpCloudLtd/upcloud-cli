@@ -50,7 +50,7 @@ func (l *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 	}, nil
 }
 
-func formatRoles(val interface{}) (text.Colors, string, error) {
+func formatRoles(val any) (text.Colors, string, error) {
 	roles, ok := val.([]string)
 	if !ok {
 		return nil, "", fmt.Errorf("cannot parse %T, expected []string", val)

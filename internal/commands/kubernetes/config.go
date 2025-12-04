@@ -101,7 +101,7 @@ func (c *configCommand) output(exec commands.Executor, config *api.Config, resp 
 		})
 	}
 
-	var value interface{}
+	var value any
 	err := yaml.Unmarshal([]byte(resp), &value)
 	if err != nil {
 		return commands.HandleError(exec, msg, err)

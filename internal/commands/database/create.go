@@ -133,7 +133,7 @@ func processProperties(in []string, t *upcloud.ManagedDatabaseType) (request.Man
 			continue
 		}
 
-		var parsedValue interface{}
+		var parsedValue any
 		if err := json.Unmarshal([]byte(value), &parsedValue); err != nil {
 			resp.Set(key, value) // Set as plain string if parsing fails
 		} else {

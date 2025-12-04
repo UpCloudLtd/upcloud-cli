@@ -269,7 +269,7 @@ func yamlToJSON(yamlIn []byte) []byte {
 		return []byte{}
 	}
 
-	var jsonObj interface{}
+	var jsonObj any
 	_ = yaml.Unmarshal(yamlIn, &jsonObj)
 
 	out, _ := json.MarshalIndent(jsonObj, "", "  ")

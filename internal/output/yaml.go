@@ -10,7 +10,7 @@ func JSONToYAML(jsonIn []byte) ([]byte, error) {
 		return []byte{}, nil
 	}
 
-	var yamlObj interface{}
+	var yamlObj any
 	if err := yaml.Unmarshal(jsonIn, &yamlObj); err != nil {
 		return nil, err
 	}

@@ -14,9 +14,9 @@ import (
 type DetailRow struct {
 	Title  string // used for human-readable representations
 	Key    string // user for machine-readable (json, yaml) representations
-	Value  interface{}
+	Value  any
 	Colour text.Colors
-	Format func(val interface{}) (text.Colors, string, error)
+	Format func(val any) (text.Colors, string, error)
 }
 
 // DetailSection represents a section in the details view
@@ -28,7 +28,7 @@ type DetailSection struct {
 
 // MarshalJSON implements json.Marshaler
 func (d DetailSection) MarshalJSON() ([]byte, error) {
-	jsonObject := map[string]interface{}{}
+	jsonObject := map[string]any{}
 	for _, r := range d.Rows {
 		jsonObject[r.Key] = r.Value
 	}
@@ -45,8 +45,8 @@ func (d Details) MarshalJSON() ([]byte, error) {
 	return json.MarshalIndent(mapSections(d.Sections), "", "  ")
 }
 
-func mapSections(sections []DetailSection) map[string]interface{} {
-	out := make(map[string]interface{})
+func mapSections(sections []DetailSection) map[string]any {
+	out := make(map[string]any)
 	for _, section := range sections {
 		if section.Key != "" {
 			out[section.Key] = mapSectionRows(section.Rows)
@@ -59,8 +59,8 @@ func mapSections(sections []DetailSection) map[string]interface{} {
 	return out
 }
 
-func mapSectionRows(rows []DetailRow) map[string]interface{} {
-	out := make(map[string]interface{})
+func mapSectionRows(rows []DetailRow) map[string]any {
+	out := make(map[string]any)
 	for _, row := range rows {
 		out[row.Key] = row.Value
 	}
@@ -103,6 +103,6 @@ func (d Details) MarshalHuman() ([]byte, error) {
 }
 
 // MarshalRawMap implements output.Output
-func (d Details) MarshalRawMap() (map[string]interface{}, error) {
+func (d Details) MarshalRawMap() (map[string]any, error) {
 	return mapSections(d.Sections), nil
 }
