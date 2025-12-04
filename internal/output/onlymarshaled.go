@@ -27,7 +27,7 @@ func (d OnlyMarshaled) MarshalJSON() ([]byte, error) {
 // wants and it is down to the command itself to provide that.
 func (d OnlyMarshaled) MarshalHuman() ([]byte, error) {
 	if errValue, ok := d.Value.(error); ok {
-		return []byte(fmt.Sprintf("ERROR: %v", errValue)), nil
+		return fmt.Appendf(nil, "ERROR: %v", errValue), nil
 	}
 	return []byte{}, nil
 }
