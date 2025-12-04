@@ -155,8 +155,6 @@ Flags:
 			expectedFileContents: exampleKubernetesKubeconfig("write-to-non-empty-file-with-override"),
 		},
 	} {
-		tt := tt
-
 		t.Run(tt.name, func(t *testing.T) {
 			mService := smock.Service{}
 			mService.On("GetKubernetesClusters", mock.Anything).
