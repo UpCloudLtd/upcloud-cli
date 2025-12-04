@@ -60,11 +60,9 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 	var wg sync.WaitGroup
 	var rules *upcloud.FirewallRules
 	var fwRuleErr error
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
+	wg.Go(func() {
 		rules, fwRuleErr = exec.Firewall().GetFirewallRules(exec.Context(), &request.GetFirewallRulesRequest{ServerUUID: arg})
-	}()
+	})
 	server, err := exec.Server().GetServerDetails(exec.Context(), &request.GetServerDetailsRequest{UUID: arg})
 	if err != nil {
 		return nil, err
