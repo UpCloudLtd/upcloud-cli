@@ -3,6 +3,7 @@ package output
 import (
 	"encoding/json"
 	"fmt"
+	"maps"
 
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
@@ -51,9 +52,7 @@ func mapSections(sections []DetailSection) map[string]any {
 		if section.Key != "" {
 			out[section.Key] = mapSectionRows(section.Rows)
 		} else {
-			for k, v := range mapSectionRows(section.Rows) {
-				out[k] = v
-			}
+			maps.Copy(out, mapSectionRows(section.Rows))
 		}
 	}
 	return out

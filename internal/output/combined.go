@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"maps"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
 )
@@ -47,9 +48,7 @@ func flattenSections(m Combined) map[string]any {
 			if err != nil {
 				panic(fmt.Sprintf("cannot marshal '%v' to raw output", sec.Key))
 			}
-			for k, v := range rowOut {
-				out[k] = v
-			}
+			maps.Copy(out, rowOut)
 		}
 	}
 
