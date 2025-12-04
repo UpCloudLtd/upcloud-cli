@@ -67,7 +67,7 @@ func (m Combined) MarshalHuman() ([]byte, error) {
 		if _, ok := sec.Contents.(Details); !ok && sec.Title != "" {
 			// skip drawing title for details, as details handles its own title drawing
 			// TODO: a bit confusing.. probably should refactor?
-			out = append(out, []byte(fmt.Sprintf("  %v\n", ui.DefaultHeaderColours.Sprint(sec.Title)))...)
+			out = append(out, fmt.Appendf(nil, "  %v\n", ui.DefaultHeaderColours.Sprint(sec.Title))...)
 		}
 		if _, ok := sec.Contents.(Table); ok {
 			// this is a table, indent it
