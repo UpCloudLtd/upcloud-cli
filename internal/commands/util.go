@@ -227,12 +227,7 @@ func IsDeprecatedAliasUsed(deprecatedAlias string) bool {
 		return false
 	}
 
-	for _, arg := range os.Args[1:] {
-		if arg == deprecatedAlias {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(os.Args[1:], deprecatedAlias)
 }
 
 // PrintDeprecationWarning prints a deprecation message
