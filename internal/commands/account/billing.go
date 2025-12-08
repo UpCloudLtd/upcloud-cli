@@ -63,15 +63,9 @@ func (s *billingCommand) ExecuteWithoutArguments(exec commands.Executor) (output
 		return nil, err
 	}
 
-	createCategorySections := func() []output.DetailSection {
-		sections := []output.DetailSection{
-			{
-				Rows: []output.DetailRow{
-					{Title: "Currency:", Key: "currency", Value: summary.Currency},
-					{Title: "Total Amount:", Key: "total_amount", Value: summary.TotalAmount},
-				},
-			},
-		}
+	createCategorySections := func() []output.CombinedSection {
+		var sections []output.CombinedSection
+		var summaryRows []output.TableRow
 
 		categories := map[string]*upcloud.BillingCategory{
 			"Servers":                 summary.Servers,
@@ -86,13 +80,7 @@ func (s *billingCommand) ExecuteWithoutArguments(exec commands.Executor) (output
 
 		for categoryName, category := range categories {
 			if category != nil {
-				section := output.DetailSection{
-					Title: categoryName,
-					Rows: []output.DetailRow{
-						{Title: "Total Amount:", Key: "total_amount", Value: category.TotalAmount},
-					},
-				}
-
+				summaryRows = append(summaryRows, output.TableRow{categoryName, category.TotalAmount})
 				resourceGroups := map[string]*upcloud.BillingResourceGroup{
 					"Server":                 category.Server,
 					"Managed Database":       category.ManagedDatabase,
@@ -107,47 +95,53 @@ func (s *billingCommand) ExecuteWithoutArguments(exec commands.Executor) (output
 				}
 
 				for groupName, group := range resourceGroups {
-					if group != nil {
-						section.Rows = append(section.Rows, output.DetailRow{
-							Title: fmt.Sprintf("%s Total:", groupName),
-							Key:   fmt.Sprintf("%s_total", groupName),
-							Value: group.TotalAmount,
-						})
-
-						// Add individual resources
-						for i, resource := range group.Resources {
-							section.Rows = append(section.Rows, output.DetailRow{
-								Title: fmt.Sprintf("Resource %d ID:", i+1),
-								Key:   fmt.Sprintf("%s_resource_%d_id", groupName, i+1),
-								Value: resource.ResourceID,
-							})
-							section.Rows = append(section.Rows, output.DetailRow{
-								Title: fmt.Sprintf("Resource %d Amount:", i+1),
-								Key:   fmt.Sprintf("%s_resource_%d_amount", groupName, i+1),
-								Value: resource.Amount,
-							})
-							section.Rows = append(section.Rows, output.DetailRow{
-								Title: fmt.Sprintf("Resource %d Hours:", i+1),
-								Key:   fmt.Sprintf("%s_resource_%d_hours", groupName, i+1),
-								Value: resource.Hours,
+					if group != nil && len(group.Resources) > 0 {
+						var resourceRows []output.TableRow
+						for _, resource := range group.Resources {
+							resourceRows = append(resourceRows, output.TableRow{
+								resource.ResourceID,
+								resource.Amount,
+								resource.Hours,
 							})
 						}
+
+						sections = append(sections, output.CombinedSection{
+							Key:   fmt.Sprintf("%s_%s_resources", categoryName, groupName),
+							Title: fmt.Sprintf("%s - %s Resources:", categoryName, groupName),
+							Contents: output.Table{
+								Columns: []output.TableColumn{
+									{Key: "resource_id", Header: "Resource ID"},
+									{Key: "amount", Header: "Amount"},
+									{Key: "hours", Header: "Hours"},
+								},
+								Rows:         resourceRows,
+								EmptyMessage: fmt.Sprintf("No resources for %s.", groupName),
+							},
+						})
 					}
 				}
-
-				sections = append(sections, section)
 			}
 		}
 
+		summaryRows = append(summaryRows, output.TableRow{"Total", summary.TotalAmount})
+		sections = append([]output.CombinedSection{{
+			Key:   "summary",
+			Title: "Summary:",
+			Contents: output.Table{
+				Columns: []output.TableColumn{
+					{Key: "resource", Header: "Resource"},
+					{Key: "total_amount", Header: "Amount"},
+				},
+				Rows: summaryRows,
+			},
+		}}, sections...)
 		return sections
 	}
 
-	details := output.Details{
-		Sections: createCategorySections(),
-	}
+	combined := output.Combined(createCategorySections())
 
 	return output.MarshaledWithHumanOutput{
 		Value:  summary,
-		Output: details,
+		Output: combined,
 	}, nil
 }
