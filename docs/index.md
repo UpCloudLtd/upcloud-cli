@@ -223,7 +223,7 @@ On bash, the completions depend on `bash-completion` package. Install and config
 
 To be able to manage your UpCloud resources, you need to configure credentials for `upctl` and enable API access for these credentials.
 
-Define the credentials either by setting `UPCLOUD_USERNAME` and `UPCLOUD_PASSWORD` environmental variables or `UPCLOUD_TOKEN` environment variable,
+Define the credentials either by setting `UPCLOUD_USERNAME` and `UPCLOUD_PASSWORD` environmental variables or `UPCLOUD_TOKEN` environment variable (recommended for CI/CD and automated workflows),
 or in the `upctl` config file (default `~/.config/upctl.yaml`, overridable with `--config /path/to/upctl.yaml`):
 
 ```yaml
