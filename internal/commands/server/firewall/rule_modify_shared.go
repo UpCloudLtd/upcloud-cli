@@ -53,9 +53,9 @@ func configureRuleFilterFlagsPostAdd(cobraCmd *cobra.Command) {
 	commands.Must(cobraCmd.RegisterFlagCompletionFunc("comment", cobra.NoFileCompletions))
 	commands.Must(cobraCmd.RegisterFlagCompletionFunc("direction", cobra.FixedCompletions(directions, cobra.ShellCompDirectiveNoFileComp)))
 	commands.Must(cobraCmd.RegisterFlagCompletionFunc("protocol", cobra.FixedCompletions(protocols, cobra.ShellCompDirectiveNoFileComp)))
-	commands.Must(cobraCmd.RegisterFlagCompletionFunc("dest-port", cobra.NoFileCompletions))
-	commands.Must(cobraCmd.RegisterFlagCompletionFunc("src-address", cobra.NoFileCompletions))
-	commands.Must(cobraCmd.RegisterFlagCompletionFunc("skip-confirmation", cobra.NoFileCompletions))
+	commands.Must(cobraCmd.RegisterFlagCompletionFunc("dest-port", completeCommonPorts))
+	commands.Must(cobraCmd.RegisterFlagCompletionFunc("src-address", completeIPAddress))
+	commands.Must(cobraCmd.RegisterFlagCompletionFunc("skip-confirmation", completeSkipConfirmation))
 }
 
 // findMatchingRules finds rules matching the specified filters
