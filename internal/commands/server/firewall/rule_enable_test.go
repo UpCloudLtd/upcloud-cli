@@ -24,6 +24,7 @@ func TestRuleEnableCommand(t *testing.T) {
 				Direction: "in",
 				Action:    "drop",
 				Protocol:  "tcp",
+				Comment:   "Test rule",
 			},
 			{
 				Position:  2,
@@ -96,6 +97,12 @@ func TestRuleEnableCommand(t *testing.T) {
 			flags:       []string{"--position", "99"},
 			arg:         serverUUID,
 			expectedErr: "firewall rule at position 99 not found on server",
+		},
+		{
+			name:        "Skip confirmation set to 0 requires confirmation for single rule",
+			flags:       []string{"--comment", "Test", "--skip-confirmation", "0"},
+			arg:         serverUUID,
+			expectedErr: "would enable 1 rules (exceeds skip-confirmation=0)",
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
