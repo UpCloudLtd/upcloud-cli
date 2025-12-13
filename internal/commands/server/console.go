@@ -250,6 +250,7 @@ func (s *consoleCommand) getAvailableVNCClients() []vncClient {
 			executable: "open",
 			buildArgs: func(host string, port int, passFile string, fullscreen, viewOnly bool) []string {
 				// macOS Screen Sharing prompts for password interactively
+				// Note: fullscreen and viewOnly are not supported by macOS Screen Sharing
 				return []string{fmt.Sprintf("vnc://%s:%d", host, port)}
 			},
 		})
@@ -263,7 +264,16 @@ func (s *consoleCommand) getAvailableVNCClients() []vncClient {
 			executable: "remmina",
 			buildArgs: func(host string, port int, passFile string, fullscreen, viewOnly bool) []string {
 				// Remmina will prompt for password interactively
-				return []string{"-c", fmt.Sprintf("vnc://%s:%d", host, port)}
+				args := []string{}
+				if fullscreen {
+					args = append(args, "--enable-fullscreen")
+				}
+				args = append(args, "-c", fmt.Sprintf("vnc://%s:%d", host, port))
+				// Note: viewOnly is not supported by Remmina command-line arguments
+				if viewOnly {
+					args = append(args, "--set-option", "ViewOnly=1")
+				}
+				return args
 			},
 		})
 		clients = append(clients, tigervncClient())
