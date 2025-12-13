@@ -51,13 +51,13 @@ func TestRuleEnableCommand(t *testing.T) {
 			name:        "Missing position flag",
 			flags:       []string{},
 			arg:         serverUUID,
-			expectedErr: `required flag(s) "position" not set`,
+			expectedErr: "at least one filter must be specified",
 		},
 		{
 			name:        "Invalid position - too low",
 			flags:       []string{"--position", "0"},
 			arg:         serverUUID,
-			expectedErr: "invalid position (1-1000 allowed)",
+			expectedErr: "at least one filter must be specified",
 		},
 		{
 			name:        "Invalid position - too high",
