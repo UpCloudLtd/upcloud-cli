@@ -171,52 +171,14 @@ func (s *consoleCommand) detectVNCClient() (*vncClient, error) {
 		"  Windows: Download from https://github.com/TigerVNC/tigervnc/releases")
 }
 
-// getAvailableVNCClients returns VNC clients that might be available on the system
+// getAvailableVNCClients returns VNC clients in platform-specific preferred order
 func (s *consoleCommand) getAvailableVNCClients() []vncClient {
-	clients := []vncClient{
-		{
-			name:       "tigervnc",
-			executable: "vncviewer",
-			buildArgs: func(host string, port int, passFile string, fullscreen, viewOnly bool) []string {
-				args := []string{}
-				if fullscreen {
-					args = append(args, "-fullscreen")
-				}
-				if viewOnly {
-					args = append(args, "-viewonly")
-				}
-				args = append(args, "-passwd", passFile, fmt.Sprintf("%s:%d", host, port))
-				return args
-			},
-		},
-		{
-			name:       "realvnc",
-			executable: "vncviewer",
-			buildArgs: func(host string, port int, passFile string, fullscreen, viewOnly bool) []string {
-				args := []string{"-passwd", passFile}
-				if viewOnly {
-					args = append(args, "-viewonly")
-				}
-				args = append(args, fmt.Sprintf("%s:%d", host, port))
-				return args
-			},
-		},
-	}
+	var clients []vncClient
 
-	// Remmina (common on Linux, especially GNOME)
-	// Note: Remmina requires encrypted passwords via vnc://user:pass@host format
-	// For now, we just launch it and let user enter password interactively
-	clients = append(clients, vncClient{
-		name:       "remmina",
-		executable: "remmina",
-		buildArgs: func(host string, port int, passFile string, fullscreen, viewOnly bool) []string {
-			// Remmina will prompt for password interactively
-			return []string{"-c", fmt.Sprintf("vnc://%s:%d", host, port)}
-		},
-	})
-
-	// macOS-specific: built-in Screen Sharing
-	if runtime.GOOS == "darwin" {
+	// Platform-specific ordering: prefer native/built-in clients first
+	switch runtime.GOOS {
+	case "darwin":
+		// macOS: prefer built-in Screen Sharing, then TigerVNC
 		clients = append(clients, vncClient{
 			name:       "macos",
 			executable: "open",
@@ -225,9 +187,64 @@ func (s *consoleCommand) getAvailableVNCClients() []vncClient {
 				return []string{fmt.Sprintf("vnc://%s:%d", host, port)}
 			},
 		})
+		clients = append(clients, tigervncClient())
+		clients = append(clients, realvncClient())
+
+	case "linux":
+		// Linux: prefer Remmina (common on GNOME/Ubuntu), then TigerVNC
+		clients = append(clients, vncClient{
+			name:       "remmina",
+			executable: "remmina",
+			buildArgs: func(host string, port int, passFile string, fullscreen, viewOnly bool) []string {
+				// Remmina will prompt for password interactively
+				return []string{"-c", fmt.Sprintf("vnc://%s:%d", host, port)}
+			},
+		})
+		clients = append(clients, tigervncClient())
+		clients = append(clients, realvncClient())
+
+	default:
+		// Windows and others: TigerVNC first, then RealVNC
+		clients = append(clients, tigervncClient())
+		clients = append(clients, realvncClient())
 	}
 
 	return clients
+}
+
+// tigervncClient returns TigerVNC client configuration
+func tigervncClient() vncClient {
+	return vncClient{
+		name:       "tigervnc",
+		executable: "vncviewer",
+		buildArgs: func(host string, port int, passFile string, fullscreen, viewOnly bool) []string {
+			args := []string{}
+			if fullscreen {
+				args = append(args, "-fullscreen")
+			}
+			if viewOnly {
+				args = append(args, "-viewonly")
+			}
+			args = append(args, "-passwd", passFile, fmt.Sprintf("%s:%d", host, port))
+			return args
+		},
+	}
+}
+
+// realvncClient returns RealVNC client configuration
+func realvncClient() vncClient {
+	return vncClient{
+		name:       "realvnc",
+		executable: "vncviewer",
+		buildArgs: func(host string, port int, passFile string, fullscreen, viewOnly bool) []string {
+			args := []string{"-passwd", passFile}
+			if viewOnly {
+				args = append(args, "-viewonly")
+			}
+			args = append(args, fmt.Sprintf("%s:%d", host, port))
+			return args
+		},
+	}
 }
 
 // createSecurePasswordFile creates a temporary file with VNC password
