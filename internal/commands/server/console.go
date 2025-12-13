@@ -49,7 +49,7 @@ func (s *consoleCommand) InitCommand() {
 	s.AddFlags(flags)
 
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("viewer", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"tigervnc", "realvnc"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"tigervnc", "realvnc", "remmina", "macos"}, cobra.ShellCompDirectiveNoFileComp
 	}))
 }
 
@@ -91,7 +91,12 @@ func (s *consoleCommand) Execute(exec commands.Executor, uuid string) (output.Ou
 		return nil, err
 	}
 
-	exec.PushProgressSuccess(fmt.Sprintf("Launching %s to connect to %s...", client.name, serverDetails.Title))
+	// For clients that don't support password files, display the password
+	if client.name == "remmina" || client.name == "macos" {
+		exec.PushProgressSuccess(fmt.Sprintf("Launching %s to connect to %s...\nVNC Password: %s", client.name, serverDetails.Title, password))
+	} else {
+		exec.PushProgressSuccess(fmt.Sprintf("Launching %s to connect to %s...", client.name, serverDetails.Title))
+	}
 
 	// Create secure temporary password file
 	passFile, cleanup, err := createSecurePasswordFile(password)
@@ -156,10 +161,10 @@ func (s *consoleCommand) detectVNCClient() (*vncClient, error) {
 		}
 	}
 
-	return nil, fmt.Errorf("no VNC client found. Please install TigerVNC or RealVNC:\n" +
-		"  Ubuntu/Debian: sudo apt install tigervnc-viewer\n" +
-		"  macOS:         brew install --cask tiger-vnc-viewer\n" +
-		"  Windows:       Download from https://github.com/TigerVNC/tigervnc/releases")
+	return nil, fmt.Errorf("no VNC client found. Please install one of the following:\n" +
+		"  Linux:   sudo apt install tigervnc-viewer  (recommended, or remmina)\n" +
+		"  macOS:   brew install --cask tiger-vnc-viewer  (or use built-in Screen Sharing)\n" +
+		"  Windows: Download from https://github.com/TigerVNC/tigervnc/releases")
 }
 
 // getAvailableVNCClients returns VNC clients that might be available on the system
@@ -194,13 +199,25 @@ func (s *consoleCommand) getAvailableVNCClients() []vncClient {
 		},
 	}
 
-	// macOS-specific: built-in Screen Sharing (doesn't support password file)
+	// Remmina (common on Linux, especially GNOME)
+	// Note: Remmina requires encrypted passwords via vnc://user:pass@host format
+	// For now, we just launch it and let user enter password interactively
+	clients = append(clients, vncClient{
+		name:       "remmina",
+		executable: "remmina",
+		buildArgs: func(host string, port int, passFile string, fullscreen, viewOnly bool) []string {
+			// Remmina will prompt for password interactively
+			return []string{"-c", fmt.Sprintf("vnc://%s:%d", host, port)}
+		},
+	})
+
+	// macOS-specific: built-in Screen Sharing
 	if runtime.GOOS == "darwin" {
 		clients = append(clients, vncClient{
 			name:       "macos",
 			executable: "open",
 			buildArgs: func(host string, port int, passFile string, fullscreen, viewOnly bool) []string {
-				// macOS open vnc:// will prompt for password interactively
+				// macOS Screen Sharing prompts for password interactively
 				return []string{fmt.Sprintf("vnc://%s:%d", host, port)}
 			},
 		})
