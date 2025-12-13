@@ -46,9 +46,9 @@ func ConsoleCommand() commands.Command {
 func (s *consoleCommand) InitCommand() {
 	flags := &pflag.FlagSet{}
 	flags.StringVar(&s.viewer, "viewer", "", "VNC client to use (tigervnc, realvnc, remmina, macos)")
-	flags.BoolVar(&s.fullscreen, "fullscreen", false, "Start in fullscreen mode")
-	flags.BoolVar(&s.viewOnly, "view-only", false, "View only, no input")
-	flags.BoolVar(&s.showPassword, "show-password", false, "Display VNC password (required for some clients like Remmina and macOS Screen Sharing)")
+	flags.BoolVar(&s.fullscreen, "fullscreen", false, "Start in fullscreen mode (TigerVNC, Remmina)")
+	flags.BoolVar(&s.viewOnly, "view-only", false, "View only, no input (TigerVNC, RealVNC)")
+	flags.BoolVar(&s.showPassword, "show-password", false, "Display VNC password (required for Remmina and macOS Screen Sharing)")
 	s.AddFlags(flags)
 
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("viewer", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -269,10 +269,7 @@ func (s *consoleCommand) getAvailableVNCClients() []vncClient {
 					args = append(args, "--enable-fullscreen")
 				}
 				args = append(args, "-c", fmt.Sprintf("vnc://%s:%d", host, port))
-				// Note: viewOnly is not supported by Remmina command-line arguments
-				if viewOnly {
-					args = append(args, "--set-option", "ViewOnly=1")
-				}
+				// Note: viewOnly flag is not supported by Remmina (no command-line option available)
 				return args
 			},
 		})
