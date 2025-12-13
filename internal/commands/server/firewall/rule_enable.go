@@ -54,7 +54,7 @@ func (s *ruleEnableCommand) InitCommand() {
 	flagSet.StringVar(&s.ruleProtocol, "protocol", "", "Filter by protocol. Available: "+strings.Join(protocols, ", "))
 	flagSet.StringVar(&s.ruleDestPort, "dest-port", "", "Filter by destination port (matches both start and end)")
 	flagSet.StringVar(&s.ruleSrcAddress, "src-address", "", "Filter by source address (partial match)")
-	flagSet.IntVar(&s.skipConfirmation, "skip-confirmation", 1, "Maximum rules to modify without confirmation (0 = always confirm)")
+	flagSet.IntVar(&s.skipConfirmation, "skip-confirmation", 1, "Maximum rules to modify without confirmation. Use 0 to always require confirmation, even for a single rule.")
 	s.AddFlags(flagSet)
 
 	s.Cobra().MarkFlagsMutuallyExclusive("position", "comment")
