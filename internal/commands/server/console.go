@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"syscall"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
@@ -165,10 +166,75 @@ func (s *consoleCommand) detectVNCClient() (*vncClient, error) {
 		}
 	}
 
-	return nil, fmt.Errorf("no VNC client found. Please install one of the following:\n" +
-		"  Linux:   sudo apt install tigervnc-viewer  (recommended, or remmina)\n" +
-		"  macOS:   brew install --cask tiger-vnc-viewer  (or use built-in Screen Sharing)\n" +
-		"  Windows: Download from https://github.com/TigerVNC/tigervnc/releases")
+	// No client found - provide platform-specific installation instructions
+	return nil, fmt.Errorf("no VNC client found. Install one:\n%s", getInstallInstructions())
+}
+
+// getInstallInstructions returns platform-specific VNC client installation instructions
+func getInstallInstructions() string {
+	switch runtime.GOOS {
+	case "darwin":
+		return "  macOS:\n" +
+			"    Built-in Screen Sharing is available (no installation needed)\n" +
+			"    Or install TigerVNC: brew install --cask tiger-vnc-viewer"
+	case "linux":
+		// Check for specific distributions
+		distro := detectLinuxDistro()
+		switch distro {
+		case "ubuntu", "debian":
+			return "  Ubuntu/Debian:\n" +
+				"    sudo apt-get install -y remmina-plugin-vnc tigervnc-viewer"
+		case "fedora", "rhel", "centos":
+			return "  Fedora/RHEL/CentOS:\n" +
+				"    sudo dnf install -y remmina tigervnc"
+		case "arch":
+			return "  Arch Linux:\n" +
+				"    sudo pacman -S remmina tigervnc"
+		default:
+			return "  Linux (generic):\n" +
+				"    Debian/Ubuntu:     sudo apt-get install -y remmina-plugin-vnc tigervnc-viewer\n" +
+				"    Fedora/RHEL:       sudo dnf install -y remmina tigervnc\n" +
+				"    Arch:              sudo pacman -S remmina tigervnc\n" +
+				"    Or use your package manager to install remmina or tigervnc-viewer"
+		}
+	case "windows":
+		return "  Windows:\n" +
+			"    Download TigerVNC from: https://github.com/TigerVNC/tigervnc/releases\n" +
+			"    Or RealVNC from: https://www.realvnc.com/en/connect/download/viewer/"
+	default:
+		return "  Install TigerVNC or RealVNC for your platform"
+	}
+}
+
+// detectLinuxDistro attempts to detect the Linux distribution
+func detectLinuxDistro() string {
+	// Try reading /etc/os-release
+	data, err := os.ReadFile("/etc/os-release")
+	if err != nil {
+		return ""
+	}
+
+	content := string(data)
+	if strings.Contains(strings.ToLower(content), "ubuntu") {
+		return "ubuntu"
+	}
+	if strings.Contains(strings.ToLower(content), "debian") {
+		return "debian"
+	}
+	if strings.Contains(strings.ToLower(content), "fedora") {
+		return "fedora"
+	}
+	if strings.Contains(strings.ToLower(content), "rhel") || strings.Contains(strings.ToLower(content), "red hat") {
+		return "rhel"
+	}
+	if strings.Contains(strings.ToLower(content), "centos") {
+		return "centos"
+	}
+	if strings.Contains(strings.ToLower(content), "arch") {
+		return "arch"
+	}
+
+	return ""
 }
 
 // getAvailableVNCClients returns VNC clients in platform-specific preferred order
