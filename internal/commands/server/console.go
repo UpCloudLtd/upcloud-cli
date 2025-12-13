@@ -21,9 +21,10 @@ import (
 
 type consoleCommand struct {
 	*commands.BaseCommand
-	viewer     string
-	fullscreen bool
-	viewOnly   bool
+	viewer       string
+	fullscreen   bool
+	viewOnly     bool
+	showPassword bool
 	completion.Server
 	resolver.CachingServer
 }
@@ -43,9 +44,10 @@ func ConsoleCommand() commands.Command {
 // InitCommand implements Command.InitCommand
 func (s *consoleCommand) InitCommand() {
 	flags := &pflag.FlagSet{}
-	flags.StringVar(&s.viewer, "viewer", "", "VNC client to use (tigervnc, realvnc)")
+	flags.StringVar(&s.viewer, "viewer", "", "VNC client to use (tigervnc, realvnc, remmina, macos)")
 	flags.BoolVar(&s.fullscreen, "fullscreen", false, "Start in fullscreen mode")
 	flags.BoolVar(&s.viewOnly, "view-only", false, "View only, no input")
+	flags.BoolVar(&s.showPassword, "show-password", false, "Display VNC password (required for some clients like Remmina and macOS Screen Sharing)")
 	s.AddFlags(flags)
 
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("viewer", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -91,9 +93,11 @@ func (s *consoleCommand) Execute(exec commands.Executor, uuid string) (output.Ou
 		return nil, err
 	}
 
-	// For clients that don't support password files, display the password
-	if client.name == "remmina" || client.name == "macos" {
+	// Display password if explicitly requested or if using a client that requires it
+	if s.showPassword {
 		exec.PushProgressSuccess(fmt.Sprintf("Launching %s to connect to %s...\nVNC Password: %s", client.name, serverDetails.Title, password))
+	} else if client.name == "remmina" || client.name == "macos" {
+		exec.PushProgressSuccess(fmt.Sprintf("Launching %s to connect to %s...\nNote: Use --show-password flag to display the VNC password for manual entry.", client.name, serverDetails.Title))
 	} else {
 		exec.PushProgressSuccess(fmt.Sprintf("Launching %s to connect to %s...", client.name, serverDetails.Title))
 	}
