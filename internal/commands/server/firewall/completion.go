@@ -37,9 +37,8 @@ func parseServicesFile() []string {
 		desc string
 	}{
 		{"22", "SSH"},
-		{"80", "HTTP"},
+		{"80", "HTTP (or HTTPS w/TLS)"},
 		{"443", "HTTPS"},
-		{"21", "FTP"},
 		{"25", "SMTP"},
 		{"53", "DNS"},
 		{"110", "POP3"},
@@ -47,11 +46,9 @@ func parseServicesFile() []string {
 		{"3306", "MySQL"},
 		{"5432", "PostgreSQL"},
 		{"6379", "Redis"},
-		{"8080", "HTTP-Alt"},
+		{"8080", "HTTP (or HTTPS w/TLS)"},
 		{"8443", "HTTPS-Alt"},
-		{"3000", "Dev-Server"},
-		{"5000", "Dev-Server"},
-		{"8000", "Dev-Server"},
+		{"8000", "HTTP (or HTTPS w/TLS)"},
 	}
 
 	for _, cp := range commonPorts {
