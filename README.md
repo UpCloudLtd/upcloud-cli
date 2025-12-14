@@ -10,7 +10,7 @@ to control your resources from the command line or any compatible interface.
 
 For instructions on how to install `upctl`, configure credentials, and run commands, see [Getting started](https://upcloudltd.github.io/upcloud-cli/) instructions in the documentation.
 
-For CI/CD and automated workflows, use the `UPCLOUD_TOKEN` environment variable instead of username and password credentials.
+We recommend using API tokens for authentication: configure the token in `~/.config/upctl.yaml` or set the `UPCLOUD_TOKEN` environment variable instead of username and password credentials.
 
 ## Exit codes
 
