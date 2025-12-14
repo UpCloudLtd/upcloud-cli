@@ -298,7 +298,7 @@ func tigervncClient() vncClient {
 			if viewOnly {
 				args = append(args, "-viewonly")
 			}
-			args = append(args, "-passwd", passFile, fmt.Sprintf("%s:%d", host, port))
+			args = append(args, "-passwd", passFile, fmt.Sprintf("%s::%d", host, port))
 			return args
 		},
 	}
@@ -314,7 +314,7 @@ func realvncClient() vncClient {
 			if viewOnly {
 				args = append(args, "-viewonly")
 			}
-			args = append(args, fmt.Sprintf("%s:%d", host, port))
+			args = append(args, fmt.Sprintf("%s::%d", host, port))
 			return args
 		},
 	}
