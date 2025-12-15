@@ -7,6 +7,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/account/token"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/all"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/auditlog"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/billing"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/database"
 	databaseindex "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/database/index"
 	databaseproperties "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/database/properties"
@@ -144,6 +145,11 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	commands.BuildCommand(token.ListCommand(), tokenCommand.Cobra(), conf)
 	commands.BuildCommand(token.ShowCommand(), tokenCommand.Cobra(), conf)
 	commands.BuildCommand(token.DeleteCommand(), tokenCommand.Cobra(), conf)
+
+	// Billing
+	billingCommand := commands.BuildCommand(billing.BaseBillingCommand(), rootCmd, conf)
+	commands.BuildCommand(billing.SummaryCommand(), billingCommand.Cobra(), conf)
+	commands.BuildCommand(billing.ListCommand(), billingCommand.Cobra(), conf)
 
 	// Zone
 	zoneCommand := commands.BuildCommand(zone.BaseZoneCommand(), rootCmd, conf)
