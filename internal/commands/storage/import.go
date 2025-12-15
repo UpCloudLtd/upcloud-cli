@@ -25,6 +25,73 @@ import (
 	"github.com/spf13/pflag"
 )
 
+// supportedContentTypes maps file extensions to IANA-registered content types
+// based on UpCloud Storage Import API documentation
+var supportedContentTypes = map[string]string{
+	".gz":    "application/gzip",
+	".xz":    "application/x-xz",
+	".iso":   "application/octet-stream",
+	".img":   "application/octet-stream",
+	".raw":   "application/octet-stream",
+	".qcow2": "application/octet-stream",
+	".tar":   "application/x-tar",
+	".bz2":   "application/x-bzip2",
+	".7z":    "application/x-7z-compressed",
+	".zip":   "application/zip",
+}
+
+// getSupportedExtensionsText returns a formatted string of supported file extensions
+func getSupportedExtensionsText() string {
+	var extensions []string
+	for ext := range supportedContentTypes {
+		extensions = append(extensions, ext)
+	}
+	// Sort for consistent output
+	for i := 0; i < len(extensions); i++ {
+		for j := i + 1; j < len(extensions); j++ {
+			if extensions[i] > extensions[j] {
+				extensions[i], extensions[j] = extensions[j], extensions[i]
+			}
+		}
+	}
+	var result string
+	for i, ext := range extensions {
+		if i > 0 {
+			result += ", "
+		}
+		result += ext
+	}
+	return result
+}
+
+// getSupportedContentTypesText returns a formatted string of supported content types
+func getSupportedContentTypesText() string {
+	seen := make(map[string]bool)
+	var types []string
+	for _, ct := range supportedContentTypes {
+		if !seen[ct] {
+			types = append(types, ct)
+			seen[ct] = true
+		}
+	}
+	// Sort for consistent output
+	for i := 0; i < len(types); i++ {
+		for j := i + 1; j < len(types); j++ {
+			if types[i] > types[j] {
+				types[i], types[j] = types[j], types[i]
+			}
+		}
+	}
+	var result string
+	for i, ct := range types {
+		if i > 0 {
+			result += ", "
+		}
+		result += ct
+	}
+	return result
+}
+
 // ImportCommand creates the "storage import" command
 func ImportCommand() commands.Command {
 	return &importCommand{
@@ -70,9 +137,9 @@ type importCommand struct {
 // InitCommand implements Command.InitCommand
 func (s *importCommand) InitCommand() {
 	flagSet := &pflag.FlagSet{}
-	flagSet.StringVar(&s.sourceLocation, "source-location", "", "Location of the source of the import. Can be a file or a URL.")
+	flagSet.StringVar(&s.sourceLocation, "source-location", "", fmt.Sprintf("Location of the source of the import. Can be a file or a URL. Supported file extensions: %s", getSupportedExtensionsText()))
 	flagSet.StringVar(&s.existingStorageUUIDOrName, "storage", "", "Import to an existing storage. Storage must be large enough and must be undetached or the server where the storage is attached must be in shutdown state.")
-	flagSet.StringVar(&s.contentType, "content-type", "", "Content type of the file being imported. If not specified, it will be automatically detected based on file extension. Supported types: application/gzip, application/x-xz, application/x-tar, application/x-bzip2, application/x-7z-compressed, application/zip, application/octet-stream")
+	flagSet.StringVar(&s.contentType, "content-type", "", fmt.Sprintf("Content type of the file being imported. If not specified, it will be automatically detected based on file extension. Supported types: %s", getSupportedContentTypesText()))
 	config.AddToggleFlag(flagSet, &s.noWait, "no-wait", false, "When importing from remote url, do not wait until the import finishes or storage is in online state. If set, command will exit after import process has been initialized.")
 	config.AddToggleFlag(flagSet, &s.wait, "wait", false, "Wait for storage to be in online state before returning.")
 	applyCreateFlags(flagSet, &s.createParams, defaultCreateParams)
@@ -354,23 +421,8 @@ func pollStorageImportStatus(exec commands.Executor, uuid string, statusChan cha
 }
 
 func getContentType(filename string) string {
-	// Map file extensions to their IANA-registered content types
-	// Based on UpCloud Storage Import API documentation
-	contentTypes := map[string]string{
-		".gz":  "application/gzip",
-		".xz":  "application/x-xz",
-		".iso": "application/octet-stream",
-		".img": "application/octet-stream",
-		".raw": "application/octet-stream",
-		".qcow2": "application/octet-stream",
-		".tar": "application/x-tar",
-		".bz2": "application/x-bzip2",
-		".7z":  "application/x-7z-compressed",
-		".zip": "application/zip",
-	}
-
 	ext := filepath.Ext(filename)
-	if contentType, exists := contentTypes[ext]; exists {
+	if contentType, exists := supportedContentTypes[ext]; exists {
 		return contentType
 	}
 
