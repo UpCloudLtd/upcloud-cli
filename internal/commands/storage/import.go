@@ -60,6 +60,7 @@ type importCommand struct {
 	existingStorageUUIDOrName string
 	noWait                    config.OptionalBoolean
 	wait                      config.OptionalBoolean
+	contentType               string
 
 	createParams createParams
 
@@ -71,6 +72,7 @@ func (s *importCommand) InitCommand() {
 	flagSet := &pflag.FlagSet{}
 	flagSet.StringVar(&s.sourceLocation, "source-location", "", "Location of the source of the import. Can be a file or a URL.")
 	flagSet.StringVar(&s.existingStorageUUIDOrName, "storage", "", "Import to an existing storage. Storage must be large enough and must be undetached or the server where the storage is attached must be in shutdown state.")
+	flagSet.StringVar(&s.contentType, "content-type", "", "Content type of the file being imported. If not specified, it will be automatically detected based on file extension. Supported types: application/gzip, application/x-xz, application/x-tar, application/x-bzip2, application/x-7z-compressed, application/zip, application/octet-stream")
 	config.AddToggleFlag(flagSet, &s.noWait, "no-wait", false, "When importing from remote url, do not wait until the import finishes or storage is in online state. If set, command will exit after import process has been initialized.")
 	config.AddToggleFlag(flagSet, &s.wait, "wait", false, "Wait for storage to be in online state before returning.")
 	applyCreateFlags(flagSet, &s.createParams, defaultCreateParams)
@@ -206,7 +208,7 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		if err != nil {
 			return commands.HandleError(exec, msg, fmt.Errorf("cannot open local file: %w", err))
 		}
-		go importLocalFile(exec, storageToImportTo.UUID, sourceFile, statusChan)
+		go importLocalFile(exec, storageToImportTo.UUID, sourceFile, s.contentType, statusChan)
 	}
 
 	// import has been triggered, read updates from the process
@@ -351,19 +353,42 @@ func pollStorageImportStatus(exec commands.Executor, uuid string, statusChan cha
 	}
 }
 
-func importLocalFile(exec commands.Executor, uuid string, file *os.File, statusChan chan<- storageImportStatus) {
+func getContentType(filename string) string {
+	// Map file extensions to their IANA-registered content types
+	// Based on UpCloud Storage Import API documentation
+	contentTypes := map[string]string{
+		".gz":  "application/gzip",
+		".xz":  "application/x-xz",
+		".iso": "application/octet-stream",
+		".img": "application/octet-stream",
+		".raw": "application/octet-stream",
+		".qcow2": "application/octet-stream",
+		".tar": "application/x-tar",
+		".bz2": "application/x-bzip2",
+		".7z":  "application/x-7z-compressed",
+		".zip": "application/zip",
+	}
+
+	ext := filepath.Ext(filename)
+	if contentType, exists := contentTypes[ext]; exists {
+		return contentType
+	}
+
+	// Default to octet-stream for unknown types
+	return "application/octet-stream"
+}
+
+func importLocalFile(exec commands.Executor, uuid string, file *os.File, userContentType string, statusChan chan<- storageImportStatus) {
 	// make sure we close the channel when exiting import
 	defer close(statusChan)
 	chDone := make(chan storageImportStatus)
 	reader := &readerCounter{source: file}
 
 	// figure out content type
-	contentType := "application/octet-stream"
-	switch filepath.Ext(file.Name()) {
-	case ".gz":
-		contentType = "application/gzip"
-	case ".xz":
-		contentType = "application/x-xz"
+	// use user-provided content type if specified, otherwise auto-detect
+	contentType := userContentType
+	if contentType == "" {
+		contentType = getContentType(file.Name())
 	}
 
 	go func() {

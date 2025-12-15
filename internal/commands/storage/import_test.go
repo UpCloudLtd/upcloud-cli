@@ -164,6 +164,33 @@ func TestImportCommand(t *testing.T) {
 	}
 }
 
+func TestGetContentType(t *testing.T) {
+	tests := []struct {
+		filename    string
+		expected    string
+	}{
+		{"image.iso", "application/octet-stream"},
+		{"image.img", "application/octet-stream"},
+		{"image.raw", "application/octet-stream"},
+		{"image.qcow2", "application/octet-stream"},
+		{"archive.gz", "application/gzip"},
+		{"archive.xz", "application/x-xz"},
+		{"archive.tar", "application/x-tar"},
+		{"archive.bz2", "application/x-bzip2"},
+		{"archive.7z", "application/x-7z-compressed"},
+		{"archive.zip", "application/zip"},
+		{"unknown.bin", "application/octet-stream"},
+		{"noextension", "application/octet-stream"},
+	}
+
+	for _, test := range tests {
+		t.Run(test.filename, func(t *testing.T) {
+			result := getContentType(test.filename)
+			assert.Equal(t, test.expected, result)
+		})
+	}
+}
+
 func TestParseSource(t *testing.T) {
 	for _, test := range []struct {
 		name                    string
