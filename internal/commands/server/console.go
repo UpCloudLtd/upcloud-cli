@@ -36,7 +36,7 @@ func ConsoleCommand() commands.Command {
 	return &consoleCommand{
 		BaseCommand: commands.New(
 			"console",
-			"Connect to server VNC console",
+			"Connect to server VNC console (supports macOS, Linux, WSL, Windows)",
 			"upctl server console 00038afc-e100-4e91-9d28-b9c463e7e9b4",
 			"upctl server console myserver --fullscreen",
 		),
@@ -245,7 +245,7 @@ func (s *consoleCommand) getAvailableVNCClients() []vncClient {
 	// Platform-specific ordering: prefer native/built-in clients first
 	switch runtime.GOOS {
 	case "darwin":
-		// macOS: prefer built-in Screen Sharing, then TigerVNC
+		// macOS: prefer built-in Screen Sharing, then TigerVNC/RealVNC
 		clients = append(clients, vncClient{
 			name:       "macos",
 			executable: "open",
@@ -259,7 +259,9 @@ func (s *consoleCommand) getAvailableVNCClients() []vncClient {
 		clients = append(clients, realvncClient())
 
 	case "linux":
-		// Linux: prefer Remmina (common on GNOME/Ubuntu), then TigerVNC
+		// Linux (including WSL): prefer Remmina (common on GNOME/Ubuntu), then TigerVNC/RealVNC
+		// WSL users can install: sudo apt-get install remmina-plugin-vnc tigervnc-viewer
+		// GUI works automatically via WSLg (WSL2 with X11 support)
 		clients = append(clients, vncClient{
 			name:       "remmina",
 			executable: "remmina",
@@ -278,7 +280,9 @@ func (s *consoleCommand) getAvailableVNCClients() []vncClient {
 		clients = append(clients, realvncClient())
 
 	default:
-		// Windows and others: TigerVNC first, then RealVNC
+		// Windows (native): Use TigerVNC or RealVNC
+		// Download from: https://github.com/TigerVNC/tigervnc/releases
+		// Or: https://www.realvnc.com/en/connect/download/viewer/
 		clients = append(clients, tigervncClient())
 		clients = append(clients, realvncClient())
 	}
