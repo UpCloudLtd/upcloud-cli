@@ -10,6 +10,7 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/KarpelesLab/vncpasswd"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
@@ -341,8 +342,9 @@ func createSecurePasswordFile(password string) (string, func(), error) {
 	// Create password file
 	passFile := filepath.Join(tmpDir, "password")
 
-	// Write password as plain text (TigerVNC -passwd accepts plain text)
-	if err := os.WriteFile(passFile, []byte(password), 0600); err != nil {
+	// Encrypt password using VNC's DES encryption (via vncpasswd library)
+	encryptedPassword := vncpasswd.Crypt(password)
+	if err := os.WriteFile(passFile, encryptedPassword, 0600); err != nil {
 		cleanup()
 		return "", nil, err
 	}
