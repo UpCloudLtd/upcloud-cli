@@ -166,8 +166,8 @@ func TestImportCommand(t *testing.T) {
 
 func TestGetContentType(t *testing.T) {
 	tests := []struct {
-		filename    string
-		expected    string
+		filename string
+		expected string
 	}{
 		{"image.iso", "application/octet-stream"},
 		{"image.img", "application/octet-stream"},
