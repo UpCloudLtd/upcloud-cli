@@ -35,12 +35,12 @@ jobs:
         with:
           go-version-file: go.mod
         if: matrix.language == 'go'
-      - uses: github/codeql-action/init@fe4161a26a8629af62121b670040955b330f9af2 # v4.31.6
+      - uses: github/codeql-action/init@1b168cd39490f61582a9beae412bb7057a6b2c4e # v4.31.8
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.language == 'go' && 'manual' || 'none' }}
       - run: make build install-docs-tools md-docs
         if: matrix.language == 'go'
-      - uses: github/codeql-action/analyze@fe4161a26a8629af62121b670040955b330f9af2 # v4.31.6
+      - uses: github/codeql-action/analyze@1b168cd39490f61582a9beae412bb7057a6b2c4e # v4.31.8
         with:
           category: /language:${{ matrix.language }}
