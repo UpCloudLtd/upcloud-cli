@@ -34,12 +34,12 @@ type listCommand struct {
 
 // resourceInfo holds resource information
 type resourceInfo struct {
-	Type       string
-	UUID       string
-	Name       string
-	Amount     float64
-	Hours      int
-	Currency   string
+	Type     string
+	UUID     string
+	Name     string
+	Amount   float64
+	Hours    int
+	Currency string
 }
 
 // InitCommand implements commands.Command
@@ -75,7 +75,7 @@ func (c *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 	}
 
 	// Fetch resource names
-	exec.PushProgressUpdateMessage(msg, msg + " (fetching resource names)")
+	exec.PushProgressUpdateMessage(msg, msg+" (fetching resource names)")
 
 	// Get all servers
 	servers, err := exec.Server().GetServers(exec.Context())
