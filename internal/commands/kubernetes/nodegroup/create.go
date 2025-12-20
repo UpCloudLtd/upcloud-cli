@@ -3,6 +3,7 @@ package nodegroup
 import (
 	"fmt"
 	"regexp"
+	"slices"
 	"strings"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
@@ -79,10 +80,8 @@ func validateStorageTier(tier string) error {
 		return nil // Empty is valid (uses plan default)
 	}
 
-	for _, validTier := range validStorageTiers {
-		if tier == validTier {
-			return nil
-		}
+	if slices.Contains(validStorageTiers, tier) {
+		return nil
 	}
 
 	return fmt.Errorf("invalid storage tier %q, must be one of: %s", tier, strings.Join(validStorageTiers, ", "))

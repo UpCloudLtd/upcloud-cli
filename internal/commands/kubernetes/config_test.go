@@ -155,8 +155,6 @@ Flags:
 			expectedFileContents: exampleKubernetesKubeconfig("write-to-non-empty-file-with-override"),
 		},
 	} {
-		tt := tt
-
 		t.Run(tt.name, func(t *testing.T) {
 			mService := smock.Service{}
 			mService.On("GetKubernetesClusters", mock.Anything).
@@ -269,7 +267,7 @@ func yamlToJSON(yamlIn []byte) []byte {
 		return []byte{}
 	}
 
-	var jsonObj interface{}
+	var jsonObj any
 	_ = yaml.Unmarshal(yamlIn, &jsonObj)
 
 	out, _ := json.MarshalIndent(jsonObj, "", "  ")

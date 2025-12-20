@@ -187,7 +187,7 @@ func (s *DataTable) Render() string {
 				cfg.Align = text.AlignRight
 			}
 			if _, ok := s.rows[0][pos].(time.Time); ok && cfg.Transformer == nil {
-				cfg.Transformer = func(val interface{}) string {
+				cfg.Transformer = func(val any) string {
 					tv, ok := val.(time.Time)
 					if !ok {
 						return fmt.Sprintf("%s", val)
@@ -196,7 +196,7 @@ func (s *DataTable) Render() string {
 				}
 			}
 			if _, ok := s.rows[0][pos].(float64); ok && cfg.Transformer == nil {
-				cfg.Transformer = func(val interface{}) string {
+				cfg.Transformer = func(val any) string {
 					fv, ok := val.(float64)
 					if !ok {
 						return fmt.Sprintf("%s", val)

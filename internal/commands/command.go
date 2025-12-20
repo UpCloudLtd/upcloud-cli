@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
@@ -161,12 +162,7 @@ func (s *BaseCommand) Aliases() []string {
 
 // isDeprecatedAlias checks if an alias is deprecated
 func (s *BaseCommand) isDeprecatedAlias(alias string) bool {
-	for _, deprecated := range s.deprecatedAliases {
-		if alias == deprecated {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(s.deprecatedAliases, alias)
 }
 
 func (s *BaseCommand) DeprecatedAliases() []string {

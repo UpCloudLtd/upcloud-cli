@@ -135,7 +135,7 @@ func (s *Config) IsSet(key string) bool {
 }
 
 // Get return the value of the key in the current namespace
-func (s *Config) Get(key string) interface{} {
+func (s *Config) Get(key string) any {
 	return s.viper.Get(key)
 }
 

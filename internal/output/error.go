@@ -15,7 +15,7 @@ type Error struct {
 func (e Error) MarshalJSON() ([]byte, error) {
 	marshaled, err := e.MarshalRawMap()
 	if err != nil {
-		return json.MarshalIndent(map[string]interface{}{
+		return json.MarshalIndent(map[string]any{
 			"error": err.Error(),
 		}, "", "  ")
 	}
@@ -30,8 +30,8 @@ func (e Error) MarshalHuman() ([]byte, error) {
 }
 
 // MarshalRawMap implements output.Output
-func (e Error) MarshalRawMap() (map[string]interface{}, error) {
-	m := make(map[string]interface{})
+func (e Error) MarshalRawMap() (map[string]any, error) {
+	m := make(map[string]any)
 	if e.Resolved != "" {
 		m["resource"] = e.Resolved
 	}
