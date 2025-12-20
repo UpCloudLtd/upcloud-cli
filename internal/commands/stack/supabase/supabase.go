@@ -11,7 +11,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/stack"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
-	"gopkg.in/yaml.v3"
+	"go.yaml.in/yaml/v3"
 )
 
 type ChartVersion string
