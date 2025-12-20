@@ -6,7 +6,7 @@ require (
 	dario.cat/mergo v1.0.2
 	github.com/UpCloudLtd/progress v1.0.3
 	github.com/UpCloudLtd/upcloud-go-api/credentials v0.1.1
-	github.com/UpCloudLtd/upcloud-go-api/v8 v8.31.1
+	github.com/UpCloudLtd/upcloud-go-api/v8 v8.32.0
 	github.com/adrg/xdg v0.5.3
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
 	github.com/gemalto/flume v1.0.0
