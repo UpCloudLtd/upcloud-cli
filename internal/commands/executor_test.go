@@ -55,25 +55,25 @@ func TestExecutor_WaitForError(t *testing.T) {
 
 type mockLogEntry struct {
 	Msg  string
-	Args []interface{}
+	Args []any
 }
 
 type mockLogger struct {
 	debugLines []mockLogEntry
 	infoLines  []mockLogEntry
 	errorLines []mockLogEntry
-	context    []interface{}
+	context    []any
 }
 
-func (m *mockLogger) Debug(msg string, args ...interface{}) {
+func (m *mockLogger) Debug(msg string, args ...any) {
 	m.debugLines = append(m.debugLines, mockLogEntry{msg, args})
 }
 
-func (m *mockLogger) Info(msg string, args ...interface{}) {
+func (m *mockLogger) Info(msg string, args ...any) {
 	m.infoLines = append(m.infoLines, mockLogEntry{msg, args})
 }
 
-func (m *mockLogger) Error(msg string, args ...interface{}) {
+func (m *mockLogger) Error(msg string, args ...any) {
 	m.errorLines = append(m.errorLines, mockLogEntry{msg, args})
 }
 
@@ -85,7 +85,7 @@ func (m mockLogger) IsInfo() bool {
 	return true
 }
 
-func (m mockLogger) With(args ...interface{}) flume.Logger {
+func (m mockLogger) With(args ...any) flume.Logger {
 	return &mockLogger{
 		context: append(m.context, args...),
 	}
@@ -94,7 +94,7 @@ func (m mockLogger) With(args ...interface{}) flume.Logger {
 func TestExecutor_Logging(t *testing.T) {
 	mService := &smock.Service{}
 	cfg := config.New()
-	logger := &mockLogger{context: []interface{}{"base", "context"}}
+	logger := &mockLogger{context: []any{"base", "context"}}
 	exec := NewExecutor(cfg, mService, logger)
 	exec.Debug("debug1", "hello", "world")
 	// create a contexted executor
@@ -104,15 +104,15 @@ func TestExecutor_Logging(t *testing.T) {
 	// make sure the main executor does not leak to the contexted one or vice versa
 	assert.Equal(t, &mockLogger{
 		debugLines: []mockLogEntry{
-			{Msg: "debug1", Args: []interface{}{"hello", "world"}},
-			{Msg: "debug2", Args: []interface{}{"hi", "earth"}},
+			{Msg: "debug1", Args: []any{"hello", "world"}},
+			{Msg: "debug2", Args: []any{"hi", "earth"}},
 		},
-		context: []interface{}{"base", "context"},
+		context: []any{"base", "context"},
 	}, logger)
 	assert.Equal(t, &mockLogger{
 		debugLines: []mockLogEntry{
-			{Msg: "debugcontext", Args: []interface{}{"helloz", "worldz"}},
+			{Msg: "debugcontext", Args: []any{"helloz", "worldz"}},
 		},
-		context: []interface{}{"base", "context", "added", "newcontext"},
+		context: []any{"base", "context", "added", "newcontext"},
 	}, contextExec.(*executorImpl).logger)
 }

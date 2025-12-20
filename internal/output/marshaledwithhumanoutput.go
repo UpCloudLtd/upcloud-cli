@@ -6,7 +6,7 @@ import (
 
 // MarshaledWithHumanOutput implements output.Command for a return value that passes through raw marshaled JSON or YAML and only affects human output. Like MarshaledWithHumanDetails, but allows more complex output.
 type MarshaledWithHumanOutput struct {
-	Value  interface{}
+	Value  any
 	Output Output
 }
 
@@ -22,6 +22,6 @@ func (d MarshaledWithHumanOutput) MarshalHuman() ([]byte, error) {
 }
 
 // MarshalRawMap implements output.Output
-func (d MarshaledWithHumanOutput) MarshalRawMap() (map[string]interface{}, error) {
+func (d MarshaledWithHumanOutput) MarshalRawMap() (map[string]any, error) {
 	return nil, errors.New("MarshaledWithHumanOutput output should not be used as part of multiple output, raw output is undefined")
 }

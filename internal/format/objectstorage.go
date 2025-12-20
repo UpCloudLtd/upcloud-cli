@@ -24,7 +24,7 @@ func objectStorageOperationalStateColour(state upcloud.ManagedObjectStorageOpera
 }
 
 // ObjectStorageOperationalState implements Format function for managed object storage operational states
-func ObjectStorageOperationalState(val interface{}) (text.Colors, string, error) {
+func ObjectStorageOperationalState(val any) (text.Colors, string, error) {
 	return usingColorFunction(objectStorageOperationalStateColour, val)
 }
 
@@ -39,6 +39,6 @@ func objectStorageConfiguredStatusColour(state upcloud.ManagedObjectStorageConfi
 }
 
 // ObjectStorageConfiguredStatus implements Format function for managed object storage configured statuses
-func ObjectStorageConfiguredStatus(val interface{}) (text.Colors, string, error) {
+func ObjectStorageConfiguredStatus(val any) (text.Colors, string, error) {
 	return usingColorFunction(objectStorageConfiguredStatusColour, val)
 }

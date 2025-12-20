@@ -274,7 +274,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 	}, nil
 }
 
-func formatShowIPAddresses(val interface{}) (text.Colors, string, error) {
+func formatShowIPAddresses(val any) (text.Colors, string, error) {
 	addresses, ok := val.(upcloud.IPAddressSlice)
 	if !ok {
 		return nil, "", fmt.Errorf("cannot parse IP addresses from %T, expected upcloud.IPAddressSlice", val)

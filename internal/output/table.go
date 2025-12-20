@@ -14,7 +14,7 @@ import (
 )
 
 // TableRow represents a single row of data in a table
-type TableRow []interface{}
+type TableRow []any
 
 // TableColumn defines how a particular column is rendered
 type TableColumn struct {
@@ -23,7 +23,7 @@ type TableColumn struct {
 	Hidden bool
 	config *table.ColumnConfig
 	Colour text.Colors
-	Format func(val interface{}) (text.Colors, string, error)
+	Format func(val any) (text.Colors, string, error)
 }
 
 // Table represents command output rendered as a table
@@ -34,10 +34,10 @@ type Table struct {
 	HideHeader   bool
 }
 
-func (s Table) asListOfMaps() []map[string]interface{} {
-	jmap := []map[string]interface{}{}
+func (s Table) asListOfMaps() []map[string]any {
+	jmap := []map[string]any{}
 	for _, row := range s.Rows {
-		jrow := map[string]interface{}{}
+		jrow := map[string]any{}
 		for i := range row {
 			jrow[s.Columns[i].Key] = row[i]
 		}
@@ -96,7 +96,7 @@ func (s Table) MarshalHuman() ([]byte, error) {
 				cfg.Align = text.AlignRight
 			}
 			if _, ok := s.Rows[0][pos].(time.Time); ok && cfg.Transformer == nil {
-				cfg.Transformer = func(val interface{}) string {
+				cfg.Transformer = func(val any) string {
 					tv, ok := val.(time.Time)
 					if !ok {
 						return fmt.Sprintf("%s", val)
@@ -105,7 +105,7 @@ func (s Table) MarshalHuman() ([]byte, error) {
 				}
 			}
 			if _, ok := s.Rows[0][pos].(float64); ok && cfg.Transformer == nil {
-				cfg.Transformer = func(val interface{}) string {
+				cfg.Transformer = func(val any) string {
 					fv, ok := val.(float64)
 					if !ok {
 						return fmt.Sprintf("%s", val)
@@ -153,9 +153,9 @@ func (s Table) MarshalHuman() ([]byte, error) {
 }
 
 // MarshalRawMap implements output.Output
-func (s Table) MarshalRawMap() (map[string]interface{}, error) {
+func (s Table) MarshalRawMap() (map[string]any, error) {
 	// TODO: make this better..
-	return map[string]interface{}{
+	return map[string]any{
 		"table": s.asListOfMaps(),
 	}, nil
 }
