@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.27.0] - 2025-12-31
+
 ### Added
 
 - In `kubernetes create`, allow waiting for cluster and its node-groups to reach running state with `--wait=all` flag. When using `--wait` or `--wait=cluster`, the command will wait only for the cluster to reach running state.
@@ -658,7 +660,8 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.26.0...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.27.0...HEAD
+[3.27.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.26.0...v3.27.0
 [3.26.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.25.0...v3.26.0
 [3.25.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.24.1...v3.25.0
 [3.24.1]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.24.0...v3.24.1
