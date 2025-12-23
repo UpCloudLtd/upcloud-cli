@@ -126,10 +126,7 @@ type findResult struct {
 }
 
 func findResources[T any](exec commands.Executor, wg *sync.WaitGroup, returnChan chan findResult, r resolver.CachingResolutionProvider[T], include, exclude []string) {
-	wg.Add(1)
-
-	go func() {
-		defer wg.Done()
+	wg.Go(func() {
 		var resources []Resource
 		matches, err := getMatches(exec, r, include, exclude)
 		if err != nil {
@@ -145,7 +142,7 @@ func findResources[T any](exec commands.Executor, wg *sync.WaitGroup, returnChan
 			resources = append(resources, resource)
 		}
 		returnChan <- findResult{Resources: resources, Error: nil}
-	}()
+	})
 }
 
 func ListResources(exec commands.Executor, include, exclude []string) ([]Resource, error) {
@@ -318,7 +315,7 @@ func DeleteResources(exec commands.Executor, resources []Resource, workerCount i
 	}
 
 	workerQueue := make(chan int, workerCount)
-	for n := 0; n < workerCount; n++ {
+	for n := range workerCount {
 		workerQueue <- n
 	}
 

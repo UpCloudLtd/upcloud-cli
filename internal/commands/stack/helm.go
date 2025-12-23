@@ -44,7 +44,7 @@ func InitHelmActionConfig(releaseName string, logFile *os.File) (*action.Configu
 		settings.RESTClientGetter(),
 		releaseName,
 		driverName,
-		func(format string, v ...interface{}) {
+		func(format string, v ...any) {
 			msg := fmt.Sprintf(format, v...)
 
 			// Write all messages to the log file
@@ -185,9 +185,9 @@ func loadHelmChartsFromRepo(actionConfig *action.Configuration, repoURL, chartNa
 
 // MergeHelmValueFiles merges multiple Helm values files into a single map.
 // This function is used to combine values from multiple files, allowing for overrides.
-func MergeHelmValueFiles(valuesFiles []string) (map[string]interface{}, error) {
+func MergeHelmValueFiles(valuesFiles []string) (map[string]any, error) {
 	// Merge values files with override
-	mergedVals := map[string]interface{}{}
+	mergedVals := map[string]any{}
 	for _, vf := range valuesFiles {
 		vals, err := chartutil.ReadValuesFile(vf)
 		if err != nil {

@@ -120,7 +120,7 @@ func getNetworks(exec commands.Executor, attached upcloud.RouterNetworkSlice) ([
 		return []upcloud.Network{}, nil
 	}
 	idleWorkers := make(chan int, maxRouterActions)
-	for n := 0; n < maxRouterActions; n++ {
+	for n := range maxRouterActions {
 		idleWorkers <- n
 	}
 	results := make(chan *upcloud.Network)

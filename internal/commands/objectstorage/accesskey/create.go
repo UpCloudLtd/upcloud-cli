@@ -55,7 +55,7 @@ func (s *createCommand) Execute(exec commands.Executor, serviceUUID string) (out
 	exec.PushProgressSuccess(msg)
 
 	// Handle SecretAccessKey which might be a pointer
-	var secretKey interface{}
+	var secretKey any
 	if res.SecretAccessKey != nil {
 		secretKey = *res.SecretAccessKey
 	} else {

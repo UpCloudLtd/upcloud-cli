@@ -53,7 +53,7 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 	}, nil
 }
 
-func formatID(val interface{}) (text.Colors, string, error) {
+func formatID(val any) (text.Colors, string, error) {
 	id, ok := val.(int)
 	if !ok {
 		return nil, "", fmt.Errorf("cannot parse IP addresses from %T, expected int", val)
