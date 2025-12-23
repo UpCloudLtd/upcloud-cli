@@ -7920,12 +7920,14 @@
 <p><code>upctl</code> provides a command-line interface to UpCloud services. It allows you to
 control your resources from the command line or any compatible interface.</p>
 <p>To be able to manage your UpCloud resources, you need to configure credentials
-for <code>upctl</code> and enable API access for these credentials. Define the credentials
-by setting <code>UPCLOUD_USERNAME</code> and <code>UPCLOUD_PASSWORD</code> environment variables. API
-access can be configured on the Account page of the UpCloud Hub. We recommend
-you to set up a sub-account specifically for the API usage with its own username
-and password, as it allows you to assign specific permissions for increased
-security.</p>
+for <code>upctl</code>. We recommend using API tokens. Configure credentials by using
+<code>upctl account login --with-token</code> command to save a token to system keyring, in
+<code>~/.config/upctl.yaml</code> or set the <code>UPCLOUD_TOKEN</code> environment variable.
+Alternatively, use <code>UPCLOUD_USERNAME</code> and <code>UPCLOUD_PASSWORD</code> environment
+variables. When using username and password, API access can be configured on the
+Account page of the UpCloud Hub. We recommend you to set up a sub-account
+specifically for the API usage with its own credentials, as it allows you to
+assign specific permissions for increased security.</p>
 <h2 id="options">Options</h2>
 <table>
 <thead>
