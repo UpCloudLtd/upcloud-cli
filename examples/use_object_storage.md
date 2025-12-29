@@ -63,7 +63,7 @@ Attach a policy to grant the user access to buckets:
 
 Verify S3 access with AWS CLI:
 
-```sh
+```sh when=false
 # Get the service endpoint
 upctl object-storage show ${prefix}service
 
