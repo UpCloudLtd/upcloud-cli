@@ -53,7 +53,6 @@ func (st *storageCommand) InitCommand() {
 func matchStorages(storages []upcloud.Storage, searchVal string) []*upcloud.Storage {
 	var r []*upcloud.Storage
 	for _, storage := range storages {
-		storage := storage
 		if storage.Title == searchVal || storage.UUID == searchVal {
 			r = append(r, &storage)
 		}

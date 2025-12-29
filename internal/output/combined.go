@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"maps"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
 )
@@ -23,8 +24,8 @@ func (m Combined) MarshalJSON() ([]byte, error) {
 	return json.MarshalIndent(flattenSections(m), "", "  ")
 }
 
-func flattenSections(m Combined) map[string]interface{} {
-	out := map[string]interface{}{}
+func flattenSections(m Combined) map[string]any {
+	out := map[string]any{}
 
 	for _, sec := range m {
 		if sec.Key != "" {
@@ -47,9 +48,7 @@ func flattenSections(m Combined) map[string]interface{} {
 			if err != nil {
 				panic(fmt.Sprintf("cannot marshal '%v' to raw output", sec.Key))
 			}
-			for k, v := range rowOut {
-				out[k] = v
-			}
+			maps.Copy(out, rowOut)
 		}
 	}
 
@@ -68,7 +67,7 @@ func (m Combined) MarshalHuman() ([]byte, error) {
 		if _, ok := sec.Contents.(Details); !ok && sec.Title != "" {
 			// skip drawing title for details, as details handles its own title drawing
 			// TODO: a bit confusing.. probably should refactor?
-			out = append(out, []byte(fmt.Sprintf("  %v\n", ui.DefaultHeaderColours.Sprint(sec.Title)))...)
+			out = append(out, fmt.Appendf(nil, "  %v\n", ui.DefaultHeaderColours.Sprint(sec.Title))...)
 		}
 		if _, ok := sec.Contents.(Table); ok {
 			// this is a table, indent it
@@ -112,6 +111,6 @@ func prefixLines(marshaled []byte, s string) (out []byte) {
 }
 
 // MarshalRawMap implements output.Output
-func (m Combined) MarshalRawMap() (map[string]interface{}, error) {
+func (m Combined) MarshalRawMap() (map[string]any, error) {
 	return nil, errors.New("multiple output cannot nest, raw output is undefined")
 }

@@ -17,6 +17,6 @@ func serverGroupAntiAffinityStateColour(state string) text.Colors {
 }
 
 // ServerGroupAntiAffinityState implements Format function for server group anti-affinity states
-func ServerGroupAntiAffinityState(val interface{}) (text.Colors, string, error) {
+func ServerGroupAntiAffinityState(val any) (text.Colors, string, error) {
 	return usingColorFunction(serverGroupAntiAffinityStateColour, val)
 }

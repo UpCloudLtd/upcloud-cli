@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func AssertOutputHasType(t *testing.T, output string, expected interface{}) {
+func AssertOutputHasType(t *testing.T, output string, expected any) {
 	t.Helper()
 
 	err := json.Unmarshal([]byte(output), expected)
@@ -21,6 +21,6 @@ func AssertOutputHasType(t *testing.T, output string, expected interface{}) {
 func AssertOutputIsList(t *testing.T, output string) {
 	t.Helper()
 
-	list := make([]interface{}, 0)
+	list := make([]any, 0)
 	AssertOutputHasType(t, output, &list)
 }

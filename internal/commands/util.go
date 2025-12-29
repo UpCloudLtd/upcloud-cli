@@ -50,8 +50,8 @@ func Parse(in string) ([]string, error) {
 // ToArray turns an interface{} to a slice of interface{}s.
 // If the underlying type is also a slice, the elements will be returned as the return values elements..
 // Otherwise, the input element is wrapped in a slice.
-func ToArray(in interface{}) []interface{} {
-	var elems []interface{}
+func ToArray(in any) []any {
+	var elems []any
 	if reflect.TypeOf(in).Kind() == reflect.Slice {
 		is := reflect.ValueOf(in)
 		for i := 0; i < is.Len(); i++ {
@@ -69,8 +69,8 @@ func ToArray(in interface{}) []interface{} {
 // expected to return a uuid.
 func SearchResources(
 	ids []string,
-	searchFn func(id string) (interface{}, error),
-	getUUID func(interface{}) string,
+	searchFn func(id string) (any, error),
+	getUUID func(any) string,
 ) ([]string, error) {
 	var result []string
 	for _, id := range ids {
@@ -227,12 +227,7 @@ func IsDeprecatedAliasUsed(deprecatedAlias string) bool {
 		return false
 	}
 
-	for _, arg := range os.Args[1:] {
-		if arg == deprecatedAlias {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(os.Args[1:], deprecatedAlias)
 }
 
 // PrintDeprecationWarning prints a deprecation message

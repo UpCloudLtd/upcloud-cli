@@ -21,6 +21,6 @@ func storageStateColour(state string) text.Colors {
 }
 
 // StorageState implements Format function for storage states
-func StorageState(val interface{}) (text.Colors, string, error) {
+func StorageState(val any) (text.Colors, string, error) {
 	return usingColorFunction(storageStateColour, val)
 }

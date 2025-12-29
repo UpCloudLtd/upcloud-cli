@@ -62,7 +62,7 @@ func (c *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 	}, nil
 }
 
-func formatUUID(val interface{}) (text.Colors, string, error) {
+func formatUUID(val any) (text.Colors, string, error) {
 	str, ok := val.(string)
 	if !ok {
 		return nil, "", fmt.Errorf("cannot parse %T, expected string", val)

@@ -98,8 +98,8 @@ func TestCreateCommand(t *testing.T) {
 				Properties: request.ManagedDatabasePropertiesRequest{
 					"ism_enabled":    true,
 					"custom_domain":  "custom.upcloud.com",
-					"saml":           map[string]interface{}{"enabled": true},
-					"openid":         map[string]interface{}{"client_id": "test_client_id"},
+					"saml":           map[string]any{"enabled": true},
+					"openid":         map[string]any{"client_id": "test_client_id"},
 					"numeric_string": "123",
 				},
 			},
