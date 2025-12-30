@@ -176,7 +176,7 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 		{serviceName: "MySQL", serviceType: "mysql"},
 		{serviceName: "OpenSearch", serviceType: "opensearch"},
 		{serviceName: "PostgreSQL", serviceType: "pg"},
-		{serviceName: "Redis", serviceType: "redis"},
+		{serviceName: "Redis", serviceType: "redis"}, // To be removed when Redis support has been removed
 		{serviceName: "Valkey", serviceType: "valkey"},
 	} {
 		typeCommand := commands.BuildCommand(databaseproperties.DBTypeCommand(i.serviceType, i.serviceName), propertiesCommand.Cobra(), conf)

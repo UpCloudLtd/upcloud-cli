@@ -67,6 +67,8 @@ func (s *listCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 		outputFn = pg
 	case upcloud.ManagedDatabaseServiceTypeRedis: //nolint:staticcheck // To be removed when Redis support has been removed
 		outputFn = redis
+	case upcloud.ManagedDatabaseServiceTypeValkey:
+		outputFn = valkey
 	default:
 		return nil, fmt.Errorf("session list not supported for database type %s", db.Type)
 	}
@@ -160,6 +162,39 @@ func redis(sessions upcloud.ManagedDatabaseSessions) output.Output {
 	rows := make([]output.TableRow, 0)
 
 	for _, session := range sessions.Redis { //nolint:staticcheck // To be removed when Redis support has been removed
+		rows = append(rows, output.TableRow{
+			session.Id,
+			session.Query,
+			session.FlagsRaw,
+			session.ClientAddr,
+			session.ApplicationName,
+			session.ActiveDatabase,
+			session.ConnectionAge.String(),
+			session.ConnectionIdle.String(),
+		})
+	}
+	return output.MarshaledWithHumanOutput{
+		Value: sessions,
+		Output: output.Table{
+			Columns: []output.TableColumn{
+				{Key: "id", Header: "Process ID", Format: format.DatabaseSessionPID},
+				{Key: "query", Header: "Query"},
+				{Key: "flags_raw", Header: "Flags"},
+				{Key: "client_addr", Header: "Client IP", Colour: ui.DefaultAddressColours},
+				{Key: "application_name", Header: "Application name"},
+				{Key: "active_database", Header: "Database"},
+				{Key: "connection_age", Header: "Age"},
+				{Key: "connection_idle", Header: "Idle"},
+			},
+			Rows: rows,
+		},
+	}
+}
+
+func valkey(sessions upcloud.ManagedDatabaseSessions) output.Output {
+	rows := make([]output.TableRow, 0)
+
+	for _, session := range sessions.Valkey {
 		rows = append(rows, output.TableRow{
 			session.Id,
 			session.Query,
