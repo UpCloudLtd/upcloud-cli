@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - In `kubernetes create`, allow waiting for cluster and its node-groups to reach running state with `--wait=all` flag. When using `--wait` or `--wait=cluster`, the command will wait only for the cluster to reach running state.
+- Add `account billing` command for listing billing details.
 
 ## [3.26.0] - 2025-11-26
 

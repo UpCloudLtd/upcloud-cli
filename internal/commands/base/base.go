@@ -137,6 +137,7 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	commands.BuildCommand(account.ShowCommand(), accountCommand.Cobra(), conf)
 	commands.BuildCommand(account.ListCommand(), accountCommand.Cobra(), conf)
 	commands.BuildCommand(account.DeleteCommand(), accountCommand.Cobra(), conf)
+	commands.BuildCommand(account.BillingCommand(), accountCommand.Cobra(), conf)
 
 	// Account permissions
 	permissionsCommand := commands.BuildCommand(permissions.BasePermissionsCommand(), accountCommand.Cobra(), conf)
@@ -287,7 +288,6 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	allCommand := commands.BuildCommand(all.BaseAllCommand(), rootCmd, conf)
 	commands.BuildCommand(all.PurgeCommand(), allCommand.Cobra(), conf)
 	commands.BuildCommand(all.ListCommand(), allCommand.Cobra(), conf)
-
 	// Stack operations
 	stackCommand := commands.BuildCommand(stack.BaseStackCommand(), rootCmd, conf)
 	stackDeployCommand := commands.BuildCommand(stack.DeployCommand(), stackCommand.Cobra(), conf)
