@@ -36,7 +36,7 @@ func (s *billingCommand) InitCommand() {
 
 	flagSet.IntVar(&s.year, "year", 0, "Year for billing information.")
 	flagSet.IntVar(&s.month, "month", 0, "Month for billing information.")
-	flagSet.StringVar(&s.resourceID, "resource_id", "", "For IP addresses: the address itself, others, resource UUID")
+	flagSet.StringVar(&s.resourceID, "resource-id", "", "For IP addresses: the address itself, others, resource UUID")
 	flagSet.StringVar(&s.username, "username", "", "Valid username")
 
 	s.AddFlags(flagSet)
