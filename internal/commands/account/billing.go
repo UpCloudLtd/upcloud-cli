@@ -2,6 +2,7 @@ package account
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
@@ -42,6 +43,14 @@ func (s *billingCommand) InitCommand() {
 
 	commands.Must(s.Cobra().MarkFlagRequired("year"))
 	commands.Must(s.Cobra().MarkFlagRequired("month"))
+}
+
+func firstElementAsString(row output.TableRow) string {
+	s, ok := row[0].(string)
+	if !ok {
+		return ""
+	}
+	return s
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
@@ -123,7 +132,14 @@ func (s *billingCommand) ExecuteWithoutArguments(exec commands.Executor) (output
 			}
 		}
 
+		sort.Slice(summaryRows, func(i, j int) bool {
+			return firstElementAsString(summaryRows[i]) < firstElementAsString(summaryRows[j])
+		})
 		summaryRows = append(summaryRows, output.TableRow{"Total", summary.TotalAmount})
+
+		sort.Slice(sections, func(i, j int) bool {
+			return sections[i].Title < sections[j].Title
+		})
 		sections = append([]output.CombinedSection{{
 			Key:   "summary",
 			Title: "Summary:",
