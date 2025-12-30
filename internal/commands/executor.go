@@ -156,7 +156,7 @@ func (e executorImpl) All() internal.AllServices {
 func NewExecutor(cfg *config.Config, svc internal.AllServices, logger flume.Logger) Executor {
 	executor := &executorImpl{
 		Config:     cfg,
-		progress:   progress.NewProgress(config.GetProgressOutputConfig()),
+		progress:   progress.NewProgress(config.GetProgressOutputConfig(cfg)),
 		logger:     logger,
 		service:    svc,
 		sigIntChan: make(chan os.Signal, 1),
