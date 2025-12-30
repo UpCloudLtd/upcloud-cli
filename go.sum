@@ -423,8 +423,8 @@ github.com/UpCloudLtd/progress v1.0.3 h1:8SfntHkBPyQc5BL3946Bgi9KYnQOxa5RR2EKdad
 github.com/UpCloudLtd/progress v1.0.3/go.mod h1:iGxOnb9HvHW0yrLGUjHr0lxHhn7TehgWwh7a8NqK6iQ=
 github.com/UpCloudLtd/upcloud-go-api/credentials v0.1.1 h1:eTfQsv58ufALOk9BZ7WbS/i7pMUD11RnYYpRPsz0LdI=
 github.com/UpCloudLtd/upcloud-go-api/credentials v0.1.1/go.mod h1:7OtVs2UqtfvjkC1HfE+Oud0MnbMv7qUWnbEgxnTAqts=
-github.com/UpCloudLtd/upcloud-go-api/v8 v8.32.0 h1:mtxrTUWr7vB2lcv0KEpHpXAdQMl4ol024I+P+qfEIRc=
-github.com/UpCloudLtd/upcloud-go-api/v8 v8.32.0/go.mod h1:NBh1d/ip1bhdAIhuPWbyPme7tbLzDTV7dhutUmU1vg8=
+github.com/UpCloudLtd/upcloud-go-api/v8 v8.33.0 h1:18MDgUePzdapCSKwLWVL+WRawyT25yMxmV9TQ32KQJQ=
+github.com/UpCloudLtd/upcloud-go-api/v8 v8.33.0/go.mod h1:NBh1d/ip1bhdAIhuPWbyPme7tbLzDTV7dhutUmU1vg8=
 github.com/adrg/xdg v0.5.3 h1:xRnxJXne7+oWDatRhR1JLnvuccuIeCoBu2rtuLqQB78=
 github.com/adrg/xdg v0.5.3/go.mod h1:nlTsY+NNiCBGCK2tpm09vRqfVzrc2fLmXGpBLF0zlTQ=
 github.com/ansel1/merry v1.5.0/go.mod h1:wUy/yW0JX0ix9GYvUbciq+bi3jW/vlKPlbpI7qdZpOw=
