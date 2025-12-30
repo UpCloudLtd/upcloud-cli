@@ -10,31 +10,31 @@
       
       
       
-        <link rel="canonical" href="https://upcloudltd.github.io/upcloud-cli/examples/use_userdata_to_configure_server/">
+        <link rel="canonical" href="https://upcloudltd.github.io/upcloud-cli/commands_reference/upctl_account/billing/">
       
       
-        <link rel="prev" href="../use_object_storage/">
+        <link rel="prev" href="../">
       
       
-        <link rel="next" href="../../changelog/">
+        <link rel="next" href="../delete/">
       
       
         
       
       
-      <link rel="icon" href="../../favicon.svg">
+      <link rel="icon" href="../../../favicon.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
     
     
       
-        <title>Use user-data to configure a server - UpCloud command-line client</title>
+        <title>upctl account billing - UpCloud command-line client</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -53,9 +53,9 @@
       
     
     
-      <link rel="stylesheet" href="../../extra.css">
+      <link rel="stylesheet" href="../../../extra.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#use-user-data-to-configure-a-server" class="md-skip">
+        <a href="#upctl-account-billing" class="md-skip">
           Skip to content
         </a>
       
@@ -94,7 +94,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="UpCloud command-line client" class="md-header__button md-logo" aria-label="UpCloud command-line client" data-md-component="logo">
+    <a href="../../.." title="UpCloud command-line client" class="md-header__button md-logo" aria-label="UpCloud command-line client" data-md-component="logo">
       <svg
   width="198"
   height="135"
@@ -130,7 +130,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Use user-data to configure a server
+              upctl account billing
             
           </span>
         </div>
@@ -220,7 +220,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="UpCloud command-line client" class="md-nav__button md-logo" aria-label="UpCloud command-line client" data-md-component="logo">
+    <a href="../../.." title="UpCloud command-line client" class="md-nav__button md-logo" aria-label="UpCloud command-line client" data-md-component="logo">
       <svg
   width="198"
   height="135"
@@ -266,7 +266,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         
   
   
@@ -290,18 +290,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
           <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
@@ -322,7 +324,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             
@@ -340,7 +342,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl/" class="md-nav__link">
+      <a href="../../upctl/" class="md-nav__link">
         
   
   
@@ -365,18 +367,20 @@
                 
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" checked>
         
           
           <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
@@ -397,7 +401,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2_2">
             <span class="md-nav__icon md-icon"></span>
             
@@ -415,7 +419,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_account/" class="md-nav__link">
+      <a href="../" class="md-nav__link">
         
   
   
@@ -440,10 +444,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_account/billing/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    account billing
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -459,6 +490,50 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#examples" class="md-nav__link"> Examples </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#options" class="md-nav__link"> Options </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#global-options" class="md-nav__link"> Global options </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#related-commands" class="md-nav__link"> Related commands </a>
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -471,7 +546,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_account/delete/" class="md-nav__link">
+      <a href="../delete/" class="md-nav__link">
         
   
   
@@ -499,7 +574,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_account/list/" class="md-nav__link">
+      <a href="../list/" class="md-nav__link">
         
   
   
@@ -527,7 +602,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_account/login/" class="md-nav__link">
+      <a href="../login/" class="md-nav__link">
         
   
   
@@ -602,7 +677,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_account/permissions/" class="md-nav__link">
+      <a href="../permissions/" class="md-nav__link">
         
   
   
@@ -630,7 +705,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_account/permissions/list/" class="md-nav__link">
+      <a href="../permissions/list/" class="md-nav__link">
         
   
   
@@ -666,7 +741,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_account/show/" class="md-nav__link">
+      <a href="../show/" class="md-nav__link">
         
   
   
@@ -741,7 +816,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_account/token/" class="md-nav__link">
+      <a href="../token/" class="md-nav__link">
         
   
   
@@ -769,7 +844,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_account/token/create/" class="md-nav__link">
+      <a href="../token/create/" class="md-nav__link">
         
   
   
@@ -797,7 +872,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_account/token/delete/" class="md-nav__link">
+      <a href="../token/delete/" class="md-nav__link">
         
   
   
@@ -825,7 +900,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_account/token/list/" class="md-nav__link">
+      <a href="../token/list/" class="md-nav__link">
         
   
   
@@ -853,7 +928,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_account/token/show/" class="md-nav__link">
+      <a href="../token/show/" class="md-nav__link">
         
   
   
@@ -944,7 +1019,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_audit-log/" class="md-nav__link">
+      <a href="../../upctl_audit-log/" class="md-nav__link">
         
   
   
@@ -972,7 +1047,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_audit-log/export/" class="md-nav__link">
+      <a href="../../upctl_audit-log/export/" class="md-nav__link">
         
   
   
@@ -1102,7 +1177,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_database/index/" class="md-nav__link">
+      <a href="../../upctl_database/index/" class="md-nav__link">
         
   
   
@@ -1130,7 +1205,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_database/index/delete/" class="md-nav__link">
+      <a href="../../upctl_database/index/delete/" class="md-nav__link">
         
   
   
@@ -1158,7 +1233,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_database/index/list/" class="md-nav__link">
+      <a href="../../upctl_database/index/list/" class="md-nav__link">
         
   
   
@@ -1194,7 +1269,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_database/" class="md-nav__link">
+      <a href="../../upctl_database/" class="md-nav__link">
         
   
   
@@ -1222,7 +1297,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_database/create/" class="md-nav__link">
+      <a href="../../upctl_database/create/" class="md-nav__link">
         
   
   
@@ -1250,7 +1325,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_database/delete/" class="md-nav__link">
+      <a href="../../upctl_database/delete/" class="md-nav__link">
         
   
   
@@ -1278,7 +1353,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_database/list/" class="md-nav__link">
+      <a href="../../upctl_database/list/" class="md-nav__link">
         
   
   
@@ -1306,7 +1381,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_database/plans/" class="md-nav__link">
+      <a href="../../upctl_database/plans/" class="md-nav__link">
         
   
   
@@ -1381,7 +1456,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_database/properties/" class="md-nav__link">
+      <a href="../../upctl_database/properties/" class="md-nav__link">
         
   
   
@@ -1456,7 +1531,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_database/properties/mysql/" class="md-nav__link">
+      <a href="../../upctl_database/properties/mysql/" class="md-nav__link">
         
   
   
@@ -1484,7 +1559,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_database/properties/mysql/show/" class="md-nav__link">
+      <a href="../../upctl_database/properties/mysql/show/" class="md-nav__link">
         
   
   
@@ -1567,7 +1642,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_database/properties/opensearch/" class="md-nav__link">
+      <a href="../../upctl_database/properties/opensearch/" class="md-nav__link">
         
   
   
@@ -1595,7 +1670,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_database/properties/opensearch/show/" class="md-nav__link">
+      <a href="../../upctl_database/properties/opensearch/show/" class="md-nav__link">
         
   
   
@@ -1678,7 +1753,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_database/properties/pg/" class="md-nav__link">
+      <a href="../../upctl_database/properties/pg/" class="md-nav__link">
         
   
   
@@ -1706,7 +1781,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_database/properties/pg/show/" class="md-nav__link">
+      <a href="../../upctl_database/properties/pg/show/" class="md-nav__link">
         
   
   
@@ -1789,7 +1864,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_database/properties/redis/" class="md-nav__link">
+      <a href="../../upctl_database/properties/redis/" class="md-nav__link">
         
   
   
@@ -1817,7 +1892,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_database/properties/redis/show/" class="md-nav__link">
+      <a href="../../upctl_database/properties/redis/show/" class="md-nav__link">
         
   
   
@@ -1900,7 +1975,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_database/properties/valkey/" class="md-nav__link">
+      <a href="../../upctl_database/properties/valkey/" class="md-nav__link">
         
   
   
@@ -1928,7 +2003,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_database/properties/valkey/show/" class="md-nav__link">
+      <a href="../../upctl_database/properties/valkey/show/" class="md-nav__link">
         
   
   
@@ -2019,7 +2094,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_database/session/" class="md-nav__link">
+      <a href="../../upctl_database/session/" class="md-nav__link">
         
   
   
@@ -2047,7 +2122,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_database/session/cancel/" class="md-nav__link">
+      <a href="../../upctl_database/session/cancel/" class="md-nav__link">
         
   
   
@@ -2075,7 +2150,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_database/session/list/" class="md-nav__link">
+      <a href="../../upctl_database/session/list/" class="md-nav__link">
         
   
   
@@ -2111,7 +2186,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_database/show/" class="md-nav__link">
+      <a href="../../upctl_database/show/" class="md-nav__link">
         
   
   
@@ -2139,7 +2214,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_database/start/" class="md-nav__link">
+      <a href="../../upctl_database/start/" class="md-nav__link">
         
   
   
@@ -2167,7 +2242,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_database/stop/" class="md-nav__link">
+      <a href="../../upctl_database/stop/" class="md-nav__link">
         
   
   
@@ -2195,7 +2270,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_database/types/" class="md-nav__link">
+      <a href="../../upctl_database/types/" class="md-nav__link">
         
   
   
@@ -2278,7 +2353,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_gateway/" class="md-nav__link">
+      <a href="../../upctl_gateway/" class="md-nav__link">
         
   
   
@@ -2306,7 +2381,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_gateway/delete/" class="md-nav__link">
+      <a href="../../upctl_gateway/delete/" class="md-nav__link">
         
   
   
@@ -2334,7 +2409,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_gateway/list/" class="md-nav__link">
+      <a href="../../upctl_gateway/list/" class="md-nav__link">
         
   
   
@@ -2362,7 +2437,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_gateway/plans/" class="md-nav__link">
+      <a href="../../upctl_gateway/plans/" class="md-nav__link">
         
   
   
@@ -2445,7 +2520,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_host/" class="md-nav__link">
+      <a href="../../upctl_host/" class="md-nav__link">
         
   
   
@@ -2473,7 +2548,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_host/list/" class="md-nav__link">
+      <a href="../../upctl_host/list/" class="md-nav__link">
         
   
   
@@ -2556,7 +2631,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_ip-address/" class="md-nav__link">
+      <a href="../../upctl_ip-address/" class="md-nav__link">
         
   
   
@@ -2584,7 +2659,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_ip-address/assign/" class="md-nav__link">
+      <a href="../../upctl_ip-address/assign/" class="md-nav__link">
         
   
   
@@ -2612,7 +2687,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_ip-address/list/" class="md-nav__link">
+      <a href="../../upctl_ip-address/list/" class="md-nav__link">
         
   
   
@@ -2640,7 +2715,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_ip-address/modify/" class="md-nav__link">
+      <a href="../../upctl_ip-address/modify/" class="md-nav__link">
         
   
   
@@ -2668,7 +2743,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_ip-address/remove/" class="md-nav__link">
+      <a href="../../upctl_ip-address/remove/" class="md-nav__link">
         
   
   
@@ -2696,7 +2771,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_ip-address/show/" class="md-nav__link">
+      <a href="../../upctl_ip-address/show/" class="md-nav__link">
         
   
   
@@ -2779,7 +2854,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_kubernetes/" class="md-nav__link">
+      <a href="../../upctl_kubernetes/" class="md-nav__link">
         
   
   
@@ -2807,7 +2882,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_kubernetes/config/" class="md-nav__link">
+      <a href="../../upctl_kubernetes/config/" class="md-nav__link">
         
   
   
@@ -2835,7 +2910,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_kubernetes/create/" class="md-nav__link">
+      <a href="../../upctl_kubernetes/create/" class="md-nav__link">
         
   
   
@@ -2863,7 +2938,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_kubernetes/delete/" class="md-nav__link">
+      <a href="../../upctl_kubernetes/delete/" class="md-nav__link">
         
   
   
@@ -2891,7 +2966,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_kubernetes/list/" class="md-nav__link">
+      <a href="../../upctl_kubernetes/list/" class="md-nav__link">
         
   
   
@@ -2919,7 +2994,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_kubernetes/modify/" class="md-nav__link">
+      <a href="../../upctl_kubernetes/modify/" class="md-nav__link">
         
   
   
@@ -2994,7 +3069,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_kubernetes/node-group/" class="md-nav__link">
+      <a href="../../upctl_kubernetes/node-group/" class="md-nav__link">
         
   
   
@@ -3022,7 +3097,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_kubernetes/node-group/create/" class="md-nav__link">
+      <a href="../../upctl_kubernetes/node-group/create/" class="md-nav__link">
         
   
   
@@ -3050,7 +3125,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_kubernetes/node-group/delete/" class="md-nav__link">
+      <a href="../../upctl_kubernetes/node-group/delete/" class="md-nav__link">
         
   
   
@@ -3078,7 +3153,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_kubernetes/node-group/scale/" class="md-nav__link">
+      <a href="../../upctl_kubernetes/node-group/scale/" class="md-nav__link">
         
   
   
@@ -3106,7 +3181,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_kubernetes/node-group/show/" class="md-nav__link">
+      <a href="../../upctl_kubernetes/node-group/show/" class="md-nav__link">
         
   
   
@@ -3142,7 +3217,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_kubernetes/plans/" class="md-nav__link">
+      <a href="../../upctl_kubernetes/plans/" class="md-nav__link">
         
   
   
@@ -3170,7 +3245,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_kubernetes/show/" class="md-nav__link">
+      <a href="../../upctl_kubernetes/show/" class="md-nav__link">
         
   
   
@@ -3198,7 +3273,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_kubernetes/versions/" class="md-nav__link">
+      <a href="../../upctl_kubernetes/versions/" class="md-nav__link">
         
   
   
@@ -3281,7 +3356,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_load-balancer/" class="md-nav__link">
+      <a href="../../upctl_load-balancer/" class="md-nav__link">
         
   
   
@@ -3309,7 +3384,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_load-balancer/delete/" class="md-nav__link">
+      <a href="../../upctl_load-balancer/delete/" class="md-nav__link">
         
   
   
@@ -3337,7 +3412,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_load-balancer/list/" class="md-nav__link">
+      <a href="../../upctl_load-balancer/list/" class="md-nav__link">
         
   
   
@@ -3365,7 +3440,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_load-balancer/plans/" class="md-nav__link">
+      <a href="../../upctl_load-balancer/plans/" class="md-nav__link">
         
   
   
@@ -3393,7 +3468,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_load-balancer/show/" class="md-nav__link">
+      <a href="../../upctl_load-balancer/show/" class="md-nav__link">
         
   
   
@@ -3476,7 +3551,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_network/" class="md-nav__link">
+      <a href="../../upctl_network/" class="md-nav__link">
         
   
   
@@ -3504,7 +3579,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_network/create/" class="md-nav__link">
+      <a href="../../upctl_network/create/" class="md-nav__link">
         
   
   
@@ -3532,7 +3607,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_network/delete/" class="md-nav__link">
+      <a href="../../upctl_network/delete/" class="md-nav__link">
         
   
   
@@ -3560,7 +3635,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_network/list/" class="md-nav__link">
+      <a href="../../upctl_network/list/" class="md-nav__link">
         
   
   
@@ -3588,7 +3663,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_network/modify/" class="md-nav__link">
+      <a href="../../upctl_network/modify/" class="md-nav__link">
         
   
   
@@ -3616,7 +3691,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_network/show/" class="md-nav__link">
+      <a href="../../upctl_network/show/" class="md-nav__link">
         
   
   
@@ -3699,7 +3774,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_network-peering/" class="md-nav__link">
+      <a href="../../upctl_network-peering/" class="md-nav__link">
         
   
   
@@ -3727,7 +3802,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_network-peering/delete/" class="md-nav__link">
+      <a href="../../upctl_network-peering/delete/" class="md-nav__link">
         
   
   
@@ -3755,7 +3830,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_network-peering/disable/" class="md-nav__link">
+      <a href="../../upctl_network-peering/disable/" class="md-nav__link">
         
   
   
@@ -3783,7 +3858,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_network-peering/list/" class="md-nav__link">
+      <a href="../../upctl_network-peering/list/" class="md-nav__link">
         
   
   
@@ -3866,7 +3941,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_object-storage/" class="md-nav__link">
+      <a href="../../upctl_object-storage/" class="md-nav__link">
         
   
   
@@ -3941,7 +4016,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_object-storage/access-key/" class="md-nav__link">
+      <a href="../../upctl_object-storage/access-key/" class="md-nav__link">
         
   
   
@@ -3969,7 +4044,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_object-storage/access-key/create/" class="md-nav__link">
+      <a href="../../upctl_object-storage/access-key/create/" class="md-nav__link">
         
   
   
@@ -3997,7 +4072,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_object-storage/access-key/delete/" class="md-nav__link">
+      <a href="../../upctl_object-storage/access-key/delete/" class="md-nav__link">
         
   
   
@@ -4025,7 +4100,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_object-storage/access-key/list/" class="md-nav__link">
+      <a href="../../upctl_object-storage/access-key/list/" class="md-nav__link">
         
   
   
@@ -4108,7 +4183,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_object-storage/bucket/" class="md-nav__link">
+      <a href="../../upctl_object-storage/bucket/" class="md-nav__link">
         
   
   
@@ -4136,7 +4211,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_object-storage/bucket/create/" class="md-nav__link">
+      <a href="../../upctl_object-storage/bucket/create/" class="md-nav__link">
         
   
   
@@ -4164,7 +4239,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_object-storage/bucket/delete/" class="md-nav__link">
+      <a href="../../upctl_object-storage/bucket/delete/" class="md-nav__link">
         
   
   
@@ -4192,7 +4267,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_object-storage/bucket/list/" class="md-nav__link">
+      <a href="../../upctl_object-storage/bucket/list/" class="md-nav__link">
         
   
   
@@ -4228,7 +4303,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_object-storage/create/" class="md-nav__link">
+      <a href="../../upctl_object-storage/create/" class="md-nav__link">
         
   
   
@@ -4256,7 +4331,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_object-storage/delete/" class="md-nav__link">
+      <a href="../../upctl_object-storage/delete/" class="md-nav__link">
         
   
   
@@ -4331,7 +4406,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_object-storage/label/" class="md-nav__link">
+      <a href="../../upctl_object-storage/label/" class="md-nav__link">
         
   
   
@@ -4359,7 +4434,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_object-storage/label/add/" class="md-nav__link">
+      <a href="../../upctl_object-storage/label/add/" class="md-nav__link">
         
   
   
@@ -4387,7 +4462,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_object-storage/label/list/" class="md-nav__link">
+      <a href="../../upctl_object-storage/label/list/" class="md-nav__link">
         
   
   
@@ -4415,7 +4490,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_object-storage/label/remove/" class="md-nav__link">
+      <a href="../../upctl_object-storage/label/remove/" class="md-nav__link">
         
   
   
@@ -4451,7 +4526,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_object-storage/list/" class="md-nav__link">
+      <a href="../../upctl_object-storage/list/" class="md-nav__link">
         
   
   
@@ -4526,7 +4601,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_object-storage/network/" class="md-nav__link">
+      <a href="../../upctl_object-storage/network/" class="md-nav__link">
         
   
   
@@ -4554,7 +4629,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_object-storage/network/attach/" class="md-nav__link">
+      <a href="../../upctl_object-storage/network/attach/" class="md-nav__link">
         
   
   
@@ -4582,7 +4657,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_object-storage/network/detach/" class="md-nav__link">
+      <a href="../../upctl_object-storage/network/detach/" class="md-nav__link">
         
   
   
@@ -4610,7 +4685,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_object-storage/network/list/" class="md-nav__link">
+      <a href="../../upctl_object-storage/network/list/" class="md-nav__link">
         
   
   
@@ -4646,7 +4721,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_object-storage/regions/" class="md-nav__link">
+      <a href="../../upctl_object-storage/regions/" class="md-nav__link">
         
   
   
@@ -4674,7 +4749,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_object-storage/show/" class="md-nav__link">
+      <a href="../../upctl_object-storage/show/" class="md-nav__link">
         
   
   
@@ -4749,7 +4824,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_object-storage/user/" class="md-nav__link">
+      <a href="../../upctl_object-storage/user/" class="md-nav__link">
         
   
   
@@ -4777,7 +4852,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_object-storage/user/create/" class="md-nav__link">
+      <a href="../../upctl_object-storage/user/create/" class="md-nav__link">
         
   
   
@@ -4805,7 +4880,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_object-storage/user/delete/" class="md-nav__link">
+      <a href="../../upctl_object-storage/user/delete/" class="md-nav__link">
         
   
   
@@ -4833,7 +4908,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_object-storage/user/list/" class="md-nav__link">
+      <a href="../../upctl_object-storage/user/list/" class="md-nav__link">
         
   
   
@@ -4924,7 +4999,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_partner/" class="md-nav__link">
+      <a href="../../upctl_partner/" class="md-nav__link">
         
   
   
@@ -4999,7 +5074,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_partner/account/" class="md-nav__link">
+      <a href="../../upctl_partner/account/" class="md-nav__link">
         
   
   
@@ -5027,7 +5102,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_partner/account/create/" class="md-nav__link">
+      <a href="../../upctl_partner/account/create/" class="md-nav__link">
         
   
   
@@ -5055,7 +5130,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_partner/account/list/" class="md-nav__link">
+      <a href="../../upctl_partner/account/list/" class="md-nav__link">
         
   
   
@@ -5146,7 +5221,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_router/" class="md-nav__link">
+      <a href="../../upctl_router/" class="md-nav__link">
         
   
   
@@ -5174,7 +5249,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_router/create/" class="md-nav__link">
+      <a href="../../upctl_router/create/" class="md-nav__link">
         
   
   
@@ -5202,7 +5277,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_router/delete/" class="md-nav__link">
+      <a href="../../upctl_router/delete/" class="md-nav__link">
         
   
   
@@ -5230,7 +5305,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_router/list/" class="md-nav__link">
+      <a href="../../upctl_router/list/" class="md-nav__link">
         
   
   
@@ -5258,7 +5333,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_router/modify/" class="md-nav__link">
+      <a href="../../upctl_router/modify/" class="md-nav__link">
         
   
   
@@ -5286,7 +5361,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_router/show/" class="md-nav__link">
+      <a href="../../upctl_router/show/" class="md-nav__link">
         
   
   
@@ -5369,7 +5444,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_server/" class="md-nav__link">
+      <a href="../../upctl_server/" class="md-nav__link">
         
   
   
@@ -5397,7 +5472,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_server/create/" class="md-nav__link">
+      <a href="../../upctl_server/create/" class="md-nav__link">
         
   
   
@@ -5425,7 +5500,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_server/delete/" class="md-nav__link">
+      <a href="../../upctl_server/delete/" class="md-nav__link">
         
   
   
@@ -5453,7 +5528,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_server/eject/" class="md-nav__link">
+      <a href="../../upctl_server/eject/" class="md-nav__link">
         
   
   
@@ -5528,7 +5603,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_server/firewall/" class="md-nav__link">
+      <a href="../../upctl_server/firewall/" class="md-nav__link">
         
   
   
@@ -5556,7 +5631,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_server/firewall/create/" class="md-nav__link">
+      <a href="../../upctl_server/firewall/create/" class="md-nav__link">
         
   
   
@@ -5584,7 +5659,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_server/firewall/delete/" class="md-nav__link">
+      <a href="../../upctl_server/firewall/delete/" class="md-nav__link">
         
   
   
@@ -5612,7 +5687,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_server/firewall/show/" class="md-nav__link">
+      <a href="../../upctl_server/firewall/show/" class="md-nav__link">
         
   
   
@@ -5648,7 +5723,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_server/list/" class="md-nav__link">
+      <a href="../../upctl_server/list/" class="md-nav__link">
         
   
   
@@ -5676,7 +5751,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_server/load/" class="md-nav__link">
+      <a href="../../upctl_server/load/" class="md-nav__link">
         
   
   
@@ -5704,7 +5779,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_server/modify/" class="md-nav__link">
+      <a href="../../upctl_server/modify/" class="md-nav__link">
         
   
   
@@ -5779,7 +5854,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_server/network-interface/" class="md-nav__link">
+      <a href="../../upctl_server/network-interface/" class="md-nav__link">
         
   
   
@@ -5807,7 +5882,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_server/network-interface/create/" class="md-nav__link">
+      <a href="../../upctl_server/network-interface/create/" class="md-nav__link">
         
   
   
@@ -5835,7 +5910,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_server/network-interface/delete/" class="md-nav__link">
+      <a href="../../upctl_server/network-interface/delete/" class="md-nav__link">
         
   
   
@@ -5863,7 +5938,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_server/network-interface/modify/" class="md-nav__link">
+      <a href="../../upctl_server/network-interface/modify/" class="md-nav__link">
         
   
   
@@ -5899,7 +5974,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_server/plans/" class="md-nav__link">
+      <a href="../../upctl_server/plans/" class="md-nav__link">
         
   
   
@@ -5927,7 +6002,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_server/relocate/" class="md-nav__link">
+      <a href="../../upctl_server/relocate/" class="md-nav__link">
         
   
   
@@ -5955,7 +6030,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_server/restart/" class="md-nav__link">
+      <a href="../../upctl_server/restart/" class="md-nav__link">
         
   
   
@@ -5983,7 +6058,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_server/show/" class="md-nav__link">
+      <a href="../../upctl_server/show/" class="md-nav__link">
         
   
   
@@ -6011,7 +6086,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_server/start/" class="md-nav__link">
+      <a href="../../upctl_server/start/" class="md-nav__link">
         
   
   
@@ -6039,7 +6114,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_server/stop/" class="md-nav__link">
+      <a href="../../upctl_server/stop/" class="md-nav__link">
         
   
   
@@ -6114,7 +6189,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_server/storage/" class="md-nav__link">
+      <a href="../../upctl_server/storage/" class="md-nav__link">
         
   
   
@@ -6142,7 +6217,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_server/storage/attach/" class="md-nav__link">
+      <a href="../../upctl_server/storage/attach/" class="md-nav__link">
         
   
   
@@ -6170,7 +6245,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_server/storage/detach/" class="md-nav__link">
+      <a href="../../upctl_server/storage/detach/" class="md-nav__link">
         
   
   
@@ -6261,7 +6336,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_server-group/" class="md-nav__link">
+      <a href="../../upctl_server-group/" class="md-nav__link">
         
   
   
@@ -6289,7 +6364,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_server-group/create/" class="md-nav__link">
+      <a href="../../upctl_server-group/create/" class="md-nav__link">
         
   
   
@@ -6317,7 +6392,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_server-group/delete/" class="md-nav__link">
+      <a href="../../upctl_server-group/delete/" class="md-nav__link">
         
   
   
@@ -6345,7 +6420,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_server-group/list/" class="md-nav__link">
+      <a href="../../upctl_server-group/list/" class="md-nav__link">
         
   
   
@@ -6373,7 +6448,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_server-group/modify/" class="md-nav__link">
+      <a href="../../upctl_server-group/modify/" class="md-nav__link">
         
   
   
@@ -6401,7 +6476,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_server-group/show/" class="md-nav__link">
+      <a href="../../upctl_server-group/show/" class="md-nav__link">
         
   
   
@@ -6484,7 +6559,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_stack/" class="md-nav__link">
+      <a href="../../upctl_stack/" class="md-nav__link">
         
   
   
@@ -6559,7 +6634,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_stack/deploy/" class="md-nav__link">
+      <a href="../../upctl_stack/deploy/" class="md-nav__link">
         
   
   
@@ -6587,7 +6662,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_stack/deploy/dokku/" class="md-nav__link">
+      <a href="../../upctl_stack/deploy/dokku/" class="md-nav__link">
         
   
   
@@ -6615,7 +6690,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_stack/deploy/starter-kit/" class="md-nav__link">
+      <a href="../../upctl_stack/deploy/starter-kit/" class="md-nav__link">
         
   
   
@@ -6643,7 +6718,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_stack/deploy/supabase/" class="md-nav__link">
+      <a href="../../upctl_stack/deploy/supabase/" class="md-nav__link">
         
   
   
@@ -6726,7 +6801,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_stack/destroy/" class="md-nav__link">
+      <a href="../../upctl_stack/destroy/" class="md-nav__link">
         
   
   
@@ -6754,7 +6829,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_stack/destroy/dokku/" class="md-nav__link">
+      <a href="../../upctl_stack/destroy/dokku/" class="md-nav__link">
         
   
   
@@ -6782,7 +6857,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_stack/destroy/starter-kit/" class="md-nav__link">
+      <a href="../../upctl_stack/destroy/starter-kit/" class="md-nav__link">
         
   
   
@@ -6810,7 +6885,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_stack/destroy/supabase/" class="md-nav__link">
+      <a href="../../upctl_stack/destroy/supabase/" class="md-nav__link">
         
   
   
@@ -6901,7 +6976,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_storage/" class="md-nav__link">
+      <a href="../../upctl_storage/" class="md-nav__link">
         
   
   
@@ -6976,7 +7051,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_storage/backup/" class="md-nav__link">
+      <a href="../../upctl_storage/backup/" class="md-nav__link">
         
   
   
@@ -7004,7 +7079,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_storage/backup/create/" class="md-nav__link">
+      <a href="../../upctl_storage/backup/create/" class="md-nav__link">
         
   
   
@@ -7032,7 +7107,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_storage/backup/restore/" class="md-nav__link">
+      <a href="../../upctl_storage/backup/restore/" class="md-nav__link">
         
   
   
@@ -7068,7 +7143,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_storage/clone/" class="md-nav__link">
+      <a href="../../upctl_storage/clone/" class="md-nav__link">
         
   
   
@@ -7096,7 +7171,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_storage/create/" class="md-nav__link">
+      <a href="../../upctl_storage/create/" class="md-nav__link">
         
   
   
@@ -7124,7 +7199,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_storage/delete/" class="md-nav__link">
+      <a href="../../upctl_storage/delete/" class="md-nav__link">
         
   
   
@@ -7152,7 +7227,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_storage/import/" class="md-nav__link">
+      <a href="../../upctl_storage/import/" class="md-nav__link">
         
   
   
@@ -7180,7 +7255,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_storage/list/" class="md-nav__link">
+      <a href="../../upctl_storage/list/" class="md-nav__link">
         
   
   
@@ -7208,7 +7283,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_storage/modify/" class="md-nav__link">
+      <a href="../../upctl_storage/modify/" class="md-nav__link">
         
   
   
@@ -7236,7 +7311,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_storage/show/" class="md-nav__link">
+      <a href="../../upctl_storage/show/" class="md-nav__link">
         
   
   
@@ -7264,7 +7339,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_storage/templatise/" class="md-nav__link">
+      <a href="../../upctl_storage/templatise/" class="md-nav__link">
         
   
   
@@ -7300,7 +7375,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_version/" class="md-nav__link">
+      <a href="../../upctl_version/" class="md-nav__link">
         
   
   
@@ -7375,7 +7450,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_zone/" class="md-nav__link">
+      <a href="../../upctl_zone/" class="md-nav__link">
         
   
   
@@ -7450,7 +7525,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_zone/devices/" class="md-nav__link">
+      <a href="../../upctl_zone/devices/" class="md-nav__link">
         
   
   
@@ -7478,7 +7553,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_zone/devices/show/" class="md-nav__link">
+      <a href="../../upctl_zone/devices/show/" class="md-nav__link">
         
   
   
@@ -7514,7 +7589,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_zone/list/" class="md-nav__link">
+      <a href="../../upctl_zone/list/" class="md-nav__link">
         
   
   
@@ -7554,20 +7629,18 @@
       
   
   
-    
   
   
-  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
@@ -7588,7 +7661,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -7606,7 +7679,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../create_a_custom_template/" class="md-nav__link">
+      <a href="../../../examples/create_a_custom_template/" class="md-nav__link">
         
   
   
@@ -7634,7 +7707,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../create_and_restore_backup/" class="md-nav__link">
+      <a href="../../../examples/create_and_restore_backup/" class="md-nav__link">
         
   
   
@@ -7662,7 +7735,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../create_and_ssh_into_a_server/" class="md-nav__link">
+      <a href="../../../examples/create_and_ssh_into_a_server/" class="md-nav__link">
         
   
   
@@ -7690,7 +7763,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../create_cluster_and_expose_service/" class="md-nav__link">
+      <a href="../../../examples/create_cluster_and_expose_service/" class="md-nav__link">
         
   
   
@@ -7718,7 +7791,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../possible_exit_codes/" class="md-nav__link">
+      <a href="../../../examples/possible_exit_codes/" class="md-nav__link">
         
   
   
@@ -7746,7 +7819,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../use_object_storage/" class="md-nav__link">
+      <a href="../../../examples/use_object_storage/" class="md-nav__link">
         
   
   
@@ -7771,19 +7844,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../../examples/use_userdata_to_configure_server/" class="md-nav__link">
         
   
   
@@ -7799,7 +7863,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -7819,7 +7882,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../changelog/" class="md-nav__link">
+      <a href="../../../changelog/" class="md-nav__link">
         
   
   
@@ -7859,6 +7922,38 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#examples" class="md-nav__link"> Examples </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#options" class="md-nav__link"> Options </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#global-options" class="md-nav__link"> Global options </a>
+</li>
+      
+        <!-- Limit TOC depth to 1 -->
+
+<li class="md-nav__item">
+  <a href="#related-commands" class="md-nav__link"> Related commands </a>
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -7874,46 +7969,103 @@
 
 <!-- Hide edit button as command reference and changelog do not exist on main branch -->
 
-<h1 id="use-user-data-to-configure-a-server">Use user-data to configure a server</h1>
-<p>This example demonstrates how to create a server with <code>upctl</code> and run a container inside the server using an user-data script.</p>
-<p>To keep track of resources created during this example, we will use common prefix in all resource names.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>prefix=example-upctl-server-userdata-
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>zone=pl-waw1
+<h1 id="upctl-account-billing">upctl account billing</h1>
+<p>Show billing information</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>upctl account billing [flags]
 </span></code></pre></div>
-<p>First, create a file for the user-data script. The script installs <a href="https://podman.io/">podman</a> and uses it to run a <a href="https://github.com/UpCloudLtd/hello-container">hello container</a> that will be exposed in the port 80 of the server.</p>
-<div class="language-sh highlight"><span class="filename">user-data.sh</span><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="ch">#!/bin/sh</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>sudo<span class="w"> </span>apt-get<span class="w"> </span>update
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>podman
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>podman<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>-p<span class="w"> </span><span class="m">80</span>:80<span class="w"> </span>ghcr.io/upcloudltd/hello
+<h2 id="examples">Examples</h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>upctl account billing --year 2025 --month 7
 </span></code></pre></div>
-<p>Create a server and use the user-data script from <code>user-data.sh</code> to configure the server.</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Create ssh-key into current working directory</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>ssh-keygen<span class="w"> </span>-t<span class="w"> </span>ed25519<span class="w"> </span>-q<span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;./id_ed25519&quot;</span><span class="w"> </span>-N<span class="w"> </span><span class="s2">&quot;&quot;</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>upctl<span class="w"> </span>server<span class="w"> </span>create<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span>--hostname<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>server<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span>--zone<span class="w"> </span><span class="si">${</span><span class="nv">zone</span><span class="si">}</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span>--plan<span class="w"> </span><span class="s2">&quot;DEV-1xCPU-1GB-10GB&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span>--ssh-keys<span class="w"> </span>./id_ed25519.pub<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">    </span>--network<span class="w"> </span><span class="nv">type</span><span class="o">=</span>public<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">    </span>--user-data<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>cat<span class="w"> </span>user-data.sh<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">    </span>--wait<span class="p">;</span>
-</span></code></pre></div>
-<p>After the server has started, we can use curl to wait for the container to be available.</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nv">ip</span><span class="o">=</span><span class="k">$(</span>upctl<span class="w"> </span>server<span class="w"> </span>show<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>server<span class="w"> </span>-o<span class="w"> </span>json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;.networking.interfaces[] | select(.type == &quot;public&quot;) | .ip_addresses[0].address&#39;</span><span class="k">)</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">until</span><span class="w"> </span>curl<span class="w"> </span>-sf<span class="w"> </span>http://<span class="nv">$ip</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span>sleep<span class="w"> </span><span class="m">5</span><span class="p">;</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="k">done</span><span class="p">;</span>
-</span></code></pre></div>
-<p>Finally, we can cleanup the created resources.</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>upctl<span class="w"> </span>all<span class="w"> </span>purge<span class="w"> </span>-i<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>*
-</span></code></pre></div>
+<h2 id="options">Options</h2>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--year</code></td>
+<td>Year for billing information.<br/>Default: <code>0</code></td>
+</tr>
+<tr>
+<td><code>--month</code></td>
+<td>Month for billing information.<br/>Default: <code>0</code></td>
+</tr>
+<tr>
+<td><code>--resource-id</code></td>
+<td>For IP addresses: the address itself, others, resource UUID</td>
+</tr>
+<tr>
+<td><code>--username</code></td>
+<td>Valid username</td>
+</tr>
+<tr>
+<td><code>--help</code>, <code>-h</code></td>
+<td>help for billing<br/>Default: <code>false</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="global-options">Global options</h2>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--client-timeout</code>, <code>-t</code></td>
+<td>Client timeout to use in API calls.<br/>Default: <code>0s</code></td>
+</tr>
+<tr>
+<td><code>--config</code></td>
+<td>Configuration file path.</td>
+</tr>
+<tr>
+<td><code>--debug</code></td>
+<td>Print out more verbose debug logs.<br/>Default: <code>false</code></td>
+</tr>
+<tr>
+<td><code>--force-colours</code></td>
+<td>Force coloured output despite detected terminal support.</td>
+</tr>
+<tr>
+<td><code>--no-colours</code></td>
+<td>Disable coloured output despite detected terminal support. Colours can also be disabled by setting NO_COLOR environment variable.</td>
+</tr>
+<tr>
+<td><code>--output</code>, <code>-o</code></td>
+<td>Output format. Valid values are <code>human</code>, <code>json</code> and <code>yaml</code>.<br/>Default: <code>human</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="related-commands">Related commands</h2>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../">upctl account</a></td>
+<td>Manage accounts</td>
+</tr>
+</tbody>
+</table>
 
 
 
 
 
 
+
+  
+  
 
 
 
@@ -7965,10 +8117,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>
