@@ -1758,7 +1758,7 @@
   <span class="md-ellipsis">
     
   
-    properties redis
+    properties valkey
   
 
     
@@ -1771,117 +1771,6 @@
         
         <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_2_4_7_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2_4_7_5">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    properties redis
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../commands_reference/upctl_database/properties/redis/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    redis 
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../commands_reference/upctl_database/properties/redis/show/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    redis show
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-    
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4_7_6" >
-        
-          
-          <label class="md-nav__link" for="__nav_2_4_7_6" id="__nav_2_4_7_6_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    properties valkey
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_2_4_7_6_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2_4_7_6">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -8692,6 +8581,11 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <ul>
 <li>In <code>kubernetes create</code>, allow waiting for cluster and its node-groups to reach running state with <code>--wait=all</code> flag. When using <code>--wait</code> or <code>--wait=cluster</code>, the command will wait only for the cluster to reach running state.</li>
 <li>Add <code>account billing</code> command for listing billing details.</li>
+<li>Add support for Valkey to <code>database show</code> and <code>database session list</code> commands.</li>
+</ul>
+<h3 id="removed">Removed</h3>
+<ul>
+<li>Removed support for deprecated Redis service. This is treated as non-breaking change as all users have been migrated to Valkey.</li>
 </ul>
 <h2 id="3260-2025-11-26"><a href="https://github.com/UpCloudLtd/upcloud-cli/compare/v3.25.0...v3.26.0">3.26.0</a> - 2025-11-26</h2>
 <h3 id="added_1">Added</h3>
@@ -8989,7 +8883,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li><em>Managed object storages</em> field to human readable output of <code>account show</code>.</li>
 <li>Commands for listing accounts and permissions.</li>
 </ul>
-<h3 id="removed">Removed</h3>
+<h3 id="removed_1">Removed</h3>
 <ul>
 <li>From human output of <code>storage list</code>, <em>Created</em> column. This field is still available in the machine readable outputs.</li>
 </ul>
@@ -9059,7 +8953,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <ul>
 <li><strong>Breaking</strong>: In JSON and YAML output of <code>ip-address show</code>: use same JSON keys as in API documentation. This removes <code>credits</code> key that was used in place of <code>floating</code>.</li>
 </ul>
-<h3 id="removed_1">Removed</h3>
+<h3 id="removed_2">Removed</h3>
 <ul>
 <li><strong>Breaking</strong>: Remove <code>database connection list</code> and <code>database connection cancel</code> commands in favor of <code>database session</code> counterparts</li>
 <li><strong>Breaking</strong>: In JSON and YAML output of <code>database properties * show</code>: pass-through the API response. This removes <code>key</code> field from the output.</li>
