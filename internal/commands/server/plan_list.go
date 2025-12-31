@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"math"
 	"reflect"
 	"sort"
 	"strings"
@@ -22,15 +23,15 @@ func PlanListCommand() commands.Command {
 
 type planListCommand struct {
 	*commands.BaseCommand
-	showCost bool
-	duration time.Duration
+	pricingZone     string
+	pricingDuration string
 }
 
 // InitCommand initializes the command flags
 func (s *planListCommand) InitCommand() {
 	flagSet := &pflag.FlagSet{}
-	flagSet.BoolVar(&s.showCost, "cost", false, "Show cost information for plans")
-	flagSet.DurationVar(&s.duration, "duration", time.Hour, "Duration for cost calculation (e.g., 1h, 24h, 168h for week, 720h for month)")
+	flagSet.StringVar(&s.pricingZone, "pricing", "", "Show pricing for the specified zone (e.g., de-fra1)")
+	flagSet.StringVar(&s.pricingDuration, "pricing-duration", "monthly", "Duration for pricing calculation (hourly, monthly, or duration like 1h, 24h, 720h)")
 
 	s.BaseCommand.Cobra().Flags().AddFlagSet(flagSet)
 }
@@ -55,13 +56,41 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 		return plans[i].StorageSize < plans[j].StorageSize
 	})
 
+	// Parse pricing duration
+	var duration time.Duration
+	switch s.pricingDuration {
+	case "hourly":
+		duration = time.Hour
+	case "monthly":
+		duration = 30 * 24 * time.Hour // 720 hours
+	default:
+		// Try to parse as duration
+		var err error
+		duration, err = time.ParseDuration(s.pricingDuration)
+		if err != nil {
+			return nil, fmt.Errorf("invalid pricing-duration: %s (use 'hourly', 'monthly', or duration like '24h')", s.pricingDuration)
+		}
+	}
+
 	// Fetch pricing information if requested
-	var priceZones *upcloud.PriceZones
-	if s.showCost {
-		priceZones, err = exec.All().GetPriceZones(exec.Context())
+	var priceZone *upcloud.PriceZone
+	showPricing := s.pricingZone != ""
+	if showPricing {
+		priceZones, err := exec.All().GetPriceZones(exec.Context())
 		if err != nil {
 			// Continue without pricing - just show plans
-			s.showCost = false
+			showPricing = false
+		} else {
+			// Find the requested zone
+			for _, zone := range priceZones.PriceZones {
+				if zone.Name == s.pricingZone {
+					priceZone = &zone
+					break
+				}
+			}
+			if priceZone == nil {
+				return nil, fmt.Errorf("pricing zone %s not found", s.pricingZone)
+			}
 		}
 	}
 
@@ -83,8 +112,8 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 		}
 
 		// Add cost if requested
-		if s.showCost && priceZones != nil {
-			cost := getPlanCost(p, priceZones, s.duration)
+		if showPricing && priceZone != nil {
+			cost := getPlanCost(p, priceZone, duration)
 			row = append(row, fmt.Sprintf("%.4f", cost))
 		}
 
@@ -94,12 +123,12 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 	return output.MarshaledWithHumanOutput{
 		Value: plans,
 		Output: output.Combined{
-			planSection("general_purpose", "General purpose", rows["general_purpose"], s.showCost, s.duration),
-			planSection("gpu", "GPU", rows["gpu"], s.showCost, s.duration),
-			planSection("cloud_native", "Cloud native", rows["cloud_native"], s.showCost, s.duration),
-			planSection("high_cpu", "High CPU", rows["high_cpu"], s.showCost, s.duration),
-			planSection("high_memory", "High memory", rows["high_memory"], s.showCost, s.duration),
-			planSection("developer", "Developer", rows["developer"], s.showCost, s.duration),
+			planSection("general_purpose", "General purpose", rows["general_purpose"], showPricing, s.pricingDuration),
+			planSection("gpu", "GPU", rows["gpu"], showPricing, s.pricingDuration),
+			planSection("cloud_native", "Cloud native", rows["cloud_native"], showPricing, s.pricingDuration),
+			planSection("high_cpu", "High CPU", rows["high_cpu"], showPricing, s.pricingDuration),
+			planSection("high_memory", "High memory", rows["high_memory"], showPricing, s.pricingDuration),
+			planSection("developer", "Developer", rows["developer"], showPricing, s.pricingDuration),
 		},
 	}, nil
 }
@@ -123,7 +152,7 @@ func planType(p upcloud.Plan) string {
 	return "general_purpose"
 }
 
-func planSection(key, title string, rows []output.TableRow, showCost bool, duration time.Duration) output.CombinedSection {
+func planSection(key, title string, rows []output.TableRow, showPricing bool, pricingDuration string) output.CombinedSection {
 	columns := []output.TableColumn{
 		{Key: "name", Header: "Name"},
 		{Key: "cores", Header: "Cores"},
@@ -140,10 +169,10 @@ func planSection(key, title string, rows []output.TableRow, showCost bool, durat
 		)
 	}
 
-	if showCost {
+	if showPricing {
 		columns = append(columns, output.TableColumn{
 			Key:    "cost",
-			Header: formatDurationHeader(duration),
+			Header: formatPricingHeader(pricingDuration),
 		})
 	}
 
@@ -158,20 +187,17 @@ func planSection(key, title string, rows []output.TableRow, showCost bool, durat
 }
 
 // getPlanCost calculates the cost for a given plan
-func getPlanCost(plan upcloud.Plan, priceZones *upcloud.PriceZones, duration time.Duration) float64 {
-	if priceZones == nil || len(priceZones.PriceZones) == 0 {
+func getPlanCost(plan upcloud.Plan, priceZone *upcloud.PriceZone, duration time.Duration) float64 {
+	if priceZone == nil {
 		return 0
 	}
-
-	// Get the first price zone
-	priceZone := priceZones.PriceZones[0]
 
 	// Try to find specific plan pricing first using reflection
 	// Field naming convention varies, e.g., "1xCPU-1GB" → "ServerPlan1xCPU1GB"
 	fieldName := "ServerPlan" + strings.ReplaceAll(plan.Name, "-", "")
 	fieldName = strings.ReplaceAll(fieldName, ".", "")
 
-	v := reflect.ValueOf(priceZone)
+	v := reflect.ValueOf(*priceZone)
 	field := v.FieldByName(fieldName)
 
 	var hourlyPrice float64
@@ -195,41 +221,20 @@ func getPlanCost(plan upcloud.Plan, priceZones *upcloud.PriceZones, duration tim
 	}
 
 	// Calculate cost for the requested duration
-	return hourlyPrice * duration.Hours()
+	// UpCloud bills per (starting) hour, so round up to next full hour
+	return hourlyPrice * math.Ceil(duration.Hours())
 }
 
-// formatDurationHeader creates a human-readable header for the cost column
-func formatDurationHeader(duration time.Duration) string {
-	hours := duration.Hours()
-
-	// Common duration labels
-	switch {
-	case hours == 1:
-		return "Cost (per hour)"
-	case hours == 24:
-		return "Cost (per day)"
-	case hours == 24*7:
-		return "Cost (per week)"
-	case hours >= 24*30 && hours <= 24*31:
-		return "Cost (per month)"
-	case hours >= 24*365 && hours <= 24*366:
-		return "Cost (per year)"
-	case hours < 1:
-		minutes := int(duration.Minutes())
-		return fmt.Sprintf("Cost (per %d min)", minutes)
-	case hours < 24:
-		if hours == float64(int(hours)) {
-			return fmt.Sprintf("Cost (per %d hours)", int(hours))
-		}
-		return fmt.Sprintf("Cost (per %.1f hours)", hours)
-	case hours < 24*7:
-		days := hours / 24
-		if days == float64(int(days)) {
-			return fmt.Sprintf("Cost (per %d days)", int(days))
-		}
-		return fmt.Sprintf("Cost (per %.1f days)", days)
+// formatPricingHeader creates a human-readable header for the cost column
+func formatPricingHeader(pricingDuration string) string {
+	// Handle special named values
+	switch pricingDuration {
+	case "hourly":
+		return "Price (per hour)"
+	case "monthly":
+		return "Price (per month)"
 	default:
-		days := hours / 24
-		return fmt.Sprintf("Cost (per %.0f days)", days)
+		// For custom durations, just display the duration string
+		return fmt.Sprintf("Price (%s)", pricingDuration)
 	}
 }
