@@ -61,6 +61,7 @@ type GlobalFlags struct {
 	OutputFormat  string        `valid:"in(human|json|yaml)"`
 	NoColours     OptionalBoolean
 	ForceColours  OptionalBoolean
+	NoKeyring     bool          `valid:"-"`
 }
 
 // Config holds the configuration for running upctl
@@ -98,15 +99,21 @@ func (s *Config) Load() error {
 		}
 	}
 
-	creds, err := credentials.Parse(credentials.Credentials{
-		Username: v.GetString("username"),
-		Password: v.GetString("password"),
-		Token:    v.GetString("token"),
-	})
-	if err == nil {
-		v.Set("username", creds.Username)
-		v.Set("password", creds.Password)
-		v.Set("token", creds.Token)
+	// Check for no-keyring setting from both flag and config file
+	noKeyring := s.GlobalFlags.NoKeyring || v.GetBool("no-keyring")
+
+	// Only attempt to parse credentials with keyring if no-keyring is not set
+	if !noKeyring {
+		creds, err := credentials.Parse(credentials.Credentials{
+			Username: v.GetString("username"),
+			Password: v.GetString("password"),
+			Token:    v.GetString("token"),
+		})
+		if err == nil {
+			v.Set("username", creds.Username)
+			v.Set("password", creds.Password)
+			v.Set("token", creds.Token)
+		}
 	}
 
 	v.Set("config", v.ConfigFileUsed())
@@ -142,6 +149,11 @@ func (s *Config) Get(key string) any {
 // GetString is a convenience method of getting a configuration value in the current namespace as a string
 func (s *Config) GetString(key string) string {
 	return s.viper.GetString(key)
+}
+
+// GetBool is a convenience method of getting a configuration value in the current namespace as a boolean
+func (s *Config) GetBool(key string) bool {
+	return s.viper.GetBool(key)
 }
 
 // FlagByKey returns pflag.Flag associated with a key in config
@@ -243,6 +255,40 @@ func GetVersion() string {
 
 func SaveTokenToKeyring(token string) error {
 	return keyring.Set(credentials.KeyringServiceName, credentials.KeyringTokenUser, token)
+}
+
+func SaveTokenToConfigFile(token string, configFile string) error {
+	// Read existing config or create new one
+	v := viper.New()
+	v.SetConfigType("yaml")
+
+	if configFile != "" {
+		// Use the specified config file
+		v.SetConfigFile(configFile)
+	} else {
+		// Use default locations
+		v.SetConfigName("upctl")
+		v.AddConfigPath(xdg.ConfigHome)
+		v.AddConfigPath("$HOME/.config")
+	}
+
+	// Try to read existing config (ignore errors if not found)
+	_ = v.ReadInConfig()
+
+	// Set the token
+	v.Set("token", token)
+
+	// Determine config file path for writing
+	if configFile == "" {
+		configFile = v.ConfigFileUsed()
+		if configFile == "" {
+			// Config file doesn't exist, create it in XDG config home
+			configFile = filepath.Join(xdg.ConfigHome, "upctl.yaml")
+		}
+	}
+
+	// Write the config file
+	return v.WriteConfigAs(configFile)
 }
 
 func getVersion() string {

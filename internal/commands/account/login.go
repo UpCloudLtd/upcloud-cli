@@ -9,6 +9,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
 )
 
 // LoginCommand creates the "account login" command
@@ -57,14 +58,42 @@ func (s *loginCommand) executeWithToken(exec commands.Executor) (output.Output, 
 		return nil, fmt.Errorf("failed to read token from standard input: %w", err)
 	}
 
-	msg := "Saving provided token to the system keyring."
-	exec.PushProgressStarted(msg)
-	err = config.SaveTokenToKeyring(strings.TrimSpace(token))
-	if err != nil {
-		return commands.HandleError(exec, msg, err)
-	}
+	token = strings.TrimSpace(token)
 
-	exec.PushProgressSuccess(msg)
+	// Check if keyring is disabled via global flag or config
+	// Note: We check the flag directly because the config isn't loaded for offline commands
+	noKeyring, _ := s.Cobra().Root().PersistentFlags().GetBool("no-keyring")
+	// Also check if it was set in config via viper (if available)
+	if !noKeyring && s.Cobra().Root().PersistentFlags().Changed("config") {
+		// Config file was specified, check if no-keyring is set there
+		v := viper.New()
+		configFile, _ := s.Cobra().Root().PersistentFlags().GetString("config")
+		if configFile != "" {
+			v.SetConfigFile(configFile)
+			v.SetConfigType("yaml")
+			_ = v.ReadInConfig()
+			noKeyring = v.GetBool("no-keyring")
+		}
+	}
+	if noKeyring {
+		// Get config file path from flag if specified
+		configFile, _ := s.Cobra().Root().PersistentFlags().GetString("config")
+		msg := "Saving token to configuration file (keyring disabled)."
+		exec.PushProgressStarted(msg)
+		err = config.SaveTokenToConfigFile(token, configFile)
+		if err != nil {
+			return commands.HandleError(exec, msg, err)
+		}
+		exec.PushProgressSuccess(msg)
+	} else {
+		msg := "Saving provided token to the system keyring."
+		exec.PushProgressStarted(msg)
+		err = config.SaveTokenToKeyring(token)
+		if err != nil {
+			return commands.HandleError(exec, msg, err)
+		}
+		exec.PushProgressSuccess(msg)
+	}
 
 	return output.None{}, nil
 }

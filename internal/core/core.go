@@ -102,6 +102,10 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 		&conf.GlobalFlags.Debug, "debug", false,
 		"Print out more verbose debug logs.",
 	)
+	flags.BoolVar(
+		&conf.GlobalFlags.NoKeyring, "no-keyring", false,
+		"Disable system keyring integration for credential storage.",
+	)
 	flags.DurationVarP(
 		&conf.GlobalFlags.ClientTimeout, "client-timeout", "t",
 		0,
