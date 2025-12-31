@@ -2,19 +2,21 @@ package serverfirewall
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
+	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
-	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
 type deleteCommand struct {
 	*commands.BaseCommand
-	rulePosition int
+	params ruleModifyParams
 	completion.Server
 	resolver.CachingServer
 }
@@ -24,39 +26,118 @@ func DeleteCommand() commands.Command {
 	return &deleteCommand{
 		BaseCommand: commands.New(
 			"delete",
-			"Removes a firewall rule from a server. Firewall rules must be removed individually. The positions of remaining firewall rules will be adjusted after a rule is removed.",
+			"Delete firewall rules from a server. Rules can be deleted by position or by using filters.",
 			"upctl server firewall delete 00038afc-d526-4148-af0e-d2f1eeaded9b --position 1",
+			"upctl server firewall delete myserver --comment \"temporary rule\"",
+			"upctl server firewall delete myserver --direction in --protocol tcp --dest-port 8080",
 		),
+		params: ruleModifyParams{
+			skipConfirmation: 1,
+		},
 	}
 }
 
 // InitCommand implements Command.InitCommand
 func (s *deleteCommand) InitCommand() {
 	flagSet := &pflag.FlagSet{}
-	flagSet.IntVar(&s.rulePosition, "position", 0, "Rule position. Available: 1-1000")
+	addRuleFilterFlags(flagSet, &s.params, s.Cobra())
 	s.AddFlags(flagSet)
-
-	commands.Must(s.Cobra().MarkFlagRequired("position"))
-	commands.Must(s.Cobra().RegisterFlagCompletionFunc("position", cobra.NoFileCompletions))
+	configureRuleFilterFlagsPostAdd(s.Cobra())
 }
 
 // Execute implements commands.MultipleArgumentCommand
 func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
-	if s.rulePosition < 1 || s.rulePosition > 1000 {
-		return nil, fmt.Errorf("invalid position (1-1000 allowed)")
-	}
-	msg := fmt.Sprintf("Deleting firewall rule %d from server %v", s.rulePosition, arg)
-	exec.PushProgressStarted(msg)
-
-	err := exec.Firewall().DeleteFirewallRule(exec.Context(), &request.DeleteFirewallRuleRequest{
-		ServerUUID: arg,
-		Position:   s.rulePosition,
+	// Get current firewall rules
+	server, err := exec.Server().GetServerDetails(exec.Context(), &request.GetServerDetailsRequest{
+		UUID: arg,
 	})
 	if err != nil {
-		return commands.HandleError(exec, msg, err)
+		return nil, err
 	}
 
-	exec.PushProgressSuccess(msg)
+	// Find matching rules
+	matchedIndices := findMatchingRules(server.FirewallRules, &s.params)
+
+	if len(matchedIndices) == 0 {
+		return nil, fmt.Errorf("no firewall rules matched the specified filters")
+	}
+
+	// Confirm if multiple rules or if confirmation required
+	if len(matchedIndices) > s.params.skipConfirmation {
+		exec.PushProgressUpdate(fmt.Sprintf("Found %d matching firewall rules:", len(matchedIndices)))
+		for _, idx := range matchedIndices {
+			rule := &server.FirewallRules[idx]
+			exec.PushProgressUpdate(fmt.Sprintf("  Position %d: %s %s %s -> %s",
+				rule.Position, rule.Direction, rule.Protocol,
+				formatRuleAddress(rule, true), formatRuleAddress(rule, false)))
+		}
+
+		if !ui.Confirm(fmt.Sprintf("Delete %d firewall rules?", len(matchedIndices))) {
+			return output.None{}, nil
+		}
+	}
+
+	// Sort indices in descending order to delete from highest position first
+	// This prevents position shifts affecting subsequent deletions
+	sort.Sort(sort.Reverse(sort.IntSlice(matchedIndices)))
+
+	// Delete each matched rule
+	deletedCount := 0
+	for _, idx := range matchedIndices {
+		rule := &server.FirewallRules[idx]
+		msg := fmt.Sprintf("Deleting firewall rule at position %d", rule.Position)
+		exec.PushProgressStarted(msg)
+
+		err := exec.Firewall().DeleteFirewallRule(exec.Context(), &request.DeleteFirewallRuleRequest{
+			ServerUUID: arg,
+			Position:   rule.Position,
+		})
+		if err != nil {
+			exec.PushProgressFailed(msg)
+			if deletedCount > 0 {
+				exec.PushProgressUpdate(fmt.Sprintf("Successfully deleted %d rules before error", deletedCount))
+			}
+			return nil, err
+		}
+
+		exec.PushProgressSuccess(msg)
+		deletedCount++
+
+		// Adjust positions of remaining rules in our local copy
+		for i := range server.FirewallRules {
+			if server.FirewallRules[i].Position > rule.Position {
+				server.FirewallRules[i].Position--
+			}
+		}
+	}
 
 	return output.None{}, nil
+}
+
+func formatRuleAddress(rule *upcloud.FirewallRule, source bool) string {
+	var addr, port string
+	if source {
+		addr = rule.SourceAddressStart
+		if rule.SourceAddressEnd != "" && rule.SourceAddressEnd != rule.SourceAddressStart {
+			addr = fmt.Sprintf("%s-%s", addr, rule.SourceAddressEnd)
+		}
+		port = rule.SourcePortStart
+		if rule.SourcePortEnd != "" && rule.SourcePortEnd != rule.SourcePortStart {
+			port = fmt.Sprintf("%s-%s", port, rule.SourcePortEnd)
+		}
+	} else {
+		addr = rule.DestinationAddressStart
+		if rule.DestinationAddressEnd != "" && rule.DestinationAddressEnd != rule.DestinationAddressStart {
+			addr = fmt.Sprintf("%s-%s", addr, rule.DestinationAddressEnd)
+		}
+		port = rule.DestinationPortStart
+		if rule.DestinationPortEnd != "" && rule.DestinationPortEnd != rule.DestinationPortStart {
+			port = fmt.Sprintf("%s-%s", port, rule.DestinationPortEnd)
+		}
+	}
+
+	if port != "" {
+		return fmt.Sprintf("%s:%s", addr, port)
+	}
+	return addr
 }
