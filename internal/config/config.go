@@ -113,6 +113,11 @@ func (s *Config) Load() error {
 			v.Set("username", creds.Username)
 			v.Set("password", creds.Password)
 			v.Set("token", creds.Token)
+		} else {
+			// Log keyring error but don't fail - credentials might be provided differently
+			// Wrap the error with helpful hints for debugging
+			wrappedErr := WrapKeyringError(err)
+			logger.Debug("Failed to parse credentials from keyring", "error", wrappedErr)
 		}
 	}
 
@@ -254,7 +259,30 @@ func GetVersion() string {
 }
 
 func SaveTokenToKeyring(token string) error {
-	return keyring.Set(credentials.KeyringServiceName, credentials.KeyringTokenUser, token)
+	err := keyring.Set(credentials.KeyringServiceName, credentials.KeyringTokenUser, token)
+	if err != nil {
+		return WrapKeyringError(err)
+	}
+	return nil
+}
+
+// WrapKeyringError adds helpful hints to keyring errors
+func WrapKeyringError(err error) error {
+	if err == nil {
+		return nil
+	}
+
+	// Check for common keyring error patterns
+	errStr := err.Error()
+	if strings.Contains(errStr, "failed to unlock") ||
+	   strings.Contains(errStr, "keyring") ||
+	   strings.Contains(errStr, "secret") ||
+	   strings.Contains(errStr, "dbus") ||
+	   strings.Contains(errStr, "collection") {
+		return fmt.Errorf("%w\n\nHint: If you're experiencing keyring issues, you can:\n  1. Use the --no-keyring flag to save credentials to config file instead\n  2. Set 'no-keyring: true' in your upctl.yaml config file\n  3. Use environment variables UPCLOUD_TOKEN for authentication", err)
+	}
+
+	return err
 }
 
 func SaveTokenToConfigFile(token string, configFile string) error {
