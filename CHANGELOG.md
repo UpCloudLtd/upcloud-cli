@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - In `kubernetes create`, allow waiting for cluster and its node-groups to reach running state with `--wait=all` flag. When using `--wait` or `--wait=cluster`, the command will wait only for the cluster to reach running state.
 - Add `account billing` command for listing billing details.
+- Add support for Valkey to `database show` and `database session list` commands.
+
+### Removed
+
+- Removed support for deprecated Redis service. This is treated as non-breaking change as all users have been migrated to Valkey.
 
 ## [3.26.0] - 2025-11-26
 
