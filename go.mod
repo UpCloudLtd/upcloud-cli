@@ -4,7 +4,7 @@ go 1.25.3
 
 require (
 	dario.cat/mergo v1.0.2
-	github.com/UpCloudLtd/progress v1.0.3
+	github.com/UpCloudLtd/progress v1.1.0
 	github.com/UpCloudLtd/upcloud-go-api/credentials v0.1.1
 	github.com/UpCloudLtd/upcloud-go-api/v8 v8.33.0
 	github.com/adrg/xdg v0.5.3
