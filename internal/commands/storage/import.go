@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync/atomic"
 	"time"
 
@@ -54,14 +55,14 @@ func getSupportedExtensionsText() string {
 			}
 		}
 	}
-	var result string
+	var result strings.Builder
 	for i, ext := range extensions {
 		if i > 0 {
-			result += ", "
+			result.WriteString(", ")
 		}
-		result += ext
+		result.WriteString(ext)
 	}
-	return result
+	return result.String()
 }
 
 // getSupportedContentTypesText returns a formatted string of supported content types
@@ -82,14 +83,14 @@ func getSupportedContentTypesText() string {
 			}
 		}
 	}
-	var result string
+	var result strings.Builder
 	for i, ct := range types {
 		if i > 0 {
-			result += ", "
+			result.WriteString(", ")
 		}
-		result += ct
+		result.WriteString(ct)
 	}
-	return result
+	return result.String()
 }
 
 // ImportCommand creates the "storage import" command
