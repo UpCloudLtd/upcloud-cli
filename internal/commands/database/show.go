@@ -160,8 +160,8 @@ func getVersion(db *upcloud.ManagedDatabase) string {
 		return db.Metadata.OpenSearchVersion
 	case "pg":
 		return db.Metadata.PGVersion
-	case "redis":
-		return db.Metadata.RedisVersion //nolint:staticcheck // To be removed when Redis support has been removed
+	case "valkey":
+		return db.Metadata.ValkeyVersion
 	}
 	return ""
 }
