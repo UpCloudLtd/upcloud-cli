@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"fmt"
+	"os"
 	"path/filepath"
 	"regexp"
 	"runtime/debug"
@@ -65,11 +66,12 @@ type GlobalFlags struct {
 
 // Config holds the configuration for running upctl
 type Config struct {
-	viper       *viper.Viper
-	flagSet     *pflag.FlagSet
-	cancel      context.CancelFunc
-	context     context.Context //nolint: containedctx // This is where the top-level context is stored
-	GlobalFlags GlobalFlags
+	viper        *viper.Viper
+	flagSet      *pflag.FlagSet
+	cancel       context.CancelFunc
+	context      context.Context //nolint: containedctx // This is where the top-level context is stored
+	GlobalFlags  GlobalFlags
+	keyringError error // Track keyring access errors for better error messages
 }
 
 // Load loads config and sets up service
@@ -98,15 +100,43 @@ func (s *Config) Load() error {
 		}
 	}
 
-	creds, err := credentials.Parse(credentials.Credentials{
-		Username: v.GetString("username"),
-		Password: v.GetString("password"),
-		Token:    v.GetString("token"),
-	})
-	if err == nil {
-		v.Set("username", creds.Username)
-		v.Set("password", creds.Password)
-		v.Set("token", creds.Token)
+	// Try to load from credentials file first (before trying keyring)
+	fileCreds, fileErr := LoadCredentialsFile()
+	if fileErr != nil && !os.IsNotExist(fileErr) {
+		logger.Debug("Could not load credentials file", "error", fileErr)
+	} else if fileCreds.Token != "" || (fileCreds.Username != "" && fileCreds.Password != "") {
+		// Merge file credentials (config/env takes precedence)
+		if v.GetString("token") == "" && fileCreds.Token != "" {
+			v.Set("token", fileCreds.Token)
+			logger.Debug("Using token from credentials file")
+		}
+		if v.GetString("username") == "" && fileCreds.Username != "" {
+			v.Set("username", fileCreds.Username)
+		}
+		if v.GetString("password") == "" && fileCreds.Password != "" {
+			v.Set("password", fileCreds.Password)
+		}
+	}
+
+	// Only try keyring if we don't have credentials yet
+	needsKeyring := v.GetString("token") == "" &&
+		(v.GetString("username") == "" || v.GetString("password") == "")
+
+	if needsKeyring {
+		creds, err := credentials.Parse(credentials.Credentials{
+			Username: v.GetString("username"),
+			Password: v.GetString("password"),
+			Token:    v.GetString("token"),
+		})
+		if err != nil {
+			// Store the keyring error for later use in error messages
+			s.keyringError = err
+			logger.Debug("Keyring access failed", "error", err)
+		} else {
+			v.Set("username", creds.Username)
+			v.Set("password", creds.Password)
+			v.Set("token", creds.Token)
+		}
 	}
 
 	v.Set("config", v.ConfigFileUsed())
@@ -213,7 +243,11 @@ func (s *Config) CreateService() (internal.AllServices, error) {
 		if s.GetString("config") != "" {
 			configDetails = fmt.Sprintf("used %s", s.GetString("config"))
 		}
-		return nil, clierrors.MissingCredentialsError{ConfigFile: configDetails, ServiceName: credentials.KeyringServiceName}
+		return nil, clierrors.MissingCredentialsError{
+			ConfigFile:   configDetails,
+			ServiceName:  credentials.KeyringServiceName,
+			KeyringError: s.keyringError,
+		}
 	}
 
 	configs := []client.ConfigFn{
