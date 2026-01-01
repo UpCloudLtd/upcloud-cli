@@ -74,7 +74,7 @@ func (l *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 	}, nil
 }
 
-func formatOptions(val interface{}) (text.Colors, string, error) {
+func formatOptions(val any) (text.Colors, string, error) {
 	options, ok := val.(*upcloud.PermissionOptions)
 	if !ok {
 		return nil, "", fmt.Errorf("cannot parse %T, expected *upcloud.PermissionOptions", val)

@@ -28,6 +28,13 @@ func TestGetVersion(t *testing.T) {
 				Type:     upcloud.ManagedDatabaseServiceTypePostgreSQL,
 				Metadata: &upcloud.ManagedDatabaseMetadata{PGVersion: "15"},
 			},
+		}, {
+			name:     "valkey",
+			expected: "8.1.5",
+			db: &upcloud.ManagedDatabase{
+				Type:     upcloud.ManagedDatabaseServiceTypeValkey,
+				Metadata: &upcloud.ManagedDatabaseMetadata{ValkeyVersion: "8.1.5"},
+			},
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {

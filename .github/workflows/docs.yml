@@ -34,14 +34,14 @@ jobs:
       - name: Generate documentation
         run: make docs
       - name: Store generated MkDocs site
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: mkdocs-site
           path: site
           retention-days: 7
       - name: Deploy to pages
         if: ${{ github.ref_name == 'main' || github.event_name == 'release'}}
-        uses: JamesIves/github-pages-deploy-action@4a3abc783e1a24aeb44c16e869ad83caf6b4cc23 # 4.7.4
+        uses: JamesIves/github-pages-deploy-action@9d877eea73427180ae43cf98e8914934fe157a1a # 4.7.6
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages

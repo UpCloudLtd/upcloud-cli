@@ -1312,6 +1312,22 @@ func (m *Service) DetachManagedObjectStorageUserPolicy(ctx context.Context, r *r
 	return nil
 }
 
+func (m *Service) CreateManagedObjectStoragePolicyVersion(ctx context.Context, r *request.CreateManagedObjectStoragePolicyVersionRequest) (*upcloud.ManagedObjectStoragePolicyVersion, error) {
+	return nil, nil
+}
+
+func (m *Service) GetManagedObjectStoragePolicyVersion(ctx context.Context, r *request.GetManagedObjectStoragePolicyVersionRequest) (*upcloud.ManagedObjectStoragePolicyVersion, error) {
+	return nil, nil
+}
+
+func (m *Service) GetManagedObjectStoragePolicyVersions(ctx context.Context, r *request.GetManagedObjectStoragePolicyVersionsRequest) ([]upcloud.ManagedObjectStoragePolicyVersion, error) {
+	return nil, nil
+}
+
+func (m *Service) DeleteManagedObjectStoragePolicyVersion(ctx context.Context, r *request.DeleteManagedObjectStoragePolicyVersionRequest) error {
+	return nil
+}
+
 func (m *Service) CreateManagedObjectStorageCustomDomain(ctx context.Context, r *request.CreateManagedObjectStorageCustomDomainRequest) error {
 	return m.Called(r).Error(0)
 }

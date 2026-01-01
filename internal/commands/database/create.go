@@ -133,7 +133,7 @@ func processProperties(in []string, t *upcloud.ManagedDatabaseType) (request.Man
 			continue
 		}
 
-		var parsedValue interface{}
+		var parsedValue any
 		if err := json.Unmarshal([]byte(value), &parsedValue); err != nil {
 			resp.Set(key, value) // Set as plain string if parsing fails
 		} else {
@@ -147,9 +147,9 @@ func processNetworks(in []string) ([]upcloud.ManagedDatabaseNetwork, error) {
 	var networks []upcloud.ManagedDatabaseNetwork
 	for _, netStr := range in {
 		network := upcloud.ManagedDatabaseNetwork{}
-		pairs := strings.Split(netStr, ",")
+		pairs := strings.SplitSeq(netStr, ",")
 
-		for _, pair := range pairs {
+		for pair := range pairs {
 			parts := strings.SplitN(pair, "=", 2)
 			if len(parts) != 2 {
 				return nil, fmt.Errorf("invalid network format: %s, expected key=value", pair)
