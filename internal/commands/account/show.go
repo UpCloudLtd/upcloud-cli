@@ -119,7 +119,7 @@ func (s *showCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 	}, nil
 }
 
-func formatCredits(val interface{}) (text.Colors, string, error) {
+func formatCredits(val any) (text.Colors, string, error) {
 	credits, ok := val.(float64)
 	if !ok {
 		return nil, "", fmt.Errorf("cannot parse %T, expected float64", val)
