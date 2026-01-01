@@ -8,5 +8,5 @@ import (
 type Output interface {
 	json.Marshaler
 	MarshalHuman() ([]byte, error)
-	MarshalRawMap() (map[string]interface{}, error)
+	MarshalRawMap() (map[string]any, error)
 }

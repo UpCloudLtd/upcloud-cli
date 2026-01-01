@@ -120,7 +120,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 	}, nil
 }
 
-func formatShowServers(val interface{}) (text.Colors, string, error) {
+func formatShowServers(val any) (text.Colors, string, error) {
 	servers, ok := val.(upcloud.ServerUUIDSlice)
 	if !ok {
 		return nil, "", fmt.Errorf("cannot parse server UUIDs from %T, expected upcloud.ServerUUIDSlice", val)

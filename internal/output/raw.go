@@ -18,8 +18,8 @@ func (s Raw) MarshalHuman() ([]byte, error) {
 }
 
 // MarshalRawMap implements output.Output
-func (s Raw) MarshalRawMap() (map[string]interface{}, error) {
-	return map[string]interface{}{}, nil
+func (s Raw) MarshalRawMap() (map[string]any, error) {
+	return map[string]any{}, nil
 }
 
 // Read implements io.ReadCloser.

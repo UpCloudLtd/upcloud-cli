@@ -35,8 +35,8 @@ type Executor interface {
 	Account() service.Account
 	Token() service.Token
 	All() internal.AllServices
-	Debug(msg string, args ...interface{})
-	WithLogger(args ...interface{}) Executor
+	Debug(msg string, args ...any)
+	WithLogger(args ...any) Executor
 	WithProgress(progress *progress.Progress) Executor
 }
 
@@ -55,7 +55,7 @@ type executorImpl struct {
 	sigIntChan chan os.Signal
 }
 
-func (e executorImpl) WithLogger(args ...interface{}) Executor {
+func (e executorImpl) WithLogger(args ...any) Executor {
 	e.logger = e.logger.With(args...)
 	return &e
 }
@@ -69,7 +69,7 @@ func (e *executorImpl) Context() context.Context {
 	return e.Config.Context()
 }
 
-func (e *executorImpl) Debug(msg string, args ...interface{}) {
+func (e *executorImpl) Debug(msg string, args ...any) {
 	e.logger.Debug(msg, args...)
 }
 

@@ -9,7 +9,7 @@ import (
 )
 
 // Boolean returns val formatted as a boolean
-func Boolean(val interface{}) (text.Colors, string, error) {
+func Boolean(val any) (text.Colors, string, error) {
 	if vb, ok := val.(bool); ok {
 		if vb {
 			return ui.DefaultBooleanColoursTrue, "yes", nil
@@ -28,7 +28,7 @@ func Boolean(val interface{}) (text.Colors, string, error) {
 }
 
 // Dereference returns "%v" Sprintf'ed value of a pointer
-func Dereference[T any](val interface{}) (text.Colors, string, error) {
+func Dereference[T any](val any) (text.Colors, string, error) {
 	ptr, ok := val.(*T)
 	if !ok {
 		return nil, "", fmt.Errorf("cannot parse %T, expected pointer", val)
@@ -42,7 +42,7 @@ func Dereference[T any](val interface{}) (text.Colors, string, error) {
 }
 
 // PossiblyUnknownString outputs "Unknown" in light black if input value is an empty string, otherwise passesthrough the input value.
-func PossiblyUnknownString(val interface{}) (text.Colors, string, error) {
+func PossiblyUnknownString(val any) (text.Colors, string, error) {
 	str, ok := val.(string)
 	if !ok {
 		return nil, "", fmt.Errorf("cannot parse %T, expected string", val)
@@ -54,7 +54,7 @@ func PossiblyUnknownString(val interface{}) (text.Colors, string, error) {
 	return nil, str, nil
 }
 
-func usingColorFunction[T ~string](colorFunction func(T) text.Colors, val interface{}) (text.Colors, string, error) {
+func usingColorFunction[T ~string](colorFunction func(T) text.Colors, val any) (text.Colors, string, error) {
 	typedVal, ok := val.(T)
 	if !ok {
 		return nil, "", fmt.Errorf("cannot parse value from %T, expected %T", val, T(""))

@@ -14,6 +14,6 @@ func (s None) MarshalHuman() ([]byte, error) {
 }
 
 // MarshalRawMap implements output.Output
-func (s None) MarshalRawMap() (map[string]interface{}, error) {
-	return map[string]interface{}{}, nil
+func (s None) MarshalRawMap() (map[string]any, error) {
+	return map[string]any{}, nil
 }

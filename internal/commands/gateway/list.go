@@ -66,7 +66,7 @@ func (c *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 	}, nil
 }
 
-func formatRouters(val interface{}) (text.Colors, string, error) {
+func formatRouters(val any) (text.Colors, string, error) {
 	routers, ok := val.([]upcloud.GatewayRouter)
 	if !ok {
 		return nil, "", fmt.Errorf("cannot parse routers from %T, expected []upcloud.GatewayRouter", val)

@@ -414,7 +414,7 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	}}, nil
 }
 
-func formatCreateIPAddresses(val interface{}) (text.Colors, string, error) {
+func formatCreateIPAddresses(val any) (text.Colors, string, error) {
 	server, ok := val.(*upcloud.ServerDetails)
 	if !ok {
 		return nil, "", fmt.Errorf("cannot parse IP addresses from %T, expected *upcloud.ServerDetails", val)
