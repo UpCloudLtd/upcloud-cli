@@ -138,10 +138,12 @@ and plain old checksum files are available for verifying release assets.
     ```sh
     gh attestation verify \
         /path/to/locally/downloaded/upcloud-cli_{{ latest_release }}_linux_x86_64.tar.gz \
-        --repo UpCloudLtd/upcloud-cli
+        --repo UpCloudLtd/upcloud-cli \
+        --signer-repo UpCloudLtd/workflows
     ```
 
     Attestations are available starting from version 3.16.0.
+    To verify attestations for versions older than 3.28.0, leave out `--signer-repo`.
 
 === "Digests"
 
