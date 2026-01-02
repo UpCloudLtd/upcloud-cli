@@ -9,7 +9,6 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
-	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -67,7 +66,7 @@ func TestEjectCDROMCommand(t *testing.T) {
 			assert.NoError(t, err)
 
 			_, err = c.(commands.MultipleArgumentCommand).Execute(
-				commands.NewExecutor(conf, mService, flume.New("test")),
+				commands.NewExecutor(conf, mService, conf.NewLogger("test")),
 				Server1.UUID,
 			)
 

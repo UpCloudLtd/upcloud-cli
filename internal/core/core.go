@@ -13,7 +13,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
 
 	valid "github.com/asaskevich/govalidator"
-	"github.com/gemalto/flume"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -52,24 +51,6 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 				} else {
 					text.DisableColors()
 				}
-			}
-
-			// Set up flume
-			flume.SetOut(os.Stderr)
-			// TODO: should we make the level configurable?
-			logLvl := flume.DebugLevel
-			if !conf.GlobalFlags.Debug {
-				// not debugging, no log output!
-				logLvl = flume.OffLevel
-			}
-			addCaller := true
-			if err := flume.Configure(flume.Config{
-				AddCaller:    &addCaller,
-				DefaultLevel: logLvl,
-				// do not colour logs, as it doesn't really fit our use case and complicates the colour handling
-				Encoding: "ltsv",
-			}); err != nil {
-				return fmt.Errorf("flume config error: %w", err)
 			}
 
 			if err := conf.Load(); err != nil {

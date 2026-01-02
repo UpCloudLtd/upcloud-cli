@@ -9,7 +9,6 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
-	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -178,7 +177,7 @@ func TestModifyCommandExistingBackupRule(t *testing.T) {
 			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 
-			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService, flume.New("test")), test.storageDetails.UUID)
+			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService, conf.NewLogger("test")), test.storageDetails.UUID)
 
 			if test.error != "" {
 				assert.EqualError(t, err, test.error)
@@ -220,7 +219,7 @@ func TestModifyCommandAutoresize(t *testing.T) {
 		err := c.Cobra().Flags().Parse([]string{"--size", "50", "--enable-filesystem-autoresize"})
 		assert.NoError(t, err)
 
-		output, err := c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService, flume.New("test")), UUID)
+		output, err := c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService, conf.NewLogger("test")), UUID)
 		assert.NoError(t, err)
 		mService.AssertNumberOfCalls(t, "ModifyStorage", 1)
 		mService.AssertNumberOfCalls(t, "ResizeStorageFilesystem", 1)

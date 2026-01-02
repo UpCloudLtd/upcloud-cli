@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 	"os/signal"
 	"time"
@@ -15,7 +16,6 @@ import (
 	internal "github.com/UpCloudLtd/upcloud-cli/v3/internal/service"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/service"
-	"github.com/gemalto/flume"
 )
 
 // Executor represents the execution context for commands
@@ -51,7 +51,7 @@ type executorImpl struct {
 	Config     *config.Config
 	progress   *progress.Progress
 	service    internal.AllServices
-	logger     flume.Logger
+	logger     *slog.Logger
 	sigIntChan chan os.Signal
 }
 
@@ -153,10 +153,10 @@ func (e executorImpl) All() internal.AllServices {
 }
 
 // NewExecutor creates the default Executor
-func NewExecutor(cfg *config.Config, svc internal.AllServices, logger flume.Logger) Executor {
+func NewExecutor(cfg *config.Config, svc internal.AllServices, logger *slog.Logger) Executor {
 	executor := &executorImpl{
 		Config:     cfg,
-		progress:   progress.NewProgress(config.GetProgressOutputConfig()),
+		progress:   progress.NewProgress(config.GetProgressOutputConfig(cfg)),
 		logger:     logger,
 		service:    svc,
 		sigIntChan: make(chan os.Signal, 1),

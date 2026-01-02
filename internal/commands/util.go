@@ -47,7 +47,7 @@ func Parse(in string) ([]string, error) {
 	return ParseN(in, -1)
 }
 
-// ToArray turns an interface{} to a slice of interface{}s.
+// ToArray turns an any to a slice of anys.
 // If the underlying type is also a slice, the elements will be returned as the return values elements..
 // Otherwise, the input element is wrapped in a slice.
 func ToArray(in any) []any {
