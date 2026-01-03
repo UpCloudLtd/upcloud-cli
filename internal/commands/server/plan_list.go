@@ -57,42 +57,51 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 		return plans[i].StorageSize < plans[j].StorageSize
 	})
 
-	// Parse pricing duration
-	var duration time.Duration
+	// Check if pricing should be shown
+	showPricing := s.pricingZone != ""
 
-	// Check if it's a month-based duration (e.g., 1m, 3m, 12m)
-	if strings.HasSuffix(s.pricingDuration, "m") && !strings.Contains(s.pricingDuration, "h") && !strings.Contains(s.pricingDuration, "s") {
-		// Try to parse as months
-		monthStr := strings.TrimSuffix(s.pricingDuration, "m")
-		months, err := strconv.Atoi(monthStr)
-		if err == nil && months > 0 {
-			// Use 30 days per month for pricing calculations
-			duration = time.Duration(months) * 30 * 24 * time.Hour
+	// Validate that pricing-duration is only used with --pricing
+	if !showPricing && s.pricingDuration != "1m" {
+		// User specified pricing-duration without specifying a pricing zone
+		return nil, fmt.Errorf("--pricing-duration requires --pricing zone to be specified")
+	}
+
+	// Parse pricing duration only if showing pricing
+	var duration time.Duration
+	if showPricing {
+		// Check if it's a month-based duration (e.g., 1m, 3m, 12m)
+		if strings.HasSuffix(s.pricingDuration, "m") && !strings.Contains(s.pricingDuration, "h") && !strings.Contains(s.pricingDuration, "s") {
+			// Try to parse as months
+			monthStr := strings.TrimSuffix(s.pricingDuration, "m")
+			months, err := strconv.Atoi(monthStr)
+			if err == nil && months > 0 {
+				// Use 28 days per month for pricing calculations (UpCloud bills max 28 days per month)
+				duration = time.Duration(months) * 28 * 24 * time.Hour
+			} else {
+				// Not a valid month duration, try as standard duration
+				duration, err = time.ParseDuration(s.pricingDuration)
+				if err != nil {
+					return nil, fmt.Errorf("invalid pricing-duration: %s (use formats like '1h', '24h', '1m', '3m', '12m')", s.pricingDuration)
+				}
+			}
 		} else {
-			// Not a valid month duration, try as standard duration
+			// Parse as standard duration
+			var err error
 			duration, err = time.ParseDuration(s.pricingDuration)
 			if err != nil {
 				return nil, fmt.Errorf("invalid pricing-duration: %s (use formats like '1h', '24h', '1m', '3m', '12m')", s.pricingDuration)
 			}
 		}
-	} else {
-		// Parse as standard duration
-		var err error
-		duration, err = time.ParseDuration(s.pricingDuration)
-		if err != nil {
-			return nil, fmt.Errorf("invalid pricing-duration: %s (use formats like '1h', '24h', '1m', '3m', '12m')", s.pricingDuration)
-		}
 	}
 
 	// Fetch pricing information if requested
 	var priceZone *upcloud.PriceZone
-	showPricing := s.pricingZone != ""
 	if showPricing {
 		priceZones, err := exec.All().GetPriceZones(exec.Context())
 		if err != nil {
 			// Continue without pricing - just show plans
 			showPricing = false
-		} else {
+		} else if priceZones != nil {
 			// Find the requested zone
 			for _, zone := range priceZones.PriceZones {
 				if zone.Name == s.pricingZone {
@@ -103,6 +112,9 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 			if priceZone == nil {
 				return nil, fmt.Errorf("pricing zone %s not found", s.pricingZone)
 			}
+		} else {
+			// priceZones is nil, disable pricing
+			showPricing = false
 		}
 	}
 
