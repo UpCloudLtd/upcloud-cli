@@ -16,6 +16,16 @@ func TestMonthDurationParsing(t *testing.T) {
 		expectedHeader string
 	}{
 		{
+			input:          "hourly",
+			expectedHours:  1,
+			expectedHeader: "Price (per hour)",
+		},
+		{
+			input:          "monthly",
+			expectedHours:  28 * 24,
+			expectedHeader: "Price (per month)",
+		},
+		{
 			input:          "1m",
 			expectedHours:  28 * 24,
 			expectedHeader: "Price (per month)",
@@ -39,24 +49,31 @@ func TestMonthDurationParsing(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.input, func(t *testing.T) {
-			// Test that duration calculation matches 28 days per month
+			// Test that duration calculation matches expected
 			duration := time.Duration(0)
 
 			// Simulate the parsing logic from plan_list.go
-			if tc.input[len(tc.input)-1] == 'm' {
-				months := 0
-				if tc.input == "1m" {
-					months = 1
-				} else if tc.input == "3m" {
-					months = 3
-				} else if tc.input == "6m" {
-					months = 6
-				} else if tc.input == "12m" {
-					months = 12
-				}
+			switch tc.input {
+			case "hourly":
+				duration = 1 * time.Hour
+			case "monthly":
+				duration = 28 * 24 * time.Hour
+			default:
+				if tc.input[len(tc.input)-1] == 'm' {
+					months := 0
+					if tc.input == "1m" {
+						months = 1
+					} else if tc.input == "3m" {
+						months = 3
+					} else if tc.input == "6m" {
+						months = 6
+					} else if tc.input == "12m" {
+						months = 12
+					}
 
-				// Use 28 days per month (as per UpCloud billing policy)
-				duration = time.Duration(months) * 28 * 24 * time.Hour
+					// Use 28 days per month (as per UpCloud billing policy)
+					duration = time.Duration(months) * 28 * 24 * time.Hour
+				}
 			}
 
 			actualHours := int(duration.Hours())

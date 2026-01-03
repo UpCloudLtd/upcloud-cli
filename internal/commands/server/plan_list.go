@@ -32,7 +32,7 @@ type planListCommand struct {
 func (s *planListCommand) InitCommand() {
 	flagSet := &pflag.FlagSet{}
 	flagSet.StringVar(&s.pricingZone, "pricing", "", "Show pricing for the specified zone (e.g., de-fra1)")
-	flagSet.StringVar(&s.pricingDuration, "pricing-duration", "1m", "Duration for pricing calculation (e.g., 1h, 24h, 1m, 3m, 12m)")
+	flagSet.StringVar(&s.pricingDuration, "pricing-duration", "1m", "Duration for pricing calculation (e.g., 'hourly', 'monthly', '1h', '24h', '1m', '3m', '12m')")
 
 	s.BaseCommand.Cobra().Flags().AddFlagSet(flagSet)
 }
@@ -69,27 +69,36 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 	// Parse pricing duration only if showing pricing
 	var duration time.Duration
 	if showPricing {
-		// Check if it's a month-based duration (e.g., 1m, 3m, 12m)
-		if strings.HasSuffix(s.pricingDuration, "m") && !strings.Contains(s.pricingDuration, "h") && !strings.Contains(s.pricingDuration, "s") {
-			// Try to parse as months
-			monthStr := strings.TrimSuffix(s.pricingDuration, "m")
-			months, err := strconv.Atoi(monthStr)
-			if err == nil && months > 0 {
-				// Use 28 days per month for pricing calculations (UpCloud bills max 28 days per month)
-				duration = time.Duration(months) * 28 * 24 * time.Hour
+		// Handle special keywords first
+		switch strings.ToLower(s.pricingDuration) {
+		case "hourly":
+			duration = 1 * time.Hour
+		case "monthly":
+			// Use 28 days per month for pricing calculations (UpCloud bills max 28 days per month)
+			duration = 28 * 24 * time.Hour
+		default:
+			// Check if it's a month-based duration (e.g., 1m, 3m, 12m)
+			if strings.HasSuffix(s.pricingDuration, "m") && !strings.Contains(s.pricingDuration, "h") && !strings.Contains(s.pricingDuration, "s") {
+				// Try to parse as months
+				monthStr := strings.TrimSuffix(s.pricingDuration, "m")
+				months, err := strconv.Atoi(monthStr)
+				if err == nil && months > 0 {
+					// Use 28 days per month for pricing calculations (UpCloud bills max 28 days per month)
+					duration = time.Duration(months) * 28 * 24 * time.Hour
+				} else {
+					// Not a valid month duration, try as standard duration
+					duration, err = time.ParseDuration(s.pricingDuration)
+					if err != nil {
+						return nil, fmt.Errorf("invalid pricing-duration: %s (use formats like 'hourly', 'monthly', '1h', '24h', '1m', '3m', '12m')", s.pricingDuration)
+					}
+				}
 			} else {
-				// Not a valid month duration, try as standard duration
+				// Parse as standard duration
+				var err error
 				duration, err = time.ParseDuration(s.pricingDuration)
 				if err != nil {
-					return nil, fmt.Errorf("invalid pricing-duration: %s (use formats like '1h', '24h', '1m', '3m', '12m')", s.pricingDuration)
+					return nil, fmt.Errorf("invalid pricing-duration: %s (use formats like 'hourly', 'monthly', '1h', '24h', '1m', '3m', '12m')", s.pricingDuration)
 				}
-			}
-		} else {
-			// Parse as standard duration
-			var err error
-			duration, err = time.ParseDuration(s.pricingDuration)
-			if err != nil {
-				return nil, fmt.Errorf("invalid pricing-duration: %s (use formats like '1h', '24h', '1m', '3m', '12m')", s.pricingDuration)
 			}
 		}
 	}
@@ -251,6 +260,14 @@ func getPlanCost(plan upcloud.Plan, priceZone *upcloud.PriceZone, duration time.
 
 // formatPricingHeader creates a human-readable header for the cost column
 func formatPricingHeader(pricingDuration string) string {
+	// Handle special keywords
+	switch strings.ToLower(pricingDuration) {
+	case "hourly":
+		return "Price (per hour)"
+	case "monthly":
+		return "Price (per month)"
+	}
+
 	// Check if it's a month-based duration
 	if strings.HasSuffix(pricingDuration, "m") && !strings.Contains(pricingDuration, "h") && !strings.Contains(pricingDuration, "s") {
 		monthStr := strings.TrimSuffix(pricingDuration, "m")
