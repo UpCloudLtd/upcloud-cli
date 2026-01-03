@@ -3,12 +3,12 @@ package serverfirewall
 import (
 	"fmt"
 	"sort"
+	"strings"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
-	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 	"github.com/spf13/pflag"
@@ -48,24 +48,24 @@ func (s *ruleEnableCommand) InitCommand() {
 // Execute implements commands.MultipleArgumentCommand
 func (s *ruleEnableCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	// Get current firewall rules
-	server, err := exec.Server().GetServerDetails(exec.Context(), &request.GetServerDetailsRequest{
-		UUID: arg,
+	rulesResponse, err := exec.Firewall().GetFirewallRules(exec.Context(), &request.GetFirewallRulesRequest{
+		ServerUUID: arg,
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	// Find the catch-all drop rule position
-	catchAllPosition := findCatchAllDropRule(server.FirewallRules)
+	catchAllPosition := findCatchAllDropRule(rulesResponse.FirewallRules)
 	if catchAllPosition == 0 {
 		return nil, fmt.Errorf("no catch-all drop rule found in firewall rules")
 	}
 
 	// Find matching rules that are currently after the catch-all
-	matchedIndices := findMatchingRules(server.FirewallRules, &s.params)
+	matchedIndices := findMatchingRules(rulesResponse.FirewallRules, &s.params)
 	var rulesToMove []int
 	for _, idx := range matchedIndices {
-		if server.FirewallRules[idx].Position > catchAllPosition {
+		if rulesResponse.FirewallRules[idx].Position > catchAllPosition {
 			rulesToMove = append(rulesToMove, idx)
 		}
 	}
@@ -76,27 +76,29 @@ func (s *ruleEnableCommand) Execute(exec commands.Executor, arg string) (output.
 
 	// Confirm if multiple rules or if confirmation required
 	if len(rulesToMove) > s.params.skipConfirmation {
-		exec.PushProgressUpdate(fmt.Sprintf("Found %d disabled firewall rules to enable:", len(rulesToMove)))
+		var ruleDescriptions []string
 		for _, idx := range rulesToMove {
-			rule := &server.FirewallRules[idx]
-			exec.PushProgressUpdate(fmt.Sprintf("  Position %d: %s %s %s",
-				rule.Position, rule.Direction, rule.Protocol, rule.Comment))
+			rule := &rulesResponse.FirewallRules[idx]
+			desc := fmt.Sprintf("  Position %d: %s %s", rule.Position, rule.Direction, rule.Protocol)
+			if rule.Comment != "" {
+				desc += fmt.Sprintf(" (comment: %q)", rule.Comment)
+			}
+			ruleDescriptions = append(ruleDescriptions, desc)
 		}
 
-		if !ui.Confirm(fmt.Sprintf("Enable %d firewall rules?", len(rulesToMove))) {
-			return output.None{}, nil
-		}
+		return nil, fmt.Errorf("would enable %d firewall rules (exceeds skip-confirmation=%d). Matching rules:\n%s\n\nIncrease --skip-confirmation to proceed",
+			len(rulesToMove), s.params.skipConfirmation, strings.Join(ruleDescriptions, "\n"))
 	}
 
 	// Sort by position (ascending) to move rules in order
 	sort.Slice(rulesToMove, func(i, j int) bool {
-		return server.FirewallRules[rulesToMove[i]].Position < server.FirewallRules[rulesToMove[j]].Position
+		return rulesResponse.FirewallRules[rulesToMove[i]].Position < rulesResponse.FirewallRules[rulesToMove[j]].Position
 	})
 
 	// Move each rule to just before the catch-all
 	movedCount := 0
 	for _, idx := range rulesToMove {
-		rule := &server.FirewallRules[idx]
+		rule := &rulesResponse.FirewallRules[idx]
 		oldPosition := rule.Position
 		// Move to just before catch-all (which may have shifted)
 		newPosition := catchAllPosition
@@ -118,17 +120,16 @@ func (s *ruleEnableCommand) Execute(exec commands.Executor, arg string) (output.
 			Position:   oldPosition,
 		})
 		if err != nil {
-			exec.PushProgressFailed(msg)
 			if movedCount > 0 {
-				exec.PushProgressUpdate(fmt.Sprintf("Successfully enabled %d rules before error", movedCount))
+				msg = fmt.Sprintf("Successfully enabled %d rules before error: %v", movedCount, err)
 			}
-			return nil, err
+			return commands.HandleError(exec, msg, err)
 		}
 
 		// Create the rule at the new position
 		_, err = exec.Firewall().CreateFirewallRule(exec.Context(), &request.CreateFirewallRuleRequest{
-			ServerUUID:  arg,
-			FirewallRule: request.FirewallRule{
+			ServerUUID: arg,
+			FirewallRule: upcloud.FirewallRule{
 				Direction:               newRule.Direction,
 				Action:                  newRule.Action,
 				Family:                  newRule.Family,
@@ -143,11 +144,10 @@ func (s *ruleEnableCommand) Execute(exec commands.Executor, arg string) (output.
 				SourcePortStart:         newRule.SourcePortStart,
 				SourcePortEnd:           newRule.SourcePortEnd,
 				Comment:                 newRule.Comment,
+				Position:                newPosition,
 			},
-			Position: newPosition,
 		})
 		if err != nil {
-			exec.PushProgressFailed(msg)
 			return nil, fmt.Errorf("failed to recreate rule at position %d: %w", newPosition, err)
 		}
 
