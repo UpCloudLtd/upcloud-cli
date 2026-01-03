@@ -20,23 +20,46 @@ func TestRuleEnableCommand(t *testing.T) {
 	currentRules := &upcloud.FirewallRules{
 		FirewallRules: []upcloud.FirewallRule{
 			{
-				Position:  1,
-				Direction: "in",
-				Action:    "drop",
-				Protocol:  "tcp",
-				Comment:   "Test rule",
+				Position:                1,
+				Direction:               "in",
+				Action:                  "accept",
+				Protocol:                "tcp",
+				DestinationAddressStart: "0.0.0.0",
+				DestinationAddressEnd:   "255.255.255.255",
+				SourceAddressStart:      "0.0.0.0",
+				SourceAddressEnd:        "255.255.255.255",
 			},
 			{
-				Position:  2,
-				Direction: "in",
-				Action:    "accept",
-				Protocol:  "tcp",
+				Position:                2,
+				Direction:               "in",
+				Action:                  "drop",
+				Protocol:                "tcp",
+				DestinationAddressStart: "0.0.0.0",
+				DestinationAddressEnd:   "255.255.255.255",
+				SourceAddressStart:      "0.0.0.0",
+				SourceAddressEnd:        "255.255.255.255",
+				Comment:                 "Catch-all drop rule",
 			},
 			{
-				Position:  5,
-				Direction: "out",
-				Action:    "drop",
-				Protocol:  "udp",
+				Position:                3,
+				Direction:               "in",
+				Action:                  "accept",
+				Protocol:                "tcp",
+				DestinationAddressStart: "0.0.0.0",
+				DestinationAddressEnd:   "255.255.255.255",
+				SourceAddressStart:      "0.0.0.0",
+				SourceAddressEnd:        "255.255.255.255",
+				Comment:                 "Test rule",
+			},
+			{
+				Position:                4,
+				Direction:               "out",
+				Action:                  "accept",
+				Protocol:                "udp",
+				DestinationAddressStart: "0.0.0.0",
+				DestinationAddressEnd:   "255.255.255.255",
+				SourceAddressStart:      "0.0.0.0",
+				SourceAddressEnd:        "255.255.255.255",
 			},
 		},
 	}
@@ -52,43 +75,42 @@ func TestRuleEnableCommand(t *testing.T) {
 			name:        "Missing position flag",
 			flags:       []string{},
 			arg:         serverUUID,
-			expectedErr: "at least one filter must be specified",
+			expectedErr: "would enable 2 firewall rules (exceeds skip-confirmation=1)",
 		},
 		{
 			name:        "Invalid position - too low",
 			flags:       []string{"--position", "0"},
 			arg:         serverUUID,
-			expectedErr: "at least one filter must be specified",
+			expectedErr: "would enable 2 firewall rules (exceeds skip-confirmation=1)",
 		},
 		{
 			name:        "Invalid position - too high",
 			flags:       []string{"--position", "1001"},
 			arg:         serverUUID,
-			expectedErr: "invalid position (1-1000 allowed)",
+			expectedErr: "no disabled firewall rules matched the specified filters",
 		},
 		{
-			name:  "Successfully enable rule at position 5",
-			flags: []string{"--position", "5"},
+			name:  "Successfully enable rule at position 3",
+			flags: []string{"--position", "3"},
 			arg:   serverUUID,
 			checkMocks: func(t *testing.T, mService *smock.Service) {
 				mService.AssertCalled(t, "GetFirewallRules", &request.GetFirewallRulesRequest{
 					ServerUUID: serverUUID,
 				})
 
-				mService.AssertCalled(t, "CreateFirewallRules", mock.MatchedBy(func(req interface{}) bool {
-					r, ok := req.(*request.CreateFirewallRulesRequest)
+				// Should delete the old rule at position 3 (after catch-all)
+				mService.AssertCalled(t, "DeleteFirewallRule", &request.DeleteFirewallRuleRequest{
+					ServerUUID: serverUUID,
+					Position:   3,
+				})
+
+				// Should create the rule before catch-all (position 2)
+				mService.AssertCalled(t, "CreateFirewallRule", mock.MatchedBy(func(req interface{}) bool {
+					r, ok := req.(*request.CreateFirewallRuleRequest)
 					if !ok {
 						return false
 					}
-					if r.ServerUUID != serverUUID {
-						return false
-					}
-					for _, rule := range r.FirewallRules {
-						if rule.Position == 5 {
-							return rule.Action == upcloud.FirewallRuleActionAccept
-						}
-					}
-					return false
+					return r.ServerUUID == serverUUID && r.FirewallRule.Position == 2
 				}))
 			},
 		},
@@ -96,13 +118,13 @@ func TestRuleEnableCommand(t *testing.T) {
 			name:        "Rule position not found",
 			flags:       []string{"--position", "99"},
 			arg:         serverUUID,
-			expectedErr: "firewall rule at position 99 not found on server",
+			expectedErr: "no disabled firewall rules matched the specified filters",
 		},
 		{
 			name:        "Skip confirmation set to 0 requires confirmation for single rule",
 			flags:       []string{"--comment", "Test", "--skip-confirmation", "0"},
 			arg:         serverUUID,
-			expectedErr: "would enable 1 rules (exceeds skip-confirmation=0)",
+			expectedErr: "would enable 1 firewall rules (exceeds skip-confirmation=0)",
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
@@ -113,7 +135,8 @@ func TestRuleEnableCommand(t *testing.T) {
 				return ok && r.ServerUUID == serverUUID
 			})).Return(currentRules, nil)
 
-			mService.On("CreateFirewallRules", mock.Anything).Return(nil)
+			mService.On("DeleteFirewallRule", mock.Anything).Return(nil).Maybe()
+			mService.On("CreateFirewallRule", mock.Anything).Return(&upcloud.FirewallRule{}, nil).Maybe()
 
 			conf := config.New()
 			cc := commands.BuildCommand(RuleEnableCommand(), nil, conf)
