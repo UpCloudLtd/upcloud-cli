@@ -81,6 +81,11 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	commands.BuildCommand(serverfirewall.DeleteCommand(), serverFirewallCommand.Cobra(), conf)
 	commands.BuildCommand(serverfirewall.ShowCommand(), serverFirewallCommand.Cobra(), conf)
 
+	// Server firewall rule operations
+	serverFirewallRuleCommand := commands.BuildCommand(serverfirewall.BaseServerFirewallRuleCommand(), serverFirewallCommand.Cobra(), conf)
+	commands.BuildCommand(serverfirewall.RuleEnableCommand(), serverFirewallRuleCommand.Cobra(), conf)
+	commands.BuildCommand(serverfirewall.RuleDisableCommand(), serverFirewallRuleCommand.Cobra(), conf)
+
 	// Storages
 	storageCommand := commands.BuildCommand(storage.BaseStorageCommand(), rootCmd, conf)
 	commands.BuildCommand(storage.ListCommand(), storageCommand.Cobra(), conf)
