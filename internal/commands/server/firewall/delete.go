@@ -3,12 +3,12 @@ package serverfirewall
 import (
 	"fmt"
 	"sort"
+	"strings"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
-	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 	"github.com/spf13/pflag"
@@ -48,15 +48,15 @@ func (s *deleteCommand) InitCommand() {
 // Execute implements commands.MultipleArgumentCommand
 func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	// Get current firewall rules
-	server, err := exec.Server().GetServerDetails(exec.Context(), &request.GetServerDetailsRequest{
-		UUID: arg,
+	rulesResponse, err := exec.Firewall().GetFirewallRules(exec.Context(), &request.GetFirewallRulesRequest{
+		ServerUUID: arg,
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	// Find matching rules
-	matchedIndices := findMatchingRules(server.FirewallRules, &s.params)
+	matchedIndices := findMatchingRules(rulesResponse.FirewallRules, &s.params)
 
 	if len(matchedIndices) == 0 {
 		return nil, fmt.Errorf("no firewall rules matched the specified filters")
@@ -64,17 +64,20 @@ func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Outp
 
 	// Confirm if multiple rules or if confirmation required
 	if len(matchedIndices) > s.params.skipConfirmation {
-		exec.PushProgressUpdate(fmt.Sprintf("Found %d matching firewall rules:", len(matchedIndices)))
+		var ruleDescriptions []string
 		for _, idx := range matchedIndices {
-			rule := &server.FirewallRules[idx]
-			exec.PushProgressUpdate(fmt.Sprintf("  Position %d: %s %s %s -> %s",
+			rule := &rulesResponse.FirewallRules[idx]
+			desc := fmt.Sprintf("  Position %d: %s %s %s -> %s",
 				rule.Position, rule.Direction, rule.Protocol,
-				formatRuleAddress(rule, true), formatRuleAddress(rule, false)))
+				formatRuleAddress(rule, true), formatRuleAddress(rule, false))
+			if rule.Comment != "" {
+				desc += fmt.Sprintf(" (comment: %q)", rule.Comment)
+			}
+			ruleDescriptions = append(ruleDescriptions, desc)
 		}
 
-		if !ui.Confirm(fmt.Sprintf("Delete %d firewall rules?", len(matchedIndices))) {
-			return output.None{}, nil
-		}
+		return nil, fmt.Errorf("would delete %d firewall rules (exceeds skip-confirmation=%d). Matching rules:\n%s\n\nIncrease --skip-confirmation to proceed",
+			len(matchedIndices), s.params.skipConfirmation, strings.Join(ruleDescriptions, "\n"))
 	}
 
 	// Sort indices in descending order to delete from highest position first
@@ -84,7 +87,7 @@ func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Outp
 	// Delete each matched rule
 	deletedCount := 0
 	for _, idx := range matchedIndices {
-		rule := &server.FirewallRules[idx]
+		rule := &rulesResponse.FirewallRules[idx]
 		msg := fmt.Sprintf("Deleting firewall rule at position %d", rule.Position)
 		exec.PushProgressStarted(msg)
 
@@ -93,20 +96,19 @@ func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Outp
 			Position:   rule.Position,
 		})
 		if err != nil {
-			exec.PushProgressFailed(msg)
 			if deletedCount > 0 {
-				exec.PushProgressUpdate(fmt.Sprintf("Successfully deleted %d rules before error", deletedCount))
+				msg = fmt.Sprintf("Successfully deleted %d rules before error: %v", deletedCount, err)
 			}
-			return nil, err
+			return commands.HandleError(exec, msg, err)
 		}
 
 		exec.PushProgressSuccess(msg)
 		deletedCount++
 
 		// Adjust positions of remaining rules in our local copy
-		for i := range server.FirewallRules {
-			if server.FirewallRules[i].Position > rule.Position {
-				server.FirewallRules[i].Position--
+		for i := range rulesResponse.FirewallRules {
+			if rulesResponse.FirewallRules[i].Position > rule.Position {
+				rulesResponse.FirewallRules[i].Position--
 			}
 		}
 	}
