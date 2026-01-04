@@ -112,10 +112,10 @@ func TestSubHourDurationBilling(t *testing.T) {
 	// UpCloud bills per (starting) hour, so partial hours round up
 
 	testCases := []struct {
-		name            string
-		duration        time.Duration
-		expectedHours   float64
-		description     string
+		name          string
+		duration      time.Duration
+		expectedHours float64
+		description   string
 	}{
 		{
 			name:          "1 second",
