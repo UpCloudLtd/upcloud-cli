@@ -61,13 +61,14 @@ func TestMonthDurationParsing(t *testing.T) {
 			default:
 				if tc.input[len(tc.input)-1] == 'm' {
 					months := 0
-					if tc.input == "1m" {
+					switch tc.input {
+					case "1m":
 						months = 1
-					} else if tc.input == "3m" {
+					case "3m":
 						months = 3
-					} else if tc.input == "6m" {
+					case "6m":
 						months = 6
-					} else if tc.input == "12m" {
+					case "12m":
 						months = 12
 					}
 

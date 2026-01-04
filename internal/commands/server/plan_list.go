@@ -15,6 +15,11 @@ import (
 	"github.com/spf13/pflag"
 )
 
+const (
+	durationHourly  = "hourly"
+	durationMonthly = "monthly"
+)
+
 // PlanListCommand creates the "server plans" command
 func PlanListCommand() commands.Command {
 	return &planListCommand{
@@ -71,9 +76,9 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 	if showPricing {
 		// Handle special keywords first
 		switch strings.ToLower(s.pricingDuration) {
-		case "hourly":
+		case durationHourly:
 			duration = 1 * time.Hour
-		case "monthly":
+		case durationMonthly:
 			// Use 28 days per month for pricing calculations (UpCloud bills max 28 days per month)
 			duration = 28 * 24 * time.Hour
 		default:
@@ -107,10 +112,11 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 	var priceZone *upcloud.PriceZone
 	if showPricing {
 		priceZones, err := exec.All().GetPriceZones(exec.Context())
-		if err != nil {
+		switch {
+		case err != nil:
 			// Continue without pricing - just show plans
 			showPricing = false
-		} else if priceZones != nil {
+		case priceZones != nil:
 			// Find the requested zone
 			for _, zone := range priceZones.PriceZones {
 				if zone.Name == s.pricingZone {
@@ -121,7 +127,7 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 			if priceZone == nil {
 				return nil, fmt.Errorf("pricing zone %s not found", s.pricingZone)
 			}
-		} else {
+		default:
 			// priceZones is nil, disable pricing
 			showPricing = false
 		}
@@ -262,9 +268,9 @@ func getPlanCost(plan upcloud.Plan, priceZone *upcloud.PriceZone, duration time.
 func formatPricingHeader(pricingDuration string) string {
 	// Handle special keywords
 	switch strings.ToLower(pricingDuration) {
-	case "hourly":
+	case durationHourly:
 		return "Price (per hour)"
-	case "monthly":
+	case durationMonthly:
 		return "Price (per month)"
 	}
 
