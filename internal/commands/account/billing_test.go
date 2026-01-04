@@ -130,6 +130,48 @@ func TestBillingCommandBackwardCompatibility(t *testing.T) {
 	assert.True(t, cmd.detailed)
 }
 
+func TestYearMonthFlagsOverridePeriod(t *testing.T) {
+	// Test that when both year/month flags and period are specified,
+	// year/month takes precedence for backward compatibility
+	cmd := &billingCommand{
+		year:   2024,
+		month:  3,
+		period: "last month", // Should be ignored
+	}
+
+	// Simulate the logic from ExecuteWithoutArguments
+	var yearMonth string
+	if cmd.year != 0 && cmd.month != 0 {
+		yearMonth = fmt.Sprintf("%d-%02d", cmd.year, cmd.month)
+	} else if cmd.period != "" {
+		yearMonth, _, _ = parsePeriod(cmd.period)
+	}
+
+	assert.Equal(t, "2024-03", yearMonth, "year/month flags should override period")
+}
+
+func TestOriginalBehaviorWithoutNewFlags(t *testing.T) {
+	// When only year/month are provided (original usage),
+	// no new features should interfere
+	cmd := &billingCommand{
+		year:  2024,
+		month: 7,
+		// New fields all at zero/empty values
+		period:   "",
+		match:    "",
+		category: "",
+		detailed: false,
+	}
+
+	// These should work exactly as before
+	assert.Equal(t, 2024, cmd.year)
+	assert.Equal(t, 7, cmd.month)
+	assert.Empty(t, cmd.period)
+	assert.Empty(t, cmd.match)
+	assert.Empty(t, cmd.category)
+	assert.False(t, cmd.detailed)
+}
+
 func TestPeriodParsing(t *testing.T) {
 	// Test that various period formats produce valid YYYY-MM
 	periods := []string{

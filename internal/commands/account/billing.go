@@ -19,9 +19,9 @@ func BillingCommand() commands.Command {
 		BaseCommand: commands.New(
 			"billing",
 			"Show billing information",
-			"upctl account billing",                          // defaults to current month
-			"upctl account billing --period 'last month'",    // flexible period
-			"upctl account billing --year 2025 --month 7",    // backward compatible
+			"upctl account billing", // defaults to current month
+			"upctl account billing --period 'last month'", // flexible period
+			"upctl account billing --year 2025 --month 7", // backward compatible
 		),
 	}
 }
@@ -278,12 +278,9 @@ func (s *billingCommand) fetchResourceNames(exec commands.Executor, summary *upc
 	return names
 }
 
-// buildOriginalSections maintains exact original output format for backward compatibility
-func (s *billingCommand) buildOriginalSections(summary *upcloud.BillingSummary) []output.CombinedSection {
-	var sections []output.CombinedSection
-	var summaryRows []output.TableRow
-
-	categories := map[string]*upcloud.BillingCategory{
+// getCategories returns all billing categories from the summary
+func getCategories(summary *upcloud.BillingSummary) map[string]*upcloud.BillingCategory {
+	return map[string]*upcloud.BillingCategory{
 		"Servers":                 summary.Servers,
 		"Managed Databases":       summary.ManagedDatabases,
 		"Managed Object Storages": summary.ManagedObjectStorages,
@@ -293,22 +290,35 @@ func (s *billingCommand) buildOriginalSections(summary *upcloud.BillingSummary) 
 		"Networks":                summary.Networks,
 		"Storages":                summary.Storages,
 	}
+}
+
+// getResourceGroups returns all resource groups from a billing category
+func getResourceGroups(category *upcloud.BillingCategory) map[string]*upcloud.BillingResourceGroup {
+	return map[string]*upcloud.BillingResourceGroup{
+		"Server":                 category.Server,
+		"Managed Database":       category.ManagedDatabase,
+		"Managed Object Storage": category.ManagedObjectStorage,
+		"Managed Load Balancer":  category.ManagedLoadbalancer,
+		"Managed Kubernetes":     category.ManagedKubernetes,
+		"Network Gateway":        category.NetworkGateway,
+		"IPv4 Address":           category.IPv4Address,
+		"Backup":                 category.Backup,
+		"Storage":                category.Storage,
+		"Template":               category.Template,
+	}
+}
+
+// buildOriginalSections maintains exact original output format for backward compatibility
+func (s *billingCommand) buildOriginalSections(summary *upcloud.BillingSummary) []output.CombinedSection {
+	var sections []output.CombinedSection
+	var summaryRows []output.TableRow
+
+	categories := getCategories(summary)
 
 	for categoryName, category := range categories {
 		if category != nil {
 			summaryRows = append(summaryRows, output.TableRow{categoryName, category.TotalAmount})
-			resourceGroups := map[string]*upcloud.BillingResourceGroup{
-				"Server":                 category.Server,
-				"Managed Database":       category.ManagedDatabase,
-				"Managed Object Storage": category.ManagedObjectStorage,
-				"Managed Load Balancer":  category.ManagedLoadbalancer,
-				"Managed Kubernetes":     category.ManagedKubernetes,
-				"Network Gateway":        category.NetworkGateway,
-				"IPv4 Address":           category.IPv4Address,
-				"Backup":                 category.Backup,
-				"Storage":                category.Storage,
-				"Template":               category.Template,
-			}
+			resourceGroups := getResourceGroups(category)
 
 			for groupName, group := range resourceGroups {
 				if group != nil && len(group.Resources) > 0 {
@@ -366,16 +376,7 @@ func (s *billingCommand) buildEnhancedSections(summary *upcloud.BillingSummary, 
 	var sections []output.CombinedSection
 	var summaryRows []output.TableRow
 
-	categories := map[string]*upcloud.BillingCategory{
-		"Servers":                 summary.Servers,
-		"Managed Databases":       summary.ManagedDatabases,
-		"Managed Object Storages": summary.ManagedObjectStorages,
-		"Managed Load Balancers":  summary.ManagedLoadbalancers,
-		"Managed Kubernetes":      summary.ManagedKubernetes,
-		"Network Gateways":        summary.NetworkGateways,
-		"Networks":                summary.Networks,
-		"Storages":                summary.Storages,
-	}
+	categories := getCategories(summary)
 
 	// Apply category filter if specified
 	if s.category != "" {
@@ -438,18 +439,7 @@ func (s *billingCommand) buildEnhancedSections(summary *upcloud.BillingSummary, 
 func (s *billingCommand) buildResourceRows(category *upcloud.BillingCategory, resourceNames map[string]string) []output.TableRow {
 	var rows []output.TableRow
 
-	resourceGroups := map[string]*upcloud.BillingResourceGroup{
-		"Server":                 category.Server,
-		"Managed Database":       category.ManagedDatabase,
-		"Managed Object Storage": category.ManagedObjectStorage,
-		"Managed Load Balancer":  category.ManagedLoadbalancer,
-		"Managed Kubernetes":     category.ManagedKubernetes,
-		"Network Gateway":        category.NetworkGateway,
-		"IPv4 Address":           category.IPv4Address,
-		"Backup":                 category.Backup,
-		"Storage":                category.Storage,
-		"Template":               category.Template,
-	}
+	resourceGroups := getResourceGroups(category)
 
 	for _, group := range resourceGroups {
 		if group != nil {
