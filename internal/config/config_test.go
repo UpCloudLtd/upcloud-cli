@@ -30,14 +30,18 @@ func TestConfig_Load(t *testing.T) {
 	cfg := New()
 	tmpFile, err := os.CreateTemp(os.TempDir(), "")
 	require.NoError(t, err)
+	tmpFileName := tmpFile.Name()
 	t.Cleanup(func() {
-		assert.NoError(t, tmpFile.Close())
-		assert.NoError(t, os.Remove(tmpFile.Name()))
+		os.Remove(tmpFileName)
 	})
 	_, err = tmpFile.WriteString("username: sdkfo\npassword: foo")
 	require.NoError(t, err)
+	err = tmpFile.Sync()
+	require.NoError(t, err)
+	err = tmpFile.Close()
+	require.NoError(t, err)
 
-	cfg.GlobalFlags.ConfigFile = tmpFile.Name()
+	cfg.GlobalFlags.ConfigFile = tmpFileName
 	err = cfg.Load()
 	assert.NoError(t, err)
 	assert.NotEmpty(t, cfg.GetString("username"))
@@ -78,23 +82,25 @@ func TestConfig_LoadKeyring(t *testing.T) {
 	cfg := New()
 	tmpFile, err := os.CreateTemp(os.TempDir(), "")
 	require.NoError(t, err)
+	tmpFileName := tmpFile.Name()
 	t.Cleanup(func() {
-		assert.NoError(t, tmpFile.Close())
-		assert.NoError(t, os.Remove(tmpFile.Name()))
+		os.Remove(tmpFileName)
+		// remove test user from keyring
+		keyring.Delete("UpCloud", "unittest")
 	})
 	_, err = tmpFile.WriteString("username: unittest")
+	require.NoError(t, err)
+	err = tmpFile.Sync()
+	require.NoError(t, err)
+	err = tmpFile.Close()
 	require.NoError(t, err)
 
 	err = keyring.Set("UpCloud", "unittest", "unittest_password")
 	assert.NoError(t, err)
 
-	cfg.GlobalFlags.ConfigFile = tmpFile.Name()
+	cfg.GlobalFlags.ConfigFile = tmpFileName
 	err = cfg.Load()
 	require.NoError(t, err)
-	assert.Equal(t, cfg.GetString("username"), "unittest")
+	assert.Equal(t, "unittest", cfg.GetString("username"))
 	assert.Equal(t, "unittest_password", cfg.GetString("password"))
-	t.Cleanup(func() {
-		// remove test user from keyring
-		assert.NoError(t, keyring.Delete("UpCloud", "unittest"))
-	})
 }
