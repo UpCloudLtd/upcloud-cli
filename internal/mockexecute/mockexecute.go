@@ -8,7 +8,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/service"
 
-	"github.com/gemalto/flume"
 	"github.com/spf13/cobra"
 )
 
@@ -30,8 +29,8 @@ func MockExecute(command commands.Command, service service.AllServices, conf *co
 	return buf.String(), err
 }
 
-func mockRunE(command commands.Command, service service.AllServices, config *config.Config, args []string) error {
-	executor := commands.NewExecutor(config, service, flume.New("test"))
+func mockRunE(command commands.Command, service service.AllServices, conf *config.Config, args []string) error {
+	executor := commands.NewExecutor(conf, service, conf.NewLogger("test"))
 
 	var err error
 	var out output.Output
@@ -48,5 +47,5 @@ func mockRunE(command commands.Command, service service.AllServices, config *con
 	if err != nil {
 		return err
 	}
-	return output.Render(command.Cobra().OutOrStdout(), config.Output(), out)
+	return output.Render(command.Cobra().OutOrStdout(), conf.Output(), out)
 }

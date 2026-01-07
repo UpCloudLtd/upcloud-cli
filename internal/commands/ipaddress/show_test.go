@@ -11,7 +11,6 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
-	"github.com/gemalto/flume"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/stretchr/testify/assert"
 )
@@ -52,7 +51,7 @@ func TestShowCommand(t *testing.T) {
 	conf.Viper().Set(config.KeyOutput, config.ValueOutputHuman)
 
 	command := commands.BuildCommand(ShowCommand(), nil, conf)
-	out, err := command.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, svc, flume.New("test")), ipAddress.Address)
+	out, err := command.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, svc, conf.NewLogger("test")), ipAddress.Address)
 	assert.NoError(t, err)
 
 	buf := bytes.NewBuffer(nil)
