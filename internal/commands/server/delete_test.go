@@ -8,7 +8,6 @@ import (
 	smock "github.com/UpCloudLtd/upcloud-cli/v3/internal/mock"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
-	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -68,7 +67,7 @@ func TestDeleteServerCommand(t *testing.T) {
 			err := c.Cobra().Flags().Parse(test.args)
 			assert.NoError(t, err)
 
-			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService, flume.New("test")), Server1.UUID)
+			_, err = c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, mService, conf.NewLogger("test")), Server1.UUID)
 			assert.Nil(t, err)
 
 			assert.Nil(t, err)
