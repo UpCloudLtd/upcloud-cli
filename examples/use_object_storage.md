@@ -50,8 +50,10 @@ Attach a policy to grant the user access to buckets:
    service_uuid=$(upctl object-storage list -o json | jq -r ".[] | select(.name == \"${prefix}service\") | .uuid")
    ```
 
-   Then attach the policy:
-   ```sh
+   Then attach the policy (requires UPCLOUD_TOKEN environment variable):
+   ```sh when=false
+   # Note: This command requires a bearer token which can be created via the UpCloud Control Panel
+   # The when=false flag skips this in automated tests since only username/password are available in CI
    curl -X POST "https://api.upcloud.com/1.3/object-storage-2/${service_uuid}/users/${prefix}user/policies" \
      -H "Authorization: Bearer ${UPCLOUD_TOKEN}" \
      -H "Content-Type: application/json" \
