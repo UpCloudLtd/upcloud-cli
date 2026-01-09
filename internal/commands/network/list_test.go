@@ -11,7 +11,6 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
-	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -84,7 +83,7 @@ func TestListCommand(t *testing.T) {
 
 			assert.NoError(t, err)
 
-			res, err := c.(commands.NoArgumentCommand).ExecuteWithoutArguments(commands.NewExecutor(cfg, &mService, flume.New("test")))
+			res, err := c.(commands.NoArgumentCommand).ExecuteWithoutArguments(commands.NewExecutor(cfg, &mService, cfg.NewLogger("test")))
 
 			assert.Nil(t, err)
 			assert.Equal(t, createOutput(test.expected), res)
