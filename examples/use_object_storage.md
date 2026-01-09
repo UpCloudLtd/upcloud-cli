@@ -32,7 +32,11 @@ Create a user and an access key for S3-compatible access:
 
 ```sh
 upctl object-storage user create ${prefix}service --username ${prefix}user
-upctl object-storage access-key create ${prefix}service --username ${prefix}user
+
+# Create access key and save credentials
+access_key_output=$(upctl object-storage access-key create ${prefix}service --username ${prefix}user -o json)
+access_key_id=$(echo "$access_key_output" | jq -r '.access_key_id')
+secret_access_key=$(echo "$access_key_output" | jq -r '.secret_access_key')
 ```
 
 Save the access key ID and secret access key from the output - you'll need these for S3 access.
@@ -43,12 +47,12 @@ Attach a policy to grant the user access to buckets:
 
    First, get your service UUID:
    ```sh
-   upctl object-storage list
+   service_uuid=$(upctl object-storage list -o json | jq -r ".[] | select(.name == \"${prefix}service\") | .uuid")
    ```
 
-   Then attach the policy (replace `<service-uuid>` with your UUID):
+   Then attach the policy:
    ```sh
-   curl -X POST "https://api.upcloud.com/1.3/object-storage-2/<service-uuid>/users/${prefix}user/policies" \
+   curl -X POST "https://api.upcloud.com/1.3/object-storage-2/${service_uuid}/users/${prefix}user/policies" \
      -H "Authorization: Bearer ${UPCLOUD_TOKEN}" \
      -H "Content-Type: application/json" \
      -d '{"name": "ECSS3FullAccess"}'
@@ -65,12 +69,12 @@ Verify S3 access with AWS CLI:
 
 ```sh when=false
 # Get the service endpoint
-upctl object-storage show ${prefix}service
+service_endpoint=$(upctl object-storage show ${prefix}service -o json | jq -r '.endpoints[0].domain_name')
 
 # Configure AWS CLI with your credentials and test access
-AWS_ACCESS_KEY_ID=<your-access-key-id> \
-AWS_SECRET_ACCESS_KEY=<your-secret-access-key> \
-aws s3 ls --endpoint-url https://<service-endpoint>
+AWS_ACCESS_KEY_ID=${access_key_id} \
+AWS_SECRET_ACCESS_KEY=${secret_access_key} \
+aws s3 ls --endpoint-url https://${service_endpoint}
 ```
 
 Once not needed anymore, delete the user:
