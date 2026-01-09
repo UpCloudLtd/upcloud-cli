@@ -10,7 +10,6 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
-	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -109,7 +108,7 @@ func TestModifyCommand(t *testing.T) {
 			assert.NoError(t, err)
 
 			_, err = c.(commands.SingleArgumentCommand).ExecuteSingleArgument(
-				commands.NewExecutor(conf, &mService, flume.New("test")),
+				commands.NewExecutor(conf, &mService, conf.NewLogger("test")),
 				n.UUID,
 			)
 
@@ -175,7 +174,7 @@ func TestModifyCommandAttach(t *testing.T) {
 			assert.NoError(t, err)
 
 			_, err = c.(commands.SingleArgumentCommand).ExecuteSingleArgument(
-				commands.NewExecutor(conf, &mService, flume.New("test")),
+				commands.NewExecutor(conf, &mService, conf.NewLogger("test")),
 				n.UUID,
 			)
 
@@ -230,7 +229,7 @@ func TestModifyCommandDetach(t *testing.T) {
 			assert.NoError(t, err)
 
 			_, err = c.(commands.SingleArgumentCommand).ExecuteSingleArgument(
-				commands.NewExecutor(conf, &mService, flume.New("test")),
+				commands.NewExecutor(conf, &mService, conf.NewLogger("test")),
 				n.UUID,
 			)
 
@@ -308,7 +307,7 @@ func TestModifyCommandModifyAndAttach(t *testing.T) {
 			assert.NoError(t, err)
 
 			result, err := c.(commands.SingleArgumentCommand).ExecuteSingleArgument(
-				commands.NewExecutor(conf, &mService, flume.New("test")),
+				commands.NewExecutor(conf, &mService, conf.NewLogger("test")),
 				n.UUID,
 			)
 			if err != nil {
@@ -369,7 +368,7 @@ func TestModifyCommandModifyAndDetach(t *testing.T) {
 			assert.NoError(t, err)
 
 			result, err := c.(commands.SingleArgumentCommand).ExecuteSingleArgument(
-				commands.NewExecutor(conf, &mService, flume.New("test")),
+				commands.NewExecutor(conf, &mService, conf.NewLogger("test")),
 				n.UUID,
 			)
 			if err != nil {

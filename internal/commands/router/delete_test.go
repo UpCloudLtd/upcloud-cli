@@ -9,7 +9,6 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
-	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -44,7 +43,7 @@ func TestDeleteCommand(t *testing.T) {
 
 			c := commands.BuildCommand(DeleteCommand(), nil, conf)
 
-			_, err := c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService, flume.New("test")), test.arg)
+			_, err := c.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, &mService, conf.NewLogger("test")), test.arg)
 
 			if test.error != "" {
 				assert.EqualError(t, err, test.error)
