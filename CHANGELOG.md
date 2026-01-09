@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Log API requests and responses when using global `--debug` option.
+
 ## [3.27.0] - 2025-12-31
 
 ### Added

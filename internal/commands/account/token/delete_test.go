@@ -7,7 +7,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/v3/internal/mock"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
-	"github.com/gemalto/flume"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -19,7 +18,7 @@ func TestDeleteCommand(t *testing.T) {
 	svc.On("DeleteToken", dr).Once().Return(nil)
 
 	command := commands.BuildCommand(DeleteCommand(), nil, conf)
-	_, err := command.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, svc, flume.New("test")), dr.ID)
+	_, err := command.(commands.MultipleArgumentCommand).Execute(commands.NewExecutor(conf, svc, conf.NewLogger("test")), dr.ID)
 	assert.NoError(t, err)
 
 	svc.AssertExpectations(t)

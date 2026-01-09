@@ -3,6 +3,8 @@ package config
 import (
 	"context"
 	"fmt"
+	"log/slog"
+
 	"os"
 	"path/filepath"
 	"regexp"
@@ -18,7 +20,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/client"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/service"
 	"github.com/adrg/xdg"
-	"github.com/gemalto/flume"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
@@ -44,8 +45,6 @@ var (
 	Version = "dev"
 	// BuildDate contains a string with the build date.
 	BuildDate = "unknown"
-	// flume logger for config, that will be passed to log pckg
-	logger = flume.New("config")
 )
 
 // New returns a new instance of Config bound to the given viper instance
@@ -149,6 +148,8 @@ func (s *Config) Load() error {
 	if _, ok := settings["token"]; ok {
 		settings["token"] = "[REDACTED]"
 	}
+
+	logger := s.NewLogger("config")
 	logger.Debug("viper initialized", "settings", settings)
 
 	return nil
@@ -230,11 +231,25 @@ func (s *Config) Context() context.Context {
 	return s.context
 }
 
+func (s *Config) NewLogger(name string) *slog.Logger {
+	level := slog.LevelInfo
+	if s.GlobalFlags.Debug {
+		level = slog.LevelDebug
+	}
+
+	h := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
+		Level: level,
+	})
+	return slog.New(h).With("name", name)
+}
+
 // CreateService creates a new service instance and puts in the conf struct
 func (s *Config) CreateService() (internal.AllServices, error) {
 	username := s.GetString("username")
 	password := s.GetString("password")
 	token := s.GetString("token")
+
+	apiLogger := s.NewLogger("api")
 
 	if token == "" && (username == "" || password == "") {
 		// This might give silghtly unexpected results on OS X, as xdg.ConfigHome points to ~/Library/Application Support
@@ -252,6 +267,9 @@ func (s *Config) CreateService() (internal.AllServices, error) {
 
 	configs := []client.ConfigFn{
 		client.WithTimeout(s.ClientTimeout()),
+		client.WithLogger(func(_ context.Context, msg string, args ...any) {
+			apiLogger.Debug(msg, args...)
+		}),
 	}
 	if token != "" {
 		configs = append(configs, client.WithBearerAuth(token))

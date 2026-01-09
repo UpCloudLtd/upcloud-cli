@@ -6,7 +6,7 @@ import (
 	"github.com/jedib0t/go-pretty/v6/text"
 )
 
-func GetProgressOutputConfig() *progress.OutputConfig {
+func GetProgressOutputConfig(cfg *Config) *progress.OutputConfig {
 	config := progress.GetDefaultOutputConfig()
 
 	config.StatusColorMap = map[messages.MessageStatus]messages.Color{
@@ -18,6 +18,9 @@ func GetProgressOutputConfig() *progress.OutputConfig {
 		messages.MessageStatusSkipped: text.FgHiMagenta,
 	}
 	config.ColorMessage = true
+
+	// We can not update progress animations when debug messages are outputted to the same output stream. Thus, disable animations when debug output is enabled.
+	config.DisableAnimations = cfg.GlobalFlags.Debug
 
 	return config
 }
