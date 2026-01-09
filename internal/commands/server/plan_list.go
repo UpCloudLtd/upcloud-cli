@@ -242,11 +242,9 @@ func getPlanCost(plan upcloud.Plan, priceZone *upcloud.PriceZone, duration time.
 	var hourlyPrice float64
 
 	if field.IsValid() && !field.IsNil() {
-		// Found specific plan pricing
-		priceField := field.Elem().FieldByName("Amount")
-		if priceField.IsValid() && priceField.Kind() == reflect.Int {
-			// Amount is in 1/100000 of currency unit
-			hourlyPrice = float64(priceField.Int()) / 100000.0
+		priceField := field.Elem().FieldByName("Price")
+		if priceField.IsValid() && priceField.Kind() == reflect.Float64 {
+			hourlyPrice = priceField.Float() / 100
 		}
 	}
 
