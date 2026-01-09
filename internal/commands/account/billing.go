@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
@@ -251,30 +252,103 @@ func (s *billingCommand) ExecuteWithoutArguments(exec commands.Executor) (output
 	}, nil
 }
 
-// fetchResourceNames retrieves names for servers and storage resources
+// fetchResourceNames retrieves names for all resource types concurrently
 func (s *billingCommand) fetchResourceNames(exec commands.Executor, summary *upcloud.BillingSummary) map[string]string {
 	names := make(map[string]string)
+	mu := &sync.Mutex{}
+	wg := &sync.WaitGroup{}
+
+	// Helper function to safely add names
+	addNames := func(resourceMap map[string]string) {
+		mu.Lock()
+		for k, v := range resourceMap {
+			names[k] = v
+		}
+		mu.Unlock()
+	}
 
 	// Fetch server names
 	if summary.Servers != nil && summary.Servers.Server != nil {
-		servers, _ := exec.Server().GetServers(exec.Context())
-		if servers != nil {
-			for _, server := range servers.Servers {
-				names[server.UUID] = server.Title
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			resourceNames := make(map[string]string)
+			servers, err := exec.Server().GetServers(exec.Context())
+			if err == nil && servers != nil {
+				for _, server := range servers.Servers {
+					resourceNames[server.UUID] = server.Title
+				}
 			}
-		}
+			addNames(resourceNames)
+		}()
 	}
 
 	// Fetch storage names
 	if summary.Storages != nil && summary.Storages.Storage != nil {
-		storages, _ := exec.Storage().GetStorages(exec.Context(), &request.GetStoragesRequest{})
-		if storages != nil {
-			for _, storage := range storages.Storages {
-				names[storage.UUID] = storage.Title
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			resourceNames := make(map[string]string)
+			storages, err := exec.Storage().GetStorages(exec.Context(), &request.GetStoragesRequest{})
+			if err == nil && storages != nil {
+				for _, storage := range storages.Storages {
+					resourceNames[storage.UUID] = storage.Title
+				}
 			}
-		}
+			addNames(resourceNames)
+		}()
 	}
 
+	// Fetch load balancer names
+	if summary.ManagedLoadbalancers != nil && summary.ManagedLoadbalancers.ManagedLoadbalancer != nil {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			resourceNames := make(map[string]string)
+			loadBalancers, err := exec.All().GetLoadBalancers(exec.Context(), &request.GetLoadBalancersRequest{})
+			if err == nil && loadBalancers != nil {
+				for _, lb := range loadBalancers {
+					resourceNames[lb.UUID] = lb.Name
+				}
+			}
+			addNames(resourceNames)
+		}()
+	}
+
+	// Fetch database names
+	if summary.ManagedDatabases != nil && summary.ManagedDatabases.ManagedDatabase != nil {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			resourceNames := make(map[string]string)
+			databases, err := exec.All().GetManagedDatabases(exec.Context(), &request.GetManagedDatabasesRequest{})
+			if err == nil && databases != nil {
+				for _, db := range databases {
+					resourceNames[db.UUID] = db.Name
+				}
+			}
+			addNames(resourceNames)
+		}()
+	}
+
+	// Fetch Kubernetes cluster names
+	if summary.ManagedKubernetes != nil && summary.ManagedKubernetes.ManagedKubernetes != nil {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			resourceNames := make(map[string]string)
+			clusters, err := exec.All().GetKubernetesClusters(exec.Context(), &request.GetKubernetesClustersRequest{})
+			if err == nil && clusters != nil {
+				for _, cluster := range clusters {
+					resourceNames[cluster.UUID] = cluster.Name
+				}
+			}
+			addNames(resourceNames)
+		}()
+	}
+
+	// Wait for all fetches to complete
+	wg.Wait()
 	return names
 }
 
