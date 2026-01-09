@@ -261,17 +261,28 @@ func (s *billingCommand) fetchResourceNames(exec commands.Executor, summary *upc
 	// Helper function to safely add names
 	addNames := func(resourceMap map[string]string) {
 		mu.Lock()
+		defer mu.Unlock()
 		for k, v := range resourceMap {
 			names[k] = v
 		}
-		mu.Unlock()
 	}
 
-	// Fetch server names
-	if summary.Servers != nil && summary.Servers.Server != nil {
+	// Helper to fetch resources in a goroutine
+	fetchResources := func(shouldFetch bool, fetcher func() map[string]string) {
+		if !shouldFetch {
+			return
+		}
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
+			addNames(fetcher())
+		}()
+	}
+
+	// Fetch server names
+	fetchResources(
+		summary.Servers != nil && summary.Servers.Server != nil,
+		func() map[string]string {
 			resourceNames := make(map[string]string)
 			servers, err := exec.Server().GetServers(exec.Context())
 			if err == nil && servers != nil {
@@ -279,15 +290,14 @@ func (s *billingCommand) fetchResourceNames(exec commands.Executor, summary *upc
 					resourceNames[server.UUID] = server.Title
 				}
 			}
-			addNames(resourceNames)
-		}()
-	}
+			return resourceNames
+		},
+	)
 
 	// Fetch storage names
-	if summary.Storages != nil && summary.Storages.Storage != nil {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+	fetchResources(
+		summary.Storages != nil && summary.Storages.Storage != nil,
+		func() map[string]string {
 			resourceNames := make(map[string]string)
 			storages, err := exec.Storage().GetStorages(exec.Context(), &request.GetStoragesRequest{})
 			if err == nil && storages != nil {
@@ -295,15 +305,14 @@ func (s *billingCommand) fetchResourceNames(exec commands.Executor, summary *upc
 					resourceNames[storage.UUID] = storage.Title
 				}
 			}
-			addNames(resourceNames)
-		}()
-	}
+			return resourceNames
+		},
+	)
 
 	// Fetch load balancer names
-	if summary.ManagedLoadbalancers != nil && summary.ManagedLoadbalancers.ManagedLoadbalancer != nil {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+	fetchResources(
+		summary.ManagedLoadbalancers != nil && summary.ManagedLoadbalancers.ManagedLoadbalancer != nil,
+		func() map[string]string {
 			resourceNames := make(map[string]string)
 			loadBalancers, err := exec.All().GetLoadBalancers(exec.Context(), &request.GetLoadBalancersRequest{})
 			if err == nil && loadBalancers != nil {
@@ -311,15 +320,14 @@ func (s *billingCommand) fetchResourceNames(exec commands.Executor, summary *upc
 					resourceNames[lb.UUID] = lb.Name
 				}
 			}
-			addNames(resourceNames)
-		}()
-	}
+			return resourceNames
+		},
+	)
 
 	// Fetch database names
-	if summary.ManagedDatabases != nil && summary.ManagedDatabases.ManagedDatabase != nil {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+	fetchResources(
+		summary.ManagedDatabases != nil && summary.ManagedDatabases.ManagedDatabase != nil,
+		func() map[string]string {
 			resourceNames := make(map[string]string)
 			databases, err := exec.All().GetManagedDatabases(exec.Context(), &request.GetManagedDatabasesRequest{})
 			if err == nil && databases != nil {
@@ -327,15 +335,14 @@ func (s *billingCommand) fetchResourceNames(exec commands.Executor, summary *upc
 					resourceNames[db.UUID] = db.Name
 				}
 			}
-			addNames(resourceNames)
-		}()
-	}
+			return resourceNames
+		},
+	)
 
 	// Fetch Kubernetes cluster names
-	if summary.ManagedKubernetes != nil && summary.ManagedKubernetes.ManagedKubernetes != nil {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+	fetchResources(
+		summary.ManagedKubernetes != nil && summary.ManagedKubernetes.ManagedKubernetes != nil,
+		func() map[string]string {
 			resourceNames := make(map[string]string)
 			clusters, err := exec.All().GetKubernetesClusters(exec.Context(), &request.GetKubernetesClustersRequest{})
 			if err == nil && clusters != nil {
@@ -343,9 +350,9 @@ func (s *billingCommand) fetchResourceNames(exec commands.Executor, summary *upc
 					resourceNames[cluster.UUID] = cluster.Name
 				}
 			}
-			addNames(resourceNames)
-		}()
-	}
+			return resourceNames
+		},
+	)
 
 	// Wait for all fetches to complete
 	wg.Wait()
