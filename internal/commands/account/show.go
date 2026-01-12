@@ -24,18 +24,21 @@ type showCommand struct {
 func (s *showCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	svc := exec.Account()
 	account, err := svc.GetAccount(exec.Context())
-	if err != nil {
-		return nil, err
-	}
+    if err != nil {
+        return nil, err
+    }
 
-	details := output.Details{
-		Sections: []output.DetailSection{
-			{
-				Rows: []output.DetailRow{
-					{Title: "Username:", Key: "username", Value: account.UserName},
-					{Title: "Credits:", Key: "credits", Value: account.Credits, Format: formatCredits},
-				},
-			},
+    creditsFormatter := getFormatCredits(account.Currency)
+
+    details := output.Details{
+        Sections: []output.DetailSection{
+            {
+                Rows: []output.DetailRow{
+                    {Title: "Username:", Key: "username", Value: account.UserName},
+                    {Title: "Credits:", Key: "credits", Value: account.Credits, Format: creditsFormatter},
+                },
+            },
+
 			{
 				Title: "Resource Limits:", Key: "resource_limits", Rows: []output.DetailRow{
 					{
@@ -119,16 +122,19 @@ func (s *showCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 	}, nil
 }
 
-func formatCredits(val any) (text.Colors, string, error) {
-	credits, ok := val.(float64)
-	if !ok {
-		return nil, "", fmt.Errorf("cannot parse %T, expected float64", val)
-	}
+func getFormatCredits(currency string) func(val any) (text.Colors, string, error) {
+    return func(val any) (text.Colors, string, error) {
+        credits, ok := val.(float64)
+        if !ok {
+            return nil, "", fmt.Errorf("cannot parse %T, expected float64", val)
+        }
 
-	if math.Abs(credits) < 0.001 {
-		return nil, "Denied", nil
-	}
+        if math.Abs(credits) < 0.001 {
+            return nil, "Denied", nil
+        }
 
-	// Format does not follow european standards, but this is in sync with UI
-	return nil, fmt.Sprintf("€%.2f", credits/100), nil
+        // Credits are returned in cents
+        return nil, fmt.Sprintf("%.2f %s", credits/100, currency), nil
+    }
 }
+
