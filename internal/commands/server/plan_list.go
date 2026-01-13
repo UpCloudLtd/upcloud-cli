@@ -3,7 +3,6 @@ package server
 import (
 	"fmt"
 	"math"
-	"reflect"
 	"sort"
 	"strconv"
 	"strings"
@@ -12,12 +11,13 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
+	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/pflag"
 )
 
 const (
-	durationHourly  = "hourly"
-	durationMonthly = "monthly"
+	durationHour  = "hour"
+	durationMonth = "month"
 )
 
 // PlanListCommand creates the "server plans" command
@@ -37,7 +37,7 @@ type planListCommand struct {
 func (s *planListCommand) InitCommand() {
 	flagSet := &pflag.FlagSet{}
 	flagSet.StringVar(&s.pricingZone, "pricing", "", "Show pricing for the specified zone (e.g., de-fra1)")
-	flagSet.StringVar(&s.pricingDuration, "pricing-duration", "1m", "Duration for pricing calculation (e.g., 'hourly', 'monthly', '1h', '24h', '1m', '3m', '12m')")
+	flagSet.StringVar(&s.pricingDuration, "pricing-duration", durationMonth, "Duration for pricing calculation (e.g., 'hour', 'month', '1h', '24h', '1m', '3m', '12m')")
 
 	s.BaseCommand.Cobra().Flags().AddFlagSet(flagSet)
 }
@@ -76,9 +76,9 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 	if showPricing {
 		// Handle special keywords first
 		switch strings.ToLower(s.pricingDuration) {
-		case durationHourly:
+		case durationHour:
 			duration = 1 * time.Hour
-		case durationMonthly:
+		case durationMonth:
 			// Use 28 days per month for pricing calculations (UpCloud bills max 28 days per month)
 			duration = 28 * 24 * time.Hour
 		default:
@@ -109,22 +109,18 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 	}
 
 	// Fetch pricing information if requested
-	var priceZone *upcloud.PriceZone
+	var pricing map[string]upcloud.Price
 	if showPricing {
-		priceZones, err := exec.All().GetPriceZones(exec.Context())
+		pricingByZone, err := exec.All().GetPricingByZone(exec.Context())
 		switch {
 		case err != nil:
 			// Continue without pricing - just show plans
 			showPricing = false
-		case priceZones != nil:
+		case pricingByZone != nil:
 			// Find the requested zone
-			for _, zone := range priceZones.PriceZones {
-				if zone.Name == s.pricingZone {
-					priceZone = &zone
-					break
-				}
-			}
-			if priceZone == nil {
+			var ok bool
+			pricing, ok = (*pricingByZone)[s.pricingZone]
+			if !ok {
 				return nil, fmt.Errorf("pricing zone %s not found", s.pricingZone)
 			}
 		default:
@@ -151,9 +147,9 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 		}
 
 		// Add cost if requested
-		if showPricing && priceZone != nil {
-			cost := getPlanCost(p, priceZone, duration)
-			row = append(row, fmt.Sprintf("%.4f", cost))
+		if showPricing && pricing != nil {
+			cost := getPlanCost(p, pricing, duration)
+			row = append(row, cost)
 		}
 
 		rows[key] = append(rows[key], row)
@@ -209,9 +205,15 @@ func planSection(key, title string, rows []output.TableRow, showPricing bool, pr
 	}
 
 	if showPricing {
+		decimals := 3
+		if pricingDuration == durationMonth {
+			decimals = 2
+		}
+
 		columns = append(columns, output.TableColumn{
 			Key:    "cost",
 			Header: formatPricingHeader(pricingDuration),
+			Format: getFormatPrice(decimals),
 		})
 	}
 
@@ -226,36 +228,19 @@ func planSection(key, title string, rows []output.TableRow, showPricing bool, pr
 }
 
 // getPlanCost calculates the cost for a given plan
-func getPlanCost(plan upcloud.Plan, priceZone *upcloud.PriceZone, duration time.Duration) float64 {
-	if priceZone == nil {
-		return 0
+func getPlanCost(plan upcloud.Plan, pricing map[string]upcloud.Price, duration time.Duration) float64 {
+	if pricing == nil {
+		return math.NaN()
 	}
 
-	// Try to find specific plan pricing first using reflection
-	// Field naming convention varies, e.g., "1xCPU-1GB" → "ServerPlan1xCPU1GB"
-	fieldName := "ServerPlan" + strings.ReplaceAll(plan.Name, "-", "")
-	fieldName = strings.ReplaceAll(fieldName, ".", "")
+	fieldName := "server_plan_" + plan.Name
 
-	v := reflect.ValueOf(*priceZone)
-	field := v.FieldByName(fieldName)
-
-	var hourlyPrice float64
-
-	if field.IsValid() && !field.IsNil() {
-		priceField := field.Elem().FieldByName("Price")
-		if priceField.IsValid() && priceField.Kind() == reflect.Float64 {
-			hourlyPrice = priceField.Float() / 100
-		}
+	price, ok := pricing[fieldName]
+	if !ok {
+		return math.NaN()
 	}
 
-	// If no specific plan price, calculate from components
-	if hourlyPrice == 0 && priceZone.ServerCore != nil && priceZone.ServerMemory != nil {
-		corePrice := float64(priceZone.ServerCore.Amount) / 100000.0 // Amount is in 1/100000 of currency unit
-		memPrice := float64(priceZone.ServerMemory.Amount) / 100000.0
-
-		// Price per core * number of cores + price per GB * memory in GB
-		hourlyPrice = (corePrice * float64(plan.CoreNumber)) + (memPrice * float64(plan.MemoryAmount) / 1024.0)
-	}
+	hourlyPrice := price.Price / 100
 
 	// Calculate cost for the requested duration
 	// UpCloud bills per (starting) hour, so round up to next full hour
@@ -266,9 +251,9 @@ func getPlanCost(plan upcloud.Plan, priceZone *upcloud.PriceZone, duration time.
 func formatPricingHeader(pricingDuration string) string {
 	// Handle special keywords
 	switch strings.ToLower(pricingDuration) {
-	case durationHourly:
+	case durationHour:
 		return "Price (per hour)"
-	case durationMonthly:
+	case durationMonth:
 		return "Price (per month)"
 	}
 
@@ -293,5 +278,20 @@ func formatPricingHeader(pricingDuration string) string {
 	default:
 		// For other durations, just display the duration string
 		return fmt.Sprintf("Price (%s)", pricingDuration)
+	}
+}
+
+func getFormatPrice(decimals int) func(any) (text.Colors, string, error) {
+	format := fmt.Sprintf("%%.%df", decimals)
+	return func(val any) (text.Colors, string, error) {
+		price, ok := val.(float64)
+		if !ok {
+			return nil, "", fmt.Errorf("cannot parse price from %T, expected string", val)
+		}
+		if math.IsNaN(price) {
+			return text.Colors{text.FgHiBlack}, "unknown", nil
+		}
+
+		return nil, fmt.Sprintf(format, price), nil
 	}
 }

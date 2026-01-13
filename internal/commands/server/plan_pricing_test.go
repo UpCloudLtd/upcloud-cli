@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -175,59 +174,6 @@ func TestSubHourDurationBilling(t *testing.T) {
 			billedHours := math.Ceil(tc.duration.Hours())
 
 			assert.Equal(t, tc.expectedHours, billedHours, tc.description)
-		})
-	}
-}
-
-func TestPlanCostCalculationWithRounding(t *testing.T) {
-	// Test the actual getPlanCost function with sub-hour durations
-	priceZone := &upcloud.PriceZone{
-		Name: "test-zone",
-		ServerCore: &upcloud.Price{
-			Amount: 100000, // 1.00 per hour
-		},
-		ServerMemory: &upcloud.Price{
-			Amount: 100000, // 1.00 per GB per hour
-		},
-	}
-
-	plan := upcloud.Plan{
-		Name:         "1xCPU-1GB",
-		CoreNumber:   1,
-		MemoryAmount: 1024, // 1 GB
-	}
-
-	testCases := []struct {
-		duration     time.Duration
-		expectedCost float64
-		description  string
-	}{
-		{
-			duration:     10 * time.Second,
-			expectedCost: 2.00, // 1 CPU + 1 GB = 2.00 per hour, any fraction rounds up
-			description:  "10 seconds should cost same as 1 hour",
-		},
-		{
-			duration:     30 * time.Minute,
-			expectedCost: 2.00,
-			description:  "30 minutes should cost same as 1 hour",
-		},
-		{
-			duration:     1 * time.Hour,
-			expectedCost: 2.00,
-			description:  "1 hour should cost exactly hourly rate",
-		},
-		{
-			duration:     61 * time.Minute,
-			expectedCost: 4.00, // 2 hours worth
-			description:  "61 minutes should cost same as 2 hours",
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.description, func(t *testing.T) {
-			cost := getPlanCost(plan, priceZone, tc.duration)
-			assert.Equal(t, tc.expectedCost, cost, tc.description)
 		})
 	}
 }
