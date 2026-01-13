@@ -93,7 +93,7 @@ func (m *Service) GetPriceZones(context.Context) (*upcloud.PriceZones, error) { 
 }
 
 // GetPricingByZone implements service.Zones.GetPricingByZone
-func (m *Service) GetPricingByZone(context.Context) (*upcloud.PricingByZone, error) {
+func (m *Service) GetPricesByZone(context.Context) (*upcloud.PricesByZone, error) {
 	return nil, nil
 }
 

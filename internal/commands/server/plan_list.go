@@ -29,15 +29,15 @@ func PlanListCommand() commands.Command {
 
 type planListCommand struct {
 	*commands.BaseCommand
-	pricingZone     string
-	pricingDuration string
+	pricesZone     string
+	pricesDuration string
 }
 
 // InitCommand initializes the command flags
 func (s *planListCommand) InitCommand() {
 	flagSet := &pflag.FlagSet{}
-	flagSet.StringVar(&s.pricingZone, "pricing", "", "Show pricing for the specified zone (e.g., de-fra1)")
-	flagSet.StringVar(&s.pricingDuration, "pricing-duration", durationMonth, "Duration for pricing calculation (e.g., 'hour', 'month', '1h', '24h')")
+	flagSet.StringVar(&s.pricesZone, "prices", "", "Show prices for the specified zone (e.g., de-fra1)")
+	flagSet.StringVar(&s.pricesDuration, "prices-duration", durationMonth, "Duration for prices calculation (e.g., 'hour', 'month', '1h', '24h')")
 
 	s.BaseCommand.Cobra().Flags().AddFlagSet(flagSet)
 }
@@ -62,24 +62,24 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 		return plans[i].StorageSize < plans[j].StorageSize
 	})
 
-	// Check if pricing should be shown
-	showPricing := s.pricingZone != ""
+	// Check if prices should be shown
+	showPrices := s.pricesZone != ""
 
-	// Validate that pricing-duration is only used with --pricing
-	if !showPricing && s.pricingDuration != "month" {
-		// User specified pricing-duration without specifying a pricing zone
-		return nil, fmt.Errorf("--pricing-duration requires --pricing zone to be specified")
+	// Validate that prices-duration is only used with --prices
+	if !showPrices && s.pricesDuration != "month" {
+		// User specified prices-duration without specifying a prices zone
+		return nil, fmt.Errorf("--prices-duration requires --prices zone to be specified")
 	}
 
-	// Parse pricing duration only if showing pricing
+	// Parse prices duration only if showing prices
 	var duration time.Duration
 
-	// Use 28 days per month for pricing calculations (UpCloud bills max 28 days per month)
+	// Use 28 days per month for prices calculations (UpCloud bills max 28 days per month)
 	month := 28 * 24 * time.Hour
 
-	if showPricing {
+	if showPrices {
 		// Handle special keywords first
-		switch strings.ToLower(s.pricingDuration) {
+		switch strings.ToLower(s.pricesDuration) {
 		case durationHour:
 			duration = 1 * time.Hour
 		case durationMonth:
@@ -88,36 +88,36 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 		default:
 			// Parse as standard duration
 			var err error
-			duration, err = time.ParseDuration(s.pricingDuration)
+			duration, err = time.ParseDuration(s.pricesDuration)
 			if err != nil {
-				return nil, fmt.Errorf("invalid pricing-duration: %s (use formats like 'hourly', 'monthly', '1h', '24h')", s.pricingDuration)
+				return nil, fmt.Errorf("invalid prices-duration: %s (use formats like 'hour', 'month', '1h', '24h')", s.pricesDuration)
 			}
 		}
 	}
 
 	// Fetch pricing information if requested
-	var pricing map[string]upcloud.Price
-	if showPricing {
-		pricingByZone, err := exec.All().GetPricingByZone(exec.Context())
+	var prices map[string]upcloud.Price
+	if showPrices {
+		pricesByZone, err := exec.All().GetPricesByZone(exec.Context())
 		switch {
 		case err != nil:
 			exec.PushProgressUpdate(messages.Update{
-				Message: "Getting pricing information failed. Plans are displayed without pricing details",
+				Message: "Getting prices information failed. Plans are displayed without price details",
 				Status:  messages.MessageStatusWarning,
 				Details: "Error: " + err.Error(),
 			})
 			// Continue without pricing - just show plans
-			showPricing = false
-		case pricingByZone != nil:
+			showPrices = false
+		case pricesByZone != nil:
 			// Find the requested zone
 			var ok bool
-			pricing, ok = (*pricingByZone)[s.pricingZone]
+			prices, ok = (*pricesByZone)[s.pricesZone]
 			if !ok {
-				return nil, fmt.Errorf("pricing zone %s not found", s.pricingZone)
+				return nil, fmt.Errorf("pricing zone %s not found", s.pricesZone)
 			}
 		default:
 			// priceZones is nil, disable pricing
-			showPricing = false
+			showPrices = false
 		}
 	}
 
@@ -139,8 +139,8 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 		}
 
 		// Add cost if requested
-		if showPricing && pricing != nil {
-			cost := getPlanCost(p, pricing, duration)
+		if showPrices && prices != nil {
+			cost := getPlanCost(p, prices, duration)
 			row = append(row, cost)
 		}
 
@@ -150,12 +150,12 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 	return output.MarshaledWithHumanOutput{
 		Value: plans,
 		Output: output.Combined{
-			planSection("general_purpose", "General purpose", rows["general_purpose"], showPricing, s.pricingDuration),
-			planSection("gpu", "GPU", rows["gpu"], showPricing, s.pricingDuration),
-			planSection("cloud_native", "Cloud native", rows["cloud_native"], showPricing, s.pricingDuration),
-			planSection("high_cpu", "High CPU", rows["high_cpu"], showPricing, s.pricingDuration),
-			planSection("high_memory", "High memory", rows["high_memory"], showPricing, s.pricingDuration),
-			planSection("developer", "Developer", rows["developer"], showPricing, s.pricingDuration),
+			planSection("general_purpose", "General purpose", rows["general_purpose"], showPrices, s.pricesDuration),
+			planSection("gpu", "GPU", rows["gpu"], showPrices, s.pricesDuration),
+			planSection("cloud_native", "Cloud native", rows["cloud_native"], showPrices, s.pricesDuration),
+			planSection("high_cpu", "High CPU", rows["high_cpu"], showPrices, s.pricesDuration),
+			planSection("high_memory", "High memory", rows["high_memory"], showPrices, s.pricesDuration),
+			planSection("developer", "Developer", rows["developer"], showPrices, s.pricesDuration),
 		},
 	}, nil
 }

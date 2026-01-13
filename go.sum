@@ -32,6 +32,8 @@ github.com/UpCloudLtd/upcloud-go-api/v8 v8.33.0 h1:18MDgUePzdapCSKwLWVL+WRawyT25
 github.com/UpCloudLtd/upcloud-go-api/v8 v8.33.0/go.mod h1:NBh1d/ip1bhdAIhuPWbyPme7tbLzDTV7dhutUmU1vg8=
 github.com/UpCloudLtd/upcloud-go-api/v8 v8.33.1-0.20260113110635-f902044f9f73 h1:tAuoGfCzqgFd3jxPyxZCW77nCPMqmSFIYjKTCU5BE84=
 github.com/UpCloudLtd/upcloud-go-api/v8 v8.33.1-0.20260113110635-f902044f9f73/go.mod h1:NBh1d/ip1bhdAIhuPWbyPme7tbLzDTV7dhutUmU1vg8=
+github.com/UpCloudLtd/upcloud-go-api/v8 v8.33.1-0.20260113141802-efb2e53f24f8 h1:YHuxE5DFF9Q+sTXZY7Avmll6xzM1gD9mb27lWcKNK9U=
+github.com/UpCloudLtd/upcloud-go-api/v8 v8.33.1-0.20260113141802-efb2e53f24f8/go.mod h1:NBh1d/ip1bhdAIhuPWbyPme7tbLzDTV7dhutUmU1vg8=
 github.com/adrg/xdg v0.5.3 h1:xRnxJXne7+oWDatRhR1JLnvuccuIeCoBu2rtuLqQB78=
 github.com/adrg/xdg v0.5.3/go.mod h1:nlTsY+NNiCBGCK2tpm09vRqfVzrc2fLmXGpBLF0zlTQ=
 github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5 h1:0CwZNZbxp69SHPdPJAN/hZIm0C4OItdklCFmMRWYpio=
