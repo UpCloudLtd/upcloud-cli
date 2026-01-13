@@ -88,7 +88,7 @@ func (m *Service) GetZones(context.Context) (*upcloud.Zones, error) {
 }
 
 // GetPriceZones implements service.Zones.GetPriceZones
-func (m *Service) GetPriceZones(context.Context) (*upcloud.PriceZones, error) {
+func (m *Service) GetPriceZones(context.Context) (*upcloud.PriceZones, error) { //nolint: staticcheck // Required to implement interface
 	return nil, nil
 }
 

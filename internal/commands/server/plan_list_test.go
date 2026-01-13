@@ -44,7 +44,7 @@ func TestMonthDurationParsing(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.input, func(t *testing.T) {
 			// Test that duration calculation matches expected
-			duration := time.Duration(0)
+			var duration time.Duration
 
 			// Simulate the parsing logic from plan_list.go
 			switch tc.input {
