@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/UpCloudLtd/progress/messages"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
@@ -65,7 +66,7 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 	showPricing := s.pricingZone != ""
 
 	// Validate that pricing-duration is only used with --pricing
-	if !showPricing && s.pricingDuration != "1m" {
+	if !showPricing && s.pricingDuration != "month" {
 		// User specified pricing-duration without specifying a pricing zone
 		return nil, fmt.Errorf("--pricing-duration requires --pricing zone to be specified")
 	}
@@ -100,6 +101,11 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 		pricingByZone, err := exec.All().GetPricingByZone(exec.Context())
 		switch {
 		case err != nil:
+			exec.PushProgressUpdate(messages.Update{
+				Message: "Getting pricing information failed. Plans are displayed without pricing details",
+				Status:  messages.MessageStatusWarning,
+				Details: "Error: " + err.Error(),
+			})
 			// Continue without pricing - just show plans
 			showPricing = false
 		case pricingByZone != nil:
