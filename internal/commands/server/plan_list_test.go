@@ -15,34 +15,29 @@ func TestMonthDurationParsing(t *testing.T) {
 		expectedHeader string
 	}{
 		{
-			input:          "hourly",
+			input:          "hour",
 			expectedHours:  1,
 			expectedHeader: "Price (per hour)",
 		},
 		{
-			input:          "monthly",
+			input:          "month",
 			expectedHours:  28 * 24,
 			expectedHeader: "Price (per month)",
 		},
 		{
-			input:          "1m",
-			expectedHours:  28 * 24,
-			expectedHeader: "Price (per month)",
+			input:          "1h",
+			expectedHours:  1,
+			expectedHeader: "Price (per hour)",
 		},
 		{
-			input:          "3m",
-			expectedHours:  3 * 28 * 24,
-			expectedHeader: "Price (per 3 months)",
+			input:          "4h30m",
+			expectedHours:  5,
+			expectedHeader: "Price (per 4h30m)",
 		},
 		{
-			input:          "6m",
-			expectedHours:  6 * 28 * 24,
-			expectedHeader: "Price (per 6 months)",
-		},
-		{
-			input:          "12m",
-			expectedHours:  12 * 28 * 24,
-			expectedHeader: "Price (per 12 months)",
+			input:          "24h",
+			expectedHours:  24,
+			expectedHeader: "Price (per day)",
 		},
 	}
 
@@ -53,37 +48,21 @@ func TestMonthDurationParsing(t *testing.T) {
 
 			// Simulate the parsing logic from plan_list.go
 			switch tc.input {
-			case "hourly":
+			case "hour":
 				duration = 1 * time.Hour
-			case "monthly":
+			case "month":
 				duration = 28 * 24 * time.Hour
 			default:
-				if tc.input[len(tc.input)-1] == 'm' {
-					months := 0
-					switch tc.input {
-					case "1m":
-						months = 1
-					case "3m":
-						months = 3
-					case "6m":
-						months = 6
-					case "12m":
-						months = 12
-					}
-
-					// Use 28 days per month (as per UpCloud billing policy)
-					duration = time.Duration(months) * 28 * 24 * time.Hour
-				}
+				duration, _ = time.ParseDuration(tc.input)
 			}
 
-			actualHours := int(duration.Hours())
+			actualHours := int(math.Ceil(duration.Hours()))
 			assert.Equal(t, tc.expectedHours, actualHours,
 				"Duration %s should be %d hours (28 days per month)", tc.input, tc.expectedHours)
 
 			// Test header formatting
 			header := formatPricingHeader(tc.input)
-			assert.Equal(t, tc.expectedHeader, header,
-				"Header for %s should be '%s'", tc.input, tc.expectedHeader)
+			assert.Equal(t, tc.expectedHeader, header)
 		})
 	}
 }
