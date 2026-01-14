@@ -71,32 +71,9 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 		return nil, fmt.Errorf("--prices-duration requires --prices zone to be specified")
 	}
 
-	// Parse prices duration only if showing prices
-	var duration time.Duration
-
-	// Use 28 days per month for prices calculations (UpCloud bills max 28 days per month)
-	month := 28 * 24 * time.Hour
-
-	if showPrices {
-		// Handle special keywords first
-		switch strings.ToLower(s.pricesDuration) {
-		case durationHour:
-			duration = 1 * time.Hour
-		case durationMonth:
-			// Use 28 days per month for pricing calculations (UpCloud bills max 28 days per month)
-			duration = month
-		default:
-			// Parse as standard duration
-			var err error
-			duration, err = time.ParseDuration(s.pricesDuration)
-			if err != nil {
-				return nil, fmt.Errorf("invalid prices-duration: %s (use formats like 'hour', 'month', '1h', '24h')", s.pricesDuration)
-			}
-		}
-	}
-
-	// Fetch pricing information if requested
+	// Fetch pricing information and parse duration if requested
 	var prices map[string]upcloud.Price
+	var duration time.Duration
 	if showPrices {
 		pricesByZone, err := exec.All().GetPricesByZone(exec.Context())
 		switch {
@@ -118,6 +95,11 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 		default:
 			// priceZones is nil, disable pricing
 			showPrices = false
+		}
+
+		duration, err = getDuration(s.pricesDuration)
+		if err != nil {
+			return nil, err
 		}
 	}
 
@@ -216,6 +198,28 @@ func planSection(key, title string, rows []output.TableRow, showPricing bool, pr
 			Columns: columns,
 			Rows:    rows,
 		},
+	}
+}
+
+func getDuration(pricesDuration string) (time.Duration, error) {
+	// Use 28 days per month for prices calculations (UpCloud bills max 28 days per month)
+	month := 28 * 24 * time.Hour
+
+	// Handle special keywords first
+	switch strings.ToLower(pricesDuration) {
+	case durationHour:
+		return 1 * time.Hour, nil
+	case durationMonth:
+		// Use 28 days per month for pricing calculations (UpCloud bills max 28 days per month)
+		return month, nil
+	default:
+		// Parse as standard duration
+		var err error
+		duration, err := time.ParseDuration(pricesDuration)
+		if err != nil {
+			return time.Duration(0), fmt.Errorf("failed to parse prices-duration from duration string: %w", err)
+		}
+		return duration, nil
 	}
 }
 
