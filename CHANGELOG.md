@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Log API requests and responses when using global `--debug` option.
 - Include plan prices in `server plans` output if `--prices` flag is used.
 
+### Fixed
+
+- In human readable output of `account show`, use accounts currency for credits.
+
 ## [3.27.0] - 2025-12-31
 
 ### Added
