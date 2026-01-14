@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.28.0] - 2026-01-14
+
 ### Added
 
 - Log API requests and responses when using global `--debug` option.
@@ -669,7 +671,8 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.27.0...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.28.0...HEAD
+[3.28.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.27.0...v3.28.0
 [3.27.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.26.0...v3.27.0
 [3.26.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.25.0...v3.26.0
 [3.25.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.24.1...v3.25.0
