@@ -4,12 +4,18 @@ updates:
     directory: /
     schedule:
       interval: daily
+    cooldown:
+      default-days: 7
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: daily
+    cooldown:
+      default-days: 7
   - package-ecosystem: gomod
     open-pull-requests-limit: 15
     directory: /
     schedule:
       interval: daily
+    cooldown:
+      default-days: 7
