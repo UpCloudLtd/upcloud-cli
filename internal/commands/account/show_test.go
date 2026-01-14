@@ -39,7 +39,7 @@ func TestShowCommand(t *testing.T) {
 
 	expected := `  
   Username: upctl_test 
-  Credits:  €123.45    
+  Credits:  123.45 EUR
   
   Resource Limits:
     Cores:                      100 
@@ -64,6 +64,10 @@ func TestShowCommand(t *testing.T) {
 	mService := new(smock.Service)
 
 	mService.On("GetAccount").Return(&account, nil)
+	mService.On("GetAccountDetails").Return(&upcloud.AccountDetails{
+        Currency: "EUR",
+    }, nil)
+
 	// force human output
 	conf.Viper().Set(config.KeyOutput, config.ValueOutputHuman)
 
@@ -73,4 +77,5 @@ func TestShowCommand(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, expected, output)
 	mService.AssertNumberOfCalls(t, "GetAccount", 1)
+	mService.AssertNumberOfCalls(t, "GetAccountDetails", 1)
 }

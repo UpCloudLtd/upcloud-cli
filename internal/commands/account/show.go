@@ -28,7 +28,12 @@ func (s *showCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
         return nil, err
     }
 
-    creditsFormatter := getFormatCredits(account.Currency)
+    detailsAccount, err := svc.GetAccountDetails(exec.Context())
+    if err != nil {
+        return nil, err
+    }
+
+    creditsFormatter := getFormatCredits(detailsAccount.Currency)
 
     details := output.Details{
         Sections: []output.DetailSection{
