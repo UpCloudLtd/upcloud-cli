@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Log API requests and responses when using global `--debug` option.
+- Include plan prices in `server plans` output if `--prices` flag is used.
 
 ### Fixed
 
