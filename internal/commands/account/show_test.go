@@ -12,6 +12,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestShowCommand(t *testing.T) {
@@ -39,7 +40,7 @@ func TestShowCommand(t *testing.T) {
 
 	expected := `  
   Username: upctl_test 
-  Credits:  123.45 EUR
+  Credits:  123.45 EUR 
   
   Resource Limits:
     Cores:                      100 
@@ -64,9 +65,9 @@ func TestShowCommand(t *testing.T) {
 	mService := new(smock.Service)
 
 	mService.On("GetAccount").Return(&account, nil)
-	mService.On("GetAccountDetails").Return(&upcloud.AccountDetails{
-        Currency: "EUR",
-    }, nil)
+	mService.On("GetAccountDetails", mock.Anything).Return(&upcloud.AccountDetails{
+		Currency: "EUR",
+	}, nil)
 
 	// force human output
 	conf.Viper().Set(config.KeyOutput, config.ValueOutputHuman)

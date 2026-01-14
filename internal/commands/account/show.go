@@ -6,6 +6,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
+	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 	"github.com/jedib0t/go-pretty/v6/text"
 )
 
@@ -24,25 +25,25 @@ type showCommand struct {
 func (s *showCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	svc := exec.Account()
 	account, err := svc.GetAccount(exec.Context())
-    if err != nil {
-        return nil, err
-    }
+	if err != nil {
+		return nil, err
+	}
 
-    detailsAccount, err := svc.GetAccountDetails(exec.Context())
-    if err != nil {
-        return nil, err
-    }
+	detailsAccount, err := svc.GetAccountDetails(exec.Context(), &request.GetAccountDetailsRequest{Username: account.UserName})
+	if err != nil {
+		return nil, err
+	}
 
-    creditsFormatter := getFormatCredits(detailsAccount.Currency)
+	creditsFormatter := getFormatCredits(detailsAccount.Currency)
 
-    details := output.Details{
-        Sections: []output.DetailSection{
-            {
-                Rows: []output.DetailRow{
-                    {Title: "Username:", Key: "username", Value: account.UserName},
-                    {Title: "Credits:", Key: "credits", Value: account.Credits, Format: creditsFormatter},
-                },
-            },
+	details := output.Details{
+		Sections: []output.DetailSection{
+			{
+				Rows: []output.DetailRow{
+					{Title: "Username:", Key: "username", Value: account.UserName},
+					{Title: "Credits:", Key: "credits", Value: account.Credits, Format: creditsFormatter},
+				},
+			},
 
 			{
 				Title: "Resource Limits:", Key: "resource_limits", Rows: []output.DetailRow{
@@ -128,18 +129,17 @@ func (s *showCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 }
 
 func getFormatCredits(currency string) func(val any) (text.Colors, string, error) {
-    return func(val any) (text.Colors, string, error) {
-        credits, ok := val.(float64)
-        if !ok {
-            return nil, "", fmt.Errorf("cannot parse %T, expected float64", val)
-        }
+	return func(val any) (text.Colors, string, error) {
+		credits, ok := val.(float64)
+		if !ok {
+			return nil, "", fmt.Errorf("cannot parse %T, expected float64", val)
+		}
 
-        if math.Abs(credits) < 0.001 {
-            return nil, "Denied", nil
-        }
+		if math.Abs(credits) < 0.001 {
+			return nil, "Denied", nil
+		}
 
-        // Credits are returned in cents
-        return nil, fmt.Sprintf("%.2f %s", credits/100, currency), nil
-    }
+		// Credits are returned in cents
+		return nil, fmt.Sprintf("%.2f %s", credits/100, currency), nil
+	}
 }
-
