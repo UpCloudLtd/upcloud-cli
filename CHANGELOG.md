@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Unconditionally enable colors if the [FORCE_COLOR](https://force-color.org) environment variable is set to a non-empty value.
+
 ## [3.28.0] - 2026-01-14
 
 ### Added
