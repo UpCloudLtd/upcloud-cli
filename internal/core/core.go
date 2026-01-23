@@ -36,11 +36,10 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 				return err
 			}
 
-			// detect desired colour output
+			// detect desired colour output, respect https://force-color.org (FORCE_COLOR, NO_COLOR)
 			switch {
-			case conf.GlobalFlags.ForceColours == config.True:
+			case conf.GlobalFlags.ForceColours == config.True || os.Getenv("FORCE_COLOR") != "":
 				text.EnableColors()
-			// Environment variable with US spelling to support https://no-color.org
 			case conf.GlobalFlags.NoColours == config.True || os.Getenv("NO_COLOR") != "":
 				text.DisableColors()
 			case conf.GlobalFlags.OutputFormat != config.ValueOutputHuman:
