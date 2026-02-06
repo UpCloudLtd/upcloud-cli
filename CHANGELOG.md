@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.29.0] - 2026-02-06
+
 ### Added
 
 - Unconditionally enable colors if the [FORCE_COLOR](https://force-color.org) environment variable is set to a non-empty value.
@@ -680,7 +682,8 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.28.0...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.29.0...HEAD
+[3.29.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.28.0...v3.29.0
 [3.28.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.27.0...v3.28.0
 [3.27.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.26.0...v3.27.0
 [3.26.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.25.0...v3.26.0
