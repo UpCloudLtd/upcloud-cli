@@ -276,7 +276,7 @@ func deleteResource(exec commands.Executor, resource Resource) (err error) {
 	case typeRouter:
 		_, err = router.Delete(exec, resource.UUID)
 	case typeObjectStorage:
-		_, err = objectstorage.Delete(exec, resource.UUID, true, true, true, true)
+		_, err = objectstorage.Delete(exec, resource.UUID, false, false, false, true, true)
 	case typeDatabase:
 		_, err = database.Delete(exec, resource.UUID, true, true)
 	case typeServer:

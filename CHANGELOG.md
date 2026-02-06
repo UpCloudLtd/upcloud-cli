@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Unconditionally enable colors if the [FORCE_COLOR](https://force-color.org) environment variable is set to a non-empty value.
+- Add `--force` flag to `object-storage delete` command.
+
+### Changed
+
+- Use `--force` flag in `all purge` command when deleting object storage instances instead of deleting sub-resources one-by-one.
 
 ## [3.28.0] - 2026-01-14
 

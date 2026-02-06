@@ -55,6 +55,15 @@ func TestDeleteCommand(t *testing.T) {
 			flags: []string{"--delete-users", "--delete-policies"},
 			req:   request.DeleteManagedObjectStorageRequest{UUID: objectstorage.UUID},
 		},
+		{
+			name:  "delete with UUID using force",
+			arg:   objectstorage.UUID,
+			flags: []string{"--force"},
+			req: request.DeleteManagedObjectStorageRequest{
+				UUID:  objectstorage.UUID,
+				Force: true,
+			},
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			mService := smock.Service{}
