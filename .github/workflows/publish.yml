@@ -10,10 +10,10 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     permissions:
-      attestations: write
       contents: write
-      id-token: write
       packages: write
+    outputs:
+      checksums: ${{ steps.capture_checksums.outputs.checksums }}
     steps:
       - name: Checkout head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -57,10 +57,14 @@ jobs:
           HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
       - name: Clear Docker login session
         run: rm -f ${HOME}/.docker/config.json
-      - name: Generate artifact attestations
-        uses: actions/attest-build-provenance@00014ed6ed5efc5b1ab7f7f34a39eb55d41aa4f8 # v3.1.0
-        with:
-          subject-checksums: dist/checksums.txt
+      - name: Capture dist checksums in an output string
+        id: capture_checksums
+        run: |
+          {
+            echo "checksums<<EOF"
+            cat dist/checksums.txt
+            echo "EOF"
+          } >>"$GITHUB_OUTPUT"
       - name: Generate AUR PKGBUILD
         run: ./scripts/generate_aur_pkgbuild.sh ${{ steps.git.outputs.tag_version }}
       - name: Publish AUR package
@@ -73,3 +77,14 @@ jobs:
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
           commit_message: Release ${{ steps.git.outputs.tag_version }}
           force_push: true
+
+  attest:
+    name: Attest
+    needs:
+      - publish_release
+    permissions:
+      attestations: write # to persist
+      id-token: write     # to sign
+    uses: UpCloudLtd/workflows/.github/workflows/build-provenance.yaml@main
+    with:
+      subject-checksums: ${{ needs.publish_release.outputs.checksums }}
