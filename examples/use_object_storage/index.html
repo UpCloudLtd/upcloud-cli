@@ -7786,8 +7786,8 @@ S3-compatible access via access keys.</p>
 <p>Once not needed anymore, delete the user:</p>
 <div class="language-sh highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>upctl<span class="w"> </span>object-storage<span class="w"> </span>user<span class="w"> </span>delete<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>service<span class="w"> </span>--username<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>user
 </span></code></pre></div>
-<p>Delete also the managed object storage service along with its buckets:</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>upctl<span class="w"> </span>object-storage<span class="w"> </span>delete<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>service<span class="w"> </span>--delete-buckets
+<p>Delete also the managed object storage service along with all its sub-resources such as buckets and users:</p>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>upctl<span class="w"> </span>object-storage<span class="w"> </span>delete<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>service<span class="w"> </span>--force
 </span></code></pre></div>
 
 
