@@ -13,6 +13,7 @@ import (
 	"github.com/UpCloudLtd/progress/messages"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/database"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/filestorage"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/kubernetes"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/loadbalancer"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/network"
@@ -31,6 +32,7 @@ const (
 	includeHelp = "Include resources matching the given name. If defined multiple times, resource is included if it matches any of the given names. `*` matches all resources."
 	excludeHelp = "Exclude resources matching the given name. If defined multiple times, resource is included if it matches any of the given names."
 
+	typeFileStorage       = "file-storage"
 	typeKubernetes        = "kubernetes-cluster"
 	typeLoadBalancer      = "load-balancer"
 	typeCertificateBundle = "certificate-bundle"
@@ -147,7 +149,7 @@ func findResources[T any](exec commands.Executor, wg *sync.WaitGroup, returnChan
 
 func ListResources(exec commands.Executor, include, exclude []string) ([]Resource, error) {
 	var resources []Resource
-	returnChan := make(chan findResult, 12)
+	returnChan := make(chan findResult, 13)
 
 	var wg sync.WaitGroup
 
@@ -163,7 +165,7 @@ func ListResources(exec commands.Executor, include, exclude []string) ([]Resourc
 	findResources(exec, &wg, returnChan, &resolver.CachingStorage{Access: "private"}, include, exclude)
 	findResources(exec, &wg, returnChan, &cachingTag{}, include, exclude)
 	findResources(exec, &wg, returnChan, &cachingCertificateBundle{}, include, exclude)
-
+	findResources(exec, &wg, returnChan, &resolver.CachingFileStorage{}, include, exclude)
 	wg.Wait()
 	close(returnChan)
 
@@ -187,6 +189,12 @@ func ListResources(exec commands.Executor, include, exclude []string) ([]Resourc
 
 func getResource(val any) (Resource, error) {
 	switch v := val.(type) {
+	case upcloud.FileStorage:
+		return Resource{
+			Name: v.Name,
+			Type: typeFileStorage,
+			UUID: v.UUID,
+		}, nil
 	case upcloud.LoadBalancer:
 		return Resource{
 			Name: v.Name,
@@ -265,6 +273,8 @@ func getResource(val any) (Resource, error) {
 
 func deleteResource(exec commands.Executor, resource Resource) (err error) {
 	switch resource.Type {
+	case typeFileStorage:
+		_, err = filestorage.Delete(exec, resource.UUID, true)
 	case typeKubernetes:
 		_, err = kubernetes.Delete(exec, resource.UUID, true)
 	case typeLoadBalancer:
