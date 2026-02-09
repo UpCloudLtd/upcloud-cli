@@ -51,7 +51,7 @@ Attach a policy to grant the user access to buckets:
    ```
 
    Then attach the policy (requires UPCLOUD_TOKEN environment variable):
-   ```sh when=false
+   ```sh when="false"
    # Note: This command requires a bearer token which can be created via the UpCloud Control Panel
    # The when=false flag skips this in automated tests since only username/password are available in CI
    curl -X POST "https://api.upcloud.com/1.3/object-storage-2/${service_uuid}/users/${prefix}user/policies" \
@@ -69,7 +69,7 @@ Attach a policy to grant the user access to buckets:
 
 Verify S3 access with AWS CLI:
 
-```sh when=false
+```sh when="false"
 # Get the service endpoint
 service_endpoint=$(upctl object-storage show ${prefix}service -o json | jq -r '.endpoints[0].domain_name')
 
@@ -79,13 +79,7 @@ AWS_SECRET_ACCESS_KEY=${secret_access_key} \
 aws s3 ls --endpoint-url https://${service_endpoint}
 ```
 
-Once not needed anymore, delete the user:
-
-```sh
-upctl object-storage user delete ${prefix}service --username ${prefix}user
-```
-
-Delete also the managed object storage service along with all its sub-resources such as buckets and users:
+Delete the managed object storage service along with all its sub-resources such as buckets and users:
 
 ```sh
 upctl object-storage delete ${prefix}service --force
