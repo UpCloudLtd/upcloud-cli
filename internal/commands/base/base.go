@@ -25,6 +25,7 @@ import (
 	objectstoragelabel "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/objectstorage/label"
 	objectstoragenetwork "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/objectstorage/network"
 	objectstorageuser "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/objectstorage/user"
+	objectstorageuserpolicy "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/objectstorage/user/policy"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/partner"
 	partneraccount "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/partner/account"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/root"
@@ -233,6 +234,12 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	commands.BuildCommand(objectstorageuser.CreateCommand(), userCommand.Cobra(), conf)
 	commands.BuildCommand(objectstorageuser.DeleteCommand(), userCommand.Cobra(), conf)
 	commands.BuildCommand(objectstorageuser.ListCommand(), userCommand.Cobra(), conf)
+
+	// Object storage user policy management
+	userPolicyCommand := commands.BuildCommand(objectstorageuserpolicy.BaseUserPolicyCommand(), userCommand.Cobra(), conf)
+	commands.BuildCommand(objectstorageuserpolicy.AttachCommand(), userPolicyCommand.Cobra(), conf)
+	commands.BuildCommand(objectstorageuserpolicy.DetachCommand(), userPolicyCommand.Cobra(), conf)
+	commands.BuildCommand(objectstorageuserpolicy.ListCommand(), userPolicyCommand.Cobra(), conf)
 
 	// Object storage access key management
 	accessKeyCommand := commands.BuildCommand(objectstorageAccesskey.BaseAccessKeyCommand(), objectStorageCommand.Cobra(), conf)
