@@ -7,9 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.29.0] - 2026-02-06
+
+### Added
+
+- Unconditionally enable colors if the [FORCE_COLOR](https://force-color.org) environment variable is set to a non-empty value.
+- Add `--force` flag to `object-storage delete` command.
+
+### Changed
+
+- Use `--force` flag in `all purge` command when deleting object storage instances instead of deleting sub-resources one-by-one.
+
+## [3.28.0] - 2026-01-14
+
 ### Added
 
 - Log API requests and responses when using global `--debug` option.
+- Include plan prices in `server plans` output if `--prices` flag is used.
+
+### Fixed
+
+- In human readable output of `account show`, use accounts currency for credits.
 
 ## [3.27.0] - 2025-12-31
 
@@ -664,7 +682,9 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.27.0...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.29.0...HEAD
+[3.29.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.28.0...v3.29.0
+[3.28.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.27.0...v3.28.0
 [3.27.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.26.0...v3.27.0
 [3.26.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.25.0...v3.26.0
 [3.25.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.24.1...v3.25.0

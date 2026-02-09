@@ -85,8 +85,8 @@ Once not needed anymore, delete the user:
 upctl object-storage user delete ${prefix}service --username ${prefix}user
 ```
 
-Delete also the managed object storage service along with its buckets:
+Delete also the managed object storage service along with all its sub-resources such as buckets and users:
 
 ```sh
-upctl object-storage delete ${prefix}service --delete-buckets
+upctl object-storage delete ${prefix}service --force
 ```

@@ -24,7 +24,8 @@ func TestPurgeCommand(t *testing.T) {
 			args: []string{"--include", "*tf-acc-test*", "--exclude", "*persistent*"},
 			called: [][]any{
 				{"DeleteManagedObjectStorage", &request.DeleteManagedObjectStorageRequest{
-					UUID: objectStorages[0].UUID,
+					UUID:  objectStorages[0].UUID,
+					Force: true,
 				}},
 				{"DeleteNetwork", &request.DeleteNetworkRequest{
 					UUID: networks.Networks[0].UUID,
