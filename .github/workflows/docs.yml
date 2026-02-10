@@ -39,11 +39,13 @@ jobs:
           name: mkdocs-site
           path: site
           retention-days: 7
-      - name: Deploy to pages
-        if: ${{ github.ref_name == 'main' || github.event_name == 'release'}}
-        uses: JamesIves/github-pages-deploy-action@d92aa235d04922e8f08b40ce78cc5442fcfbfa2f # 4.8.0
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: site
-          CLEAN: true
+      - name: Setup git user for mike
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+      - name: Deploy to main
+        if: ${{ github.ref_name == 'main' }}
+        run: mike deploy --push --title "Unreleased (main)" main
+      - name: Deploy to latest
+        if: ${{ github.event_name == 'release' }}
+        run: mike deploy --push --title "Latest (${{ github.event.release.tag_name }})" latest
