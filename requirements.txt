@@ -1,4 +1,5 @@
 # Dependencies for auto-generating and developing docs
+mike~=2.1
 mkdocs~=1.5
 mkdocs-material~=9.5
 mkdocs-macros-plugin~=1.0
