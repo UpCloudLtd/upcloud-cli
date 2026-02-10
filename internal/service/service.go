@@ -26,4 +26,5 @@ type AllServices interface {
 	service.Token
 	service.Tag
 	service.AuditLog
+	service.FileStorage
 }

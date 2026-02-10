@@ -1612,3 +1612,217 @@ func (m *Service) ExportAuditLog(_ context.Context, r *request.ExportAuditLogReq
 	}
 	return args[0].(io.ReadCloser), args.Error(1)
 }
+
+func (m *Service) GetFileStorages(ctx context.Context, r *request.GetFileStoragesRequest) ([]upcloud.FileStorage, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].([]upcloud.FileStorage), args.Error(1)
+}
+
+func (m *Service) CreateFileStorage(ctx context.Context, r *request.CreateFileStorageRequest) (*upcloud.FileStorage, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.FileStorage), args.Error(1)
+}
+
+func (m *Service) GetFileStorage(ctx context.Context, r *request.GetFileStorageRequest) (*upcloud.FileStorage, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.FileStorage), args.Error(1)
+}
+
+func (m *Service) ReplaceFileStorage(ctx context.Context, r *request.ReplaceFileStorageRequest) (*upcloud.FileStorage, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.FileStorage), args.Error(1)
+}
+
+func (m *Service) ModifyFileStorage(ctx context.Context, r *request.ModifyFileStorageRequest) (*upcloud.FileStorage, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.FileStorage), args.Error(1)
+}
+
+func (m *Service) DeleteFileStorage(ctx context.Context, r *request.DeleteFileStorageRequest) error {
+	args := m.Called(r)
+	return args.Error(0)
+}
+
+func (m *Service) WaitForFileStorageDeletion(ctx context.Context, r *request.WaitForFileStorageDeletionRequest) error {
+	args := m.Called(r)
+	return args.Error(0)
+}
+
+func (m *Service) WaitForFileStorageOperationalState(ctx context.Context, r *request.WaitForFileStorageOperationalStateRequest) (*upcloud.FileStorage, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.FileStorage), args.Error(1)
+}
+
+func (m *Service) GetFileStorageCurrentState(ctx context.Context, r *request.GetFileStorageCurrentStateRequest) (*upcloud.FileStorage, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.FileStorage), args.Error(1)
+}
+
+func (m *Service) GetFileStorageNetworks(ctx context.Context, r *request.GetFileStorageNetworksRequest) ([]upcloud.FileStorageNetwork, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].([]upcloud.FileStorageNetwork), args.Error(1)
+}
+
+func (m *Service) CreateFileStorageNetwork(ctx context.Context, r *request.CreateFileStorageNetworkRequest) (*upcloud.FileStorageNetwork, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.FileStorageNetwork), args.Error(1)
+}
+
+func (m *Service) GetFileStorageNetwork(ctx context.Context, r *request.GetFileStorageNetworkRequest) (*upcloud.FileStorageNetwork, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.FileStorageNetwork), args.Error(1)
+}
+
+func (m *Service) ModifyFileStorageNetwork(ctx context.Context, r *request.ModifyFileStorageNetworkRequest) (*upcloud.FileStorageNetwork, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.FileStorageNetwork), args.Error(1)
+}
+
+func (m *Service) DeleteFileStorageNetwork(ctx context.Context, r *request.DeleteFileStorageNetworkRequest) error {
+	args := m.Called(r)
+	return args.Error(0)
+}
+
+func (m *Service) GetFileStorageShares(ctx context.Context, r *request.GetFileStorageSharesRequest) ([]upcloud.FileStorageShare, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].([]upcloud.FileStorageShare), args.Error(1)
+}
+
+func (m *Service) CreateFileStorageShare(ctx context.Context, r *request.CreateFileStorageShareRequest) (*upcloud.FileStorageShare, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.FileStorageShare), args.Error(1)
+}
+
+func (m *Service) GetFileStorageShare(ctx context.Context, r *request.GetFileStorageShareRequest) (*upcloud.FileStorageShare, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.FileStorageShare), args.Error(1)
+}
+
+func (m *Service) ModifyFileStorageShare(ctx context.Context, r *request.ModifyFileStorageShareRequest) (*upcloud.FileStorageShare, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.FileStorageShare), args.Error(1)
+}
+
+func (m *Service) DeleteFileStorageShare(ctx context.Context, r *request.DeleteFileStorageShareRequest) error {
+	args := m.Called(r)
+	return args.Error(0)
+}
+
+func (m *Service) GetFileStorageShareACLs(ctx context.Context, r *request.GetFileStorageShareACLsRequest) ([]upcloud.FileStorageShareACL, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].([]upcloud.FileStorageShareACL), args.Error(1)
+}
+
+func (m *Service) CreateFileStorageShareACL(ctx context.Context, r *request.CreateFileStorageShareACLRequest) (*upcloud.FileStorageShareACL, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.FileStorageShareACL), args.Error(1)
+}
+
+func (m *Service) GetFileStorageShareACL(ctx context.Context, r *request.GetFileStorageShareACLRequest) (*upcloud.FileStorageShareACL, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.FileStorageShareACL), args.Error(1)
+}
+
+func (m *Service) ModifyFileStorageShareACL(ctx context.Context, r *request.ModifyFileStorageShareACLRequest) (*upcloud.FileStorageShareACL, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.FileStorageShareACL), args.Error(1)
+}
+
+func (m *Service) DeleteFileStorageShareACL(ctx context.Context, r *request.DeleteFileStorageShareACLRequest) error {
+	args := m.Called(r)
+	return args.Error(0)
+}
+
+func (m *Service) GetFileStorageLabels(ctx context.Context, r *request.GetFileStorageLabelsRequest) ([]upcloud.Label, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].([]upcloud.Label), args.Error(1)
+}
+
+func (m *Service) CreateFileStorageLabel(ctx context.Context, r *request.CreateFileStorageLabelRequest) (*upcloud.Label, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.Label), args.Error(1)
+}
+
+func (m *Service) GetFileStorageLabel(ctx context.Context, r *request.GetFileStorageLabelRequest) (*upcloud.Label, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.Label), args.Error(1)
+}
+
+func (m *Service) ModifyFileStorageLabel(ctx context.Context, r *request.ModifyFileStorageLabelRequest) (*upcloud.Label, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.Label), args.Error(1)
+}
+
+func (m *Service) DeleteFileStorageLabel(ctx context.Context, r *request.DeleteFileStorageLabelRequest) error {
+	args := m.Called(r)
+	return args.Error(0)
+}

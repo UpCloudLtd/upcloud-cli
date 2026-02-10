@@ -11,6 +11,7 @@ import (
 	databaseindex "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/database/index"
 	databaseproperties "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/database/properties"
 	databasesession "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/database/session"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/filestorage"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/gateway"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/host"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/ipaddress"
@@ -187,6 +188,11 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	indexCommand := commands.BuildCommand(databaseindex.BaseIndexCommand(), databaseCommand.Cobra(), conf)
 	commands.BuildCommand(databaseindex.DeleteCommand(), indexCommand.Cobra(), conf)
 	commands.BuildCommand(databaseindex.ListCommand(), indexCommand.Cobra(), conf)
+
+	// FileStorage
+	filestorageCommand := commands.BuildCommand(filestorage.BaseFileStorageCommand(), rootCmd, conf)
+	commands.BuildCommand(filestorage.ListCommand(), filestorageCommand.Cobra(), conf)
+	commands.BuildCommand(filestorage.DeleteCommand(), filestorageCommand.Cobra(), conf)
 
 	// LoadBalancers
 	loadbalancerCommand := commands.BuildCommand(loadbalancer.BaseLoadBalancerCommand(), rootCmd, conf)
