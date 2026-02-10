@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add commands for attaching, detaching, and listing policies attached to a user in managed object storage service.
+
 ## [3.29.0] - 2026-02-06
 
 ### Added
