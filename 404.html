@@ -7,13 +7,15 @@
     <meta http-equiv="refresh" content="1; url=latest/" />
   </noscript>
   <script>
-    if (window.location.pathname.startsWith("/upcloud-cli/latest/")) {
+    const subPath = window.location.pathname.replace(/^\/upcloud-cli/,"")
+
+    if (subPath.startsWith("/latest/")) {
       window.location.replace(
-        "latest/404.html"
+        "/upcloud-cli/latest/404.html"
       );
     } else {
       window.location.replace(
-        "/upcloud-cli/latest" + window.location.pathname + window.location.search + window.location.hash
+        "/upcloud-cli/latest" + subPath + window.location.search + window.location.hash
       );
     }
   </script>
