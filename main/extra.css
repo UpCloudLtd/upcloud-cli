@@ -1,0 +1,40 @@
+:root > * {
+  --md-default-bg-color: rgb(250, 250, 252);
+  --md-primary-fg-color: rgb(123, 0, 255);
+  --md-primary-fg-color--light: #9360ff;
+  --md-primary-fg-color--dark: #5100ae;
+  --md-accent-fg-color: rgb(123, 0, 255);
+  --md-accent-fg-color--transparent: rgba(123, 0, 255, 0.25);
+
+  --md-typeset-a-color: var(--md-primary-fg-color--dark);
+}
+
+.md-header {
+  background-color: #fff;
+}
+
+.md-header--shadow {
+  box-shadow: none;
+}
+
+.md-logo {
+  color: rgb(123, 0, 255);
+}
+
+.md-content table {
+    width: 100%;
+}
+
+.md-nav--primary .md-nav__title[for="__drawer"] {
+  background-color: inherit;
+  text-overflow: unset;
+}
+
+.md-nav__title .md-nav__button.md-logo :is(img, svg) {
+  height: 1.4rem;
+  margin: 0.5rem auto;
+}
+
+.md-nav__source {
+  background-color: inherit;
+}
