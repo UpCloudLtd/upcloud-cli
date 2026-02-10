@@ -4747,173 +4747,6 @@
 
               
             
-              
-                
-  
-  
-  
-  
-    
-    
-    
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_12_11_5" >
-        
-          
-          <label class="md-nav__link" for="__nav_2_12_11_5" id="__nav_2_12_11_5_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    user policy
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_2_12_11_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2_12_11_5">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    user policy
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_object-storage/user/policy/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    policy 
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_object-storage/user/policy/attach/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    policy attach
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_object-storage/user/policy/detach/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    policy detach
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_object-storage/user/policy/list/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    policy list
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
@@ -7952,27 +7785,13 @@ S3-compatible access via access keys.</p>
 </span></code></pre></div>
 <p>Create a user and an access key for S3-compatible access:</p>
 <div class="language-sh highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>upctl<span class="w"> </span>object-storage<span class="w"> </span>user<span class="w"> </span>create<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>service<span class="w"> </span>--username<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>user
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="c1"># Create access key and save credentials</span>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nv">access_key_output</span><span class="o">=</span><span class="k">$(</span>upctl<span class="w"> </span>object-storage<span class="w"> </span>access-key<span class="w"> </span>create<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>service<span class="w"> </span>--username<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>user<span class="w"> </span>-o<span class="w"> </span>json<span class="k">)</span>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nv">access_key_id</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$access_key_output</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;.access_key_id&#39;</span><span class="k">)</span>
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="nv">secret_access_key</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$access_key_output</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;.secret_access_key&#39;</span><span class="k">)</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>upctl<span class="w"> </span>object-storage<span class="w"> </span>access-key<span class="w"> </span>create<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>service<span class="w"> </span>--username<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>user
 </span></code></pre></div>
-<p>Save the access key ID and secret access key from the output - you'll need these for S3 access.</p>
-<p>Attach a policy to grant the user access to buckets:</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>upctl<span class="w"> </span>object-storage<span class="w"> </span>user<span class="w"> </span>policy<span class="w"> </span>attach<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>service<span class="w"> </span>--username<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>user<span class="w"> </span>--policy<span class="w"> </span>ECSS3FullAccess
+<p>Once not needed anymore, delete the user:</p>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>upctl<span class="w"> </span>object-storage<span class="w"> </span>user<span class="w"> </span>delete<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>service<span class="w"> </span>--username<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>user
 </span></code></pre></div>
-<p>Verify S3 access with AWS CLI:</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Get the service endpoint</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nv">service_endpoint</span><span class="o">=</span><span class="k">$(</span>upctl<span class="w"> </span>object-storage<span class="w"> </span>show<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>service<span class="w"> </span>-o<span class="w"> </span>json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;.endpoints[0].domain_name&#39;</span><span class="k">)</span>
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="c1"># Configure AWS CLI with your credentials and test access</span>
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="nv">AWS_ACCESS_KEY_ID</span><span class="o">=</span><span class="si">${</span><span class="nv">access_key_id</span><span class="si">}</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="nv">AWS_SECRET_ACCESS_KEY</span><span class="o">=</span><span class="si">${</span><span class="nv">secret_access_key</span><span class="si">}</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>aws<span class="w"> </span>s3<span class="w"> </span>ls<span class="w"> </span>--endpoint-url<span class="w"> </span>https://<span class="si">${</span><span class="nv">service_endpoint</span><span class="si">}</span>
-</span></code></pre></div>
-<p>Delete the managed object storage service along with all its sub-resources such as buckets and users:</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>upctl<span class="w"> </span>object-storage<span class="w"> </span>delete<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>service<span class="w"> </span>--force
+<p>Delete also the managed object storage service along with all its sub-resources such as buckets and users:</p>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>upctl<span class="w"> </span>object-storage<span class="w"> </span>delete<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>service<span class="w"> </span>--force
 </span></code></pre></div>
 
 
