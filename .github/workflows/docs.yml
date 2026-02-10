@@ -44,7 +44,8 @@ jobs:
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
       - name: Deploy to main
-        if: ${{ github.ref_name == 'main' }}
+        # Update main also on release events to refresh versions in installation instructions
+        if: ${{ github.ref_name == 'main' || github.event_name == 'release' }}
         run: mike deploy --push --title "Unreleased (main)" main
       - name: Deploy to latest
         if: ${{ github.event_name == 'release' }}
