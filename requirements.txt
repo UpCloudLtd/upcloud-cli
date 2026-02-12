@@ -1,6 +1,5 @@
 # Dependencies for auto-generating and developing docs
 mike~=2.1
-mkdocs~=1.5
-mkdocs-material~=9.5
-mkdocs-macros-plugin~=1.0
-zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
+mkdocs~=1.6
+mkdocs-material~=9.7
+mkdocs-macros-plugin~=1.5
