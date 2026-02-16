@@ -29,7 +29,7 @@ require (
 	k8s.io/helm v2.17.0+incompatible
 	k8s.io/kubectl v0.35.0
 	sigs.k8s.io/kustomize/api v0.21.0
-	sigs.k8s.io/kustomize/kyaml v0.21.0
+	sigs.k8s.io/kustomize/kyaml v0.21.1
 )
 
 require (
