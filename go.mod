@@ -23,7 +23,7 @@ require (
 	golang.org/x/sync v0.19.0
 	golang.org/x/term v0.40.0
 	helm.sh/helm/v3 v3.20.0
-	k8s.io/api v0.35.0
+	k8s.io/api v0.35.1
 	k8s.io/apimachinery v0.35.1
 	k8s.io/client-go v0.35.0
 	k8s.io/helm v2.17.0+incompatible
