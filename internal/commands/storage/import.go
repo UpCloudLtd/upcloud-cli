@@ -202,7 +202,7 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	case upcloud.StorageImportSourceDirectUpload:
 		// import from local file
 		transferType = "upload"
-		sourceFile, err := os.Open(parsedSource.Path)
+		sourceFile, err := os.Open(parsedSource.Path) //nolint:gosec // local source path comes from explicit CLI input
 		if err != nil {
 			return commands.HandleError(exec, msg, fmt.Errorf("cannot open local file: %w", err))
 		}
@@ -314,7 +314,7 @@ func createStorage(exec commands.Executor, params *createParams) (upcloud.Storag
 }
 
 func getLocalFileSize(path string) (size int64, err error) {
-	stat, err := os.Stat(path)
+	stat, err := os.Stat(path) //nolint:gosec // local path comes from explicit CLI/file URL input
 	if err != nil {
 		return 0, err
 	}

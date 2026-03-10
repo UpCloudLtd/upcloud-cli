@@ -38,7 +38,7 @@ func TestCreateToken(t *testing.T) {
 				AllowedIPRanges:    nil,
 			},
 			resp: &upcloud.Token{
-				APIToken:           "ucat_01JH5D3ZZJVZS6JC713FA11CB8",
+				APIToken:           "test-token",
 				ID:                 "0cd8eab4-ecb7-445b-a457-6019b0a00496",
 				Name:               "test",
 				Type:               "workspace",

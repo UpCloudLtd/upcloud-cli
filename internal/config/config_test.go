@@ -16,7 +16,7 @@ func TestConfig_LoadInvalidYAML(t *testing.T) {
 	require.NoError(t, err)
 	t.Cleanup(func() {
 		assert.NoError(t, tmpFile.Close())
-		assert.NoError(t, os.Remove(tmpFile.Name()))
+		assert.NoError(t, os.Remove(tmpFile.Name())) //nolint:gosec // temp file name comes from os.CreateTemp
 	})
 	_, err = tmpFile.WriteString("usernamd:sdkfo\npassword: foo")
 	require.NoError(t, err)
@@ -27,12 +27,16 @@ func TestConfig_LoadInvalidYAML(t *testing.T) {
 }
 
 func TestConfig_Load(t *testing.T) {
+	t.Setenv("UPCLOUD_USERNAME", "")
+	t.Setenv("UPCLOUD_PASSWORD", "")
+	t.Setenv("UPCLOUD_TOKEN", "")
+
 	cfg := New()
 	tmpFile, err := os.CreateTemp(os.TempDir(), "")
 	require.NoError(t, err)
 	t.Cleanup(func() {
 		assert.NoError(t, tmpFile.Close())
-		assert.NoError(t, os.Remove(tmpFile.Name()))
+		assert.NoError(t, os.Remove(tmpFile.Name())) //nolint:gosec // temp file name comes from os.CreateTemp
 	})
 	_, err = tmpFile.WriteString("username: sdkfo\npassword: foo")
 	require.NoError(t, err)
@@ -74,13 +78,14 @@ func TestConfig_GetVersion(t *testing.T) {
 func TestConfig_LoadKeyring(t *testing.T) {
 	t.Setenv("UPCLOUD_USERNAME", "")
 	t.Setenv("UPCLOUD_PASSWORD", "")
+	t.Setenv("UPCLOUD_TOKEN", "")
 
 	cfg := New()
 	tmpFile, err := os.CreateTemp(os.TempDir(), "")
 	require.NoError(t, err)
 	t.Cleanup(func() {
 		assert.NoError(t, tmpFile.Close())
-		assert.NoError(t, os.Remove(tmpFile.Name()))
+		assert.NoError(t, os.Remove(tmpFile.Name())) //nolint:gosec // temp file name comes from os.CreateTemp
 	})
 	_, err = tmpFile.WriteString("username: unittest")
 	require.NoError(t, err)
@@ -91,7 +96,7 @@ func TestConfig_LoadKeyring(t *testing.T) {
 	cfg.GlobalFlags.ConfigFile = tmpFile.Name()
 	err = cfg.Load()
 	require.NoError(t, err)
-	assert.Equal(t, cfg.GetString("username"), "unittest")
+	assert.Equal(t, "unittest", cfg.GetString("username"))
 	assert.Equal(t, "unittest_password", cfg.GetString("password"))
 	t.Cleanup(func() {
 		// remove test user from keyring

@@ -30,7 +30,7 @@ func IsStderrTerminal() bool {
 // GetTerminalWidth tries to figure out the width of the terminal and returns it
 // returns 0 if there are problems in getting the width.
 func GetTerminalWidth() int {
-	w, _, err := term.GetSize(int(os.Stdout.Fd()))
+	w, _, err := term.GetSize(int(os.Stdout.Fd())) //nolint:gosec // file descriptors are runtime-provided small integers
 	if err != nil {
 		return 0
 	}

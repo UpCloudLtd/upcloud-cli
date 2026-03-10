@@ -22,7 +22,7 @@ type SupabaseConfig struct {
 	LbHostname  string
 	ClusterName string
 
-	JWTSecret         string
+	JWTSecret         string //nolint:gosec // config intentionally carries JWT signing secret
 	AnonKey           string
 	ServiceRoleKey    string
 	PostgresPassword  string
