@@ -16,7 +16,7 @@ func TestConfig_LoadInvalidYAML(t *testing.T) {
 	require.NoError(t, err)
 	t.Cleanup(func() {
 		assert.NoError(t, tmpFile.Close())
-		assert.NoError(t, os.Remove(tmpFile.Name())) //nolint:gosec // temp file name comes from os.CreateTemp
+		assert.NoError(t, os.Remove(tmpFile.Name())) // #nosec G703 -- temp path is created by os.CreateTemp
 	})
 	_, err = tmpFile.WriteString("usernamd:sdkfo\npassword: foo")
 	require.NoError(t, err)
@@ -36,7 +36,7 @@ func TestConfig_Load(t *testing.T) {
 	require.NoError(t, err)
 	t.Cleanup(func() {
 		assert.NoError(t, tmpFile.Close())
-		assert.NoError(t, os.Remove(tmpFile.Name())) //nolint:gosec // temp file name comes from os.CreateTemp
+		assert.NoError(t, os.Remove(tmpFile.Name())) // #nosec G703 -- temp path is created by os.CreateTemp
 	})
 	_, err = tmpFile.WriteString("username: sdkfo\npassword: foo")
 	require.NoError(t, err)
@@ -85,7 +85,7 @@ func TestConfig_LoadKeyring(t *testing.T) {
 	require.NoError(t, err)
 	t.Cleanup(func() {
 		assert.NoError(t, tmpFile.Close())
-		assert.NoError(t, os.Remove(tmpFile.Name())) //nolint:gosec // temp file name comes from os.CreateTemp
+		assert.NoError(t, os.Remove(tmpFile.Name())) // #nosec G703 -- temp path is created by os.CreateTemp
 	})
 	_, err = tmpFile.WriteString("username: unittest")
 	require.NoError(t, err)
