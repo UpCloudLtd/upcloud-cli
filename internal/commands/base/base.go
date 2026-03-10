@@ -11,6 +11,7 @@ import (
 	databaseindex "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/database/index"
 	databaseproperties "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/database/properties"
 	databasesession "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/database/session"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/filestorage"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/gateway"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/host"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/ipaddress"
@@ -25,6 +26,7 @@ import (
 	objectstoragelabel "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/objectstorage/label"
 	objectstoragenetwork "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/objectstorage/network"
 	objectstorageuser "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/objectstorage/user"
+	objectstorageuserpolicy "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/objectstorage/user/policy"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/partner"
 	partneraccount "github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/partner/account"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/root"
@@ -132,6 +134,7 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	commands.BuildCommand(account.ShowCommand(), accountCommand.Cobra(), conf)
 	commands.BuildCommand(account.ListCommand(), accountCommand.Cobra(), conf)
 	commands.BuildCommand(account.DeleteCommand(), accountCommand.Cobra(), conf)
+	commands.BuildCommand(account.BillingCommand(), accountCommand.Cobra(), conf)
 
 	// Account permissions
 	permissionsCommand := commands.BuildCommand(permissions.BasePermissionsCommand(), accountCommand.Cobra(), conf)
@@ -175,7 +178,6 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 		{serviceName: "MySQL", serviceType: "mysql"},
 		{serviceName: "OpenSearch", serviceType: "opensearch"},
 		{serviceName: "PostgreSQL", serviceType: "pg"},
-		{serviceName: "Redis", serviceType: "redis"},
 		{serviceName: "Valkey", serviceType: "valkey"},
 	} {
 		typeCommand := commands.BuildCommand(databaseproperties.DBTypeCommand(i.serviceType, i.serviceName), propertiesCommand.Cobra(), conf)
@@ -186,6 +188,11 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	indexCommand := commands.BuildCommand(databaseindex.BaseIndexCommand(), databaseCommand.Cobra(), conf)
 	commands.BuildCommand(databaseindex.DeleteCommand(), indexCommand.Cobra(), conf)
 	commands.BuildCommand(databaseindex.ListCommand(), indexCommand.Cobra(), conf)
+
+	// FileStorage
+	filestorageCommand := commands.BuildCommand(filestorage.BaseFileStorageCommand(), rootCmd, conf)
+	commands.BuildCommand(filestorage.ListCommand(), filestorageCommand.Cobra(), conf)
+	commands.BuildCommand(filestorage.DeleteCommand(), filestorageCommand.Cobra(), conf)
 
 	// LoadBalancers
 	loadbalancerCommand := commands.BuildCommand(loadbalancer.BaseLoadBalancerCommand(), rootCmd, conf)
@@ -233,6 +240,12 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	commands.BuildCommand(objectstorageuser.CreateCommand(), userCommand.Cobra(), conf)
 	commands.BuildCommand(objectstorageuser.DeleteCommand(), userCommand.Cobra(), conf)
 	commands.BuildCommand(objectstorageuser.ListCommand(), userCommand.Cobra(), conf)
+
+	// Object storage user policy management
+	userPolicyCommand := commands.BuildCommand(objectstorageuserpolicy.BaseUserPolicyCommand(), userCommand.Cobra(), conf)
+	commands.BuildCommand(objectstorageuserpolicy.AttachCommand(), userPolicyCommand.Cobra(), conf)
+	commands.BuildCommand(objectstorageuserpolicy.DetachCommand(), userPolicyCommand.Cobra(), conf)
+	commands.BuildCommand(objectstorageuserpolicy.ListCommand(), userPolicyCommand.Cobra(), conf)
 
 	// Object storage access key management
 	accessKeyCommand := commands.BuildCommand(objectstorageAccesskey.BaseAccessKeyCommand(), objectStorageCommand.Cobra(), conf)
@@ -282,7 +295,6 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	allCommand := commands.BuildCommand(all.BaseAllCommand(), rootCmd, conf)
 	commands.BuildCommand(all.PurgeCommand(), allCommand.Cobra(), conf)
 	commands.BuildCommand(all.ListCommand(), allCommand.Cobra(), conf)
-
 	// Stack operations
 	stackCommand := commands.BuildCommand(stack.BaseStackCommand(), rootCmd, conf)
 	stackDeployCommand := commands.BuildCommand(stack.DeployCommand(), stackCommand.Cobra(), conf)

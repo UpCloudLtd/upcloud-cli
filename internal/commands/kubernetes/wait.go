@@ -30,3 +30,43 @@ func WaitForClusterState(uuid string, state upcloud.KubernetesClusterState, exec
 	exec.PushProgressUpdateMessage(msg, msg)
 	exec.PushProgressSuccess(msg)
 }
+
+func waitUntilClusterAndNodeGroupsRunning(uuid string, exec commands.Executor, msg string) {
+	ctx := exec.Context()
+
+	exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Waiting for cluster %s to be in running state", uuid))
+
+	cluster, err := exec.All().WaitForKubernetesClusterState(ctx, &request.WaitForKubernetesClusterStateRequest{
+		UUID:         uuid,
+		DesiredState: upcloud.KubernetesClusterStateRunning,
+	})
+	if err != nil {
+		exec.PushProgressUpdate(messages.Update{
+			Key:     msg,
+			Message: msg,
+			Status:  messages.MessageStatusWarning,
+			Details: "Error: " + err.Error(),
+		})
+		return
+	}
+
+	exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Waiting for cluster %s node-groups to be in running state", uuid))
+	for _, ng := range cluster.NodeGroups {
+		if _, err := exec.All().WaitForKubernetesNodeGroupState(ctx, &request.WaitForKubernetesNodeGroupStateRequest{
+			ClusterUUID:  uuid,
+			Name:         ng.Name,
+			DesiredState: upcloud.KubernetesNodeGroupStateRunning,
+		}); err != nil {
+			exec.PushProgressUpdate(messages.Update{
+				Key:     msg,
+				Message: msg,
+				Status:  messages.MessageStatusWarning,
+				Details: "Error: " + err.Error(),
+			})
+			return
+		}
+	}
+
+	exec.PushProgressUpdateMessage(msg, msg)
+	exec.PushProgressSuccess(msg)
+}

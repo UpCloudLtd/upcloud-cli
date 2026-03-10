@@ -17,14 +17,15 @@ func TestPurgeCommand(t *testing.T) {
 	for _, test := range []struct {
 		name   string
 		args   []string
-		called [][]interface{}
+		called [][]any
 	}{
 		{
 			name: "purge non-persistent tf-acc-test resources",
 			args: []string{"--include", "*tf-acc-test*", "--exclude", "*persistent*"},
-			called: [][]interface{}{
+			called: [][]any{
 				{"DeleteManagedObjectStorage", &request.DeleteManagedObjectStorageRequest{
-					UUID: objectStorages[0].UUID,
+					UUID:  objectStorages[0].UUID,
+					Force: true,
 				}},
 				{"DeleteNetwork", &request.DeleteNetworkRequest{
 					UUID: networks.Networks[0].UUID,

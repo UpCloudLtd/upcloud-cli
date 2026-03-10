@@ -14,7 +14,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 	internal "github.com/UpCloudLtd/upcloud-cli/v3/internal/service"
 
-	"github.com/gemalto/flume"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -247,7 +246,7 @@ func TestExecute_Resolution(t *testing.T) {
 	mService := &smock.Service{}
 	cfg := config.New()
 	cfg.Viper().Set(config.KeyOutput, config.ValueOutputJSON)
-	executor := NewExecutor(cfg, mService, flume.New("test"))
+	executor := NewExecutor(cfg, mService, cfg.NewLogger("test"))
 	outputs, err := execute(cmd, executor, []string{"a", "b", "failtoresolve", "c"}, resolveOnly, 10, func(_ Executor, arg string) (output.Output, error) {
 		return output.OnlyMarshaled{Value: arg}, nil
 	})
@@ -283,7 +282,7 @@ func TestExecute_Error(t *testing.T) {
 	mService := &smock.Service{}
 	cfg := config.New()
 	cfg.Viper().Set(config.KeyOutput, config.ValueOutputJSON)
-	executor := NewExecutor(cfg, mService, flume.New("test"))
+	executor := NewExecutor(cfg, mService, cfg.NewLogger("test"))
 	outputs, err := execute(cmd, executor, []string{"a", "b", "failToExecute", "c"}, resolveOnly, 10, cmd.Execute)
 	assert.Len(t, outputs, 4)
 	assert.NoError(t, err)

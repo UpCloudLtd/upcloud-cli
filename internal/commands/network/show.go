@@ -134,7 +134,7 @@ func (s *showCommand) Execute(exec commands.Executor, arg string) (output.Output
 	}, nil
 }
 
-func formatShowDHCPDNS(val interface{}) (text.Colors, string, error) {
+func formatShowDHCPDNS(val any) (text.Colors, string, error) {
 	addresses, ok := val.([]string)
 	if !ok {
 		return nil, "", fmt.Errorf("cannot parse IP addresses from %T, expected []string", val)

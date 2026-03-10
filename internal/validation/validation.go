@@ -8,7 +8,7 @@ import (
 )
 
 // Value return nil if val is equal (reflect.DeepEqual) to any of the values in validVals
-func Value(val interface{}, validVals ...interface{}) error {
+func Value(val any, validVals ...any) error {
 	for _, t := range validVals {
 		if reflect.DeepEqual(val, t) {
 			return nil
@@ -48,7 +48,7 @@ func UUID4(val string) error {
 }
 
 // Numeric returns nil if v is of a numeric type or a string that can be parsed as a number.
-func Numeric(v interface{}) error {
+func Numeric(v any) error {
 	switch v.(type) {
 	case int, uint, int32, uint32, int64, uint64, float32, float64:
 		return nil

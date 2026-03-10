@@ -8,16 +8,13 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 	internal "github.com/UpCloudLtd/upcloud-cli/v3/internal/service"
-
-	"github.com/gemalto/flume"
 )
-
-var logger = flume.New("runcommand")
 
 func commandRunE(command Command, service internal.AllServices, config *config.Config, args []string) error {
 	// Cobra validations were successful
 	command.Cobra().SilenceUsage = true
 
+	logger := config.NewLogger("runcommand")
 	cmdLogger := logger.With("command", command.Cobra().CommandPath())
 	executor := NewExecutor(config, service, cmdLogger)
 
@@ -134,7 +131,7 @@ func execute(command Command, executor Executor, args []string, mode resolveMode
 	workerQueue := make(chan int, workerCount)
 
 	// push initial workers into the worker queue
-	for n := 0; n < workerCount; n++ {
+	for n := range workerCount {
 		workerQueue <- n
 	}
 

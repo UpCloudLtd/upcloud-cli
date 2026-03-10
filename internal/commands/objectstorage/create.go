@@ -122,8 +122,8 @@ func (s *createCommand) processNetworks() ([]upcloud.ManagedObjectStorageNetwork
 	var networks []upcloud.ManagedObjectStorageNetwork
 	for _, n := range s.networks {
 		var network upcloud.ManagedObjectStorageNetwork
-		parts := strings.Split(n, ",")
-		for _, part := range parts {
+		parts := strings.SplitSeq(n, ",")
+		for part := range parts {
 			kv := strings.SplitN(part, "=", 2)
 			if len(kv) != 2 {
 				return nil, fmt.Errorf("invalid network format: %s", part)

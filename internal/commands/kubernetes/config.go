@@ -3,6 +3,7 @@ package kubernetes
 import (
 	"errors"
 	"fmt"
+	"maps"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
@@ -11,7 +12,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 	"github.com/spf13/pflag"
-	"gopkg.in/yaml.v3"
+	"go.yaml.in/yaml/v3"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/tools/clientcmd/api"
 )
@@ -101,7 +102,7 @@ func (c *configCommand) output(exec commands.Executor, config *api.Config, resp 
 		})
 	}
 
-	var value interface{}
+	var value any
 	err := yaml.Unmarshal([]byte(resp), &value)
 	if err != nil {
 		return commands.HandleError(exec, msg, err)
@@ -174,15 +175,9 @@ func (c *configCommand) write(exec commands.Executor, uuid string, config *api.C
 func mergeConfig(startingConfig, newConfig *api.Config) api.Config {
 	startingConfig.CurrentContext = newConfig.CurrentContext
 
-	for k, v := range newConfig.Clusters {
-		startingConfig.Clusters[k] = v
-	}
-	for k, v := range newConfig.AuthInfos {
-		startingConfig.AuthInfos[k] = v
-	}
-	for k, v := range newConfig.Contexts {
-		startingConfig.Contexts[k] = v
-	}
+	maps.Copy(startingConfig.Clusters, newConfig.Clusters)
+	maps.Copy(startingConfig.AuthInfos, newConfig.AuthInfos)
+	maps.Copy(startingConfig.Contexts, newConfig.Contexts)
 
 	return *startingConfig
 }

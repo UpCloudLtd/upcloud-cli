@@ -35,6 +35,11 @@ plugins:
       include_yaml:
         - vars.yaml
 
+extra:
+  version:
+    default: latest
+    provider: mike
+
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true

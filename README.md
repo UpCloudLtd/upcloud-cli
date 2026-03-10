@@ -43,6 +43,11 @@ make docs
 mkdocs serve
 ```
 
+Note that documentation in GitHub pages is versioned with `mike`. See [docs](.github/workflows/docs.yml) workflow for more details. The versions are `main` and `latest`:
+
+- The `main` version is updated on every push to `main` branch. It is useful for reviewing new commands and features. The `main` version often contains instructions for features that are not yet released.
+- The `latest` version is updated on every release. It is the default version and only contains released commands and features to avoid confusion for end-users.
+
 ## Contributing
 
 Contributions from the community are much appreciated! Please note that all features using our

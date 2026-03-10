@@ -13,7 +13,6 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
 
 	valid "github.com/asaskevich/govalidator"
-	"github.com/gemalto/flume"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -23,7 +22,7 @@ const rootCmdLongDescription = `UpCloud command-line interface
 
 ` + "`" + `upctl` + "`" + ` provides a command-line interface to UpCloud services. It allows you to control your resources from the command line or any compatible interface.
 
-To be able to manage your UpCloud resources, you need to configure credentials for ` + "`" + `upctl` + "`" + ` and enable API access for these credentials. Define the credentials by setting ` + "`" + `UPCLOUD_USERNAME` + "`" + ` and ` + "`" + `UPCLOUD_PASSWORD` + "`" + ` environment variables. API access can be configured on the Account page of the UpCloud Hub. We recommend you to set up a sub-account specifically for the API usage with its own username and password, as it allows you to assign specific permissions for increased security.`
+To be able to manage your UpCloud resources, you need to configure credentials for ` + "`" + `upctl` + "`" + `. We recommend using API tokens. Configure credentials by using ` + "`" + `upctl account login --with-token` + "`" + ` command to save a token to system keyring, in ` + "`" + `~/.config/upctl.yaml` + "`" + ` or set the ` + "`" + `UPCLOUD_TOKEN` + "`" + ` environment variable. Alternatively, use ` + "`" + `UPCLOUD_USERNAME` + "`" + ` and ` + "`" + `UPCLOUD_PASSWORD` + "`" + ` environment variables. When using username and password, API access can be configured on the Account page of the UpCloud Hub. We recommend you to set up a sub-account specifically for the API usage with its own credentials, as it allows you to assign specific permissions for increased security.`
 
 // BuildRootCmd builds the root command
 func BuildRootCmd(conf *config.Config) cobra.Command {
@@ -37,11 +36,10 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 				return err
 			}
 
-			// detect desired colour output
+			// detect desired colour output, respect https://force-color.org (FORCE_COLOR, NO_COLOR)
 			switch {
-			case conf.GlobalFlags.ForceColours == config.True:
+			case conf.GlobalFlags.ForceColours == config.True || os.Getenv("FORCE_COLOR") != "":
 				text.EnableColors()
-			// Environment variable with US spelling to support https://no-color.org
 			case conf.GlobalFlags.NoColours == config.True || os.Getenv("NO_COLOR") != "":
 				text.DisableColors()
 			case conf.GlobalFlags.OutputFormat != config.ValueOutputHuman:
@@ -52,24 +50,6 @@ func BuildRootCmd(conf *config.Config) cobra.Command {
 				} else {
 					text.DisableColors()
 				}
-			}
-
-			// Set up flume
-			flume.SetOut(os.Stderr)
-			// TODO: should we make the level configurable?
-			logLvl := flume.DebugLevel
-			if !conf.GlobalFlags.Debug {
-				// not debugging, no log output!
-				logLvl = flume.OffLevel
-			}
-			addCaller := true
-			if err := flume.Configure(flume.Config{
-				AddCaller:    &addCaller,
-				DefaultLevel: logLvl,
-				// do not colour logs, as it doesn't really fit our use case and complicates the colour handling
-				Encoding: "ltsv",
-			}); err != nil {
-				return fmt.Errorf("flume config error: %w", err)
 			}
 
 			if err := conf.Load(); err != nil {

@@ -333,7 +333,7 @@ func DestroyStack(exec commands.Executor, name, zone string, deleteStorage, dele
 			}
 
 			if deleteObjectStorage {
-				_, err = objectstorage.Delete(exec, storageUUID, true, true, true, true)
+				_, err = objectstorage.Delete(exec, storageUUID, false, false, false, true, true)
 				if err != nil {
 					return fmt.Errorf("failed to delete object storage: %w", err)
 				}

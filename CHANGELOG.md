@@ -7,6 +7,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.30.0] - 2026-02-17
+
+### Added
+
+- Add commands for attaching, detaching, and listing policies attached to a user in managed object storage service.
+- Add command for listing and deleting file-storage instances.
+
+## [3.29.0] - 2026-02-06
+
+### Added
+
+- Unconditionally enable colors if the [FORCE_COLOR](https://force-color.org) environment variable is set to a non-empty value.
+- Add `--force` flag to `object-storage delete` command.
+
+### Changed
+
+- Use `--force` flag in `all purge` command when deleting object storage instances instead of deleting sub-resources one-by-one.
+
+## [3.28.0] - 2026-01-14
+
+### Added
+
+- Log API requests and responses when using global `--debug` option.
+- Include plan prices in `server plans` output if `--prices` flag is used.
+
+### Fixed
+
+- In human readable output of `account show`, use accounts currency for credits.
+
+## [3.27.0] - 2025-12-31
+
+### Added
+
+- In `kubernetes create`, allow waiting for cluster and its node-groups to reach running state with `--wait=all` flag. When using `--wait` or `--wait=cluster`, the command will wait only for the cluster to reach running state.
+- Add `account billing` command for listing billing details.
+- Add support for Valkey to `database show` and `database session list` commands.
+
+### Removed
+
+- Removed support for deprecated Redis service. This is treated as non-breaking change as all users have been migrated to Valkey.
+
+## [3.26.0] - 2025-11-26
+
+### Added
+
+- stack - starter-kit: make object storage publicly available
+
 ## [3.25.0] - 2025-10-24
 
 ### Added
@@ -642,7 +689,12 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.25.0...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.30.0...HEAD
+[3.30.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.29.0...v3.30.0
+[3.29.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.28.0...v3.29.0
+[3.28.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.27.0...v3.28.0
+[3.27.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.26.0...v3.27.0
+[3.26.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.25.0...v3.26.0
 [3.25.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.24.1...v3.25.0
 [3.24.1]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.24.0...v3.24.1
 [3.24.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.23.0...v3.24.0

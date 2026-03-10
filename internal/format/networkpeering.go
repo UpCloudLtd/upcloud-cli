@@ -20,6 +20,6 @@ func networkPeeringStateStateColour(state upcloud.NetworkPeeringState) text.Colo
 }
 
 // NetworkPeeringState implements Format function for network peering states
-func NetworkPeeringState(val interface{}) (text.Colors, string, error) {
+func NetworkPeeringState(val any) (text.Colors, string, error) {
 	return usingColorFunction(networkPeeringStateStateColour, val)
 }

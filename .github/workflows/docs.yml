@@ -20,30 +20,33 @@ jobs:
       contents: write
     steps:
       - name: Checkout head
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
       - name: Setup Go
-        uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # v6.0.0
+        uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5 # v6.2.0
         with:
           go-version-file: 'go.mod'
       - name: Setup Python
-        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.10"
       - name: Generate documentation
         run: make docs
       - name: Store generated MkDocs site
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: mkdocs-site
           path: site
           retention-days: 7
-      - name: Deploy to pages
-        if: ${{ github.ref_name == 'main' || github.event_name == 'release'}}
-        uses: JamesIves/github-pages-deploy-action@4a3abc783e1a24aeb44c16e869ad83caf6b4cc23 # 4.7.4
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: site
-          CLEAN: true
+      - name: Setup git user for mike
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+      - name: Deploy to main
+        # Update main also on release events to refresh versions in installation instructions
+        if: ${{ github.ref_name == 'main' || github.event_name == 'release' }}
+        run: mike deploy --push --title "Unreleased (main)" main
+      - name: Deploy to latest
+        if: ${{ github.event_name == 'release' }}
+        run: mike deploy --push --title "Latest (${{ github.event.release.tag_name }})" latest

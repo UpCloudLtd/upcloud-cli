@@ -13,6 +13,7 @@ import (
 	"github.com/UpCloudLtd/progress/messages"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/database"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/filestorage"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/kubernetes"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/loadbalancer"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/network"
@@ -31,6 +32,7 @@ const (
 	includeHelp = "Include resources matching the given name. If defined multiple times, resource is included if it matches any of the given names. `*` matches all resources."
 	excludeHelp = "Exclude resources matching the given name. If defined multiple times, resource is included if it matches any of the given names."
 
+	typeFileStorage       = "file-storage"
 	typeKubernetes        = "kubernetes-cluster"
 	typeLoadBalancer      = "load-balancer"
 	typeCertificateBundle = "certificate-bundle"
@@ -126,10 +128,7 @@ type findResult struct {
 }
 
 func findResources[T any](exec commands.Executor, wg *sync.WaitGroup, returnChan chan findResult, r resolver.CachingResolutionProvider[T], include, exclude []string) {
-	wg.Add(1)
-
-	go func() {
-		defer wg.Done()
+	wg.Go(func() {
 		var resources []Resource
 		matches, err := getMatches(exec, r, include, exclude)
 		if err != nil {
@@ -145,12 +144,12 @@ func findResources[T any](exec commands.Executor, wg *sync.WaitGroup, returnChan
 			resources = append(resources, resource)
 		}
 		returnChan <- findResult{Resources: resources, Error: nil}
-	}()
+	})
 }
 
 func ListResources(exec commands.Executor, include, exclude []string) ([]Resource, error) {
 	var resources []Resource
-	returnChan := make(chan findResult, 12)
+	returnChan := make(chan findResult, 13)
 
 	var wg sync.WaitGroup
 
@@ -166,7 +165,7 @@ func ListResources(exec commands.Executor, include, exclude []string) ([]Resourc
 	findResources(exec, &wg, returnChan, &resolver.CachingStorage{Access: "private"}, include, exclude)
 	findResources(exec, &wg, returnChan, &cachingTag{}, include, exclude)
 	findResources(exec, &wg, returnChan, &cachingCertificateBundle{}, include, exclude)
-
+	findResources(exec, &wg, returnChan, &resolver.CachingFileStorage{}, include, exclude)
 	wg.Wait()
 	close(returnChan)
 
@@ -190,6 +189,12 @@ func ListResources(exec commands.Executor, include, exclude []string) ([]Resourc
 
 func getResource(val any) (Resource, error) {
 	switch v := val.(type) {
+	case upcloud.FileStorage:
+		return Resource{
+			Name: v.Name,
+			Type: typeFileStorage,
+			UUID: v.UUID,
+		}, nil
 	case upcloud.LoadBalancer:
 		return Resource{
 			Name: v.Name,
@@ -268,6 +273,8 @@ func getResource(val any) (Resource, error) {
 
 func deleteResource(exec commands.Executor, resource Resource) (err error) {
 	switch resource.Type {
+	case typeFileStorage:
+		_, err = filestorage.Delete(exec, resource.UUID, true)
 	case typeKubernetes:
 		_, err = kubernetes.Delete(exec, resource.UUID, true)
 	case typeLoadBalancer:
@@ -279,7 +286,7 @@ func deleteResource(exec commands.Executor, resource Resource) (err error) {
 	case typeRouter:
 		_, err = router.Delete(exec, resource.UUID)
 	case typeObjectStorage:
-		_, err = objectstorage.Delete(exec, resource.UUID, true, true, true, true)
+		_, err = objectstorage.Delete(exec, resource.UUID, false, false, false, true, true)
 	case typeDatabase:
 		_, err = database.Delete(exec, resource.UUID, true, true)
 	case typeServer:
@@ -318,7 +325,7 @@ func DeleteResources(exec commands.Executor, resources []Resource, workerCount i
 	}
 
 	workerQueue := make(chan int, workerCount)
-	for n := 0; n < workerCount; n++ {
+	for n := range workerCount {
 		workerQueue <- n
 	}
 

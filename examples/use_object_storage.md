@@ -32,17 +32,35 @@ Create a user and an access key for S3-compatible access:
 
 ```sh
 upctl object-storage user create ${prefix}service --username ${prefix}user
-upctl object-storage access-key create ${prefix}service --username ${prefix}user
+
+# Create access key and save credentials
+access_key_output=$(upctl object-storage access-key create ${prefix}service --username ${prefix}user -o json)
+access_key_id=$(echo "$access_key_output" | jq -r '.access_key_id')
+secret_access_key=$(echo "$access_key_output" | jq -r '.secret_access_key')
 ```
 
-Once not needed anymore, delete the user:
+Save the access key ID and secret access key from the output - you'll need these for S3 access.
+
+Attach a policy to grant the user access to buckets:
 
 ```sh
-upctl object-storage user delete ${prefix}service --username ${prefix}user
+upctl object-storage user policy attach ${prefix}service --username ${prefix}user --policy ECSS3FullAccess
 ```
 
-Delete also the managed object storage service along with its buckets:
+Verify S3 access with AWS CLI:
+
+```sh when="false"
+# Get the service endpoint
+service_endpoint=$(upctl object-storage show ${prefix}service -o json | jq -r '.endpoints[0].domain_name')
+
+# Configure AWS CLI with your credentials and test access
+AWS_ACCESS_KEY_ID=${access_key_id} \
+AWS_SECRET_ACCESS_KEY=${secret_access_key} \
+aws s3 ls --endpoint-url https://${service_endpoint}
+```
+
+Delete the managed object storage service along with all its sub-resources such as buckets and users:
 
 ```sh
-upctl object-storage delete ${prefix}service --delete-buckets
+upctl object-storage delete ${prefix}service --force
 ```
