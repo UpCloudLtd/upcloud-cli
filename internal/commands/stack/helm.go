@@ -327,7 +327,7 @@ func UninstallHelmRelease(releaseName, logDir string) error {
 	}
 
 	if resp != nil {
-		fmt.Fprintf(logFile, "Uninstalled release %q: %s\n", releaseName, resp.Info)
+		fmt.Fprintf(logFile, "Uninstalled release %q: %s\n", releaseName, resp.Info) //gosec:disable G705 -- writes to local log file, not HTML
 	}
 
 	return nil
