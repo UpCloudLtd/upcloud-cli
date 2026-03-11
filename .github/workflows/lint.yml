@@ -6,6 +6,7 @@ on:
       - 'go.mod'
       - 'go.sum'
       - '.github/workflows/lint.yml'
+      - '.golangci.yaml'
 permissions:
   contents: read
 jobs:
