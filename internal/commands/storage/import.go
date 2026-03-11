@@ -314,7 +314,7 @@ func createStorage(exec commands.Executor, params *createParams) (upcloud.Storag
 }
 
 func getLocalFileSize(path string) (size int64, err error) {
-	stat, err := os.Stat(path) // #nosec G703 -- local path comes from explicit CLI/file URL input
+	stat, err := os.Stat(path) //gosec:disable G703 -- local path comes from explicit CLI/file URL input
 	if err != nil {
 		return 0, err
 	}
