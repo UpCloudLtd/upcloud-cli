@@ -159,10 +159,10 @@ func formatMatch(address fwRuleAddress) string {
 		if ipStart.Equal(ipStop) {
 			// TODO: ermm, reimplement.. when we figure out if this is really needed + how to do it
 			// sb.WriteString(ui.DefaultAddressColours.Sprint(ipStart))
-			sb.WriteString(fmt.Sprint(ipStart))
+			fmt.Fprint(&sb, ipStart)
 		} else {
 			// sb.WriteString(ui.DefaultAddressColours.Sprintf("%s →\n%s", ipStart, ipStop))
-			sb.WriteString(fmt.Sprintf("%s →\n%s", ipStart, ipStop))
+			fmt.Fprintf(&sb, "%s →\n%s", ipStart, ipStop)
 		}
 	}
 	if address.PortStart != "" {
@@ -170,9 +170,9 @@ func formatMatch(address fwRuleAddress) string {
 			sb.WriteString("\n")
 		}
 		if address.PortStart == address.PortEnd {
-			sb.WriteString(fmt.Sprintf("port: %s", address.PortStart))
+			fmt.Fprintf(&sb, "port: %s", address.PortStart)
 		} else {
-			sb.WriteString(fmt.Sprintf("port: %s → %s", address.PortStart, address.PortEnd))
+			fmt.Fprintf(&sb, "port: %s → %s", address.PortStart, address.PortEnd)
 		}
 	}
 	return sb.String()
