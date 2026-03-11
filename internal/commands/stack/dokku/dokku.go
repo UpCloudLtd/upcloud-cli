@@ -143,7 +143,7 @@ func (s *deployDokkuCommand) deploy(exec commands.Executor, configDir string) er
 		return err
 	}
 	defer func(name string) {
-		errRemove := os.Remove(name) // #nosec G703 -- temp path is created by os.CreateTemp above
+		errRemove := os.Remove(name) //gosec:disable G703 -- temp path is created by os.CreateTemp above
 		if errRemove != nil {
 			fmt.Printf("failed to remove temp file %s: %v\n", name, errRemove)
 		}
