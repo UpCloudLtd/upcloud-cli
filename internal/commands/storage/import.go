@@ -202,7 +202,7 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	case upcloud.StorageImportSourceDirectUpload:
 		// import from local file
 		transferType = "upload"
-		sourceFile, err := os.Open(parsedSource.Path) // #nosec G703 -- local source path is explicit CLI input
+		sourceFile, err := os.Open(parsedSource.Path) //gosec:disable G703 -- local source path is explicit CLI input
 		if err != nil {
 			return commands.HandleError(exec, msg, fmt.Errorf("cannot open local file: %w", err))
 		}
