@@ -30,9 +30,9 @@ func formatFlags(fs *pflag.FlagSet) string {
 		}
 		var flagText, flagUsage strings.Builder
 		if flag.Shorthand != "" {
-			flagText.WriteString(fmt.Sprintf("-%s, ", flag.Shorthand))
+			fmt.Fprintf(&flagText, "-%s, ", flag.Shorthand)
 		}
-		flagText.WriteString(fmt.Sprintf("--%s %s", flag.Name, flag.Value.Type()))
+		fmt.Fprintf(&flagText, "--%s %s", flag.Name, flag.Value.Type())
 		flagUsage.WriteString(text.WrapSoft(flag.Usage, wrappingLineLength))
 		def := flag.DefValue
 		if strings.HasSuffix(flag.Value.Type(), "Slice") || strings.HasSuffix(flag.Value.Type(), "Array") {
@@ -40,7 +40,7 @@ func formatFlags(fs *pflag.FlagSet) string {
 			def = strings.TrimSuffix(def, "]")
 		}
 		if def != "" {
-			flagUsage.WriteString(fmt.Sprintf("\nDefault: %s", def))
+			fmt.Fprintf(&flagUsage, "\nDefault: %s", def)
 		}
 		t.Append(table.Row{flagText.String(), flagUsage.String()})
 	})
