@@ -247,7 +247,7 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 				// we have no knowledge of the remote file size, report bytes uploaded
 				transferred := fmt.Sprintf("%sB", "-1")
 				if statusUpdate.bytesTransferred <= math.MaxUint32 {
-					transferred = ui.AbbrevNumBinaryPrefix(uint(statusUpdate.bytesTransferred)) // #nosec G115 -- guarded by MaxUint32 check above
+					transferred = ui.AbbrevNumBinaryPrefix(uint(statusUpdate.bytesTransferred)) //gosec:disable G115 -- guarded by MaxUint32 check above
 				}
 				exec.PushProgressUpdate(messages.Update{
 					Key: msg,
