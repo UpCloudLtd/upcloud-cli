@@ -36,7 +36,7 @@ func TestConfig_Load(t *testing.T) {
 	require.NoError(t, err)
 	t.Cleanup(func() {
 		assert.NoError(t, tmpFile.Close())
-		assert.NoError(t, os.Remove(tmpFile.Name())) // #nosec G703 -- temp path is created by os.CreateTemp
+		assert.NoError(t, os.Remove(tmpFile.Name())) //gosec:disable G703 -- temp path is created by os.CreateTemp
 	})
 	_, err = tmpFile.WriteString("username: sdkfo\npassword: foo")
 	require.NoError(t, err)
