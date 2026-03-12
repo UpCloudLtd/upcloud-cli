@@ -135,6 +135,7 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	commands.BuildCommand(account.ListCommand(), accountCommand.Cobra(), conf)
 	commands.BuildCommand(account.DeleteCommand(), accountCommand.Cobra(), conf)
 	commands.BuildCommand(account.BillingCommand(), accountCommand.Cobra(), conf)
+	commands.BuildCommand(account.CreateCommand(), accountCommand.Cobra(), conf)
 
 	// Account permissions
 	permissionsCommand := commands.BuildCommand(permissions.BasePermissionsCommand(), accountCommand.Cobra(), conf)
