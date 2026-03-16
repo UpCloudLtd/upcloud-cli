@@ -49,7 +49,7 @@ func (s *createCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 
 	fs.StringVar(&s.username, "username", "", "Sub-account username.")
-	fs.StringVar(&s.password, "password", "", "Sub-account password.")
+	fs.StringVar(&s.password, "password", "", "Sub-account password. Minimum 12 characters with 1 lowercase, 1 uppercase, and 1 number.")
 	fs.StringVar(&s.firstName, "first-name", "", "Sub-account first name.")
 	fs.StringVar(&s.lastName, "last-name", "", "Sub-account last name.")
 	fs.StringVar(&s.phone, "phone", "", "Phone number in international format (e.g. +358.91234567). Defaults to the main account value.")
