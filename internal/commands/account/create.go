@@ -136,9 +136,7 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 
 	// Build the IP filter list
 	ipFilters := upcloud.AccountIPFilters{IPFilter: []string{}}
-	for _, f := range s.ipFilters {
-		ipFilters.IPFilter = append(ipFilters.IPFilter, f)
-	}
+	ipFilters.IPFilter = append(ipFilters.IPFilter, s.ipFilters...)
 
 	msg := fmt.Sprintf("Creating sub-account %s", s.username)
 	exec.PushProgressStarted(msg)

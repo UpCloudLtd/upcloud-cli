@@ -28,6 +28,11 @@ var (
 	}
 )
 
+const (
+	username = "test_sub"
+	password = "MyP@ssw0rd123"
+)
+
 func setupCreateMocks(t *testing.T, mService *smock.Service, req *request.CreateSubaccountRequest) {
 	t.Helper()
 	mService.On("GetAccount").Return(&parentAccount, nil)
@@ -57,14 +62,14 @@ func TestCreateCommand(t *testing.T) {
 		{
 			name: "minimal — required flags only, defaults inherited from parent",
 			args: []string{
-				"--username", "test_sub",
-				"--password", "MyP@ssw0rd123",
+				"--username", username,
+				"--password", password,
 			},
 			req: &request.CreateSubaccountRequest{
 				Subaccount: func() request.CreateSubaccount {
 					s := emptyAccess
-					s.Username = "test_sub"
-					s.Password = "MyP@ssw0rd123"
+					s.Username = username
+					s.Password = password
 					s.Phone = parentDetails.Phone
 					s.Email = parentDetails.Email
 					s.Timezone = parentDetails.Timezone
@@ -81,8 +86,8 @@ func TestCreateCommand(t *testing.T) {
 		{
 			name: "all personal details provided",
 			args: []string{
-				"--username", "test_sub",
-				"--password", "MyP@ssw0rd123",
+				"--username", username,
+				"--password", password,
 				"--first-name", "John",
 				"--last-name", "Doe",
 				"--phone", "+1.5551234567",
@@ -92,8 +97,8 @@ func TestCreateCommand(t *testing.T) {
 			req: &request.CreateSubaccountRequest{
 				Subaccount: func() request.CreateSubaccount {
 					s := emptyAccess
-					s.Username = "test_sub"
-					s.Password = "MyP@ssw0rd123"
+					s.Username = username
+					s.Password = password
 					s.FirstName = "John"
 					s.LastName = "Doe"
 					s.Phone = "+1.5551234567"
@@ -112,15 +117,15 @@ func TestCreateCommand(t *testing.T) {
 		{
 			name: "currency overridden",
 			args: []string{
-				"--username", "test_sub",
-				"--password", "MyP@ssw0rd123",
+				"--username", username,
+				"--password", password,
 				"--currency", "USD",
 			},
 			req: &request.CreateSubaccountRequest{
 				Subaccount: func() request.CreateSubaccount {
 					s := emptyAccess
-					s.Username = "test_sub"
-					s.Password = "MyP@ssw0rd123"
+					s.Username = username
+					s.Password = password
 					s.Phone = parentDetails.Phone
 					s.Email = parentDetails.Email
 					s.Timezone = parentDetails.Timezone
@@ -137,16 +142,16 @@ func TestCreateCommand(t *testing.T) {
 		{
 			name: "allow-gui enabled, allow-api disabled",
 			args: []string{
-				"--username", "test_sub",
-				"--password", "MyP@ssw0rd123",
+				"--username", username,
+				"--password", password,
 				"--allow-gui",
 				"--allow-api=false",
 			},
 			req: &request.CreateSubaccountRequest{
 				Subaccount: func() request.CreateSubaccount {
 					s := emptyAccess
-					s.Username = "test_sub"
-					s.Password = "MyP@ssw0rd123"
+					s.Username = username
+					s.Password = password
 					s.Phone = parentDetails.Phone
 					s.Email = parentDetails.Email
 					s.Timezone = parentDetails.Timezone
@@ -163,16 +168,16 @@ func TestCreateCommand(t *testing.T) {
 		{
 			name: "ip filters provided",
 			args: []string{
-				"--username", "test_sub",
-				"--password", "MyP@ssw0rd123",
+				"--username", username,
+				"--password", password,
 				"--ip-filter", "1.2.3.4",
 				"--ip-filter", "5.6.7.8",
 			},
 			req: &request.CreateSubaccountRequest{
 				Subaccount: func() request.CreateSubaccount {
 					s := emptyAccess
-					s.Username = "test_sub"
-					s.Password = "MyP@ssw0rd123"
+					s.Username = username
+					s.Password = password
 					s.Phone = parentDetails.Phone
 					s.Email = parentDetails.Email
 					s.Timezone = parentDetails.Timezone
@@ -189,8 +194,8 @@ func TestCreateCommand(t *testing.T) {
 		{
 			name: "invalid currency rejected before API call",
 			args: []string{
-				"--username", "test_sub",
-				"--password", "MyP@ssw0rd123",
+				"--username", username,
+				"--password", password,
 				"--currency", "BTC",
 			},
 			req: nil, // CreateSubaccount must NOT be called
@@ -201,7 +206,7 @@ func TestCreateCommand(t *testing.T) {
 		{
 			name: "missing --username",
 			args: []string{
-				"--password", "MyP@ssw0rd123",
+				"--password", password,
 			},
 			req: nil,
 			errFn: func(t assert.TestingT, err error, _ ...any) bool {
@@ -211,7 +216,7 @@ func TestCreateCommand(t *testing.T) {
 		{
 			name: "missing --password",
 			args: []string{
-				"--username", "test_sub",
+				"--username", username,
 			},
 			req: nil,
 			errFn: func(t assert.TestingT, err error, _ ...any) bool {
@@ -221,15 +226,15 @@ func TestCreateCommand(t *testing.T) {
 		{
 			name: "single permission granted",
 			args: []string{
-				"--username", "test_sub",
-				"--password", "MyP@ssw0rd123",
+				"--username", username,
+				"--password", password,
 				"--permission", "server:*",
 			},
 			req: &request.CreateSubaccountRequest{
 				Subaccount: func() request.CreateSubaccount {
 					s := emptyAccess
-					s.Username = "test_sub"
-					s.Password = "MyP@ssw0rd123"
+					s.Username = username
+					s.Password = password
 					s.Phone = parentDetails.Phone
 					s.Email = parentDetails.Email
 					s.Timezone = parentDetails.Timezone
@@ -244,7 +249,7 @@ func TestCreateCommand(t *testing.T) {
 			permissions: []request.GrantPermissionRequest{
 				{
 					Permission: upcloud.Permission{
-						User:             "test_sub",
+						User:             username,
 						TargetType:       upcloud.PermissionTarget("server"),
 						TargetIdentifier: "*",
 					},
@@ -255,8 +260,8 @@ func TestCreateCommand(t *testing.T) {
 		{
 			name: "multiple permissions granted",
 			args: []string{
-				"--username", "test_sub",
-				"--password", "MyP@ssw0rd123",
+				"--username", username,
+				"--password", password,
 				"--permission", "server:*",
 				"--permission", "storage:*",
 				"--permission", "network:*",
@@ -264,8 +269,8 @@ func TestCreateCommand(t *testing.T) {
 			req: &request.CreateSubaccountRequest{
 				Subaccount: func() request.CreateSubaccount {
 					s := emptyAccess
-					s.Username = "test_sub"
-					s.Password = "MyP@ssw0rd123"
+					s.Username = username
+					s.Password = password
 					s.Phone = parentDetails.Phone
 					s.Email = parentDetails.Email
 					s.Timezone = parentDetails.Timezone
@@ -278,9 +283,9 @@ func TestCreateCommand(t *testing.T) {
 				}(),
 			},
 			permissions: []request.GrantPermissionRequest{
-				{Permission: upcloud.Permission{User: "test_sub", TargetType: upcloud.PermissionTarget("server"), TargetIdentifier: "*"}},
-				{Permission: upcloud.Permission{User: "test_sub", TargetType: upcloud.PermissionTarget("storage"), TargetIdentifier: "*"}},
-				{Permission: upcloud.Permission{User: "test_sub", TargetType: upcloud.PermissionTarget("network"), TargetIdentifier: "*"}},
+				{Permission: upcloud.Permission{User: username, TargetType: upcloud.PermissionTarget("server"), TargetIdentifier: "*"}},
+				{Permission: upcloud.Permission{User: username, TargetType: upcloud.PermissionTarget("storage"), TargetIdentifier: "*"}},
+				{Permission: upcloud.Permission{User: username, TargetType: upcloud.PermissionTarget("network"), TargetIdentifier: "*"}},
 			},
 			errFn: assert.NoError,
 		},
