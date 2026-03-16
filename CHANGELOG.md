@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.31.0] - 2026-03-16
+
+### Added
+
+- Add command to create subaccounts ( upctl account create)
+
 ## [3.30.0] - 2026-02-17
 
 ### Added
@@ -689,7 +695,8 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.30.0...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.31.0...HEAD
+[3.31.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.30.0...v3.31.0
 [3.30.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.29.0...v3.30.0
 [3.29.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.28.0...v3.29.0
 [3.28.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.27.0...v3.28.0
