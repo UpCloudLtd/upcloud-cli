@@ -139,13 +139,13 @@ func buildSummary(
 	// Kubernetes
 	b.WriteString("KUBERNETES CLUSTER\n")
 	if cluster != nil {
-		b.WriteString(fmt.Sprintf("  Name:        %s\n", cluster.Name))
-		b.WriteString(fmt.Sprintf("  UUID:        %s\n", cluster.UUID))
-		b.WriteString(fmt.Sprintf("  Zone:        %s\n", cluster.Zone))
-		b.WriteString(fmt.Sprintf("  Network:     %s\n", cluster.Network))
+		fmt.Fprintf(&b, "  Name:        %s\n", cluster.Name)
+		fmt.Fprintf(&b, "  UUID:        %s\n", cluster.UUID)
+		fmt.Fprintf(&b, "  Zone:        %s\n", cluster.Zone)
+		fmt.Fprintf(&b, "  Network:     %s\n", cluster.Network)
 		if kubeconfigPath != "" {
-			b.WriteString(fmt.Sprintf("  Kubeconfig:  %s\n", kubeconfigPath))
-			b.WriteString(fmt.Sprintf("  Set env:     export KUBECONFIG=%s\n", kubeconfigPath))
+			fmt.Fprintf(&b, "  Kubeconfig:  %s\n", kubeconfigPath)
+			fmt.Fprintf(&b, "  Set env:     export KUBECONFIG=%s\n", kubeconfigPath)
 			b.WriteString("  Test:        kubectl get nodes\n")
 			b.WriteString("  Ingress LB:  kubectl -n ingress-nginx get svc ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].hostname}{\"\\n\"}'\n")
 		}
@@ -155,9 +155,9 @@ func buildSummary(
 	// Network & Router
 	b.WriteString("NETWORKING\n")
 	if network != nil {
-		b.WriteString(fmt.Sprintf("  Network:     %s (UUID: %s)\n", network.Name, network.UUID))
+		fmt.Fprintf(&b, "  Network:     %s (UUID: %s)\n", network.Name, network.UUID)
 		if len(network.IPNetworks) > 0 {
-			b.WriteString(fmt.Sprintf("  CIDR:        %s\n", network.IPNetworks[0].Address))
+			fmt.Fprintf(&b, "  CIDR:        %s\n", network.IPNetworks[0].Address)
 			if network.IPNetworks[0].DHCP == upcloud.True {
 				b.WriteString("  DHCP:        enabled\n")
 			} else {
@@ -166,17 +166,17 @@ func buildSummary(
 		}
 	}
 	if router != nil {
-		b.WriteString(fmt.Sprintf("  Router:      %s (UUID: %s)\n", router.Name, router.UUID))
+		fmt.Fprintf(&b, "  Router:      %s (UUID: %s)\n", router.Name, router.UUID)
 	}
 	b.WriteString("\n")
 
 	// Managed Database
 	b.WriteString("MANAGED DATABASE\n")
 	if db != nil {
-		b.WriteString(fmt.Sprintf("  Name:        %s (UUID: %s)\n", db.Title, db.UUID))
-		b.WriteString(fmt.Sprintf("  Type/Plan:   %s / %s\n", db.Type, db.Plan))
-		b.WriteString(fmt.Sprintf("  State:       %s\n", db.State))
-		b.WriteString(fmt.Sprintf("  ServiceURI:  %s\n", db.ServiceURI))
+		fmt.Fprintf(&b, "  Name:        %s (UUID: %s)\n", db.Title, db.UUID)
+		fmt.Fprintf(&b, "  Type/Plan:   %s / %s\n", db.Type, db.Plan)
+		fmt.Fprintf(&b, "  State:       %s\n", db.State)
+		fmt.Fprintf(&b, "  ServiceURI:  %s\n", db.ServiceURI)
 	} else {
 		b.WriteString("  (not created)\n")
 	}
@@ -185,25 +185,25 @@ func buildSummary(
 	// Managed Object Storage
 	b.WriteString("OBJECT STORAGE\n")
 	if obj != nil {
-		b.WriteString(fmt.Sprintf("  Name:        %s (UUID: %s)\n", obj.Name, obj.UUID))
-		b.WriteString(fmt.Sprintf("  Region:      %s\n", obj.Region))
-		b.WriteString(fmt.Sprintf("  State:       %s\n", obj.OperationalState))
+		fmt.Fprintf(&b, "  Name:        %s (UUID: %s)\n", obj.Name, obj.UUID)
+		fmt.Fprintf(&b, "  Region:      %s\n", obj.Region)
+		fmt.Fprintf(&b, "  State:       %s\n", obj.OperationalState)
 
 		// If API provides endpoint(s)
 		if len(obj.Endpoints) > 0 {
-			b.WriteString(fmt.Sprintf("  DomainName:  %s\n", obj.Endpoints[0].DomainName))
-			b.WriteString(fmt.Sprintf("  Type:        %s\n", obj.Endpoints[0].Type))
-			b.WriteString(fmt.Sprintf("  IAMURL:      %s\n", obj.Endpoints[0].IAMURL))
-			b.WriteString(fmt.Sprintf("  STSURL:      %s\n", obj.Endpoints[0].STSURL))
+			fmt.Fprintf(&b, "  DomainName:  %s\n", obj.Endpoints[0].DomainName)
+			fmt.Fprintf(&b, "  Type:        %s\n", obj.Endpoints[0].Type)
+			fmt.Fprintf(&b, "  IAMURL:      %s\n", obj.Endpoints[0].IAMURL)
+			fmt.Fprintf(&b, "  STSURL:      %s\n", obj.Endpoints[0].STSURL)
 		}
 		// If bucket was created
 		if objBucket != "" {
-			b.WriteString(fmt.Sprintf("  Bucket:      %s\n", objBucket))
+			fmt.Fprintf(&b, "  Bucket:      %s\n", objBucket)
 		}
 		// If access key was created
 		if objAcc != nil {
-			b.WriteString(fmt.Sprintf("  AccessKey:   %s\n", objAcc.AccessKeyID))
-			b.WriteString(fmt.Sprintf("  SecretKey:   %s\n", *objAcc.SecretAccessKey))
+			fmt.Fprintf(&b, "  AccessKey:   %s\n", objAcc.AccessKeyID)
+			fmt.Fprintf(&b, "  SecretKey:   %s\n", *objAcc.SecretAccessKey)
 		}
 	} else {
 		b.WriteString("  (not created)\n")
@@ -232,7 +232,7 @@ func buildSummary(
 	// Final tips
 	b.WriteString("NEXT STEPS\n")
 	if kubeconfigPath != "" {
-		b.WriteString(fmt.Sprintf("  export KUBECONFIG=%s\n", kubeconfigPath))
+		fmt.Fprintf(&b, "  export KUBECONFIG=%s\n", kubeconfigPath)
 	}
 	b.WriteString("  Deploy ingress-nginx and your app, then point DNS (CNAME) to the LB hostname shown above.\n")
 

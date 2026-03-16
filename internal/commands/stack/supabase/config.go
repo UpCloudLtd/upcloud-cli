@@ -22,7 +22,7 @@ type SupabaseConfig struct {
 	LbHostname  string
 	ClusterName string
 
-	JWTSecret         string
+	JWTSecret         string //gosec:disable G117 -- field intentionally stores JWT signing secret
 	AnonKey           string
 	ServiceRoleKey    string
 	PostgresPassword  string
