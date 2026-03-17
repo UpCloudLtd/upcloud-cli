@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add command to create subaccounts ( upctl account create)
+- Add command to create subaccounts (`account create`)
 
 ## [3.30.0] - 2026-02-17
 
