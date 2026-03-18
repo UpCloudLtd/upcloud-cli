@@ -143,7 +143,7 @@ and plain old checksum files are available for verifying release assets.
     ```
 
     Attestations are available starting from version 3.16.0.
-    To verify attestations for versions older than 3.28.0, leave out `--signer-repo`.
+    To verify attestations for versions older than 3.31.0, leave out `--signer-repo`.
 
 === "Digests"
 
