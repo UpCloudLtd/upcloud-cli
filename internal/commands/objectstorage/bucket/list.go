@@ -6,8 +6,10 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/paging"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	"github.com/spf13/pflag"
 )
 
 // ListCommand creates the 'objectstorage bucket list' command
@@ -26,6 +28,7 @@ type listCommand struct {
 	*commands.BaseCommand
 	completion.ObjectStorage
 	resolver.CachingObjectStorage
+	paging.PageParameters
 }
 
 // InitCommand implements Command.InitCommand
@@ -33,6 +36,10 @@ func (s *listCommand) InitCommand() {
 	s.Cobra().Long = commands.WrapLongDescription(`List buckets in a managed object storage service
 
 Lists all buckets in the specified managed object storage service, showing their names and total size in bytes.`)
+
+	fs := &pflag.FlagSet{}
+	s.ConfigureFlags(fs)
+	s.AddFlags(fs)
 }
 
 // Execute implements commands.MultipleArgumentCommand
@@ -44,6 +51,7 @@ func (s *listCommand) Execute(exec commands.Executor, serviceUUID string) (outpu
 
 	req := &request.GetManagedObjectStorageBucketMetricsRequest{
 		ServiceUUID: serviceUUID,
+		Page:        s.Page(),
 	}
 
 	res, err := svc.GetManagedObjectStorageBucketMetrics(exec.Context(), req)

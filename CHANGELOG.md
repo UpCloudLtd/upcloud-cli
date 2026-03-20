@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add paging parameters to `object-storage bucket list` command.
+
 ## [3.31.0] - 2026-03-17
 
 ### Added
