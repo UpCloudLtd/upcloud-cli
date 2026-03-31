@@ -39,18 +39,18 @@ func ImportCommand() commands.Command {
 
 type readerCounter struct {
 	source io.Reader
-	read   int64
+	read   atomic.Int64
 }
 
 // Read implements io.Reader
 func (s *readerCounter) Read(p []byte) (n int, err error) {
 	n, err = s.source.Read(p)
-	atomic.AddInt64(&s.read, int64(n))
+	s.read.Add(int64(n))
 	return n, err
 }
 
 func (s *readerCounter) counter() int {
-	return int(atomic.LoadInt64(&s.read))
+	return int(s.read.Load())
 }
 
 type importCommand struct {
