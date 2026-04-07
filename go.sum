@@ -22,8 +22,8 @@ github.com/Masterminds/sprig/v3 v3.3.0 h1:mQh0Yrg1XPo6vjYXgtf5OtijNAKJRNcTdOOGZe
 github.com/Masterminds/sprig/v3 v3.3.0/go.mod h1:Zy1iXRYNqNLUolqCpL4uhk6SHUMAOSCzdgBfDb35Lz0=
 github.com/Masterminds/squirrel v1.5.4 h1:uUcX/aBc8O7Fg9kaISIUsHXdKuqehiXAMQTYX8afzqM=
 github.com/Masterminds/squirrel v1.5.4/go.mod h1:NNaOrjSoIDfDA40n7sr2tPNZRfjzjA400rg+riTZj10=
-github.com/UpCloudLtd/progress v1.1.0 h1:RT2DNMlvJy1R8WZr2dKdDgR+xD1+3+UdZauIfWr2q2w=
-github.com/UpCloudLtd/progress v1.1.0/go.mod h1:iGxOnb9HvHW0yrLGUjHr0lxHhn7TehgWwh7a8NqK6iQ=
+github.com/UpCloudLtd/progress v1.2.0 h1:48k1H0OgyK4+cmCOmw3feRVPfxvata86duTOfXsoEWg=
+github.com/UpCloudLtd/progress v1.2.0/go.mod h1:iGxOnb9HvHW0yrLGUjHr0lxHhn7TehgWwh7a8NqK6iQ=
 github.com/UpCloudLtd/upcloud-go-api/credentials v0.1.1 h1:eTfQsv58ufALOk9BZ7WbS/i7pMUD11RnYYpRPsz0LdI=
 github.com/UpCloudLtd/upcloud-go-api/credentials v0.1.1/go.mod h1:7OtVs2UqtfvjkC1HfE+Oud0MnbMv7qUWnbEgxnTAqts=
 github.com/UpCloudLtd/upcloud-go-api/v8 v8.35.0 h1:AIt07ExXzCaC9YVszkVPT+CteoyXldw0C8DGUMxtjD4=
