@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// ObjectStorage implements argument completion for gateways, by uuid or name.
+// ObjectStorage implements argument completion for managed object storages, by uuid or name.
 type ObjectStorage struct{}
 
 // make sure ObjectStorage implements the interface
@@ -25,5 +25,5 @@ func (s ObjectStorage) CompleteArgument(ctx context.Context, svc service.AllServ
 		vals = append(vals, objsto.UUID, objsto.Name)
 	}
 
-	return MatchStringPrefix(vals, toComplete, true), cobra.ShellCompDirectiveNoFileComp
+	return MatchStringPrefix(vals, toComplete, false), cobra.ShellCompDirectiveNoFileComp
 }
