@@ -132,6 +132,8 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 	return output.MarshaledWithHumanOutput{
 		Value: plans,
 		Output: output.Combined{
+			planSection("premium", "Premium", rows["premium"], showPrices, s.pricesDuration),
+			planSection("starter", "Starter", rows["starter"], showPrices, s.pricesDuration),
 			planSection("general_purpose", "General purpose", rows["general_purpose"], showPrices, s.pricesDuration),
 			planSection("gpu", "GPU", rows["gpu"], showPrices, s.pricesDuration),
 			planSection("cloud_native", "Cloud native", rows["cloud_native"], showPrices, s.pricesDuration),
@@ -143,6 +145,12 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 }
 
 func planType(p upcloud.Plan) string {
+	if strings.HasPrefix(p.Name, "PREMIUM-") {
+		return "premium"
+	}
+	if strings.HasPrefix(p.Name, "STARTER-") {
+		return "starter"
+	}
 	if strings.HasPrefix(p.Name, "DEV-") {
 		return "developer"
 	}
