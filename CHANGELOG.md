@@ -7,9 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.32.0] - 2026-04-17
+
 ### Added
 
 - Add paging parameters to `object-storage bucket list` command.
+- Add _Premium_ and _Starter_ sections to human readable output of `server plans` command.
 
 ## [3.31.0] - 2026-03-17
 
@@ -699,7 +702,8 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.31.0...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.32.0...HEAD
+[3.32.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.31.0...v3.32.0
 [3.31.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.30.0...v3.31.0
 [3.30.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.29.0...v3.30.0
 [3.29.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.28.0...v3.29.0
