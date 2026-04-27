@@ -68,7 +68,7 @@ jobs:
       - name: Generate AUR PKGBUILD
         run: ./scripts/generate_aur_pkgbuild.sh ${{ steps.git.outputs.tag_version }}
       - name: Publish AUR package
-        uses: KSXGitHub/github-actions-deploy-aur@2ac5a4c1d7035885d46b10e3193393be8460b6f1 # v4.1.1
+        uses: KSXGitHub/github-actions-deploy-aur@da03e160361ce01bf087e790b6ffd196d7dccff7 # v4.1.3
         with:
           pkgname: upcloud-cli
           pkgbuild: PKGBUILD
