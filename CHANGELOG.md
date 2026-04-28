@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.32.1] - 2026-04-27
+
+### Fixed
+
+- Create attestations from publish workflow even if AUR release fails.
+
 ## [3.32.0] - 2026-04-17
 
 ### Added
@@ -702,7 +708,8 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.32.0...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.32.1...HEAD
+[3.32.1]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.32.0...v3.32.1
 [3.32.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.31.0...v3.32.0
 [3.31.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.30.0...v3.31.0
 [3.30.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.29.0...v3.30.0
