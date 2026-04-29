@@ -85,6 +85,9 @@ func (c *metricsCommand) Execute(exec commands.Executor, uuid string) (output.Ou
 	if err != nil {
 		return nil, err
 	}
+	if metrics == nil {
+		panic("GetManagedDatabaseMetrics returned nil metrics")
+	}
 
 	latestOnly := c.latestOnly.Value()
 
