@@ -54,6 +54,22 @@ func PossiblyUnknownString(val any) (text.Colors, string, error) {
 	return nil, str, nil
 }
 
+func RoundedNumber(precision int) func(any) (text.Colors, string, error) {
+	format := fmt.Sprintf("%%.%df", precision)
+	return func(val any) (text.Colors, string, error) {
+		switch v := val.(type) {
+		case float32:
+			return nil, fmt.Sprintf(format, v), nil
+		case float64:
+			return nil, fmt.Sprintf(format, v), nil
+		case int:
+			return nil, fmt.Sprintf("%d", v), nil
+		default:
+			return nil, "", fmt.Errorf("cannot parse %T, expected float32 or float64", val)
+		}
+	}
+}
+
 func usingColorFunction[T ~string](colorFunction func(T) text.Colors, val any) (text.Colors, string, error) {
 	typedVal, ok := val.(T)
 	if !ok {

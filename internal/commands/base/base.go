@@ -164,6 +164,7 @@ func BuildCommands(rootCmd *cobra.Command, conf *config.Config) {
 	commands.BuildCommand(database.StartCommand(), databaseCommand.Cobra(), conf)
 	commands.BuildCommand(database.StopCommand(), databaseCommand.Cobra(), conf)
 	commands.BuildCommand(database.DeleteCommand(), databaseCommand.Cobra(), conf)
+	commands.BuildCommand(database.MetricsCommand(), databaseCommand.Cobra(), conf)
 
 	// Database sessions
 	sessionsCommand := commands.BuildCommand(databasesession.BaseSessionCommand(), databaseCommand.Cobra(), conf)

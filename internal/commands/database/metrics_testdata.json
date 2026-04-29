@@ -1,0 +1,245 @@
+{
+  "cpu_usage": {
+    "data": {
+      "cols": [
+        {
+          "label": "time",
+          "type": "date"
+        },
+        {
+          "label": "testdata-1 (master)",
+          "type": "number"
+        }
+      ],
+      "rows": [
+        [
+          "2026-04-29T13:47:30Z",
+          6.57543391188193
+        ],
+        [
+          "2026-04-29T13:48:00Z",
+          5.638972305639101
+        ]
+      ]
+    },
+    "hints": {
+      "title": "CPU usage %"
+    }
+  },
+  "disk_usage": {
+    "data": {
+      "cols": [
+        {
+          "label": "time",
+          "type": "date"
+        },
+        {
+          "label": "testdata-1 (master)",
+          "type": "number"
+        }
+      ],
+      "rows": [
+        [
+          "2026-04-29T13:47:30Z",
+          1.2281588198272695
+        ],
+        [
+          "2026-04-29T13:48:00Z",
+          1.2281588198272695
+        ]
+      ]
+    },
+    "hints": {
+      "title": "Disk space usage %"
+    }
+  },
+  "diskio_reads": {
+    "data": {
+      "cols": [
+        {
+          "label": "time",
+          "type": "date"
+        },
+        {
+          "label": "testdata-1 (master)",
+          "type": "number"
+        }
+      ],
+      "rows": [
+        [
+          "2026-04-29T13:47:30Z",
+          1
+        ],
+        [
+          "2026-04-29T13:48:00Z",
+          0
+        ]
+      ]
+    },
+    "hints": {
+      "title": "Disk IOPS (reads)"
+    }
+  },
+  "diskio_writes": {
+    "data": {
+      "cols": [
+        {
+          "label": "time",
+          "type": "date"
+        },
+        {
+          "label": "testdata-1 (master)",
+          "type": "number"
+        }
+      ],
+      "rows": [
+        [
+          "2026-04-29T13:47:30Z",
+          5
+        ],
+        [
+          "2026-04-29T13:48:00Z",
+          4
+        ]
+      ]
+    },
+    "hints": {
+      "title": "Disk IOPS (writes)"
+    }
+  },
+  "load_average": {
+    "data": {
+      "cols": [
+        {
+          "label": "time",
+          "type": "date"
+        },
+        {
+          "label": "testdata-1 (master)",
+          "type": "number"
+        }
+      ],
+      "rows": [
+        [
+          "2026-04-29T13:47:30Z",
+          0.17
+        ],
+        [
+          "2026-04-29T13:48:00Z",
+          0.15
+        ]
+      ]
+    },
+    "hints": {
+      "title": "Load average (5 min)"
+    }
+  },
+  "mem_available": {
+    "data": {
+      "cols": [
+        {
+          "label": "time",
+          "type": "date"
+        },
+        {
+          "label": "testdata-1 (master)",
+          "type": "number"
+        }
+      ],
+      "rows": [
+        [
+          "2026-04-29T13:47:30Z",
+          34.56846409691984
+        ],
+        [
+          "2026-04-29T13:48:00Z",
+          34.576297058020145
+        ]
+      ]
+    },
+    "hints": {
+      "title": "Memory available %"
+    }
+  },
+  "mem_usage": {
+    "data": {
+      "cols": [
+        {
+          "label": "time",
+          "type": "date"
+        },
+        {
+          "label": "testdata-1 (master)",
+          "type": "number"
+        }
+      ],
+      "rows": [
+        [
+          "2026-04-29T13:47:30Z",
+          65.43153590308016
+        ],
+        [
+          "2026-04-29T13:48:00Z",
+          65.42370294197985
+        ]
+      ]
+    },
+    "hints": {
+      "title": "Memory usage %"
+    }
+  },
+  "net_receive": {
+    "data": {
+      "cols": [
+        {
+          "label": "time",
+          "type": "date"
+        },
+        {
+          "label": "testdata-1 (master)",
+          "type": "number"
+        }
+      ],
+      "rows": [
+        [
+          "2026-04-29T13:47:30Z",
+          246
+        ],
+        [
+          "2026-04-29T13:48:00Z",
+          186
+        ]
+      ]
+    },
+    "hints": {
+      "title": "Network receive (bytes/s)"
+    }
+  },
+  "net_send": {
+    "data": {
+      "cols": [
+        {
+          "label": "time",
+          "type": "date"
+        },
+        {
+          "label": "testdata-1 (master)",
+          "type": "number"
+        }
+      ],
+      "rows": [
+        [
+          "2026-04-29T13:47:30Z",
+          1270
+        ],
+        [
+          "2026-04-29T13:48:00Z",
+          1132
+        ]
+      ]
+    },
+    "hints": {
+      "title": "Network transmit (bytes/s)"
+    }
+  }
+}
