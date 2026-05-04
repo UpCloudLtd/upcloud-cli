@@ -27,6 +27,7 @@ theme:
   favicon: favicon.svg
   language: en
   features:
+    - content.code.copy
     - navigation.instant
 
 plugins:
