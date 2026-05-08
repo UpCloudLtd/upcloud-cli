@@ -707,7 +707,11 @@ func (m *Service) GetManagedDatabaseIndices(_ context.Context, r *request.GetMan
 }
 
 func (m *Service) GetManagedDatabaseMetrics(_ context.Context, r *request.GetManagedDatabaseMetricsRequest) (*upcloud.ManagedDatabaseMetrics, error) {
-	return nil, nil
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.ManagedDatabaseMetrics), args.Error(1)
 }
 
 func (m *Service) GetManagedDatabaseLogs(_ context.Context, r *request.GetManagedDatabaseLogsRequest) (*upcloud.ManagedDatabaseLogs, error) {
