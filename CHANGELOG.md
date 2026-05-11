@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.33.0] - 2026-05-11
+
 ### Added
 
 - Add `database metrics` command.
@@ -712,7 +714,8 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.32.1...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.33.0...HEAD
+[3.33.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.32.1...v3.33.0
 [3.32.1]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.32.0...v3.32.1
 [3.32.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.31.0...v3.32.0
 [3.31.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.30.0...v3.31.0
