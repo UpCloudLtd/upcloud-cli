@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add `--enable-anti-affinity` flag to `kubernetes nodegroup create` (and to `--node-group` flag of `kubernetes create` command) for enabling best effort anti-affinity.
+
 ## [3.33.0] - 2026-05-12
 
 ### Added
