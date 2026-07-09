@@ -47,6 +47,7 @@ func TestCreateKubernetesNodeGroup(t *testing.T) {
 					KubeletArgs:          []upcloud.KubernetesKubeletArg{},
 					Taints:               []upcloud.KubernetesTaint{},
 					UtilityNetworkAccess: upcloud.BoolPtr(true),
+					AntiAffinity:         false,
 				},
 			},
 		},
@@ -84,6 +85,7 @@ func TestCreateKubernetesNodeGroup(t *testing.T) {
 				"--taint", "env=dev:NoSchedule",
 				"--taint", "env=dev2:NoSchedule",
 				"--disable-utility-network-access",
+				"--enable-anti-affinity",
 			},
 			expected: request.CreateKubernetesNodeGroupRequest{
 				ClusterUUID: clusterUUID,
@@ -124,6 +126,7 @@ func TestCreateKubernetesNodeGroup(t *testing.T) {
 						},
 					},
 					UtilityNetworkAccess: upcloud.BoolPtr(false),
+					AntiAffinity:         true,
 				},
 			},
 		},

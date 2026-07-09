@@ -38,6 +38,7 @@ type CreateNodeGroupParams struct {
 	Labels               []string
 	Taints               []string
 	UtilityNetworkAccess config.OptionalBoolean
+	AntiAffinity         config.OptionalBoolean
 }
 
 func GetCreateNodeGroupFlagSet(p *CreateNodeGroupParams) *pflag.FlagSet {
@@ -54,6 +55,7 @@ func GetCreateNodeGroupFlagSet(p *CreateNodeGroupParams) *pflag.FlagSet {
 	fs.StringVar(&p.StorageTier, "storage-tier", "", fmt.Sprintf("Storage tier (maxiops, standard, hdd). Only applicable for Cloud Native (%s*) and GPU (%s*) plans. If not specified, uses plan default.", CloudNativePlanPrefix, GPUPlanPrefix))
 	fs.StringArrayVar(&p.Taints, "taint", []string{}, "Taints to be configured to the nodes in `key=value:effect` format")
 	config.AddEnableOrDisableFlag(fs, &p.UtilityNetworkAccess, true, "utility-network-access", "utility network access. If disabled, nodes in this group will not have access to utility network")
+	config.AddEnableOrDisableFlag(fs, &p.AntiAffinity, false, "anti-affinity", "best effort anti-affinity to place nodes in this group to different physical hosts")
 
 	commands.Must(fs.SetAnnotation("count", commands.FlagAnnotationNoFileCompletions, nil))
 	commands.Must(fs.SetAnnotation("kubelet-arg", commands.FlagAnnotationNoFileCompletions, nil))
@@ -186,6 +188,7 @@ func ProcessNodeGroupParams(p CreateNodeGroupParams) (request.KubernetesNodeGrou
 		KubeletArgs:          kubeletArgs,
 		Taints:               taints,
 		UtilityNetworkAccess: upcloud.BoolPtr(p.UtilityNetworkAccess.Value()),
+		AntiAffinity:         p.AntiAffinity.Value(),
 	}
 
 	// Set storage customization for supported plans
