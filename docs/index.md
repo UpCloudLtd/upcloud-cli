@@ -126,10 +126,11 @@ upctl version
 
 ### Verify assets
 
-[GitHub artifact attestations](https://docs.github.com/en/actions/security-for-github-actions/using-artifact-attestations)
+[GitHub artifact attestations](https://docs.github.com/en/actions/security-for-github-actions/using-artifact-attestations),
+[Sigstore bundles](https://docs.sigstore.dev/about/bundle/)
 and plain old checksum files are available for verifying release assets.
 
-=== "Attestations"
+=== "Artifact attestations"
 
     [Release asset artifact attestations](https://github.com/UpCloudLtd/upcloud-cli/attestations)
     can be verified for example with the [GitHub CLI](https://github.com/cli/cli),
@@ -144,6 +145,23 @@ and plain old checksum files are available for verifying release assets.
 
     Attestations are available starting from version 3.16.0.
     To verify attestations for versions older than 3.31.0, leave out `--signer-repo`.
+
+=== "Sigstore bundles"
+
+    Attestations are also available in release assets as Sigstore bundles,
+    in asset named `upcloud-cli.sigstore.json`. They can be used to verify an asset
+    for example with [Cosign](https://github.com/sigstore/cosign),
+    using the Linux x86_64 asset as an example:
+
+    ```
+    cosign verify-blob \
+        --bundle /path/to/locally/downloaded/upcloud-cli.sigstore.json \
+        --certificate-identity https://github.com/UpCloudLtd/workflows/.github/workflows/build-provenance.yaml@refs/heads/main \
+        --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+        /path/to/locally/downloaded/upcloud-cli_{{ latest_release }}_linux_x86_64.tar.gz
+    ```
+
+    Sigstore bundles are available starting from version 3.34.0.
 
 === "Digests"
 
