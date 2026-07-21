@@ -41,6 +41,7 @@ func TestDatabasePlans_SortedHumanOutput(t *testing.T) {
 		},
 	}
 
+	//nolint:staticcheck // using ManagedDatabaseBackupConfig for legacy plans
 	legacyPg := upcloud.ManagedDatabaseType{
 		ServicePlans: []upcloud.ManagedDatabaseServicePlan{
 			{Plan: "test-plan-5", NodeCount: 3, CoreNumber: 16, MemoryAmount: 128, StorageSize: 2048, BackupConfig: upcloud.ManagedDatabaseBackupConfig{MaxCount: 30}},

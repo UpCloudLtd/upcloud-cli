@@ -52,7 +52,7 @@ func (s *plansCommand) Execute(exec commands.Executor, serviceType string) (outp
 	}
 
 	var legacyPlans []upcloud.ManagedDatabaseServicePlan
-	if s.showLegacy.Value() == true {
+	if s.showLegacy.Value() {
 		dbType, err := svc.GetManagedDatabaseServiceType(exec.Context(), &request.GetManagedDatabaseServiceTypeRequest{Type: serviceType})
 		if err != nil {
 			return nil, err
@@ -94,7 +94,6 @@ func (s *plansCommand) Execute(exec commands.Executor, serviceType string) (outp
 				},
 			})
 		}
-
 	}
 
 	rows := []output.TableRow{}
