@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add `--show-legacy` flag to `database plans` command for listing legacy plans in addition to the current plans.
+
 ## [3.34.0] - 2026-07-13
 
 ### Added
