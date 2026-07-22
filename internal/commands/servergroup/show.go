@@ -1,7 +1,7 @@
 package servergroup
 
 import (
-	"strconv"
+	"fmt"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
@@ -78,7 +78,7 @@ func (c *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 			status = notApplicable
 		}
 
-		host := strconv.Itoa(serverDetails.Host)
+		host := fmt.Sprintf("%d", serverDetails.HostID)
 		if host == "0" {
 			host = notApplicable
 		}

@@ -2,7 +2,7 @@ package completion
 
 import (
 	"context"
-	"strconv"
+	"fmt"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/service"
 	"github.com/spf13/cobra"
@@ -22,7 +22,7 @@ func (s HostID) CompleteArgument(ctx context.Context, svc service.AllServices, t
 	}
 	vals := make([]string, 0, len(hosts.Hosts))
 	for _, h := range hosts.Hosts {
-		vals = append(vals, strconv.Itoa(h.ID))
+		vals = append(vals, fmt.Sprintf("%d", h.HostID))
 	}
 	return MatchStringPrefix(vals, toComplete, true), cobra.ShellCompDirectiveNoFileComp
 }

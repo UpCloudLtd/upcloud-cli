@@ -267,14 +267,14 @@ Note that the default template, Ubuntu Server 24.04 LTS (Noble Numbat), only sup
 	fs := &pflag.FlagSet{}
 	s.params = createParams{CreateServerRequest: request.CreateServerRequest{}}
 	def := defaultCreateParams
-	fs.IntVar(&s.params.AvoidHost, "avoid-host", def.AvoidHost, avoidHostDescription)
+	fs.Int64Var(&s.params.AvoidHostID, "avoid-host", def.AvoidHostID, avoidHostDescription)
 	fs.StringVar(&s.params.BootOrder, "boot-order", def.BootOrder, "The boot device order, disk / cdrom / network or comma separated combination.")
 	fs.IntVar(&s.params.CoreNumber, "cores", def.CoreNumber, "Number of cores. Only allowed if `plan` option is set to \"custom\".")
 	config.AddToggleFlag(fs, &s.createPassword, "create-password", def.createPassword, "Create an admin password.")
 	config.AddEnableOrDisableFlag(fs, &s.firewall, def.firewall, "firewall", "firewall")
 	config.AddEnableOrDisableFlag(fs, &s.metadata, def.metadata, "metadata", "metadata service. The metadata service will be enabled by default, if the selected OS template uses cloud-init and thus requires metadata service")
 	config.AddEnableOrDisableFlag(fs, &s.remoteAccess, def.remoteAccess, "remote-access", "remote access")
-	fs.IntVar(&s.params.Host, "host", def.Host, hostDescription)
+	fs.Int64Var(&s.params.HostID, "host", def.HostID, hostDescription)
 	fs.StringVar(&s.params.Hostname, "hostname", def.Hostname, "Server hostname.")
 	fs.StringArrayVar(&s.params.labels, "label", def.labels, "Labels to describe the server in `key=value` format, multiple can be declared.\nUsage: --label env=dev\n\n--label owner=operations")
 	fs.IntVar(&s.params.MemoryAmount, "memory", def.MemoryAmount, "Memory amount in MiB. Only allowed if `plan` option is set to \"custom\".")

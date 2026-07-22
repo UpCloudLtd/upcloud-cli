@@ -32,7 +32,7 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 	rows := []output.TableRow{}
 	for _, h := range hosts.Hosts {
 		rows = append(rows, output.TableRow{
-			h.ID,
+			h.HostID,
 			h.Description,
 			h.Zone,
 			h.WindowsEnabled,
