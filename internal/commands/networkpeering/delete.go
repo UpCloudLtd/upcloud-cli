@@ -41,7 +41,7 @@ func (c *deleteCommand) InitCommand() {
 
 	// Deprecating networkpeering in favour of network-peering
 	// TODO: Remove this in the future
-	commands.SetSubcommandDeprecationHelp(c, []string{"networkpeering"})
+	commands.SetSubcommandDeprecationHelp(c, []string{deprecatedAliasNetworkPeering})
 }
 
 func Delete(exec commands.Executor, uuid string, disable bool) (output.Output, error) {
@@ -72,7 +72,7 @@ func Delete(exec commands.Executor, uuid string, disable bool) (output.Output, e
 func (c *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	// Deprecating networkpeering in favour of network-peering
 	// TODO: Remove this in the future
-	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"networkpeering"}, "network-peering")
+	commands.SetSubcommandExecutionDeprecationMessage(c, []string{deprecatedAliasNetworkPeering}, "network-peering")
 
 	return Delete(exec, arg, c.disable.Value())
 }

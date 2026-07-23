@@ -33,6 +33,7 @@ linters:
     - whitespace
   settings:
     goconst:
+      ignore-tests: true
       min-len: 5
     revive:
       rules:

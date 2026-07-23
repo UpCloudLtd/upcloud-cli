@@ -27,7 +27,7 @@ func TestShowCommand(t *testing.T) {
 			UUID:     "00fda506-2e8f-44f7-9d06-74d197d029f3",
 			Zone:     "pl-waw1",
 		},
-		Host:        4815602307,
+		HostID:      4815602307,
 		ServerGroup: "0bb022ba-7ab5-4c94-8671-2e32fa543a79",
 	}
 
@@ -39,7 +39,7 @@ func TestShowCommand(t *testing.T) {
 			UUID:     "00333d1b-3a4a-4b75-820a-4a56d70395dd",
 			Zone:     "pl-waw1",
 		},
-		Host:        8573698691,
+		HostID:      8573698691,
 		ServerGroup: "0bb022ba-7ab5-4c94-8671-2e32fa543a79",
 	}
 
@@ -51,7 +51,7 @@ func TestShowCommand(t *testing.T) {
 			UUID:     "33333d1b-3a4a-4b75-820a-4a56d7039533",
 			Zone:     "pl-waw1",
 		},
-		Host:        8573698691,
+		HostID:      8573698691,
 		ServerGroup: "0bb022ba-7ab5-4c94-8671-2e32fa543a79",
 	}
 

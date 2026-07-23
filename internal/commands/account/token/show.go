@@ -44,7 +44,7 @@ func (c *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 					{Title: "Type", Key: "type", Value: token.Type},
 					{Title: "Created At", Key: "created_at", Value: token.CreatedAt},
 					{Title: "Last Used", Key: "last_used", Value: token.LastUsed},
-					{Title: "Expires At", Key: "expires_at", Value: token.ExpiresAt},
+					{Title: "Expires At", Key: "expires_at", Value: token.ExpiresAt}, //nolint:goconst // Human-only label
 					{Title: "Allowed IP Ranges", Key: "allowed_ip_ranges", Value: token.AllowedIPRanges, Format: format.IPFilter},
 					{Title: "Can Create Sub Tokens", Key: "can_create_sub_tokens", Value: token.CanCreateSubTokens, Format: format.Boolean},
 				},

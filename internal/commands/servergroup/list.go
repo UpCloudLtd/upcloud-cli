@@ -25,14 +25,14 @@ type listCommand struct {
 func (c *listCommand) InitCommand() {
 	// Deprecating servergroup in favour of server-group
 	// TODO: Remove this in the future
-	commands.SetSubcommandDeprecationHelp(c, []string{"servergroup"})
+	commands.SetSubcommandDeprecationHelp(c, []string{deprecatedAliasServerGroup})
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (c *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	// Deprecating servergroup in favour of server-group
 	// TODO: Remove this in the future
-	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"servergroup"}, "server-group")
+	commands.SetSubcommandExecutionDeprecationMessage(c, []string{deprecatedAliasServerGroup}, "server-group")
 
 	svc := exec.All()
 	serverGroups, err := svc.GetServerGroups(exec.Context(), &request.GetServerGroupsRequest{})

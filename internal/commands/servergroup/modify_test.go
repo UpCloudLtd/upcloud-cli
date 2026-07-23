@@ -22,7 +22,7 @@ func TestModifyCommand(t *testing.T) {
 			UUID:     "11111111-1111-1111-1111-111111111111",
 			Zone:     "pl-waw1",
 		},
-		Host:        4815602307,
+		HostID:      4815602307,
 		ServerGroup: "8abc8009-4325-4b23-4321-b1232cd81231",
 	}
 
@@ -33,7 +33,7 @@ func TestModifyCommand(t *testing.T) {
 			UUID:     "22222222-2222-2222-2222-222222222222",
 			Zone:     "pl-waw1",
 		},
-		Host:        8573698691,
+		HostID:      8573698691,
 		ServerGroup: "8abc8009-4325-4b23-4321-b1232cd81231",
 	}
 

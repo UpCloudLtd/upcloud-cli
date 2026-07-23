@@ -16,6 +16,8 @@ import (
 	"github.com/joho/godotenv"
 )
 
+const defaultDashboardUsername = "supabase"
+
 type SupabaseConfig struct {
 	Name        string
 	Zone        string
@@ -71,7 +73,7 @@ func GenerateDefaultConfig() (*SupabaseConfig, error) {
 		JWTSecret:         jwtSecret,
 		AnonKey:           anonKey,
 		ServiceRoleKey:    serviceKey,
-		DashboardUsername: "supabase",
+		DashboardUsername: defaultDashboardUsername,
 		DashboardPassword: generateRandomString(20),
 		PostgresPassword:  generateRandomString(20),
 		PoolerTenantID:    generateRandomString(20),

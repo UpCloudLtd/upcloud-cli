@@ -36,7 +36,7 @@ func TestServerHumanOutput(t *testing.T) {
 		},
 		BootOrder: "cdrom,disk",
 		Firewall:  "on",
-		Host:      7653311107,
+		HostID:    7653311107,
 		IPAddresses: []upcloud.IPAddress{
 			{
 				Access:  "private",

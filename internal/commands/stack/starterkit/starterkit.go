@@ -247,10 +247,10 @@ func createKubernetes(ctx context.Context, exec commands.Executor, config *Start
 		Zone:        config.Zone,
 		NetworkCIDR: network.IPNetworks[0].Address,
 		Labels: []upcloud.Label{
-			{Key: "stacks.upcloud.com/stack", Value: string(stack.StackTypeStarterKit)},
-			{Key: "stacks.upcloud.com/created-by", Value: "upctl"},
-			{Key: "stacks.upcloud.com/version", Value: string(stack.VersionV0_1_0_0)},
-			{Key: "stacks.upcloud.com/name", Value: config.ClusterName},
+			{Key: stack.LabelKeyStack, Value: string(stack.StackTypeStarterKit)},
+			{Key: stack.LabelKeyCreatedBy, Value: stack.LabelValueUpctl},
+			{Key: stack.LabelKeyVersion, Value: string(stack.VersionV0_1_0_0)},
+			{Key: stack.LabelKeyName, Value: config.ClusterName},
 		},
 		NodeGroups: []request.KubernetesNodeGroup{
 			{
@@ -290,10 +290,10 @@ func createDatabase(ctx context.Context, exec commands.Executor, config *Starter
 			},
 		},
 		Labels: []upcloud.Label{
-			{Key: "stacks.upcloud.com/stack", Value: string(stack.StackTypeStarterKit)},
-			{Key: "stacks.upcloud.com/created-by", Value: "upctl"},
-			{Key: "stacks.upcloud.com/version", Value: string(stack.VersionV0_1_0_0)},
-			{Key: "stacks.upcloud.com/name", Value: config.DBName},
+			{Key: stack.LabelKeyStack, Value: string(stack.StackTypeStarterKit)},
+			{Key: stack.LabelKeyCreatedBy, Value: stack.LabelValueUpctl},
+			{Key: stack.LabelKeyVersion, Value: string(stack.VersionV0_1_0_0)},
+			{Key: stack.LabelKeyName, Value: config.DBName},
 		},
 	})
 	if err != nil {
@@ -328,10 +328,10 @@ func createObjectStorage(ctx context.Context, exec commands.Executor, config *St
 			},
 		},
 		Labels: []upcloud.Label{
-			{Key: "stacks.upcloud.com/stack", Value: string(stack.StackTypeStarterKit)},
-			{Key: "stacks.upcloud.com/created-by", Value: "upctl"},
-			{Key: "stacks.upcloud.com/version", Value: string(stack.VersionV0_1_0_0)},
-			{Key: "stacks.upcloud.com/name", Value: config.ObjectStorageName},
+			{Key: stack.LabelKeyStack, Value: string(stack.StackTypeStarterKit)},
+			{Key: stack.LabelKeyCreatedBy, Value: stack.LabelValueUpctl},
+			{Key: stack.LabelKeyVersion, Value: string(stack.VersionV0_1_0_0)},
+			{Key: stack.LabelKeyName, Value: config.ObjectStorageName},
 		},
 	})
 	if err != nil {

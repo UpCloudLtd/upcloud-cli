@@ -4,6 +4,8 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 )
 
+const waitModeCluster = "cluster"
+
 // BaseKubernetesCommand creates the base "kubernetes" command
 func BaseKubernetesCommand() commands.Command {
 	baseCmd := commands.New("kubernetes", "Manage Kubernetes clusters")

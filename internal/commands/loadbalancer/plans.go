@@ -20,14 +20,14 @@ type plansCommand struct {
 func (s *plansCommand) InitCommand() {
 	// Deprecating loadbalancer in favour of load-balancer
 	// TODO: Remove this in the future
-	commands.SetSubcommandDeprecationHelp(s, []string{"loadbalancer"})
+	commands.SetSubcommandDeprecationHelp(s, []string{deprecatedAliasLoadBalancer})
 }
 
 // Execute implements commands.NoArgumentCommand
 func (s *plansCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	// Deprecating loadbalancer in favour of load-balancer
 	// TODO: Remove this in the future
-	commands.SetSubcommandExecutionDeprecationMessage(s, []string{"loadbalancer"}, "load-balancer")
+	commands.SetSubcommandExecutionDeprecationMessage(s, []string{deprecatedAliasLoadBalancer}, "load-balancer")
 
 	svc := exec.All()
 	plans, err := svc.GetLoadBalancerPlans(exec.Context(), &request.GetLoadBalancerPlansRequest{})

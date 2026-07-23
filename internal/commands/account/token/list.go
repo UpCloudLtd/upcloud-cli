@@ -55,7 +55,7 @@ func (l *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 				{Key: "name", Header: "Name"},
 				{Key: "type", Header: "Type"},
 				{Key: "last_used", Header: "Last Used"},
-				{Key: "expires_at", Header: "Expires At"},
+				{Key: "expires_at", Header: "Expires At"}, //nolint:goconst // Human-only label
 			},
 			Rows: rows,
 		},

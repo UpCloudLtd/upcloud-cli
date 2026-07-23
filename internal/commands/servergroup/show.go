@@ -1,7 +1,7 @@
 package servergroup
 
 import (
-	"strconv"
+	"fmt"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
@@ -37,14 +37,14 @@ type showCommand struct {
 func (c *showCommand) InitCommand() {
 	// Deprecating servergroup in favour of server-group
 	// TODO: Remove this in the future
-	commands.SetSubcommandDeprecationHelp(c, []string{"servergroup"})
+	commands.SetSubcommandDeprecationHelp(c, []string{deprecatedAliasServerGroup})
 }
 
 // Execute implements commands.MultipleArgumentCommand
 func (c *showCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	// Deprecating servergroup in favour of server-group
 	// TODO: Remove this in the future
-	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"servergroup"}, "server-group")
+	commands.SetSubcommandExecutionDeprecationMessage(c, []string{deprecatedAliasServerGroup}, "server-group")
 
 	svc := exec.All()
 	serverGroup, err := svc.GetServerGroup(exec.Context(), &request.GetServerGroupRequest{UUID: uuid})
@@ -78,7 +78,7 @@ func (c *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 			status = notApplicable
 		}
 
-		host := strconv.Itoa(serverDetails.Host)
+		host := fmt.Sprintf("%d", serverDetails.HostID)
 		if host == "0" {
 			host = notApplicable
 		}

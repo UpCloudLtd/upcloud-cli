@@ -118,7 +118,7 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		{Title: "ID", Value: res.ID, Colour: ui.DefaultUUUIDColours},
 		{Title: "Type", Value: res.Type},
 		{Title: "Created At", Value: res.CreatedAt.Format(time.RFC3339)},
-		{Title: "Expires At", Value: res.ExpiresAt.Format(time.RFC3339)},
+		{Title: "Expires At", Value: res.ExpiresAt.Format(time.RFC3339)}, //nolint:goconst // Human-only label
 		{Title: "Allowed IP Ranges", Value: res.AllowedIPRanges},
 		{Title: "Can Create Sub Tokens", Value: res.CanCreateSubTokens},
 	}}, nil

@@ -95,10 +95,10 @@ func CreateNetwork(exec commands.Executor, networkName, location string, stackTy
 			Zone:   location,
 			Router: "",
 			Labels: []upcloud.Label{
-				{Key: "stacks.upcloud.com/stack", Value: string(stackType)},
-				{Key: "stacks.upcloud.com/created-by", Value: "upctl"},
-				{Key: "stacks.upcloud.com/version", Value: string(VersionV0_1_0_0)},
-				{Key: "stacks.upcloud.com/name", Value: networkName},
+				{Key: LabelKeyStack, Value: string(stackType)},
+				{Key: LabelKeyCreatedBy, Value: LabelValueUpctl},
+				{Key: LabelKeyVersion, Value: string(VersionV0_1_0_0)},
+				{Key: LabelKeyName, Value: networkName},
 			},
 			IPNetworks: []upcloud.IPNetwork{{Address: cidr, DHCP: upcloud.True, Family: upcloud.IPAddressFamilyIPv4}},
 		})

@@ -21,14 +21,14 @@ type listCommand struct {
 func (c *listCommand) InitCommand() {
 	// Deprecating networkpeering in favour of network-peering
 	// TODO: Remove this in the future
-	commands.SetSubcommandDeprecationHelp(c, []string{"networkpeering"})
+	commands.SetSubcommandDeprecationHelp(c, []string{deprecatedAliasNetworkPeering})
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (c *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
 	// Deprecating networkpeering in favour of network-peering
 	// TODO: Remove this in the future
-	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"networkpeering"}, "network-peering")
+	commands.SetSubcommandExecutionDeprecationMessage(c, []string{deprecatedAliasNetworkPeering}, "network-peering")
 
 	svc := exec.All()
 	peerings, err := svc.GetNetworkPeerings(exec.Context())
