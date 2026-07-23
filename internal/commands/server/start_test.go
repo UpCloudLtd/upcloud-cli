@@ -55,16 +55,16 @@ func TestStartCommand(t *testing.T) {
 			name: "host argument",
 			args: []string{"--host", "123456"},
 			startReq: request.StartServerRequest{
-				UUID: Server1.UUID,
-				Host: 123456,
+				UUID:   Server1.UUID,
+				HostID: 123456,
 			},
 		},
 		{
 			name: "avoid-host argument",
 			args: []string{"--avoid-host", "987654"},
 			startReq: request.StartServerRequest{
-				UUID:      Server1.UUID,
-				AvoidHost: 987654,
+				UUID:        Server1.UUID,
+				AvoidHostID: 987654,
 			},
 		},
 	} {
