@@ -30,6 +30,8 @@ github.com/UpCloudLtd/upcloud-go-api/credentials v0.1.1 h1:eTfQsv58ufALOk9BZ7WbS
 github.com/UpCloudLtd/upcloud-go-api/credentials v0.1.1/go.mod h1:7OtVs2UqtfvjkC1HfE+Oud0MnbMv7qUWnbEgxnTAqts=
 github.com/UpCloudLtd/upcloud-go-api/v8 v8.38.1-0.20260716125825-5666f530e603 h1:nmYuL1wVl0yTadMoEYcIN7uq9JEmY/JxIz+SvLy37N4=
 github.com/UpCloudLtd/upcloud-go-api/v8 v8.38.1-0.20260716125825-5666f530e603/go.mod h1:ex/UPAIOJxtzwe0DqX2gwCC2/oce7pBqg78pB+YnH9k=
+github.com/UpCloudLtd/upcloud-go-api/v8 v8.39.0 h1:NUUF4zbp7mUt4ipTlgaIlqq1ffzDRAaqyk/ARkWvIDw=
+github.com/UpCloudLtd/upcloud-go-api/v8 v8.39.0/go.mod h1:ex/UPAIOJxtzwe0DqX2gwCC2/oce7pBqg78pB+YnH9k=
 github.com/adrg/xdg v0.5.3 h1:xRnxJXne7+oWDatRhR1JLnvuccuIeCoBu2rtuLqQB78=
 github.com/adrg/xdg v0.5.3/go.mod h1:nlTsY+NNiCBGCK2tpm09vRqfVzrc2fLmXGpBLF0zlTQ=
 github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5 h1:0CwZNZbxp69SHPdPJAN/hZIm0C4OItdklCFmMRWYpio=
