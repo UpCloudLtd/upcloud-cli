@@ -33,7 +33,7 @@ type deleteCommand struct {
 func (c *deleteCommand) InitCommand() {
 	// Deprecating servergroup in favour of server-group
 	// TODO: Remove this in the future
-	commands.SetSubcommandDeprecationHelp(c, []string{"servergroup"})
+	commands.SetSubcommandDeprecationHelp(c, []string{deprecatedAliasServerGroup})
 }
 
 func Delete(exec commands.Executor, uuid string) (output.Output, error) {
@@ -57,7 +57,7 @@ func Delete(exec commands.Executor, uuid string) (output.Output, error) {
 func (c *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	// Deprecating servergroup in favour of server-group
 	// TODO: Remove this in the future
-	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"servergroup"}, "server-group")
+	commands.SetSubcommandExecutionDeprecationMessage(c, []string{deprecatedAliasServerGroup}, "server-group")
 
 	return Delete(exec, arg)
 }

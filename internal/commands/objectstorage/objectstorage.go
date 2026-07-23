@@ -4,6 +4,11 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 )
 
+const (
+	deprecatedAliasObjectStorage = "objectstorage"
+	deprecatedAliasObjsto        = "objsto"
+)
+
 // BaseobjectstorageCommand creates the base "object-storage" command
 func BaseobjectstorageCommand() commands.Command {
 	baseCmd := commands.New("object-storage", "Manage managed object storage services")
@@ -19,5 +24,5 @@ type objectstorageCommand struct {
 
 // InitCommand implements Command.InitCommand
 func (c *objectstorageCommand) InitCommand() {
-	c.Cobra().Aliases = []string{"obs", "objectstorage", "objsto"}
+	c.Cobra().Aliases = []string{"obs", deprecatedAliasObjectStorage, deprecatedAliasObjsto}
 }

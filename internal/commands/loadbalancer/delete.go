@@ -35,7 +35,7 @@ type deleteCommand struct {
 func (s *deleteCommand) InitCommand() {
 	// Deprecating loadbalancer in favour of load-balancer
 	// TODO: Remove this in the future
-	commands.SetSubcommandDeprecationHelp(s, []string{"loadbalancer"})
+	commands.SetSubcommandDeprecationHelp(s, []string{deprecatedAliasLoadBalancer})
 
 	flags := &pflag.FlagSet{}
 	config.AddToggleFlag(flags, &s.wait, "wait", false, "Wait until the Kubernetes cluster has been deleted before returning.")
@@ -74,7 +74,7 @@ func Delete(exec commands.Executor, uuid string, wait bool) (output.Output, erro
 func (s *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	// Deprecating loadbalancer in favour of load-balancer
 	// TODO: Remove this in the future
-	commands.SetSubcommandExecutionDeprecationMessage(s, []string{"loadbalancer"}, "load-balancer")
+	commands.SetSubcommandExecutionDeprecationMessage(s, []string{deprecatedAliasLoadBalancer}, "load-balancer")
 
 	return Delete(exec, arg, s.wait.Value())
 }

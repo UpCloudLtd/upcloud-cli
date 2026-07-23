@@ -49,7 +49,7 @@ func (c *deleteCommand) InitCommand() {
 
 	// Deprecating objectstorage and objsto in favour of object-storage
 	// TODO: Remove this in the future
-	commands.SetSubcommandDeprecationHelp(c, []string{"objectstorage", "objsto"})
+	commands.SetSubcommandDeprecationHelp(c, []string{deprecatedAliasObjectStorage, deprecatedAliasObjsto})
 }
 
 func Delete(exec commands.Executor, uuid string, deleteUsers, deletePolicies, deleteBuckets, force, wait bool) (output.Output, error) {
@@ -151,7 +151,7 @@ func Delete(exec commands.Executor, uuid string, deleteUsers, deletePolicies, de
 func (c *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	// Deprecating objectstorage and objsto in favour of object-storage
 	// TODO: Remove this in the future
-	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"objectstorage", "objsto"}, "object-storage")
+	commands.SetSubcommandExecutionDeprecationMessage(c, []string{deprecatedAliasObjectStorage, deprecatedAliasObjsto}, "object-storage")
 
 	return Delete(exec, arg, c.deleteUsers.Value(), c.deletePolicies.Value(), c.deleteBuckets.Value(), c.force.Value(), c.wait.Value())
 }

@@ -155,7 +155,7 @@ func (c *createCommand) InitCommand() {
 	config.AddToggleFlag(fs, &c.params.privateNodeGroups, "private-node-groups", false, "Do not assign public IPs to worker nodes. If set, the attached network should have a NAT gateway configured to provide internet access to the worker nodes.")
 	fs.StringVar(&c.params.Zone, "zone", "", namedargs.ZoneDescription("cluster"))
 	fs.StringVar(&c.params.wait, "wait", "none", "Wait for resources to be in running state before returning. Use `--wait` to wait for cluster and `--wait=all` to also wait for all node groups to be in running state.")
-	fs.Lookup("wait").NoOptDefVal = "cluster"
+	fs.Lookup("wait").NoOptDefVal = waitModeCluster
 	c.AddFlags(fs)
 
 	commands.Must(c.Cobra().MarkFlagRequired("name"))
@@ -197,7 +197,7 @@ func (c *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	}
 
 	switch c.params.wait {
-	case "cluster":
+	case waitModeCluster:
 		WaitForClusterState(res.UUID, upcloud.KubernetesClusterStateRunning, exec, msg)
 	case "all":
 		waitUntilClusterAndNodeGroupsRunning(res.UUID, exec, msg)

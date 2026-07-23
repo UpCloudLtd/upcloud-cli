@@ -171,7 +171,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 
 	combined = append(combined,
 		output.CombinedSection{
-			Key:   "storage",
+			Key:   flagStorage,
 			Title: "Storage: (Flags: B = bootdisk, P = part of plan)",
 			Contents: output.Table{
 				Columns: []output.TableColumn{

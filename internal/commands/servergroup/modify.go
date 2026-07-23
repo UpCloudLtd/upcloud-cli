@@ -94,7 +94,7 @@ func (c *modifyCommand) InitCommand() {
 
 	// Deprecating servergroup in favour of server-group
 	// TODO: Remove this in the future
-	commands.SetSubcommandDeprecationHelp(c, []string{"servergroup"})
+	commands.SetSubcommandDeprecationHelp(c, []string{deprecatedAliasServerGroup})
 }
 
 func (c *modifyCommand) InitCommandWithConfig(cfg *config.Config) {
@@ -105,7 +105,7 @@ func (c *modifyCommand) InitCommandWithConfig(cfg *config.Config) {
 func (c *modifyCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	// Deprecating servergroup in favour of server-group
 	// TODO: Remove this in the future
-	commands.SetSubcommandExecutionDeprecationMessage(c, []string{"servergroup"}, "server-group")
+	commands.SetSubcommandExecutionDeprecationMessage(c, []string{deprecatedAliasServerGroup}, "server-group")
 
 	svc := exec.All()
 

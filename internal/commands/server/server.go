@@ -23,6 +23,12 @@ const (
 	avoidHostDescription    = "Host to avoid when scheduling the server. Use this to make sure VMs do not reside on specific host. Refers to value from `host` attribute. Useful when building HA-environments."
 	hostDescription         = "Schedule the server on a specific host. Refers to value from `host` attribute. Only available in private clouds."
 	simpleBackupDescription = "Simple backup rule in `HHMM,{daily,dailies,weeklies,monthlies}` format or `no`. For example: `2300,dailies`."
+
+	flagCores    = "cores"
+	flagHostname = "hostname"
+	flagMemory   = "memory"
+	flagStorage  = "storage"
+	flagTitle    = "title"
 )
 
 var (

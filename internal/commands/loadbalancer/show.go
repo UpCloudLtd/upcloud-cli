@@ -35,14 +35,14 @@ type showCommand struct {
 func (s *showCommand) InitCommand() {
 	// Deprecating loadbalancer in favour of load-balancer
 	// TODO: Remove this in the future
-	commands.SetSubcommandDeprecationHelp(s, []string{"loadbalancer"})
+	commands.SetSubcommandDeprecationHelp(s, []string{deprecatedAliasLoadBalancer})
 }
 
 // Execute implements commands.MultipleArgumentCommand
 func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
 	// Deprecating loadbalancer in favour of load-balancer
 	// TODO: Remove this in the future
-	commands.SetSubcommandExecutionDeprecationMessage(s, []string{"loadbalancer"}, "load-balancer")
+	commands.SetSubcommandExecutionDeprecationMessage(s, []string{deprecatedAliasLoadBalancer}, "load-balancer")
 
 	svc := exec.All()
 	lb, err := svc.GetLoadBalancer(exec.Context(), &request.GetLoadBalancerRequest{UUID: uuid})
