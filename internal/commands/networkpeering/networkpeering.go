@@ -11,10 +11,12 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
 )
 
+const deprecatedAliasNetworkPeering = "networkpeering"
+
 // BaseNetworkPeeringCommand creates the base "networkpeering" command
 func BaseNetworkPeeringCommand() commands.Command {
 	baseCmd := commands.New("network-peering", "Manage network peerings")
-	baseCmd.SetDeprecatedAliases([]string{"networkpeering"})
+	baseCmd.SetDeprecatedAliases([]string{deprecatedAliasNetworkPeering})
 
 	return &networkpeeringCommand{
 		BaseCommand: baseCmd,
@@ -27,7 +29,7 @@ type networkpeeringCommand struct {
 
 // InitCommand implements Command.InitCommand
 func (np *networkpeeringCommand) InitCommand() {
-	np.Cobra().Aliases = []string{"np", "networkpeering"}
+	np.Cobra().Aliases = []string{"np", deprecatedAliasNetworkPeering}
 	// Deprecating networkpeering in favour of network-peering
 	// TODO: Remove this in the future
 	commands.SetDeprecationHelp(np.Cobra(), np.DeprecatedAliases())

@@ -90,10 +90,10 @@ func (s *deployStarterKitCommand) deploy(exec commands.Executor) (string, error)
 	router, err := exec.All().CreateRouter(exec.Context(), &request.CreateRouterRequest{
 		Name: config.RouterName,
 		Labels: []upcloud.Label{
-			{Key: "stacks.upcloud.com/stack", Value: string(stack.StackTypeStarterKit)},
-			{Key: "stacks.upcloud.com/created-by", Value: "upctl"},
-			{Key: "stacks.upcloud.com/version", Value: string(stack.VersionV0_1_0_0)},
-			{Key: "stacks.upcloud.com/name", Value: config.RouterName},
+			{Key: stack.LabelKeyStack, Value: string(stack.StackTypeStarterKit)},
+			{Key: stack.LabelKeyCreatedBy, Value: stack.LabelValueUpctl},
+			{Key: stack.LabelKeyVersion, Value: string(stack.VersionV0_1_0_0)},
+			{Key: stack.LabelKeyName, Value: config.RouterName},
 		},
 	})
 	if err != nil {

@@ -4,11 +4,13 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 )
 
+const deprecatedAliasLoadBalancer = "loadbalancer"
+
 // BaseLoadBalancerCommand creates the base "loadbalancer" command
 func BaseLoadBalancerCommand() commands.Command {
 	// Initialize the BaseCommand properly
 	baseCmd := commands.New("load-balancer", "Manage load balancers")
-	baseCmd.SetDeprecatedAliases([]string{"loadbalancer"})
+	baseCmd.SetDeprecatedAliases([]string{deprecatedAliasLoadBalancer})
 
 	lbc := &loadbalancerCommand{
 		BaseCommand: baseCmd,
@@ -23,7 +25,7 @@ type loadbalancerCommand struct {
 
 // InitCommand implements Command.InitCommand
 func (lb *loadbalancerCommand) InitCommand() {
-	lb.Cobra().Aliases = []string{"lb", "loadbalancer"}
+	lb.Cobra().Aliases = []string{"lb", deprecatedAliasLoadBalancer}
 
 	// Deprecating loadbalancer in favour of load-balancer
 	// TODO: Remove this in the future

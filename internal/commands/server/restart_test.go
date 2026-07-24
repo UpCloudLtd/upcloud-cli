@@ -74,7 +74,7 @@ func TestRestartCommand(t *testing.T) {
 			},
 			restartReq: request.RestartServerRequest{
 				UUID:          Server1.UUID,
-				Host:          123456,
+				HostID:        123456,
 				StopType:      defaultStopType,
 				Timeout:       defaultRestartTimeout,
 				TimeoutAction: defaultRestartTimeoutAction,

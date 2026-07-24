@@ -734,6 +734,14 @@ func (m *Service) GetManagedDatabaseServiceType(_ context.Context, r *request.Ge
 	return args[0].(*upcloud.ManagedDatabaseType), args.Error(1)
 }
 
+func (m *Service) GetManagedDatabasePlans(_ context.Context, r *request.GetManagedDatabasePlansRequest) ([]upcloud.ManagedDatabasePlanServiceType, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].([]upcloud.ManagedDatabasePlanServiceType), args.Error(1)
+}
+
 func (m *Service) GetManagedDatabaseServiceTypes(_ context.Context, r *request.GetManagedDatabaseServiceTypesRequest) (map[string]upcloud.ManagedDatabaseType, error) {
 	args := m.Called(r)
 	if args[0] == nil {

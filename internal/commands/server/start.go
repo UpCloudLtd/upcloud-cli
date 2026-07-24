@@ -31,16 +31,16 @@ type startCommand struct {
 	*commands.BaseCommand
 	completion.StoppedServer
 	resolver.CachingServer
-	host      int
-	avoidHost int
+	host      int64
+	avoidHost int64
 }
 
 // InitCommand implements Command.InitCommand
 func (s *startCommand) InitCommand() {
 	fs := &pflag.FlagSet{}
 
-	fs.IntVar(&s.avoidHost, "avoid-host", 0, avoidHostDescription)
-	fs.IntVar(&s.host, "host", 0, hostDescription)
+	fs.Int64Var(&s.avoidHost, "avoid-host", 0, avoidHostDescription)
+	fs.Int64Var(&s.host, "host", 0, hostDescription)
 
 	s.AddFlags(fs)
 }
@@ -57,9 +57,9 @@ func (s *startCommand) Execute(exec commands.Executor, uuid string) (output.Outp
 	exec.PushProgressStarted(msg)
 
 	res, err := svc.StartServer(exec.Context(), &request.StartServerRequest{
-		UUID:      uuid,
-		AvoidHost: s.avoidHost,
-		Host:      s.host,
+		UUID:        uuid,
+		AvoidHostID: s.avoidHost,
+		HostID:      s.host,
 	})
 	if err != nil {
 		return commands.HandleError(exec, msg, err)

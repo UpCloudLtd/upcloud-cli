@@ -20,6 +20,8 @@ const (
 	ChartVersionV0_1_3 ChartVersion = "v0.1.3"
 )
 
+const yamlPathEnvironment = "environment"
+
 func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) (*SupabaseConfig, error) {
 	clusterName := fmt.Sprintf("%s-%s-%s", stack.SupabaseResourceRootNameCluster, s.name, s.zone)
 	networkName := fmt.Sprintf("%s-%s-%s", stack.SupabaseResourceRootNameNetwork, s.name, s.zone)
@@ -92,11 +94,11 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 		Zone:        s.zone,
 		NetworkCIDR: network.IPNetworks[0].Address,
 		Labels: []upcloud.Label{
-			{Key: "stacks.upcloud.com/stack", Value: "supabase"},
-			{Key: "stacks.upcloud.com/created-by", Value: "upctl"},
+			{Key: stack.LabelKeyStack, Value: string(stack.StackTypeSupabase)},
+			{Key: stack.LabelKeyCreatedBy, Value: stack.LabelValueUpctl},
 			{Key: "stacks.upcloud.com/chart-version", Value: string(ChartVersionV0_1_3)},
-			{Key: "stacks.upcloud.com/version", Value: string(stack.VersionV0_1_0_0)},
-			{Key: "stacks.upcloud.com/name", Value: clusterName},
+			{Key: stack.LabelKeyVersion, Value: string(stack.VersionV0_1_0_0)},
+			{Key: stack.LabelKeyName, Value: clusterName},
 		},
 		NodeGroups: []request.KubernetesNodeGroup{
 			{
@@ -144,10 +146,10 @@ func (s *deploySupabaseCommand) deploy(exec commands.Executor, chartDir string) 
 			Region:           objStorageRegion,
 			Name:             objStorageName,
 			Labels: []upcloud.Label{
-				{Key: "stacks.upcloud.com/stack", Value: string(stack.StackTypeSupabase)},
-				{Key: "stacks.upcloud.com/created-by", Value: "upctl"},
-				{Key: "stacks.upcloud.com/version", Value: string(stack.VersionV0_1_0_0)},
-				{Key: "stacks.upcloud.com/name", Value: objStorageName},
+				{Key: stack.LabelKeyStack, Value: string(stack.StackTypeSupabase)},
+				{Key: stack.LabelKeyCreatedBy, Value: stack.LabelValueUpctl},
+				{Key: stack.LabelKeyVersion, Value: string(stack.VersionV0_1_0_0)},
+				{Key: stack.LabelKeyName, Value: objStorageName},
 			},
 			Networks: []upcloud.ManagedObjectStorageNetwork{
 				{
@@ -340,14 +342,14 @@ func updateDNS(valuesFile, updatedValuesFile, dnsPrefix string) error {
 
 	// List of keys to update
 	targetFields := [][][]string{
-		{{"studio", "environment", "SUPABASE_PUBLIC_URL"}},
-		{{"auth", "environment", "GOTRUE_SITE_URL"}},
-		{{"auth", "environment", "API_EXTERNAL_URL"}},
-		{{"rest", "environment", "POSTGREST_SITE_URL"}},
-		{{"realtime", "environment", "PORTAL_URL"}},
-		{{"storage", "environment", "FILE_STORAGE_BACKEND_URL"}},
-		{{"kong", "environment", "SUPABASE_PUBLIC_URL"}},
-		{{"kong", "environment", "SUPABASE_STUDIO_URL"}},
+		{{"studio", yamlPathEnvironment, "SUPABASE_PUBLIC_URL"}},
+		{{"auth", yamlPathEnvironment, "GOTRUE_SITE_URL"}},
+		{{"auth", yamlPathEnvironment, "API_EXTERNAL_URL"}},
+		{{"rest", yamlPathEnvironment, "POSTGREST_SITE_URL"}},
+		{{"realtime", yamlPathEnvironment, "PORTAL_URL"}},
+		{{"storage", yamlPathEnvironment, "FILE_STORAGE_BACKEND_URL"}},
+		{{"kong", yamlPathEnvironment, "SUPABASE_PUBLIC_URL"}},
+		{{"kong", yamlPathEnvironment, "SUPABASE_STUDIO_URL"}},
 	}
 
 	updated := false

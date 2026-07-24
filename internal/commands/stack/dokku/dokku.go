@@ -19,6 +19,11 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
+const (
+	dokkuName          = "dokku"
+	dokkuLabelSelector = "app=dokku"
+)
+
 func (s *deployDokkuCommand) deploy(exec commands.Executor, configDir string) error {
 	clusterName := fmt.Sprintf("%s-%s-%s", stack.DokkuResourceRootNameCluster, s.name, s.zone)
 	networkName := fmt.Sprintf("%s-%s-%s", stack.DokkuResourceRootNameNetwork, s.name, s.zone)
@@ -67,11 +72,11 @@ func (s *deployDokkuCommand) deploy(exec commands.Executor, configDir string) er
 		Zone:        s.zone,
 		NetworkCIDR: network.IPNetworks[0].Address,
 		Labels: []upcloud.Label{
-			{Key: "stacks.upcloud.com/stack", Value: "dokku"},
-			{Key: "stacks.upcloud.com/created-by", Value: "upctl"},
+			{Key: stack.LabelKeyStack, Value: dokkuName},
+			{Key: stack.LabelKeyCreatedBy, Value: stack.LabelValueUpctl},
 			{Key: "stacks.upcloud.com/dokku-version", Value: "0.1.3"}, // Dokku chart version
-			{Key: "stacks.upcloud.com/version", Value: string(stack.VersionV0_1_0_0)},
-			{Key: "stacks.upcloud.com/name", Value: clusterName},
+			{Key: stack.LabelKeyVersion, Value: string(stack.VersionV0_1_0_0)},
+			{Key: stack.LabelKeyName, Value: clusterName},
 		},
 		NodeGroups: []request.KubernetesNodeGroup{
 			{
@@ -205,8 +210,8 @@ func (s *deployDokkuCommand) deploy(exec commands.Executor, configDir string) er
 // until at least one pod with label app=dokku reports PodReady.
 func CheckDokkuInstallation(kubeClient *kubernetes.Clientset) error {
 	if _, err := kubeClient.AppsV1().
-		Deployments("dokku").
-		Get(context.Background(), "dokku", metav1.GetOptions{}); err != nil {
+		Deployments(dokkuName).
+		Get(context.Background(), dokkuName, metav1.GetOptions{}); err != nil {
 		return fmt.Errorf("dokku deployment missing: %w", err)
 	}
 
@@ -217,8 +222,8 @@ func CheckDokkuInstallation(kubeClient *kubernetes.Clientset) error {
 		true,
 		func(ctx context.Context) (done bool, err error) {
 			pods, err := kubeClient.CoreV1().
-				Pods("dokku").
-				List(ctx, metav1.ListOptions{LabelSelector: "app=dokku"})
+				Pods(dokkuName).
+				List(ctx, metav1.ListOptions{LabelSelector: dokkuLabelSelector})
 			if err != nil {
 				// transient error, try again
 				return false, nil
@@ -249,8 +254,8 @@ func CheckDokkuInstallation(kubeClient *kubernetes.Clientset) error {
 // GetDokkuPodName returns the first pod name in namespace "dokku" with label app=dokku.
 func GetDokkuPodName(kubeClient *kubernetes.Clientset) (string, error) {
 	pods, err := kubeClient.CoreV1().
-		Pods("dokku").
-		List(context.Background(), metav1.ListOptions{LabelSelector: "app=dokku"})
+		Pods(dokkuName).
+		List(context.Background(), metav1.ListOptions{LabelSelector: dokkuLabelSelector})
 	if err != nil {
 		return "", fmt.Errorf("listing dokku pods: %w", err)
 	}
@@ -295,8 +300,8 @@ func configureDokku(
 		return "", "", fmt.Errorf("opening public key: %w", err)
 	}
 	if _, _, err := stack.ExecInPod(restConfig, kubeClient,
-		"dokku", podName, "dokku",
-		[]string{"dokku", "ssh-keys:add", "admin"},
+		dokkuName, podName, dokkuName,
+		[]string{dokkuName, "ssh-keys:add", "admin"},
 		pub,
 	); err != nil {
 		return "", "", fmt.Errorf("dokku ssh-keys:add: %w", err)
@@ -305,8 +310,8 @@ func configureDokku(
 	// Registry login
 	patReader := bytes.NewBufferString(githubPAT)
 	if _, _, err := stack.ExecInPod(restConfig, kubeClient,
-		"dokku", podName, "dokku",
-		[]string{"dokku", "registry:login", registryURL, githubUser, "--password-stdin"},
+		dokkuName, podName, dokkuName,
+		[]string{dokkuName, "registry:login", registryURL, githubUser, "--password-stdin"},
 		patReader,
 	); err != nil {
 		return "", "", fmt.Errorf("dokku registry:login: %w", err)
@@ -320,14 +325,14 @@ func configureDokku(
 			"--type=kubernetes.io/dockerconfigjson --dry-run=client -o yaml | " +
 			"kubectl apply -n dokku -f -",
 	}
-	if _, _, err := stack.ExecInPod(restConfig, kubeClient, "dokku", podName, "dokku", cmd, nil); err != nil {
+	if _, _, err := stack.ExecInPod(restConfig, kubeClient, dokkuName, podName, dokkuName, cmd, nil); err != nil {
 		return "", "", fmt.Errorf("creating registry-credential: %w", err)
 	}
 
 	// Dokku config:set --global CERT_MANAGER_EMAIL=…
 	if _, _, err := stack.ExecInPod(restConfig, kubeClient,
-		"dokku", podName, "dokku",
-		[]string{"dokku", "config:set", "--global", "CERT_MANAGER_EMAIL=" + certManagerEmail},
+		dokkuName, podName, dokkuName,
+		[]string{dokkuName, "config:set", "--global", "CERT_MANAGER_EMAIL=" + certManagerEmail}, //nolint:goconst // Keep CLI argv readable
 		nil,
 	); err != nil {
 		return "", "", fmt.Errorf("setting CERT_MANAGER_EMAIL: %w", err)
@@ -335,8 +340,8 @@ func configureDokku(
 
 	// dokku domains:set-global
 	if _, _, err := stack.ExecInPod(restConfig, kubeClient,
-		"dokku", podName, "dokku",
-		[]string{"dokku", "domains:set-global", globalDomain},
+		dokkuName, podName, dokkuName,
+		[]string{dokkuName, "domains:set-global", globalDomain},
 		nil,
 	); err != nil {
 		return "", "", fmt.Errorf("setting global domain: %w", err)
@@ -344,8 +349,8 @@ func configureDokku(
 
 	// registry:set server & image-repo-template
 	if _, _, err := stack.ExecInPod(restConfig, kubeClient,
-		"dokku", podName, "dokku",
-		[]string{"dokku", "registry:set", "--global", "server", registryURL},
+		dokkuName, podName, dokkuName,
+		[]string{dokkuName, "registry:set", "--global", "server", registryURL},
 		nil,
 	); err != nil {
 		return "", "", fmt.Errorf("registry:set server: %w", err)
@@ -353,8 +358,8 @@ func configureDokku(
 
 	imageTemplate := fmt.Sprintf("%s/{{ .AppName }}", githubUser)
 	if _, _, err := stack.ExecInPod(restConfig, kubeClient,
-		"dokku", podName, "dokku",
-		[]string{"dokku", "registry:set", "--global", "image-repo-template", imageTemplate},
+		dokkuName, podName, dokkuName,
+		[]string{dokkuName, "registry:set", "--global", "image-repo-template", imageTemplate},
 		nil,
 	); err != nil {
 		return "", "", fmt.Errorf("registry:set image-repo-template: %w", err)
@@ -362,8 +367,8 @@ func configureDokku(
 
 	// builder:set herokuish
 	if _, _, err := stack.ExecInPod(restConfig, kubeClient,
-		"dokku", podName, "dokku",
-		[]string{"dokku", "builder:set", "--global", "selected", "herokuish"},
+		dokkuName, podName, dokkuName,
+		[]string{dokkuName, "builder:set", "--global", "selected", "herokuish"},
 		nil,
 	); err != nil {
 		return "", "", fmt.Errorf("builder:set herokuish: %w", err)

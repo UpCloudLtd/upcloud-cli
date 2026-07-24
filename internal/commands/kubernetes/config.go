@@ -138,7 +138,7 @@ func (c *configCommand) output(exec commands.Executor, config *api.Config, resp 
 				Title: "Contexts",
 				Contents: output.Table{
 					Columns: []output.TableColumn{
-						{Key: "cluster", Header: "Cluster"},
+						{Key: waitModeCluster, Header: "Cluster"},
 						{Key: "authinfo", Header: "Authinfo"},
 					},
 					Rows:       contexts,

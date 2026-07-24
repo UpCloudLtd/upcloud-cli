@@ -14,6 +14,7 @@ import (
 
 var (
 	maxStorageActions = 10
+	flagTitle         = "title"
 	tiers             = []string{
 		upcloud.StorageTierMaxIOPS,
 		upcloud.StorageTierStandard,

@@ -35,7 +35,7 @@ type restartCommand struct {
 	completion.StartedServer
 	WaitForServerToStart bool
 	StopType             string
-	Host                 int
+	Host                 int64
 	TimeoutAction        string
 	Timeout              time.Duration
 }
@@ -47,7 +47,7 @@ func (s *restartCommand) InitCommand() {
 	// TODO: reimplement? does not seem to make sense to automagically destroy
 	// servers if restart fails..
 	flags.StringVar(&s.StopType, "stop-type", defaultStopType, "The type of stop operation. Available: soft, hard")
-	flags.IntVar(&s.Host, "host", 0, hostDescription)
+	flags.Int64Var(&s.Host, "host", 0, hostDescription)
 	s.AddFlags(flags)
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("stop-type", cobra.FixedCompletions(stopTypes, cobra.ShellCompDirectiveNoFileComp)))
 }
@@ -70,7 +70,7 @@ func (s *restartCommand) Execute(exec commands.Executor, uuid string) (output.Ou
 	res, err := svc.RestartServer(exec.Context(), &request.RestartServerRequest{
 		UUID:          uuid,
 		StopType:      s.StopType,
-		Host:          s.Host,
+		HostID:        s.Host,
 		Timeout:       defaultRestartTimeout,
 		TimeoutAction: "ignore",
 	})

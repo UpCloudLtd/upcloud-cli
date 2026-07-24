@@ -108,12 +108,12 @@ func mysql(sessions upcloud.ManagedDatabaseSessions) output.Output {
 		Value: sessions,
 		Output: output.Table{
 			Columns: []output.TableColumn{
-				{Key: "id", Header: "Process ID", Format: format.DatabaseSessionPID},
-				{Key: "query", Header: "Query"},
+				{Key: "id", Header: "Process ID", Format: format.DatabaseSessionPID}, //nolint:goconst // Human-only label
+				{Key: "query", Header: "Query"},                                      //nolint:goconst // Human-only label
 				{Key: "usename", Header: "Username"},
-				{Key: "client_addr", Header: "Client IP", Colour: ui.DefaultAddressColours},
-				{Key: "application_name", Header: "Application"},
-				{Key: "datname", Header: "Database"},
+				{Key: "client_addr", Header: "Client IP", Colour: ui.DefaultAddressColours}, //nolint:goconst // Human-only label
+				{Key: "application_name", Header: "Application"},                            //nolint:goconst // Human-only label
+				{Key: "datname", Header: "Database"},                                        //nolint:goconst // Human-only label
 				{Key: "query_duration", Header: "Age"},
 				{Key: "state", Header: "State", Format: format.DatabaseSessionState},
 			},

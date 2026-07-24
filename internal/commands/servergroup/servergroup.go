@@ -7,15 +7,16 @@ import (
 )
 
 const (
-	met           = "met"
-	notApplicable = "-"
-	unMet         = "unmet"
+	met                        = "met"
+	notApplicable              = "-"
+	unMet                      = "unmet"
+	deprecatedAliasServerGroup = "servergroup"
 )
 
 // BaseServergroupCommand creates the base "servergroup" command
 func BaseServergroupCommand() commands.Command {
 	baseCmd := commands.New("server-group", "Manage server groups")
-	baseCmd.SetDeprecatedAliases([]string{"servergroup"})
+	baseCmd.SetDeprecatedAliases([]string{deprecatedAliasServerGroup})
 
 	return &servergroupCommand{
 		BaseCommand: baseCmd,
@@ -28,7 +29,7 @@ type servergroupCommand struct {
 
 // InitCommand implements Command.InitCommand
 func (sg *servergroupCommand) InitCommand() {
-	sg.Cobra().Aliases = []string{"sg", "servergroup"}
+	sg.Cobra().Aliases = []string{"sg", deprecatedAliasServerGroup}
 	// Deprecating servergroup in favour of server-group
 	// TODO: Remove this in the future
 	commands.SetDeprecationHelp(sg.Cobra(), sg.DeprecatedAliases())
