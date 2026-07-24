@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Support gateway resources in `all list` and `all purge` commands.
+- Add `--wait` flag to `gateway delete` command.
+
 ## [3.35.0] - 2026-07-24
 
 ### Added

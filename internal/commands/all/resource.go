@@ -14,6 +14,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/database"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/filestorage"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/gateway"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/kubernetes"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/loadbalancer"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands/network"
@@ -33,6 +34,7 @@ const (
 	excludeHelp = "Exclude resources matching the given name. If defined multiple times, resource is included if it matches any of the given names."
 
 	typeFileStorage       = "file-storage"
+	typeGateway           = "gateway"
 	typeKubernetes        = "kubernetes-cluster"
 	typeLoadBalancer      = "load-balancer"
 	typeCertificateBundle = "certificate-bundle"
@@ -149,7 +151,7 @@ func findResources[T any](exec commands.Executor, wg *sync.WaitGroup, returnChan
 
 func ListResources(exec commands.Executor, include, exclude []string) ([]Resource, error) {
 	var resources []Resource
-	returnChan := make(chan findResult, 13)
+	returnChan := make(chan findResult, 14)
 
 	var wg sync.WaitGroup
 
@@ -166,6 +168,7 @@ func ListResources(exec commands.Executor, include, exclude []string) ([]Resourc
 	findResources(exec, &wg, returnChan, &cachingTag{}, include, exclude)
 	findResources(exec, &wg, returnChan, &cachingCertificateBundle{}, include, exclude)
 	findResources(exec, &wg, returnChan, &resolver.CachingFileStorage{}, include, exclude)
+	findResources(exec, &wg, returnChan, &resolver.CachingGateway{}, include, exclude)
 	wg.Wait()
 	close(returnChan)
 
@@ -193,6 +196,12 @@ func getResource(val any) (Resource, error) {
 		return Resource{
 			Name: v.Name,
 			Type: typeFileStorage,
+			UUID: v.UUID,
+		}, nil
+	case upcloud.Gateway:
+		return Resource{
+			Name: v.Name,
+			Type: typeGateway,
 			UUID: v.UUID,
 		}, nil
 	case upcloud.LoadBalancer:
@@ -275,6 +284,8 @@ func deleteResource(exec commands.Executor, resource Resource) (err error) {
 	switch resource.Type {
 	case typeFileStorage:
 		_, err = filestorage.Delete(exec, resource.UUID, true)
+	case typeGateway:
+		_, err = gateway.Delete(exec, resource.UUID, true)
 	case typeKubernetes:
 		_, err = kubernetes.Delete(exec, resource.UUID, true)
 	case typeLoadBalancer:
