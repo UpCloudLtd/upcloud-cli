@@ -2,14 +2,12 @@ package gateway
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
-	"github.com/UpCloudLtd/upcloud-cli/v3/internal/utils"
 	"github.com/spf13/pflag"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
@@ -56,7 +54,9 @@ func Delete(exec commands.Executor, uuid string, wait bool) (output.Output, erro
 
 	if wait {
 		exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Waiting for gateway %s to be deleted", uuid))
-		err = waitUntilGatewayDeleted(exec, uuid)
+		err = svc.WaitForGatewayDeletion(exec.Context(), &request.WaitForGatewayDeletionRequest{
+			UUID: uuid,
+		})
 		if err != nil {
 			return commands.HandleError(exec, msg, err)
 		}
@@ -71,30 +71,4 @@ func Delete(exec commands.Executor, uuid string, wait bool) (output.Output, erro
 // Execute implements commands.MultipleArgumentCommand
 func (c *deleteCommand) Execute(exec commands.Executor, arg string) (output.Output, error) {
 	return Delete(exec, arg, c.wait.Value())
-}
-
-func waitUntilGatewayDeleted(exec commands.Executor, uuid string) error {
-	ticker := time.NewTicker(5 * time.Second)
-	defer ticker.Stop()
-
-	ctx := exec.Context()
-	svc := exec.All()
-
-	for i := 0; ; i++ {
-		select {
-		case <-ticker.C:
-			_, err := svc.GetGateway(exec.Context(), &request.GetGatewayRequest{
-				UUID: uuid,
-			})
-			if err != nil {
-				if utils.IsNotFoundError(err) {
-					return nil
-				}
-
-				return err
-			}
-		case <-ctx.Done():
-			return ctx.Err()
-		}
-	}
 }
