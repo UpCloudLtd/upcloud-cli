@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.35.0] - 2026-07-24
+
 ### Added
 
 - Add `--show-legacy` flag to `database plans` command for listing legacy plans in addition to the current plans.
@@ -724,7 +726,8 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.34.0...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.35.0...HEAD
+[3.35.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.34.0...v3.35.0
 [3.34.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.33.0...v3.34.0
 [3.33.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.32.1...v3.33.0
 [3.32.1]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.32.0...v3.32.1
