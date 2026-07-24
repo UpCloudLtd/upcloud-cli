@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="favicon.svg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
@@ -8217,14 +8217,14 @@ using a package manager, Docker image, or from sources with <code>go install</co
 <div class="tabbed-block">
 <p>Download pre-built package from GitHub releases and install it with your package manager.</p>
 <p>On Ubuntu or Debian, use the <code>.deb</code> package.</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>curl<span class="w"> </span>-Lo<span class="w"> </span>upcloud-cli_3.34.0_amd64.deb<span class="w"> </span>https://github.com/UpCloudLtd/upcloud-cli/releases/download/v3.34.0/upcloud-cli_3.34.0_amd64.deb
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>curl<span class="w"> </span>-Lo<span class="w"> </span>upcloud-cli_3.35.0_amd64.deb<span class="w"> </span>https://github.com/UpCloudLtd/upcloud-cli/releases/download/v3.35.0/upcloud-cli_3.35.0_amd64.deb
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1"># Preferably verify the asset before proceeding with install, see &quot;Verify assets&quot; below</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>./upcloud-cli_3.34.0_amd64.deb
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>./upcloud-cli_3.35.0_amd64.deb
 </span></code></pre></div>
 <p>On RHEL based distributions, use the <code>.rpm</code> package.</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>curl<span class="w"> </span>-Lo<span class="w"> </span>upcloud-cli-3.34.0-1.x86_64.rpm<span class="w"> </span>https://github.com/UpCloudLtd/upcloud-cli/releases/download/v3.34.0/upcloud-cli-3.34.0-1.x86_64.rpm
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>curl<span class="w"> </span>-Lo<span class="w"> </span>upcloud-cli-3.35.0-1.x86_64.rpm<span class="w"> </span>https://github.com/UpCloudLtd/upcloud-cli/releases/download/v3.35.0/upcloud-cli-3.35.0-1.x86_64.rpm
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c1"># Preferably verify the asset before proceeding with install, see &quot;Verify assets&quot; below</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>./upcloud-cli-3.34.0-1.x86_64.rpm
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>./upcloud-cli-3.35.0-1.x86_64.rpm
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
@@ -8235,9 +8235,9 @@ using a package manager, Docker image, or from sources with <code>go install</co
 </div>
 <div class="tabbed-block">
 <p>First, download the archived binary from GitHub releases to current folder and extract the binary from the archive.</p>
-<div class="language-pwsh highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nb">Invoke-WebRequest</span> <span class="n">-Uri</span> <span class="s2">&quot;https://github.com/UpCloudLtd/upcloud-cli/releases/download/v3.34.0/upcloud-cli_3.34.0_windows_x86_64.zip&quot;</span> <span class="n">-OutFile</span> <span class="s2">&quot;upcloud-cli_3.34.0_windows_x86_64.zip&quot;</span>
+<div class="language-pwsh highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nb">Invoke-WebRequest</span> <span class="n">-Uri</span> <span class="s2">&quot;https://github.com/UpCloudLtd/upcloud-cli/releases/download/v3.35.0/upcloud-cli_3.35.0_windows_x86_64.zip&quot;</span> <span class="n">-OutFile</span> <span class="s2">&quot;upcloud-cli_3.35.0_windows_x86_64.zip&quot;</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="c"># Preferably verify the asset before proceeding with install, see &quot;Verify assets&quot; below</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="nb">Expand-Archive</span> <span class="n">-Path</span> <span class="s2">&quot;upcloud-cli_3.34.0_windows_x86_64.zip&quot;</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="nb">Expand-Archive</span> <span class="n">-Path</span> <span class="s2">&quot;upcloud-cli_3.35.0_windows_x86_64.zip&quot;</span>
 </span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
 </span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="c"># Print current location</span>
 </span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="nb">Get-Location</span>
@@ -8247,7 +8247,7 @@ using a package manager, Docker image, or from sources with <code>go install</co
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="c"># Use Set-Location to change into folder that you used in previous step.</span>
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
 </span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nb">New-Item</span> <span class="n">-ItemType</span> <span class="n">Directory</span> <span class="nv">$env:ProgramFiles</span><span class="p">\</span><span class="n">upcloud-cli</span><span class="p">\</span> <span class="n">-Force</span>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nb">Move-Item</span> <span class="n">-Path</span> <span class="n">upcloud-cli_3</span><span class="p">.</span><span class="n">34</span><span class="p">.</span><span class="n">0_windows_x86_64</span><span class="p">\</span><span class="n">upctl</span><span class="p">.</span><span class="n">exe</span> <span class="n">-Destination</span> <span class="nv">$env:ProgramFiles</span><span class="p">\</span><span class="n">upcloud-cli</span><span class="p">\</span> <span class="n">-Force</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nb">Move-Item</span> <span class="n">-Path</span> <span class="n">upcloud-cli_3</span><span class="p">.</span><span class="n">35</span><span class="p">.</span><span class="n">0_windows_x86_64</span><span class="p">\</span><span class="n">upctl</span><span class="p">.</span><span class="n">exe</span> <span class="n">-Destination</span> <span class="nv">$env:ProgramFiles</span><span class="p">\</span><span class="n">upcloud-cli</span><span class="p">\</span> <span class="n">-Force</span>
 </span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
 </span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="c"># Setting the Path is required only on first install.</span>
 </span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="c"># Thus, this step can be skipped when updating to a more recent version.</span>
@@ -8276,7 +8276,7 @@ using a package manager, Docker image, or from sources with <code>go install</co
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nt">registries</span><span class="p">:</span>
 </span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">standard</span>
 </span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="nt">packages</span><span class="p">:</span>
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">UpCloudLtd/upcloud-cli@3.34.0</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">UpCloudLtd/upcloud-cli@3.35.0</span>
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
@@ -8293,16 +8293,17 @@ using a package manager, Docker image, or from sources with <code>go install</co
 <h3 id="sboms">SBOMs</h3>
 <p><a href="https://spdx.dev/use/specifications/">SPDX SBOM</a> documents (<code>*.spdx.json</code>) are available alongside release archives.</p>
 <h3 id="verify-assets">Verify assets</h3>
-<p><a href="https://docs.github.com/en/actions/security-for-github-actions/using-artifact-attestations">GitHub artifact attestations</a>
+<p><a href="https://docs.github.com/en/actions/security-for-github-actions/using-artifact-attestations">GitHub artifact attestations</a>,
+<a href="https://docs.sigstore.dev/about/bundle/">Sigstore bundles</a>
 and plain old checksum files are available for verifying release assets.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Attestations</label><label for="__tabbed_2_2">Digests</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:3"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Artifact attestations</label><label for="__tabbed_2_2">Sigstore bundles</label><label for="__tabbed_2_3">Digests</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p><a href="https://github.com/UpCloudLtd/upcloud-cli/attestations">Release asset artifact attestations</a>
 can be verified for example with the <a href="https://github.com/cli/cli">GitHub CLI</a>,
 using the Linux x86_64 asset as an example:</p>
 <div class="language-sh highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>gh<span class="w"> </span>attestation<span class="w"> </span>verify<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">    </span>/path/to/locally/downloaded/upcloud-cli_3.34.0_linux_x86_64.tar.gz<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">    </span>/path/to/locally/downloaded/upcloud-cli_3.35.0_linux_x86_64.tar.gz<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">    </span>--repo<span class="w"> </span>UpCloudLtd/upcloud-cli<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">    </span>--signer-repo<span class="w"> </span>UpCloudLtd/workflows
 </span></code></pre></div>
@@ -8310,17 +8311,30 @@ using the Linux x86_64 asset as an example:</p>
 To verify attestations for versions older than 3.31.0, leave out <code>--signer-repo</code>.</p>
 </div>
 <div class="tabbed-block">
+<p>Attestations are also available in release assets as Sigstore bundles,
+in asset named <code>upcloud-cli.sigstore.json</code>. They can be used to verify an asset
+for example with <a href="https://github.com/sigstore/cosign">Cosign</a>,
+using the Linux x86_64 asset as an example:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>cosign verify-blob \
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>    --bundle /path/to/locally/downloaded/upcloud-cli.sigstore.json \
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>    --certificate-identity https://github.com/UpCloudLtd/workflows/.github/workflows/build-provenance.yaml@refs/heads/main \
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>    --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>    /path/to/locally/downloaded/upcloud-cli_3.35.0_linux_x86_64.tar.gz
+</span></code></pre></div>
+<p>Sigstore bundles are available starting from version 3.34.0.</p>
+</div>
+<div class="tabbed-block">
 <p>Release assets' SHA-256 digests are available in releases,
 in asset named <code>checksums.txt</code>. They can be checked for example with:</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># make sure at least one downloaded asset and checksums.txt are in the current directory</span>
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>sha256sum<span class="w"> </span>-c<span class="w"> </span>--ignore-missing<span class="w"> </span>checksums.txt
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># make sure at least one downloaded asset and checksums.txt are in the current directory</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>sha256sum<span class="w"> </span>-c<span class="w"> </span>--ignore-missing<span class="w"> </span>checksums.txt
 </span></code></pre></div>
 </div>
 </div>
 </div>
 <h3 id="configure-shell-completions">Configure shell completions</h3>
 <p><code>upctl</code> provides shell completions for multiple shells. Run <code>upctl completion --help</code> to list the supported shells.</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>upctl<span class="w"> </span>completion<span class="w"> </span>--help
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>upctl<span class="w"> </span>completion<span class="w"> </span>--help
 </span></code></pre></div>
 <p>To configure the shell completions, follow the instructions provided in the help output of the command matching the shell you are using. For example, if you are using zsh, run <code>upctl completion zsh --help</code> to print the configuration instructions.</p>
 <h4 id="bash-completions">Bash completions</h4>
@@ -8330,34 +8344,34 @@ in asset named <code>checksums.txt</code>. They can be checked for example with:
 <div class="tabbed-block">
 <p>First, install <code>bash-completion</code> package, if it has not been installed already.</p>
 <p>On Ubuntu or Debian, use <code>apt</code> command to install the package:</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>bash-completion
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>bash-completion
 </span></code></pre></div>
 <p>On RHEL and Fedora based distributions, use <code>dnf</code> command to install the package.</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>bash-completion
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>bash-completion
 </span></code></pre></div>
 <p>Most distributions' packages enable bash-completion automatically.
 If not, something like this can be done to accomplish that:</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="nb">printf</span><span class="w"> </span><span class="s2">&quot;%s\n&quot;</span><span class="w"> </span><span class="s2">&quot;[[ -f /usr/share/bash-completion/bash-completion ]] &amp;&amp; . /usr/share/bash-completion/bash-completion&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.bashrc
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="nb">printf</span><span class="w"> </span><span class="s2">&quot;%s\n&quot;</span><span class="w"> </span><span class="s2">&quot;[[ -f /usr/share/bash-completion/bash-completion ]] &amp;&amp; . /usr/share/bash-completion/bash-completion&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.bashrc
 </span></code></pre></div>
 <p>If your bash-completion version is 2.12 or newer, no further steps are needed,
 upctl completion will load automatically on demand. With older bash-completion versions,
 the autoloading needs to be set up. Something like this will accomplish that:</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># Either system wide:</span>
-</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="nb">printf</span><span class="w"> </span><span class="s2">&quot;%s\n&quot;</span><span class="w"> </span><span class="s1">&#39;eval -- &quot;$(&quot;$1&quot; completion bash 2&gt;/dev/null)&quot;&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>/usr/share/bash-completion/completions/upctl
-</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>
-</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="c1"># ...or per user:</span>
-</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>~/.local/share/bash-completion/completions
-</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="nb">printf</span><span class="w"> </span><span class="s2">&quot;%s\n&quot;</span><span class="w"> </span><span class="s1">&#39;eval -- &quot;$(&quot;$1&quot; completion bash 2&gt;/dev/null)&quot;&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>~/.local/share/bash-completion/completions/upctl
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1"># Either system wide:</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="nb">printf</span><span class="w"> </span><span class="s2">&quot;%s\n&quot;</span><span class="w"> </span><span class="s1">&#39;eval -- &quot;$(&quot;$1&quot; completion bash 2&gt;/dev/null)&quot;&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>/usr/share/bash-completion/completions/upctl
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="c1"># ...or per user:</span>
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>~/.local/share/bash-completion/completions
+</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="nb">printf</span><span class="w"> </span><span class="s2">&quot;%s\n&quot;</span><span class="w"> </span><span class="s1">&#39;eval -- &quot;$(&quot;$1&quot; completion bash 2&gt;/dev/null)&quot;&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>~/.local/share/bash-completion/completions/upctl
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
 <p>First, install <code>bash-completion</code> package, if it has not been installed already, and add command to source the completions to your <code>.bash_profile</code>.</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>brew<span class="w"> </span>install<span class="w"> </span>bash-completion
-</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;[ -f &quot;$(brew --prefix)/etc/bash_completion&quot; ] &amp;&amp; . &quot;$(brew --prefix)/etc/bash_completion&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.bash_profile
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>brew<span class="w"> </span>install<span class="w"> </span>bash-completion
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;[ -f &quot;$(brew --prefix)/etc/bash_completion&quot; ] &amp;&amp; . &quot;$(brew --prefix)/etc/bash_completion&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.bash_profile
 </span></code></pre></div>
 <p>Then configure the shell completions for <code>upctl</code> by saving the output of <code>upctl completion bash</code> in <code>upctl</code> file under <code>/etc/bash_completion.d/</code>:</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>upctl<span class="w"> </span>completion<span class="w"> </span>bash<span class="w"> </span>&gt;<span class="w"> </span><span class="k">$(</span>brew<span class="w"> </span>--prefix<span class="k">)</span>/etc/bash_completion.d/upctl
-</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>.<span class="w"> </span><span class="k">$(</span>brew<span class="w"> </span>--prefix<span class="k">)</span>/etc/bash_completion
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>upctl<span class="w"> </span>completion<span class="w"> </span>bash<span class="w"> </span>&gt;<span class="w"> </span><span class="k">$(</span>brew<span class="w"> </span>--prefix<span class="k">)</span>/etc/bash_completion.d/upctl
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>.<span class="w"> </span><span class="k">$(</span>brew<span class="w"> </span>--prefix<span class="k">)</span>/etc/bash_completion
 </span></code></pre></div>
 </div>
 </div>
@@ -8365,17 +8379,17 @@ the autoloading needs to be set up. Something like this will accomplish that:</p
 <h2 id="configure-credentials">Configure credentials</h2>
 <p>To be able to manage your UpCloud resources, you need to configure credentials for <code>upctl</code> and enable API access for these credentials.</p>
 <p>We recommend using API tokens for authentication. Configure credentials by using <code>upctl account login --with-token</code> command to save a token to system keyring, in the <code>upctl</code> config file (default <code>~/.config/upctl.yaml</code>, overridable with <code>--config /path/to/upctl.yaml</code>) or by setting the <code>UPCLOUD_TOKEN</code> environment variable. Alternatively, you can use <code>UPCLOUD_USERNAME</code> and <code>UPCLOUD_PASSWORD</code> environment variables:</p>
-<div class="language-yaml highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="c1"># recommended: use API token</span>
-</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="nt">token</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;your-token&quot;</span>
-</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>
-</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="c1"># alternatively, use username and password</span>
-</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;your-username&quot;</span>
-</span><span id="__span-20-6"><a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;your-password&quot;</span>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1"># recommended: use API token</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="nt">token</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;your-token&quot;</span>
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="c1"># alternatively, use username and password</span>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;your-username&quot;</span>
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;your-password&quot;</span>
 </span></code></pre></div>
 <p>API access can be configured in the UpCloud Hub on <a href="https://hub.upcloud.com/account/overview">Account page</a> for the main-account and on the <a href="https://hub.upcloud.com/people/permissions">Permissions tab</a> of the People page for sub-accounts. We recommend you to set up a sub-account specifically for the API usage with its own username and password, as it allows you to assign specific permissions for increased security.</p>
 <h2 id="execute-commands">Execute commands</h2>
 <p>To verify you are able to access the UpCloud API, you can, for example, run <code>upctl account show</code> command to print your current balance and resource limits.</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>upctl<span class="w"> </span>account<span class="w"> </span>show
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>upctl<span class="w"> </span>account<span class="w"> </span>show
 </span></code></pre></div>
 <p>For usage examples, see the <em>Examples</em> section of the documentation.</p>
 <p>For reference on how to use each sub-command, see the <em>Commands reference</em> section of the documentation. The same information is also available in <code>--help</code> output of each command.</p>
@@ -8439,7 +8453,7 @@ the autoloading needs to be set up. Something like this will accomplish that:</p
       <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["content.code.copy", "navigation.instant"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
     
     
-      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>
