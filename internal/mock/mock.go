@@ -1443,6 +1443,19 @@ func (m *Service) ModifyGateway(_ context.Context, r *request.ModifyGatewayReque
 	return args[0].(*upcloud.Gateway), args.Error(1)
 }
 
+func (m *Service) WaitForGatewayOperationalState(_ context.Context, r *request.WaitForGatewayOperationalStateRequest) (*upcloud.Gateway, error) {
+	args := m.Called(r)
+	if args[0] == nil {
+		return nil, args.Error(1)
+	}
+	return args[0].(*upcloud.Gateway), args.Error(1)
+}
+
+func (m *Service) WaitForGatewayDeletion(_ context.Context, r *request.WaitForGatewayDeletionRequest) error {
+	args := m.Called(r)
+	return args.Error(0)
+}
+
 func (m *Service) GetGatewayPlans(ctx context.Context) ([]upcloud.GatewayPlan, error) {
 	return nil, nil
 }
