@@ -93,7 +93,7 @@ done;
 
 Finally, we can clean up the created resources.
 
-```sh cleanup
+```sh cleanup timeout=5m
 kubectl delete service hello-uks
 
 upctl all purge --include "*${prefix}*";
