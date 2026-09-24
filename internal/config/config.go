@@ -271,7 +271,7 @@ func (s *Config) CreateV9Client() (*upcloudv9.ClientWithResponses, error) {
 	if os.Getenv(upcloudv9.EnvDebugSkipCertificateVerify) == "1" {
 		transport := httpClient.Transport.(*http.Transport).Clone()
 		transport.TLSClientConfig = transport.TLSClientConfig.Clone()
-		transport.TLSClientConfig.InsecureSkipVerify = true //nolint:gosec
+		transport.TLSClientConfig.InsecureSkipVerify = true
 		httpClient.Transport = transport
 	}
 
