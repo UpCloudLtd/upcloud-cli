@@ -16,6 +16,7 @@ import (
 	internal "github.com/UpCloudLtd/upcloud-cli/v3/internal/service"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/service"
+	upcloudv9 "github.com/UpCloudLtd/upcloud-go-api/v9/pkg/upcloud"
 )
 
 // Executor represents the execution context for commands
@@ -35,9 +36,11 @@ type Executor interface {
 	Account() service.Account
 	Token() service.Token
 	All() internal.AllServices
+	V9() *upcloudv9.ClientWithResponses
 	Debug(msg string, args ...any)
 	WithLogger(args ...any) Executor
 	WithProgress(progress *progress.Progress) Executor
+	WithV9Client(client *upcloudv9.ClientWithResponses) Executor
 }
 
 type executeResult struct {
@@ -51,6 +54,7 @@ type executorImpl struct {
 	Config     *config.Config
 	progress   *progress.Progress
 	service    internal.AllServices
+	v9Client   *upcloudv9.ClientWithResponses
 	logger     *slog.Logger
 	sigIntChan chan os.Signal
 }
@@ -62,6 +66,11 @@ func (e executorImpl) WithLogger(args ...any) Executor {
 
 func (e executorImpl) WithProgress(progress *progress.Progress) Executor {
 	e.progress = progress
+	return &e
+}
+
+func (e executorImpl) WithV9Client(client *upcloudv9.ClientWithResponses) Executor {
+	e.v9Client = client
 	return &e
 }
 
@@ -150,6 +159,10 @@ func (e executorImpl) Token() service.Token {
 
 func (e executorImpl) All() internal.AllServices {
 	return e.service
+}
+
+func (e executorImpl) V9() *upcloudv9.ClientWithResponses {
+	return e.v9Client
 }
 
 // NewExecutor creates the default Executor
