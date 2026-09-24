@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -18,6 +19,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-go-api/credentials"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/client"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/service"
+	upcloudv9 "github.com/UpCloudLtd/upcloud-go-api/v9/pkg/upcloud"
 	"github.com/adrg/xdg"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -248,6 +250,55 @@ func (s *Config) CreateService() (internal.AllServices, error) {
 
 	svc := service.New(client)
 	return svc, nil
+}
+
+func (s *Config) CreateV9Client() (*upcloudv9.ClientWithResponses, error) {
+	username := s.GetString("username")
+	password := s.GetString("password")
+	token := s.GetString("token")
+
+	if token == "" && (username == "" || password == "") {
+		configDetails := fmt.Sprintf("default location %s", filepath.Join(xdg.ConfigHome, "upctl.yaml"))
+		if s.GetString("config") != "" {
+			configDetails = fmt.Sprintf("used %s", s.GetString("config"))
+		}
+		return nil, clierrors.MissingCredentialsError{ConfigFile: configDetails, ServiceName: credentials.KeyringServiceName}
+	}
+
+	apiLogger := s.NewLogger("api")
+	httpClient := client.NewDefaultHTTPClient()
+	httpClient.Timeout = s.ClientTimeout()
+	if os.Getenv(upcloudv9.EnvDebugSkipCertificateVerify) == "1" {
+		transport := httpClient.Transport.(*http.Transport).Clone()
+		transport.TLSClientConfig = transport.TLSClientConfig.Clone()
+		transport.TLSClientConfig.InsecureSkipVerify = true
+		httpClient.Transport = transport
+	}
+
+	options := []upcloudv9.ClientOption{
+		upcloudv9.WithHTTPClient(httpClient),
+		upcloudv9.WithLogger(func(_ context.Context, msg string, args ...any) {
+			apiLogger.Debug(msg, args...)
+		}),
+	}
+	if token != "" {
+		options = append(options, upcloudv9.WithCredentials(credentials.Credentials{Token: token}))
+	} else {
+		options = append(options, upcloudv9.WithCredentials(credentials.Credentials{Username: username, Password: password}))
+	}
+	if baseURL := os.Getenv(upcloudv9.EnvDebugAPIBaseURL); baseURL != "" {
+		options = append(options, upcloudv9.WithBaseURL(baseURL))
+	}
+
+	v9Client, err := upcloudv9.NewClientWithResponses(upcloudv9.ServerUrlHttpsapiUpcloudCom, options...)
+	if err != nil {
+		return nil, err
+	}
+	v9Client.RequestEditors = append(v9Client.RequestEditors, func(_ context.Context, req *http.Request) error {
+		req.Header.Set("User-Agent", fmt.Sprintf("upctl/%s", GetVersion()))
+		return nil
+	})
+	return v9Client, nil
 }
 
 func GetVersion() string {
