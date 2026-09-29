@@ -1,12 +1,13 @@
 package database
 
 import (
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/apierror"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/format"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/paging"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	upcloudv9 "github.com/UpCloudLtd/upcloud-go-api/v9/pkg/upcloud"
 	"github.com/spf13/pflag"
 )
 
@@ -30,28 +31,38 @@ func (s *listCommand) InitCommand() {
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
-	svc := exec.All()
-	databases, err := svc.GetManagedDatabases(exec.Context(), &request.GetManagedDatabasesRequest{
-		Page: s.Page(),
-	})
+	client, err := v9Client(exec)
 	if err != nil {
 		return nil, err
 	}
 
+	limit, offset := s.LimitOffset()
+	res, err := client.ListDatabasesWithResponse(exec.Context(), &upcloudv9.ListDatabasesParams{
+		Limit:  &limit,
+		Offset: &offset,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if res.JSON200 == nil {
+		return nil, apierror.FromResponse(res.StatusCode(), res.Body)
+	}
+	databases := *res.JSON200
+
 	rows := []output.TableRow{}
 	for _, db := range databases {
-		title := db.Title
+		title := deref(db.Title)
 		if title == "" {
-			title = db.Name
+			title = deref(db.Name)
 		}
 
 		rows = append(rows, output.TableRow{
-			db.UUID,
+			uuidString(db.Uuid),
 			title,
-			db.Type,
-			db.Plan,
-			db.Zone,
-			db.State,
+			deref(db.Type),
+			deref(db.Plan),
+			deref(db.Zone),
+			deref(db.State),
 		})
 	}
 

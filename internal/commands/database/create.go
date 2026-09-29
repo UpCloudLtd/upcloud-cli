@@ -2,10 +2,12 @@ package database
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"slices"
 	"strings"
 
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/apierror"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
@@ -13,11 +15,20 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/namedargs"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	upcloudv9 "github.com/UpCloudLtd/upcloud-go-api/v9/pkg/upcloud"
+	"github.com/google/uuid"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
+
+const (
+	defaultPlanCompute    = "rdb.standard.2CPU-8GB"
+	defaultPlanNodeCount  = 2
+	defaultPlanStorageGiB = 100
+	defaultPlanBackups    = "regular"
+)
+
+var planComponentFlags = []string{"plan-compute", "plan-node-count", "plan-storage-gib", "plan-backups"}
 
 type createCommand struct {
 	*commands.BaseCommand
@@ -39,86 +50,179 @@ func CreateCommand() commands.Command {
 				--zone fi-hel1 \
 				--type pg \
 				--hostname-prefix mydb \
-				--termination-protection \
+				--plan-compute rdb.standard.2CPU-8GB \
+				--plan-node-count 2 \
+				--plan-storage-gib 120 \
+				--plan-backups regular`,
+			`upctl database create \
+				--title mydb \
+				--zone fi-hel1 \
+				--type pg \
+				--hostname-prefix mydb \
+				--plan 2x2xCPU-4GB-100GB \
+				--enable-termination-protection \
 				--label env=dev \
 				--property max_connections=200`,
 		),
 	}
 }
 
-var defaultCreateParams = createParams{
-	CreateManagedDatabaseRequest: request.CreateManagedDatabaseRequest{
-		Plan: "2x2xCPU-4GB-100GB",
-		Type: upcloud.ManagedDatabaseServiceTypeMySQL,
-	},
-}
-
 type createParams struct {
-	request.CreateManagedDatabaseRequest
+	title                 string
+	zone                  string
+	hostnamePrefix        string
+	dbType                string
+	plan                  string
+	planCompute           string
+	planNodeCount         int
+	planStorageGiB        int
+	planBackups           string
+	maintenanceDow        string
+	maintenanceTime       string
 	labels                []string
 	networks              []string
-	terminationProtection config.OptionalBoolean
-	dbType                string
 	properties            []string
+	terminationProtection config.OptionalBoolean
 }
 
-func (s *createParams) processParams(t *upcloud.ManagedDatabaseType) error {
-	if len(s.labels) > 0 {
-		labelSlice, err := labels.StringsToSliceOfLabels(s.labels)
-		if err != nil {
-			return err
-		}
-		s.Labels = labelSlice
-	}
-
-	if s.dbType != "" {
-		s.Type = upcloud.ManagedDatabaseServiceType(s.dbType)
-	}
-
-	if len(s.properties) > 0 {
-		props, err := processProperties(s.properties, t)
-		if err != nil {
-			return fmt.Errorf("invalid properties: %w", err)
-		}
-		s.Properties = props
-	}
-
-	if len(s.networks) > 0 {
-		networks, err := processNetworks(s.networks)
-		if err != nil {
-			return fmt.Errorf("invalid networks: %w", err)
-		}
-		s.Networks = networks
-	}
-
-	if s.terminationProtection.IsSet() {
-		terminationProtection := s.terminationProtection.Value()
-		s.TerminationProtection = &terminationProtection
-	}
-	return nil
+func supportsPlanComponents(dbType string) bool {
+	return dbType == string(upcloudv9.DatabaseServiceTypePg) || dbType == string(upcloudv9.DatabaseServiceTypeMysql)
 }
 
-func isStringProperty(key upcloud.ManagedDatabasePropertyKey, t *upcloud.ManagedDatabaseType) bool {
-	if propType, ok := t.Properties[string(key)].Type.(string); ok {
-		return propType == "string"
+func (p *createParams) request(properties map[string]propertySchema) (upcloudv9.DatabaseServiceCreateOpenAPI, error) {
+	req := upcloudv9.DatabaseServiceCreateOpenAPI{
+		HostnamePrefix: p.hostnamePrefix,
+		Title:          p.title,
+		Type:           upcloudv9.DatabaseServiceType(p.dbType),
+		Zone:           p.zone,
 	}
 
-	if propType, ok := t.Properties[string(key)].Type.([]string); ok {
-		return slices.Contains(propType, "string")
+	if p.maintenanceDow != "" || p.maintenanceTime != "" {
+		req.Maintenance = &struct {
+			Dow  upcloudv9.DatabaseMaintenanceDow  `json:"dow"`
+			Time upcloudv9.DatabaseMaintenanceTime `json:"time"`
+		}{
+			Dow:  upcloudv9.DatabaseMaintenanceDow(p.maintenanceDow),
+			Time: p.maintenanceTime,
+		}
 	}
 
-	return false
+	if len(p.labels) > 0 {
+		v9Labels, err := labels.StringsToLabels(p.labels, func(key, value string) upcloudv9.DatabaseLabelCreate {
+			return upcloudv9.DatabaseLabelCreate{Key: key, Value: value}
+		})
+		if err != nil {
+			return req, err
+		}
+		req.Labels = &v9Labels
+	}
+
+	if len(p.properties) > 0 {
+		props, err := processProperties(p.properties, properties)
+		if err != nil {
+			return req, fmt.Errorf("invalid properties: %w", err)
+		}
+		// Properties are a generated union of per-engine types; setting the raw JSON keeps untyped key=value input.
+		raw, err := json.Marshal(props)
+		if err != nil {
+			return req, fmt.Errorf("invalid properties: %w", err)
+		}
+		var v9Props upcloudv9.DatabaseServiceCreateOpenAPI_Properties
+		if err := v9Props.UnmarshalJSON(raw); err != nil {
+			return req, fmt.Errorf("invalid properties: %w", err)
+		}
+		req.Properties = &v9Props
+	}
+
+	if len(p.networks) > 0 {
+		networks, err := processNetworks(p.networks)
+		if err != nil {
+			return req, fmt.Errorf("invalid networks: %w", err)
+		}
+		req.Networks = &networks
+	}
+
+	if p.terminationProtection.IsSet() {
+		terminationProtection := p.terminationProtection.Value()
+		req.TerminationProtection = &terminationProtection
+	}
+	return req, nil
 }
 
-func processProperties(in []string, t *upcloud.ManagedDatabaseType) (request.ManagedDatabasePropertiesRequest, error) {
-	resp := request.ManagedDatabasePropertiesRequest{}
+// applyPlanComponents validates the plan components against the plan catalog and sets them on the request.
+func (p *createParams) applyPlanComponents(catalog *upcloudv9.DatabasePlansResponse, changed func(string) bool, req *upcloudv9.DatabaseServiceCreateOpenAPI) error {
+	hint := fmt.Sprintf("run \"upctl database plans %s\" to list valid values", p.dbType)
+	for _, serviceType := range catalog.ServiceTypes {
+		if string(serviceType.Type) != p.dbType {
+			continue
+		}
+		for _, shape := range serviceType.ComputeShapes {
+			if shape.Compute != p.planCompute {
+				continue
+			}
+
+			nodeCounts := make([]string, 0, len(shape.NodeCounts))
+			for _, n := range shape.NodeCounts {
+				nodeCounts = append(nodeCounts, fmt.Sprint(n))
+			}
+			if !slices.Contains(nodeCounts, fmt.Sprint(p.planNodeCount)) {
+				return fmt.Errorf("--plan-node-count %d is not available for compute shape %s, valid node counts are %s", p.planNodeCount, shape.Compute, strings.Join(nodeCounts, ", "))
+			}
+			req.PlanCompute = &p.planCompute
+			req.PlanNodeCount = &p.planNodeCount
+
+			if shape.Storage == nil {
+				if changed("plan-storage-gib") {
+					return fmt.Errorf("compute shape %s does not support --plan-storage-gib", shape.Compute)
+				}
+			} else {
+				step := int(shape.Storage.StepGib)
+				valid := false
+				ranges := make([]string, 0, len(shape.Storage.Options))
+				for _, option := range shape.Storage.Options {
+					base, maxGiB := int(option.BaseGib), int(option.MaxGib)
+					ranges = append(ranges, fmt.Sprintf("%d-%d", base, maxGiB))
+					if p.planStorageGiB == base || (step > 0 && p.planStorageGiB > base && p.planStorageGiB <= maxGiB && (p.planStorageGiB-base)%step == 0) {
+						valid = true
+					}
+				}
+				if !valid {
+					return fmt.Errorf("--plan-storage-gib %d is not available for compute shape %s, valid totals per node are %s GiB in steps of %d GiB", p.planStorageGiB, shape.Compute, strings.Join(ranges, ", "), step)
+				}
+				req.PlanStorageGib = &p.planStorageGiB
+			}
+
+			if shape.Backups == nil {
+				if changed("plan-backups") {
+					return fmt.Errorf("compute shape %s does not support --plan-backups", shape.Compute)
+				}
+			} else {
+				tiers := make([]string, 0, len(*shape.Backups))
+				for _, tier := range *shape.Backups {
+					tiers = append(tiers, string(tier))
+				}
+				if !slices.Contains(tiers, p.planBackups) {
+					return fmt.Errorf("--plan-backups %q is not available for compute shape %s, valid backup tiers are %s", p.planBackups, shape.Compute, strings.Join(tiers, ", "))
+				}
+				backups := upcloudv9.DatabaseServiceCreateOpenAPIPlanBackups(p.planBackups)
+				req.PlanBackups = &backups
+			}
+			return nil
+		}
+		return fmt.Errorf("--plan-compute %q is not available for %s, %s", p.planCompute, p.dbType, hint)
+	}
+	return fmt.Errorf("database type %s has no component plans, use --plan", p.dbType)
+}
+
+func processProperties(in []string, schemas map[string]propertySchema) (map[string]any, error) {
+	resp := map[string]any{}
 	for _, prop := range in {
 		parts := strings.SplitN(prop, "=", 2)
 		if len(parts) != 2 {
 			return resp, fmt.Errorf("invalid property format: %s, expected key=value", prop)
 		}
 
-		key := upcloud.ManagedDatabasePropertyKey(parts[0])
+		key := parts[0]
 		value := parts[1]
 
 		// Remove quotes from the start and end of the value if they exist
@@ -128,25 +232,25 @@ func processProperties(in []string, t *upcloud.ManagedDatabaseType) (request.Man
 		}
 
 		// Handle numerical string values, e.g. Postgres version
-		if isStringProperty(key, t) {
-			resp.Set(key, value)
+		if schemas[key].allowsString() {
+			resp[key] = value
 			continue
 		}
 
 		var parsedValue any
 		if err := json.Unmarshal([]byte(value), &parsedValue); err != nil {
-			resp.Set(key, value) // Set as plain string if parsing fails
+			resp[key] = value // Set as plain string if parsing fails
 		} else {
-			resp.Set(key, parsedValue)
+			resp[key] = parsedValue
 		}
 	}
 	return resp, nil
 }
 
-func processNetworks(in []string) ([]upcloud.ManagedDatabaseNetwork, error) {
-	var networks []upcloud.ManagedDatabaseNetwork
+func processNetworks(in []string) ([]upcloudv9.DatabaseNetworkCreate, error) {
+	var networks []upcloudv9.DatabaseNetworkCreate
 	for _, netStr := range in {
-		network := upcloud.ManagedDatabaseNetwork{}
+		network := upcloudv9.DatabaseNetworkCreate{}
 		pairs := strings.SplitSeq(netStr, ",")
 
 		for pair := range pairs {
@@ -160,13 +264,17 @@ func processNetworks(in []string) ([]upcloud.ManagedDatabaseNetwork, error) {
 
 			switch key {
 			case "family":
-				network.Family = value
+				network.Family = upcloudv9.DatabaseNetworkFamily(value)
 			case "name":
 				network.Name = value
 			case "type":
-				network.Type = value
+				network.Type = upcloudv9.DatabaseNetworkType(value)
 			case "uuid":
-				network.UUID = &value
+				id, err := uuid.Parse(value)
+				if err != nil {
+					return nil, fmt.Errorf("invalid network uuid %q: %w", value, err)
+				}
+				network.Uuid = &id
 			default:
 				return nil, fmt.Errorf("unknown network parameter: %s", key)
 			}
@@ -178,19 +286,28 @@ func processNetworks(in []string) ([]upcloud.ManagedDatabaseNetwork, error) {
 
 // InitCommand implements commands.InitializeCommand
 func (s *createCommand) InitCommand() {
+	s.Cobra().Long = commands.WrapLongDescription(`Create a new database
+
+For pg and mysql, select the plan by its components with --plan-compute, --plan-node-count, --plan-storage-gib, and --plan-backups. When any of these flags is given, the omitted ones use their defaults. Run "upctl database plans <type>" to list the valid compute shapes, node counts, storage ranges, and backup tiers. --plan-storage-gib is the total storage per node, not additional storage.
+
+--plan is deprecated for pg and mysql, but still supported, and it is required for other database types. Run "upctl database plans <type> --show-legacy" to list plan names. --plan cannot be combined with the --plan-* flags. Without any plan flag, pg and mysql use the default of every --plan-* flag.`)
+
 	flags := &pflag.FlagSet{}
-	s.params = createParams{CreateManagedDatabaseRequest: request.CreateManagedDatabaseRequest{}}
-	def := defaultCreateParams
-	flags.StringVar(&s.params.HostNamePrefix, "hostname-prefix", def.HostNamePrefix, "A host name prefix for the database")
-	flags.StringVar(&s.params.Title, "title", def.Title, "A short, informational description.")
-	flags.StringVar(&s.params.Plan, "plan", def.Plan, "Plan to use for the database. Run `upctl database plans [database type]` to list all available plans.")
-	flags.StringVar(&s.params.Zone, "zone", def.Zone, namedargs.ZoneDescription("database"))
-	flags.StringVar(&s.params.dbType, "type", string(def.Type), "Type of the database")
-	flags.StringVar(&s.params.Maintenance.DayOfWeek, "maintenance-dow", def.Maintenance.DayOfWeek, "Full name of weekday in English, lower case(sunday) for automatic maintenance day of the week. Set randomly if not provided.")
-	flags.StringVar(&s.params.Maintenance.Time, "maintenance-time", def.Maintenance.Time, "Database time in UTC of automatic maintenance HH:MM:SS. Set randomly if not provided.")
-	flags.StringSliceVar(&s.params.labels, "label", def.labels, "Labels to describe the database in `key=value` format, multiple can be declared.\nUsage: --label env=dev\n\n--label owner=operations")
-	flags.StringArrayVar(&s.params.networks, "network", def.networks, "A network interface for the database, multiple can be declared.\nUsage: --network name=network-name,family=IPv4,type=private,uuid=030e83d2-d413-4d19-b1c9-af05cdb60c1f")
-	config.AddEnableOrDisableFlag(flags, &s.params.terminationProtection, def.terminationProtection.Value(), "termination-protection", "termination protection to prevent the database instance from being powered off or deleted")
+	s.params = createParams{}
+	flags.StringVar(&s.params.hostnamePrefix, "hostname-prefix", "", "A host name prefix for the database")
+	flags.StringVar(&s.params.title, "title", "", "A short, informational description.")
+	flags.StringVar(&s.params.plan, "plan", "", "Deprecated for pg and mysql, use the --plan-* flags instead. Plan name, required for database types other than pg and mysql.")
+	flags.StringVar(&s.params.planCompute, "plan-compute", defaultPlanCompute, "Compute shape for pg and mysql, see the Compute shape column of \"upctl database plans <type>\".")
+	flags.IntVar(&s.params.planNodeCount, "plan-node-count", defaultPlanNodeCount, "Number of nodes for pg and mysql.")
+	flags.IntVar(&s.params.planStorageGiB, "plan-storage-gib", defaultPlanStorageGiB, "Total storage per node in GiB for pg and mysql.")
+	flags.StringVar(&s.params.planBackups, "plan-backups", defaultPlanBackups, "Backup tier for pg and mysql.")
+	flags.StringVar(&s.params.zone, "zone", "", namedargs.ZoneDescription("database"))
+	flags.StringVar(&s.params.dbType, "type", string(upcloudv9.DatabaseServiceTypeMysql), "Type of the database")
+	flags.StringVar(&s.params.maintenanceDow, "maintenance-dow", "", "Full name of weekday in English, lower case(sunday) for automatic maintenance day of the week. Set randomly if not provided. Requires --maintenance-time.")
+	flags.StringVar(&s.params.maintenanceTime, "maintenance-time", "", "Database time in UTC of automatic maintenance HH:MM:SS. Set randomly if not provided. Requires --maintenance-dow.")
+	flags.StringSliceVar(&s.params.labels, "label", nil, "Labels to describe the database in `key=value` format, multiple can be declared.\nUsage: --label env=dev\n\n--label owner=operations")
+	flags.StringArrayVar(&s.params.networks, "network", nil, "A network interface for the database, multiple can be declared.\nUsage: --network name=network-name,family=IPv4,type=private,uuid=030e83d2-d413-4d19-b1c9-af05cdb60c1f")
+	config.AddEnableOrDisableFlag(flags, &s.params.terminationProtection, false, "termination-protection", "termination protection to prevent the database instance from being powered off or deleted")
 
 	flags.StringArrayVar(&s.params.properties, "property", nil, "Properties for the database in `key=value` format. Can be specified multiple times.")
 	config.AddToggleFlag(flags, &s.wait, "wait", false, "Wait for database to be in running state before returning.")
@@ -200,7 +317,11 @@ func (s *createCommand) InitCommand() {
 	commands.Must(s.Cobra().MarkFlagRequired("title"))
 	commands.Must(s.Cobra().MarkFlagRequired("zone"))
 	commands.Must(s.Cobra().MarkFlagRequired("hostname-prefix"))
-	for _, flag := range []string{"hostname-prefix", "title", "plan", "maintenance-dow", "maintenance-time", "label", "network", "property"} {
+	for _, flag := range planComponentFlags {
+		s.Cobra().MarkFlagsMutuallyExclusive("plan", flag)
+	}
+	s.Cobra().MarkFlagsRequiredTogether("maintenance-dow", "maintenance-time")
+	for _, flag := range append([]string{"hostname-prefix", "title", "plan", "maintenance-dow", "maintenance-time", "label", "network", "property"}, planComponentFlags...) {
 		commands.Must(s.Cobra().RegisterFlagCompletionFunc(flag, cobra.NoFileCompletions))
 	}
 }
@@ -210,36 +331,86 @@ func (s *createCommand) InitCommandWithConfig(cfg *config.Config) {
 	commands.Must(s.Cobra().RegisterFlagCompletionFunc("zone", namedargs.CompletionFunc(completion.Zone{}, cfg)))
 }
 
+// usesPlanComponents reports whether the plan is selected by components, and rejects plan flags that cannot be used for the database type.
+func (s *createCommand) usesPlanComponents() (bool, error) {
+	flags := s.Cobra().Flags()
+	componentFlags := slices.ContainsFunc(planComponentFlags, flags.Changed)
+	switch {
+	case componentFlags && !supportsPlanComponents(s.params.dbType):
+		return false, fmt.Errorf("the --plan-* flags are only supported for pg and mysql, use --plan for database type %q", s.params.dbType)
+	case componentFlags && s.params.planNodeCount < 1:
+		return false, fmt.Errorf("--plan-node-count must be a positive integer, got %d", s.params.planNodeCount)
+	case componentFlags && s.params.planStorageGiB < 1:
+		return false, fmt.Errorf("--plan-storage-gib must be a positive integer, got %d", s.params.planStorageGiB)
+	case flags.Changed("plan"):
+		return false, nil
+	case supportsPlanComponents(s.params.dbType):
+		return true, nil
+	default:
+		return false, fmt.Errorf("--plan is required for database type %q, run \"upctl database plans %s --show-legacy\" to list available plans", s.params.dbType, s.params.dbType)
+	}
+}
+
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
 func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Output, error) {
-	svc := exec.All()
-	msg := fmt.Sprintf("Creating database %v", s.params.Title)
-	exec.PushProgressStarted(msg)
-
-	t, err := svc.GetManagedDatabaseServiceType(exec.Context(), &request.GetManagedDatabaseServiceTypeRequest{
-		Type: s.params.dbType,
-	})
+	useComponents, err := s.usesPlanComponents()
 	if err != nil {
-		return commands.HandleError(exec, msg, err)
-	}
-
-	if err := s.params.processParams(t); err != nil {
 		return nil, err
 	}
 
-	req := s.params.CreateManagedDatabaseRequest
-	res, err := svc.CreateManagedDatabase(exec.Context(), &req)
+	client, err := v9Client(exec)
+	if err != nil {
+		return nil, err
+	}
+
+	msg := fmt.Sprintf("Creating database %v", s.params.title)
+	exec.PushProgressStarted(msg)
+
+	properties, err := getServiceTypeProperties(exec.Context(), client, s.params.dbType)
 	if err != nil {
 		return commands.HandleError(exec, msg, err)
 	}
 
+	req, err := s.params.request(properties)
+	if err != nil {
+		return nil, err
+	}
+
+	if useComponents {
+		plans, err := client.ListDatabasePlansWithResponse(exec.Context())
+		if err != nil {
+			return commands.HandleError(exec, msg, err)
+		}
+		if plans.JSON200 == nil {
+			return commands.HandleError(exec, msg, apierror.FromResponse(plans.StatusCode(), plans.Body))
+		}
+		if err := s.params.applyPlanComponents(plans.JSON200, s.Cobra().Flags().Changed, &req); err != nil {
+			return commands.HandleError(exec, msg, err)
+		}
+	} else {
+		req.Plan = &s.params.plan
+	}
+
+	res, err := client.CreateDatabaseWithResponse(exec.Context(), req)
+	if err != nil {
+		return commands.HandleError(exec, msg, err)
+	}
+	if res.JSON201 == nil {
+		return commands.HandleError(exec, msg, apierror.FromResponse(res.StatusCode(), res.Body))
+	}
+	db := res.JSON201
+	if db.Uuid == nil {
+		return commands.HandleError(exec, msg, errors.New("the API response did not include the database UUID"))
+	}
+	id := db.Uuid.String()
+
 	if s.wait.Value() {
-		WaitForManagedDatabaseState(res.UUID, upcloud.ManagedDatabaseStateRunning, exec, msg)
+		WaitForManagedDatabaseState(id, databaseStateRunning, exec, msg)
 	} else {
 		exec.PushProgressSuccess(msg)
 	}
 
-	return output.MarshaledWithHumanDetails{Value: res, Details: []output.DetailRow{
-		{Title: "UUID", Value: res.UUID, Colour: ui.DefaultUUUIDColours},
+	return output.MarshaledWithHumanDetails{Value: db, Details: []output.DetailRow{
+		{Title: "UUID", Value: id, Colour: ui.DefaultUUUIDColours},
 	}}, nil
 }

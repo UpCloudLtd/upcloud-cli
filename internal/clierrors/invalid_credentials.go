@@ -3,6 +3,7 @@ package clierrors
 import (
 	"errors"
 
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/apierror"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 )
 
@@ -19,14 +20,12 @@ func (err InvalidCredentialsError) Error() string {
 }
 
 func CheckAuthenticationFailed(err error) bool {
-	prob := &upcloud.Problem{}
-
-	if errors.As(err, &prob) {
-		errCode := prob.ErrorCode()
-		if errCode == upcloud.ErrCodeAuthenticationFailed || errCode == "INVALID_CREDENTIALS" {
-			return true
-		}
+	var errCode string
+	if prob := (*apierror.Problem)(nil); errors.As(err, &prob) {
+		errCode = prob.ErrorCode()
+	} else if prob := (*upcloud.Problem)(nil); errors.As(err, &prob) {
+		errCode = prob.ErrorCode()
 	}
 
-	return false
+	return errCode == upcloud.ErrCodeAuthenticationFailed || errCode == "INVALID_CREDENTIALS"
 }

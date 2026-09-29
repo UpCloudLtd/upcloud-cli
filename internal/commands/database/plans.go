@@ -44,15 +44,19 @@ func (s *plansCommand) Execute(exec commands.Executor, serviceType string) (outp
 	}
 
 	computeShapes := make([]upcloud.ManagedDatabasePlanComputeShape, 0)
+	componentised := false
 
 	for _, plan := range plans {
 		if plan.Type == serviceType {
 			computeShapes = plan.ComputeShapes
+			componentised = plan.Componentised
 		}
 	}
 
 	var legacyPlans []upcloud.ManagedDatabaseServicePlan
-	if s.showLegacy.Value() {
+	// Engines without componentised plans only have legacy plans, so those plans
+	// are their normal catalog rather than optional historical entries.
+	if s.showLegacy.Value() || !componentised {
 		dbType, err := svc.GetManagedDatabaseServiceType(exec.Context(), &request.GetManagedDatabaseServiceTypeRequest{Type: serviceType})
 		if err != nil {
 			return nil, err
@@ -76,11 +80,13 @@ func (s *plansCommand) Execute(exec commands.Executor, serviceType string) (outp
 		})
 
 		for _, plan := range legacyPlans {
+			// Legacy plans report memory and storage in MB.
+			memoryGB, storageGB := plan.MemoryAmount/1024, plan.StorageSize/1024
 			computeShapes = append(computeShapes, upcloud.ManagedDatabasePlanComputeShape{
 				Compute:                 plan.Plan,
 				Family:                  "legacy",
 				CPU:                     plan.CoreNumber,
-				MemoryGB:                plan.MemoryAmount,
+				MemoryGB:                memoryGB,
 				DynamicStorageSupported: false,
 				NodeCounts:              []int{plan.NodeCount},
 				Backups:                 []string{fmt.Sprintf("%d PITR days", plan.BackupConfig.MaxCount)},
@@ -89,7 +95,7 @@ func (s *plansCommand) Execute(exec commands.Executor, serviceType string) (outp
 					DynamicMaxMultiplier: 0,
 					TotalCapGiB:          0,
 					Options: []upcloud.ManagedDatabasePlanStorageOption{
-						{BaseGiB: plan.StorageSize, MaxGiB: plan.StorageSize},
+						{BaseGiB: storageGB, MaxGiB: storageGB},
 					},
 				},
 			})

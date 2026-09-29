@@ -8,10 +8,15 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/service"
 
+	upcloudv9 "github.com/UpCloudLtd/upcloud-go-api/v9/pkg/upcloud"
 	"github.com/spf13/cobra"
 )
 
 func MockExecute(command commands.Command, service service.AllServices, conf *config.Config) (string, error) {
+	return MockExecuteWithV9(command, service, nil, conf)
+}
+
+func MockExecuteWithV9(command commands.Command, service service.AllServices, v9Client *upcloudv9.ClientWithResponses, conf *config.Config) (string, error) {
 	buf := bytes.NewBuffer(nil)
 	command.Cobra().SetErr(buf)
 	command.Cobra().SetOut(buf)
@@ -22,15 +27,15 @@ func MockExecute(command commands.Command, service service.AllServices, conf *co
 	}
 
 	command.Cobra().RunE = func(_ *cobra.Command, args []string) error {
-		return mockRunE(command, service, conf, args)
+		return mockRunE(command, service, v9Client, conf, args)
 	}
 	err := command.Cobra().Execute()
 
 	return buf.String(), err
 }
 
-func mockRunE(command commands.Command, service service.AllServices, conf *config.Config, args []string) error {
-	executor := commands.NewExecutor(conf, service, conf.NewLogger("test"))
+func mockRunE(command commands.Command, service service.AllServices, v9Client *upcloudv9.ClientWithResponses, conf *config.Config, args []string) error {
+	executor := commands.NewExecutor(conf, service, conf.NewLogger("test")).WithV9Client(v9Client)
 
 	var err error
 	var out output.Output
