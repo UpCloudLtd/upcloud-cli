@@ -65,7 +65,11 @@ func TestShowCommand(t *testing.T) {
 		"plan": "rdb.standard.2x-2CPU-8GB-120GB-regular", "termination_protection": true,
 		"plan_components": {"compute": {"name": "rdb.standard.2CPU-8GB", "node_count": 2, "cpu": 2, "memory_gb": 8}, "storage": {"total_gib": 120}, "backups": {"name": "regular"}},
 		"metadata": {"pg_version": "16"},
-		"maintenance": {"dow": "sunday", "time": "05:00:00"},
+		"maintenance": {
+			"dow": "sunday",
+			"time": "05:00:00",
+			"pending_updates": [{"deadline": "", "description": "platform update", "start_after": "2026-09-30T10:00:00Z", "start_at": ""}]
+		},
 		"service_uri_params": {"dbname": "defaultdb", "host": "my-pg.example.com", "port": 11550, "user": "upadmin"},
 		"labels": [{"key": "env", "value": "dev"}],
 		"node_states": [{"name": "my-pg-1", "role": "master", "state": "running"}],

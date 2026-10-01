@@ -152,6 +152,31 @@ func TestCreateCommand_Request(t *testing.T) {
 	}
 }
 
+func TestCreateCommand_LegacyPlanDeprecationWarning(t *testing.T) {
+	for _, test := range []struct {
+		name        string
+		dbType      string
+		wantWarning bool
+	}{
+		{name: "pg", dbType: "pg", wantWarning: true},
+		{name: "mysql", dbType: "mysql", wantWarning: true},
+		{name: "opensearch", dbType: "opensearch", wantWarning: false},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			api := newCreateAPI(t, fakeResponse{status: http.StatusCreated, body: createdDatabase})
+			out, err := runCreate(t, api, config.New(), append(requiredCreateArgs, "--type", test.dbType, "--plan", "legacy-plan")...)
+			require.NoError(t, err)
+
+			const warning = "Deprecation Warning: --plan is deprecated for pg and mysql"
+			if test.wantWarning {
+				assert.Contains(t, out, warning)
+			} else {
+				assert.NotContains(t, out, warning)
+			}
+		})
+	}
+}
+
 func TestCreateCommand_Errors(t *testing.T) {
 	for _, test := range []struct {
 		name  string
@@ -163,25 +188,25 @@ func TestCreateCommand_Errors(t *testing.T) {
 		{
 			name:      "plan and a component flag are mutually exclusive",
 			args:      append(requiredCreateArgs, "--type", "pg", "--plan", "2x2xCPU-4GB-100GB", "--plan-compute", "rdb.standard.2CPU-8GB"),
-			error:     "if any flags in the group [plan plan-compute] are set none of the others can be; [plan plan-compute] were all set",
+			error:     "--plan cannot be combined with component plan flags (--plan-compute, --plan-node-count, --plan-storage-gib, or --plan-backups)",
 			beforeAPI: true,
 		},
 		{
 			name:      "invalid numeric value",
 			args:      append(requiredCreateArgs, "--type", "pg", "--plan-node-count", "two"),
-			error:     `invalid argument "two" for "--plan-node-count" flag`,
+			error:     `--plan-node-count must be a positive integer, got "two"`,
 			beforeAPI: true,
 		},
 		{
 			name:      "non-positive node count",
 			args:      append(requiredCreateArgs, "--type", "pg", "--plan-node-count", "0"),
-			error:     "--plan-node-count must be a positive integer, got 0",
+			error:     `--plan-node-count must be a positive integer, got "0"`,
 			beforeAPI: true,
 		},
 		{
 			name:      "negative storage",
 			args:      append(requiredCreateArgs, "--type", "pg", "--plan-storage-gib", "-10"),
-			error:     "--plan-storage-gib must be a positive integer, got -10",
+			error:     `--plan-storage-gib must be a positive integer, got "-10"`,
 			beforeAPI: true,
 		},
 		{
@@ -193,7 +218,7 @@ func TestCreateCommand_Errors(t *testing.T) {
 		{
 			name:      "engine without component plans requires --plan",
 			args:      append(requiredCreateArgs, "--type", "valkey"),
-			error:     `--plan is required for database type "valkey", run "upctl database plans valkey --show-legacy" to list available plans`,
+			error:     `--plan is required for database type "valkey", run "upctl database plans valkey" to list available plans`,
 			beforeAPI: true,
 		},
 		{

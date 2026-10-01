@@ -7,7 +7,7 @@ require (
 	github.com/UpCloudLtd/progress v1.2.1
 	github.com/UpCloudLtd/upcloud-go-api/credentials v0.1.1
 	github.com/UpCloudLtd/upcloud-go-api/v8 v8.40.0
-	github.com/UpCloudLtd/upcloud-go-api/v9 v9.0.0-20260929151619-56d6c5385c88
+	github.com/UpCloudLtd/upcloud-go-api/v9 v9.0.0-20260930115011-40a5b398d8a0
 	github.com/adrg/xdg v0.5.3
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
 	github.com/google/uuid v1.6.0

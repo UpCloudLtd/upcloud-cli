@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/apierror"
@@ -74,7 +75,9 @@ type createParams struct {
 	dbType                string
 	plan                  string
 	planCompute           string
+	planNodeCountValue    string
 	planNodeCount         int
+	planStorageGiBValue   string
 	planStorageGiB        int
 	planBackups           string
 	maintenanceDow        string
@@ -290,7 +293,7 @@ func (s *createCommand) InitCommand() {
 
 For pg and mysql, select the plan by its components with --plan-compute, --plan-node-count, --plan-storage-gib, and --plan-backups. When any of these flags is given, the omitted ones use their defaults. Run "upctl database plans <type>" to list the valid compute shapes, node counts, storage ranges, and backup tiers. --plan-storage-gib is the total storage per node, not additional storage.
 
---plan is deprecated for pg and mysql, but still supported, and it is required for other database types. Run "upctl database plans <type> --show-legacy" to list plan names. --plan cannot be combined with the --plan-* flags. Without any plan flag, pg and mysql use the default of every --plan-* flag.`)
+--plan is deprecated for pg and mysql, but still supported. Run "upctl database plans <type> --show-legacy" to list their legacy plan names. --plan is required for other database types; run "upctl database plans <type>" to list their plans. --plan cannot be combined with the --plan-* flags. Without any plan flag, pg and mysql use the default of every --plan-* flag.`)
 
 	flags := &pflag.FlagSet{}
 	s.params = createParams{}
@@ -298,8 +301,8 @@ For pg and mysql, select the plan by its components with --plan-compute, --plan-
 	flags.StringVar(&s.params.title, "title", "", "A short, informational description.")
 	flags.StringVar(&s.params.plan, "plan", "", "Deprecated for pg and mysql, use the --plan-* flags instead. Plan name, required for database types other than pg and mysql.")
 	flags.StringVar(&s.params.planCompute, "plan-compute", defaultPlanCompute, "Compute shape for pg and mysql, see the Compute shape column of \"upctl database plans <type>\".")
-	flags.IntVar(&s.params.planNodeCount, "plan-node-count", defaultPlanNodeCount, "Number of nodes for pg and mysql.")
-	flags.IntVar(&s.params.planStorageGiB, "plan-storage-gib", defaultPlanStorageGiB, "Total storage per node in GiB for pg and mysql.")
+	flags.StringVar(&s.params.planNodeCountValue, "plan-node-count", strconv.Itoa(defaultPlanNodeCount), "Number of nodes for pg and mysql.")
+	flags.StringVar(&s.params.planStorageGiBValue, "plan-storage-gib", strconv.Itoa(defaultPlanStorageGiB), "Total storage per node in GiB for pg and mysql.")
 	flags.StringVar(&s.params.planBackups, "plan-backups", defaultPlanBackups, "Backup tier for pg and mysql.")
 	flags.StringVar(&s.params.zone, "zone", "", namedargs.ZoneDescription("database"))
 	flags.StringVar(&s.params.dbType, "type", string(upcloudv9.DatabaseServiceTypeMysql), "Type of the database")
@@ -317,9 +320,6 @@ For pg and mysql, select the plan by its components with --plan-compute, --plan-
 	commands.Must(s.Cobra().MarkFlagRequired("title"))
 	commands.Must(s.Cobra().MarkFlagRequired("zone"))
 	commands.Must(s.Cobra().MarkFlagRequired("hostname-prefix"))
-	for _, flag := range planComponentFlags {
-		s.Cobra().MarkFlagsMutuallyExclusive("plan", flag)
-	}
 	s.Cobra().MarkFlagsRequiredTogether("maintenance-dow", "maintenance-time")
 	for _, flag := range append([]string{"hostname-prefix", "title", "plan", "maintenance-dow", "maintenance-time", "label", "network", "property"}, planComponentFlags...) {
 		commands.Must(s.Cobra().RegisterFlagCompletionFunc(flag, cobra.NoFileCompletions))
@@ -336,19 +336,34 @@ func (s *createCommand) usesPlanComponents() (bool, error) {
 	flags := s.Cobra().Flags()
 	componentFlags := slices.ContainsFunc(planComponentFlags, flags.Changed)
 	switch {
+	case flags.Changed("plan") && componentFlags:
+		return false, errors.New("--plan cannot be combined with component plan flags (--plan-compute, --plan-node-count, --plan-storage-gib, or --plan-backups)")
 	case componentFlags && !supportsPlanComponents(s.params.dbType):
 		return false, fmt.Errorf("the --plan-* flags are only supported for pg and mysql, use --plan for database type %q", s.params.dbType)
-	case componentFlags && s.params.planNodeCount < 1:
-		return false, fmt.Errorf("--plan-node-count must be a positive integer, got %d", s.params.planNodeCount)
-	case componentFlags && s.params.planStorageGiB < 1:
-		return false, fmt.Errorf("--plan-storage-gib must be a positive integer, got %d", s.params.planStorageGiB)
 	case flags.Changed("plan"):
 		return false, nil
 	case supportsPlanComponents(s.params.dbType):
+		var err error
+		s.params.planNodeCount, err = positivePlanInteger("plan-node-count", s.params.planNodeCountValue)
+		if err != nil {
+			return false, err
+		}
+		s.params.planStorageGiB, err = positivePlanInteger("plan-storage-gib", s.params.planStorageGiBValue)
+		if err != nil {
+			return false, err
+		}
 		return true, nil
 	default:
-		return false, fmt.Errorf("--plan is required for database type %q, run \"upctl database plans %s --show-legacy\" to list available plans", s.params.dbType, s.params.dbType)
+		return false, fmt.Errorf("--plan is required for database type %q, run \"upctl database plans %s\" to list available plans", s.params.dbType, s.params.dbType)
 	}
+}
+
+func positivePlanInteger(flag, value string) (int, error) {
+	parsed, err := strconv.Atoi(value)
+	if err != nil || parsed < 1 {
+		return 0, fmt.Errorf("--%s must be a positive integer, got %q", flag, value)
+	}
+	return parsed, nil
 }
 
 // ExecuteWithoutArguments implements commands.NoArgumentCommand
@@ -356,6 +371,9 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	useComponents, err := s.usesPlanComponents()
 	if err != nil {
 		return nil, err
+	}
+	if s.Cobra().Flags().Changed("plan") && supportsPlanComponents(s.params.dbType) {
+		_, _ = fmt.Fprintln(s.Cobra().ErrOrStderr(), "Deprecation Warning: --plan is deprecated for pg and mysql; use --plan-compute, --plan-node-count, --plan-storage-gib, and --plan-backups instead.")
 	}
 
 	client, err := v9Client(exec)
