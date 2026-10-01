@@ -48,6 +48,10 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 		return nil, apierror.FromResponse(res.StatusCode(), res.Body)
 	}
 	databases := *res.JSON200
+	legacyOutput, err := legacyDatabaseListOutput(databases)
+	if err != nil {
+		return nil, err
+	}
 
 	rows := []output.TableRow{}
 	for _, db := range databases {
@@ -67,7 +71,7 @@ func (s *listCommand) ExecuteWithoutArguments(exec commands.Executor) (output.Ou
 	}
 
 	return output.MarshaledWithHumanOutput{
-		Value: databases,
+		Value: legacyOutput,
 		Output: output.Table{
 			Columns: []output.TableColumn{
 				{Key: "uuid", Header: "UUID", Colour: ui.DefaultUUUIDColours},

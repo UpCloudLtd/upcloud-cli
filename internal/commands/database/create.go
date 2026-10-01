@@ -417,6 +417,10 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		return commands.HandleError(exec, msg, apierror.FromResponse(res.StatusCode(), res.Body))
 	}
 	db := res.JSON201
+	legacyOutput, err := legacyDatabaseOutput(db)
+	if err != nil {
+		return commands.HandleError(exec, msg, err)
+	}
 	if db.Uuid == nil {
 		return commands.HandleError(exec, msg, errors.New("the API response did not include the database UUID"))
 	}
@@ -428,7 +432,7 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		exec.PushProgressSuccess(msg)
 	}
 
-	return output.MarshaledWithHumanDetails{Value: db, Details: []output.DetailRow{
+	return output.MarshaledWithHumanDetails{Value: legacyOutput, Details: []output.DetailRow{
 		{Title: "UUID", Value: id, Colour: ui.DefaultUUUIDColours},
 	}}, nil
 }

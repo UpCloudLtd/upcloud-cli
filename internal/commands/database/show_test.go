@@ -135,9 +135,9 @@ func TestShowCommand_MySQL(t *testing.T) {
 	assert.Regexp(t, `Version:\s+8`, out)
 }
 
-func TestShowCommand_MachineReadableOutputUsesV9Response(t *testing.T) {
+func TestShowCommand_MachineReadableOutputPreservesLegacyResponse(t *testing.T) {
 	id := shownDatabaseUUID
-	response := `{"uuid":"` + id + `","title":"my-pg","type":"pg","plan_components":{"compute":{"name":"rdb.standard.2CPU-8GB","node_count":2}}}`
+	response := `{"uuid":"` + id + `","title":"my-pg","type":"pg","service_uri_params":{"port":11550},"plan_components":{"compute":{"name":"rdb.standard.2CPU-8GB","node_count":2}}}`
 
 	for _, outputFormat := range []string{config.ValueOutputJSON, config.ValueOutputYAML} {
 		t.Run(outputFormat, func(t *testing.T) {
@@ -149,13 +149,14 @@ func TestShowCommand_MachineReadableOutputUsesV9Response(t *testing.T) {
 
 			out, err := mockexecute.MockExecuteWithV9(c, &smock.Service{}, api.client, conf)
 			require.NoError(t, err)
-			assert.Contains(t, out, "plan_components")
-			assert.Contains(t, out, "rdb.standard.2CPU-8GB")
+			assert.NotContains(t, out, "plan_components")
+			assert.NotContains(t, out, "rdb.standard.2CPU-8GB")
 			if outputFormat == config.ValueOutputJSON {
 				var got map[string]any
 				require.NoError(t, json.Unmarshal([]byte(out), &got))
 				assert.Equal(t, id, got["uuid"])
-				assert.Contains(t, got, "plan_components")
+				assert.NotContains(t, got, "plan_components")
+				assert.Equal(t, "11550", got["service_uri_params"].(map[string]any)["port"])
 			}
 		})
 	}

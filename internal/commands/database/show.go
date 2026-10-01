@@ -50,6 +50,10 @@ func (s *showCommand) Execute(exec commands.Executor, uuidStr string) (output.Ou
 		return nil, apierror.FromResponse(res.StatusCode(), res.Body)
 	}
 	db := res.JSON200
+	legacyOutput, err := legacyDatabaseOutput(db)
+	if err != nil {
+		return nil, err
+	}
 	dbType := deref(db.Type)
 
 	nodeRows := []output.TableRow{}
@@ -136,7 +140,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuidStr string) (output.Ou
 
 	// For JSON and YAML output, passthrough API response
 	return output.MarshaledWithHumanOutput{
-		Value: db,
+		Value: legacyOutput,
 		Output: output.Combined{
 			output.CombinedSection{
 				Contents: output.Details{

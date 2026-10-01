@@ -32,7 +32,7 @@ const planCatalog = `{"service_types": [
 	]}
 ]}`
 
-const createdDatabase = `{"uuid": "` + createdDatabaseUUID + `", "title": "db-test", "type": "pg", "state": "rebuilding", "plan": "rdb.standard.2x-2CPU-8GB-100GB-regular"}`
+const createdDatabase = `{"uuid": "` + createdDatabaseUUID + `", "title": "db-test", "type": "pg", "state": "rebuilding", "plan": "rdb.standard.2x-2CPU-8GB-100GB-regular", "plan_components": {"compute": {"name": "rdb.standard.2CPU-8GB"}}}`
 
 // serviceType uses a list type for version, as the live API does.
 const serviceType = `{"name": "pg", "properties": {
@@ -304,6 +304,7 @@ func TestCreateCommand_Output(t *testing.T) {
 	require.NoError(t, json.Unmarshal([]byte(out), &body))
 	assert.Equal(t, createdDatabaseUUID, body["uuid"])
 	assert.Equal(t, "rdb.standard.2x-2CPU-8GB-100GB-regular", body["plan"])
+	assert.NotContains(t, body, "plan_components")
 }
 
 func TestCreateCommand_Wait(t *testing.T) {

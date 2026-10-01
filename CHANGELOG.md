@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- `database create`, `database list`, `database show`, and `database delete` use the v9 SDK. The JSON and YAML output of `database create`, `database list`, and `database show` follows the v9 API response shape.
+- `database create`, `database list`, `database show`, and `database delete` use the v9 SDK. Their existing JSON and YAML output shape is preserved.
 - `database show` displays the plan components of componentised plans.
 - `database create` without a plan flag now creates PostgreSQL and MySQL databases with the `--plan-*` defaults instead of the `2x2xCPU-4GB-100GB` plan: `rdb.standard.2CPU-8GB` compute with 8 GB memory per node instead of 4 GB, 2 nodes, 100 GiB storage per node, and the `regular` backup tier instead of the legacy backup retention of 8 days for MySQL and 15 days for PostgreSQL.
 - `database create`: `--plan` is deprecated for PostgreSQL and MySQL, and it cannot be combined with the `--plan-*` flags. `--plan` no longer has a default, and it is required for database types other than PostgreSQL and MySQL.

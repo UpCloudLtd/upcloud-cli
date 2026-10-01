@@ -14,6 +14,7 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/apierror"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
+	upcloudv8 "github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	upcloudv9 "github.com/UpCloudLtd/upcloud-go-api/v9/pkg/upcloud"
 	"github.com/google/uuid"
 )
@@ -22,6 +23,47 @@ const (
 	databaseStateRunning = "running"
 	databaseStateError   = "error"
 )
+
+// legacyDatabaseOutput preserves the database JSON/YAML contract while CRUD API calls use v9.
+func legacyDatabaseOutput(db *upcloudv9.DatabaseServiceInformationResponse) (*upcloudv8.ManagedDatabase, error) {
+	body, err := json.Marshal(db)
+	if err != nil {
+		return nil, fmt.Errorf("cannot marshal v9 database response: %w", err)
+	}
+	var normalized map[string]any
+	if err := json.Unmarshal(body, &normalized); err != nil {
+		return nil, fmt.Errorf("cannot normalize v9 database response: %w", err)
+	}
+	if params, ok := normalized["service_uri_params"].(map[string]any); ok {
+		for key, value := range params {
+			if value != nil {
+				params[key] = fmt.Sprint(value)
+			}
+		}
+	}
+	body, err = json.Marshal(normalized)
+	if err != nil {
+		return nil, fmt.Errorf("cannot marshal normalized database response: %w", err)
+	}
+
+	legacy := &upcloudv8.ManagedDatabase{}
+	if err := json.Unmarshal(body, legacy); err != nil {
+		return nil, fmt.Errorf("cannot convert v9 database response to legacy output: %w", err)
+	}
+	return legacy, nil
+}
+
+func legacyDatabaseListOutput(databases []upcloudv9.DatabaseServiceInformationResponse) ([]upcloudv8.ManagedDatabase, error) {
+	legacy := make([]upcloudv8.ManagedDatabase, 0, len(databases))
+	for i := range databases {
+		db, err := legacyDatabaseOutput(&databases[i])
+		if err != nil {
+			return nil, err
+		}
+		legacy = append(legacy, *db)
+	}
+	return legacy, nil
+}
 
 // databasePollInterval matches the v8 SDK wait helpers.
 var databasePollInterval = 5 * time.Second

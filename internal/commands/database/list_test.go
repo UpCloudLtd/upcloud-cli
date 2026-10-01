@@ -65,7 +65,7 @@ func TestDatabaseListTitleFallback(t *testing.T) {
 	}
 }
 
-func TestDatabaseListMachineReadableOutputUsesV9Response(t *testing.T) {
+func TestDatabaseListMachineReadableOutputPreservesLegacyResponse(t *testing.T) {
 	const id = "091f1afe-4ddd-4d43-afad-6aa3069cc7fe"
 	databases := `[{"uuid":"` + id + `","title":"service-name","type":"mysql","plan_components":{"compute":{"name":"rdb.standard.2CPU-8GB","node_count":2}}}]`
 
@@ -78,14 +78,14 @@ func TestDatabaseListMachineReadableOutputUsesV9Response(t *testing.T) {
 
 			out, err := mockexecute.MockExecuteWithV9(command, &smock.Service{}, api.client, conf)
 			require.NoError(t, err)
-			assert.Contains(t, out, "plan_components")
-			assert.Contains(t, out, "rdb.standard.2CPU-8GB")
+			assert.NotContains(t, out, "plan_components")
+			assert.NotContains(t, out, "rdb.standard.2CPU-8GB")
 			if outputFormat == config.ValueOutputJSON {
 				var got []map[string]any
 				require.NoError(t, json.Unmarshal([]byte(out), &got))
 				require.Len(t, got, 1)
 				assert.Equal(t, id, got[0]["uuid"])
-				assert.Contains(t, got[0], "plan_components")
+				assert.NotContains(t, got[0], "plan_components")
 			}
 		})
 	}
