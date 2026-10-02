@@ -29,7 +29,9 @@ const planCatalog = `{"service_types": [
 		{"compute": "rdb.standard.2CPU-8GB", "family": "standard", "cpu": 2, "memory_gb": 8, "dynamic_storage_supported": true,
 			"node_counts": [1, 2, 3], "backups": ["regular", "extended"],
 			"storage": {"dynamic_max_multiplier": 4, "step_gib": 10, "total_cap_gib": 10240, "options": [{"base_gib": 80, "max_gib": 400}]}}
-	]}
+	]},
+	{"type": "opensearch", "componentised": false, "zones": ["fi-hel1"], "compute_shapes": []},
+	{"type": "valkey", "componentised": false, "zones": ["fi-hel1"], "compute_shapes": []}
 ]}`
 
 const createdDatabase = `{"uuid": "` + createdDatabaseUUID + `", "title": "db-test", "type": "pg", "state": "rebuilding", "plan": "rdb.standard.2x-2CPU-8GB-100GB-regular", "plan_components": {"compute": {"name": "rdb.standard.2CPU-8GB"}}}`
@@ -286,6 +288,32 @@ func TestCreateCommand_Errors(t *testing.T) {
 			if test.beforeAPI {
 				assert.Empty(t, api.all(), "the error must be reported before calling the API")
 			}
+		})
+	}
+}
+
+func TestCreateCommand_RejectsUnavailableZoneBeforeCreate(t *testing.T) {
+	for _, test := range []struct {
+		name string
+		args []string
+	}{
+		{
+			name: "component plan",
+			args: []string{"--type", "pg", "--plan-storage-gib", "100"},
+		},
+		{
+			name: "named plan",
+			args: []string{"--type", "opensearch", "--plan", "1x2xCPU-4GB-80GB-1D"},
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			api := newCreateAPI(t, fakeResponse{status: http.StatusCreated, body: createdDatabase})
+			args := []string{"--title", "db-test", "--zone", "de-fra1", "--hostname-prefix", "testdb"}
+			_, err := runCreate(t, api, config.New(), append(args, test.args...)...)
+
+			require.EqualError(t, err, `--zone "de-fra1" is not available for database type "`+test.args[1]+`", valid zones are fi-hel1`)
+			assert.Empty(t, api.requestsTo(http.MethodPost, "/1.3/database"))
+			require.Len(t, api.requestsTo(http.MethodGet, "/1.3/database/plans"), 1)
 		})
 	}
 }

@@ -152,6 +152,20 @@ func (p *createParams) request(properties map[string]propertySchema) (upcloudv9.
 	return req, nil
 }
 
+// validateZone checks that the database type is offered in the requested zone.
+func (p *createParams) validateZone(catalog *upcloudv9.DatabasePlansResponse) error {
+	for _, serviceType := range catalog.ServiceTypes {
+		if string(serviceType.Type) != p.dbType {
+			continue
+		}
+		if !slices.Contains(serviceType.Zones, p.zone) {
+			return fmt.Errorf("--zone %q is not available for database type %q, valid zones are %s", p.zone, p.dbType, strings.Join(serviceType.Zones, ", "))
+		}
+		return nil
+	}
+	return fmt.Errorf("database type %q is not available in the plan catalog", p.dbType)
+}
+
 // applyPlanComponents validates the plan components against the plan catalog and sets them on the request.
 func (p *createParams) applyPlanComponents(catalog *upcloudv9.DatabasePlansResponse, changed func(string) bool, req *upcloudv9.DatabaseServiceCreateOpenAPI) error {
 	hint := fmt.Sprintf("run \"upctl database plans %s\" to list valid values", p.dbType)
@@ -394,14 +408,18 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		return nil, err
 	}
 
+	plans, err := client.ListDatabasePlansWithResponse(exec.Context())
+	if err != nil {
+		return commands.HandleError(exec, msg, err)
+	}
+	if plans.JSON200 == nil {
+		return commands.HandleError(exec, msg, apierror.FromResponse(plans.StatusCode(), plans.Body))
+	}
+	if err := s.params.validateZone(plans.JSON200); err != nil {
+		return commands.HandleError(exec, msg, err)
+	}
+
 	if useComponents {
-		plans, err := client.ListDatabasePlansWithResponse(exec.Context())
-		if err != nil {
-			return commands.HandleError(exec, msg, err)
-		}
-		if plans.JSON200 == nil {
-			return commands.HandleError(exec, msg, apierror.FromResponse(plans.StatusCode(), plans.Body))
-		}
 		if err := s.params.applyPlanComponents(plans.JSON200, s.Cobra().Flags().Changed, &req); err != nil {
 			return commands.HandleError(exec, msg, err)
 		}
