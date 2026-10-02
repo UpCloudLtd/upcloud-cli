@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/apierror"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
-	"github.com/UpCloudLtd/upcloud-cli/v3/internal/utils"
-	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	upcloudv9 "github.com/UpCloudLtd/upcloud-go-api/v9/pkg/upcloud"
+	"github.com/google/uuid"
 	"github.com/spf13/pflag"
 )
 
@@ -43,30 +44,43 @@ func (c *deleteCommand) InitCommand() {
 	c.AddFlags(flags)
 }
 
-func Delete(exec commands.Executor, uuid string, disableTerminationProtection, wait bool) (output.Output, error) {
-	svc := exec.All()
-	msg := fmt.Sprintf("Deleting database %s", uuid)
+func Delete(exec commands.Executor, uuidStr string, disableTerminationProtection, wait bool) (output.Output, error) {
+	msg := fmt.Sprintf("Deleting database %s", uuidStr)
 	exec.PushProgressStarted(msg)
+
+	client, err := v9Client(exec)
+	if err != nil {
+		return commands.HandleError(exec, msg, err)
+	}
+	id, err := parseDatabaseUUID(uuidStr)
+	if err != nil {
+		return commands.HandleError(exec, msg, err)
+	}
 
 	if disableTerminationProtection {
 		b := false
-		_, err := svc.ModifyManagedDatabase(exec.Context(), &request.ModifyManagedDatabaseRequest{
-			UUID:                  uuid,
+		res, err := client.ModifyDatabaseWithResponse(exec.Context(), id, upcloudv9.ModifyDatabaseJSONRequestBody{
 			TerminationProtection: &b,
 		})
 		if err != nil {
 			return commands.HandleError(exec, msg, err)
 		}
+		if res.JSON200 == nil {
+			return commands.HandleError(exec, msg, apierror.FromResponse(res.StatusCode(), res.Body))
+		}
 	}
 
-	err := svc.DeleteManagedDatabase(exec.Context(), &request.DeleteManagedDatabaseRequest{UUID: uuid})
+	res, err := client.DeleteDatabaseWithResponse(exec.Context(), id)
 	if err != nil {
 		return commands.HandleError(exec, msg, err)
 	}
+	if status := res.StatusCode(); status < 200 || status > 299 {
+		return commands.HandleError(exec, msg, apierror.FromResponse(status, res.Body))
+	}
 
 	if wait {
-		exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Waiting for database service %s to be deleted", uuid))
-		err = waitUntilDatabaseDeleted(exec, uuid)
+		exec.PushProgressUpdateMessage(msg, fmt.Sprintf("Waiting for database service %s to be deleted", uuidStr))
+		err = waitUntilDatabaseDeleted(exec, client, id)
 		if err != nil {
 			return commands.HandleError(exec, msg, err)
 		}
@@ -83,21 +97,22 @@ func (c *deleteCommand) Execute(exec commands.Executor, arg string) (output.Outp
 	return Delete(exec, arg, c.disableTerminationProtection.Value(), c.wait.Value())
 }
 
-func waitUntilDatabaseDeleted(exec commands.Executor, uuid string) error {
-	ticker := time.NewTicker(5 * time.Second)
+func waitUntilDatabaseDeleted(exec commands.Executor, client *upcloudv9.ClientWithResponses, id uuid.UUID) error {
+	ticker := time.NewTicker(databasePollInterval)
 	defer ticker.Stop()
 
 	ctx := exec.Context()
-	svc := exec.All()
 
-	for i := 0; ; i++ {
+	for {
 		select {
 		case <-ticker.C:
-			_, err := svc.GetManagedDatabase(exec.Context(), &request.GetManagedDatabaseRequest{
-				UUID: uuid,
-			})
+			res, err := client.GetDatabaseWithResponse(ctx, id)
 			if err != nil {
-				if utils.IsNotFoundError(err) {
+				return err
+			}
+			if res.JSON200 == nil {
+				err := apierror.FromResponse(res.StatusCode(), res.Body)
+				if apierror.IsNotFound(err) {
 					return nil
 				}
 

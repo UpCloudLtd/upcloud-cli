@@ -25,3 +25,9 @@ func (pp *PageParameters) Page() *request.Page {
 		Size:   pp.size,
 	}
 }
+
+// LimitOffset returns the page as limit and offset query values, computed the same way as the v8 SDK.
+func (pp *PageParameters) LimitOffset() (limit, offset int) {
+	limit = max(pp.size, 0)
+	return limit, (max(pp.number, 1) - 1) * limit
+}

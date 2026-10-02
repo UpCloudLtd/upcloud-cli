@@ -1,6 +1,7 @@
 package database
 
 import (
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/apierror"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/format"
@@ -8,8 +9,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
-	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
+	upcloudv9 "github.com/UpCloudLtd/upcloud-go-api/v9/pkg/upcloud"
 )
 
 // ShowCommand creates the "database show" command
@@ -32,94 +32,124 @@ type showCommand struct {
 }
 
 // Execute implements commands.MultipleArgumentCommand
-func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Output, error) {
-	svc := exec.All()
-	db, err := svc.GetManagedDatabase(exec.Context(), &request.GetManagedDatabaseRequest{UUID: uuid})
+func (s *showCommand) Execute(exec commands.Executor, uuidStr string) (output.Output, error) {
+	client, err := v9Client(exec)
+	if err != nil {
+		return nil, err
+	}
+	id, err := parseDatabaseUUID(uuidStr)
 	if err != nil {
 		return nil, err
 	}
 
+	res, err := client.GetDatabaseWithResponse(exec.Context(), id)
+	if err != nil {
+		return nil, err
+	}
+	if res.JSON200 == nil {
+		return nil, apierror.FromResponse(res.StatusCode(), res.Body)
+	}
+	db := res.JSON200
+	legacyOutput, err := legacyDatabaseOutput(db)
+	if err != nil {
+		return nil, err
+	}
+	dbType := deref(db.Type)
+
 	nodeRows := []output.TableRow{}
-	for _, node := range db.NodeStates {
+	for _, node := range deref(db.NodeStates) {
 		nodeRows = append(nodeRows, output.TableRow{
-			node.Name,
-			node.Role,
-			node.State,
+			deref(node.Name),
+			deref(node.Role),
+			deref(node.State),
 		})
 	}
 
 	componentsRows := []output.TableRow{}
-	for _, component := range db.Components {
+	for _, component := range deref(db.Components) {
 		componentsRows = append(componentsRows, output.TableRow{
-			component.Component,
-			component.Host,
-			component.Port,
-			component.Route,
-			component.Usage,
+			deref(component.Component),
+			deref(component.Host),
+			deref(component.Port),
+			deref(component.Route),
+			deref(component.Usage),
 		})
 	}
 
+	maintenance := deref(db.Maintenance)
 	detailSections := []output.DetailSection{
 		{
 			Title: "Overview:",
 			Rows: []output.DetailRow{
-				{Title: "UUID:", Value: db.UUID, Colour: ui.DefaultUUUIDColours},
-				{Title: "Title:", Value: db.Title},
-				{Title: "Name:", Value: db.Name},
-				{Title: "Type:", Value: prettyDatabaseType(db.Type)},
+				{Title: "UUID:", Value: uuidString(db.Uuid), Colour: ui.DefaultUUUIDColours},
+				{Title: "Title:", Value: deref(db.Title)},
+				{Title: "Name:", Value: deref(db.Name)},
+				{Title: "Type:", Value: prettyDatabaseType(dbType)},
 				{Title: "Version:", Value: getVersion(db), Format: format.PossiblyUnknownString},
-				{Title: "Plan:", Value: db.Plan},
-				{Title: "Zone:", Value: db.Zone},
-				{Title: "State:", Value: db.State, Format: format.DatabaseState},
-				{Title: "Termination protection:", Value: db.TerminationProtection, Format: format.Boolean},
-			},
-		},
-		{
-			Title: "Maintenance schedule:",
-			Rows: []output.DetailRow{
-				{Title: "Weekday:", Value: db.Maintenance.DayOfWeek},
-				{Title: "Time:", Value: db.Maintenance.Time},
-			},
-		},
-		{
-			Title: "Authentication:",
-			Rows: []output.DetailRow{
-				{Title: "Service URI:", Value: db.ServiceURI},
-				{Title: "Database name:", Value: db.ServiceURIParams.DatabaseName},
-				{Title: "Host:", Value: db.ServiceURIParams.Host},
-				{Title: "Password:", Value: db.ServiceURIParams.Password},
-				{Title: "Port:", Value: db.ServiceURIParams.Port},
-				{Title: "SSL mode:", Value: db.ServiceURIParams.SSLMode},
-				{Title: "User:", Value: db.ServiceURIParams.User},
+				{Title: "Plan:", Value: deref(db.Plan)},
+				{Title: "Zone:", Value: deref(db.Zone)},
+				{Title: "State:", Value: deref(db.State), Format: format.DatabaseState},
+				{Title: "Termination protection:", Value: deref(db.TerminationProtection), Format: format.Boolean},
 			},
 		},
 	}
 
-	if db.Type == upcloud.ManagedDatabaseServiceTypeOpenSearch {
-		acl, err := svc.GetManagedDatabaseAccessControl(exec.Context(), &request.GetManagedDatabaseAccessControlRequest{ServiceUUID: uuid})
+	if section, ok := planComponentsSection(db.PlanComponents); ok {
+		detailSections = append(detailSections, section)
+	}
+
+	detailSections = append(detailSections,
+		output.DetailSection{
+			Title: "Maintenance schedule:",
+			Rows: []output.DetailRow{
+				{Title: "Weekday:", Value: deref(maintenance.Dow)},
+				{Title: "Time:", Value: deref(maintenance.Time)},
+			},
+		},
+		output.DetailSection{
+			Title: "Authentication:",
+			Rows: []output.DetailRow{
+				{Title: "Service URI:", Value: deref(db.ServiceUri)},
+				{Title: "Database name:", Value: mapString(db.ServiceUriParams, "dbname")},
+				{Title: "Host:", Value: mapString(db.ServiceUriParams, "host")},
+				{Title: "Password:", Value: mapString(db.ServiceUriParams, "password")},
+				{Title: "Port:", Value: mapString(db.ServiceUriParams, "port")},
+				{Title: "SSL mode:", Value: mapString(db.ServiceUriParams, "ssl_mode")},
+				{Title: "User:", Value: mapString(db.ServiceUriParams, "user")},
+			},
+		},
+	)
+
+	if dbType == string(upcloudv9.DatabaseServiceTypeOpensearch) {
+		acl, err := client.GetDatabaseAccessControlWithResponse(exec.Context(), id)
 		if err != nil {
 			return nil, err
+		}
+		if acl.JSON200 == nil {
+			return nil, apierror.FromResponse(acl.StatusCode(), acl.Body)
 		}
 
 		detailSections = append(detailSections, output.DetailSection{
 			Title: "Access control settings:",
 			Rows: []output.DetailRow{
-				{Title: "Access control:", Value: acl.ACLsEnabled, Format: format.Boolean},
-				{Title: "Extended access control:", Value: acl.ExtendedACLsEnabled, Format: format.Boolean},
+				{Title: "Access control:", Value: deref(acl.JSON200.AccessControl), Format: format.Boolean},
+				{Title: "Extended access control:", Value: deref(acl.JSON200.ExtendedAccessControl), Format: format.Boolean},
 			},
 		})
 	}
 
 	// For JSON and YAML output, passthrough API response
 	return output.MarshaledWithHumanOutput{
-		Value: db,
+		Value: legacyOutput,
 		Output: output.Combined{
 			output.CombinedSection{
 				Contents: output.Details{
 					Sections: detailSections,
 				},
 			},
-			labels.GetLabelsSectionWithResourceType(db.Labels, "database"),
+			labels.LabelsSection(deref(db.Labels), func(l upcloudv9.DatabaseLabelInformationResponse) (string, string) {
+				return deref(l.Key), deref(l.Value)
+			}, "database"),
 			output.CombinedSection{
 				Title: "Nodes:",
 				Contents: output.Table{
@@ -148,33 +178,50 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 	}, nil
 }
 
-func getVersion(db *upcloud.ManagedDatabase) string {
+func planComponentsSection(pc *upcloudv9.DatabasePlanComponentsResponse) (output.DetailSection, bool) {
+	if pc == nil || pc.Compute == nil || pc.Compute.Name == nil {
+		return output.DetailSection{}, false
+	}
+
+	return output.DetailSection{
+		Title: "Plan components:",
+		Rows: []output.DetailRow{
+			{Title: "Compute:", Value: *pc.Compute.Name},
+			{Title: "Node count:", Value: deref(pc.Compute.NodeCount)},
+			{Title: "Storage per node (GiB):", Value: deref(deref(pc.Storage).TotalGib)},
+			{Title: "Backups:", Value: string(deref(deref(pc.Backups).Name))},
+		},
+	}, true
+}
+
+var versionMetadataKeys = map[string]string{
+	"mysql":      "mysql_version",
+	"opensearch": "opensearch_version",
+	"pg":         "pg_version",
+	"valkey":     "valkey_version",
+}
+
+func getVersion(db *upcloudv9.DatabaseServiceInformationResponse) string {
 	if db == nil || db.Metadata == nil {
 		return ""
 	}
 
-	switch db.Type {
-	case "mysql":
-		return db.Metadata.MySQLVersion
-	case "opensearch":
-		return db.Metadata.OpenSearchVersion
-	case "pg":
-		return db.Metadata.PGVersion
-	case "valkey":
-		return db.Metadata.ValkeyVersion
+	key, ok := versionMetadataKeys[deref(db.Type)]
+	if !ok {
+		return ""
 	}
-	return ""
+	return mapString(db.Metadata, key)
 }
 
-func prettyDatabaseType(serviceType upcloud.ManagedDatabaseServiceType) string {
-	switch serviceType {
-	case upcloud.ManagedDatabaseServiceTypeMySQL:
+func prettyDatabaseType(serviceType string) string {
+	switch upcloudv9.DatabaseServiceType(serviceType) {
+	case upcloudv9.DatabaseServiceTypeMysql:
 		return "MySQL"
-	case upcloud.ManagedDatabaseServiceTypeOpenSearch:
+	case upcloudv9.DatabaseServiceTypeOpensearch:
 		return "OpenSearch"
-	case upcloud.ManagedDatabaseServiceTypePostgreSQL:
+	case upcloudv9.DatabaseServiceTypePg:
 		return "PostgreSQL"
 	default:
-		return string(serviceType)
+		return serviceType
 	}
 }

@@ -5,14 +5,13 @@ import (
 	"strings"
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
-	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/jedib0t/go-pretty/v6/text"
 )
 
 // databaseStateColour maps database states to colours
-func databaseStateColour(state upcloud.ManagedDatabaseState) text.Colors {
+func databaseStateColour(state string) text.Colors {
 	switch state {
-	case upcloud.ManagedDatabaseStateRunning:
+	case "running":
 		return text.Colors{text.FgGreen}
 	case "rebuilding", "rebalancing":
 		return text.Colors{text.FgYellow}
