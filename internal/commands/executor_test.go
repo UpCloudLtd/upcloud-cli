@@ -8,8 +8,18 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
 	smock "github.com/UpCloudLtd/upcloud-cli/v3/internal/mock"
 
+	upcloudv9 "github.com/UpCloudLtd/upcloud-go-api/v9/pkg/upcloud"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestExecutor_V9Client(t *testing.T) {
+	mService := &smock.Service{}
+	cfg := config.New()
+	v9Client := &upcloudv9.ClientWithResponses{}
+	exec := NewExecutor(cfg, mService, cfg.NewLogger("test")).WithV9Client(v9Client)
+
+	assert.Same(t, v9Client, exec.V9())
+}
 
 func TestExecutor_WaitFor(t *testing.T) {
 	mService := &smock.Service{}

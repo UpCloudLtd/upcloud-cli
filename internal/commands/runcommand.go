@@ -17,6 +17,12 @@ func commandRunE(command Command, service internal.AllServices, config *config.C
 	logger := config.NewLogger("runcommand")
 	cmdLogger := logger.With("command", command.Cobra().CommandPath())
 	executor := NewExecutor(config, service, cmdLogger)
+	v9Client, err := config.CreateV9Client()
+	if err != nil {
+		cmdLogger.Debug("cannot create v9 SDK client", "error", err)
+	} else {
+		executor = executor.WithV9Client(v9Client)
+	}
 
 	w := command.Cobra().OutOrStdout()
 
