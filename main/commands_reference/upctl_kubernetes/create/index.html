@@ -1088,6 +1088,34 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../upctl_database/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    database 
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
     
@@ -1097,10 +1125,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4_2" >
         
           
-          <label class="md-nav__link" for="__nav_2_4_1" id="__nav_2_4_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2_4_2" id="__nav_2_4_2_label" tabindex="0">
             
   
   
@@ -1118,8 +1146,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_4_1_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2_4_1">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4_2">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1216,34 +1244,6 @@
           </ul>
         </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../upctl_database/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    database 
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -8238,12 +8238,12 @@
 </span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>                --name my-cluster \
 </span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>                --plan production-small \
 </span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>                --network 03e5ca07-f36c-4957-a676-e001e40441eb \
-</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>                --node-group count=4,kubelet-arg=&quot;log-flush-frequency=5s&quot;,label=&quot;owner=devteam&quot;,label=&quot;env=dev&quot;,name=my-node-group,plan=4xCPU-8GB,ssh-key=&quot;ssh-ed25519 AAAAo admin@user.com&quot;,ssh-key=&quot;/path/to/your/public/ssh/key.pub&quot;,storage=01000000-0000-4000-8000-000160010100,taint=&quot;env=dev:NoSchedule&quot;,taint=&quot;env=dev2:NoSchedule&quot; \
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>                --node-group count=4,kubelet-arg="log-flush-frequency=5s",label="owner=devteam",label="env=dev",name=my-node-group,plan=4xCPU-8GB,ssh-key="ssh-ed25519 AAAAo admin@user.com",ssh-key="/path/to/your/public/ssh/key.pub",storage=01000000-0000-4000-8000-000160010100,taint="env=dev:NoSchedule",taint="env=dev2:NoSchedule" \
 </span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>                --zone de-fra1
 </span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>upctl kubernetes create \
 </span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>                --name gpu-cluster \
 </span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>                --network 03e5ca07-f36c-4957-a676-e001e40441eb \
-</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>                --node-group count=2,name=gpu-workers,plan=GPU-8xCPU-64GB-1xL40S,storage-size=1024,storage-tier=maxiops,label=&quot;gpu=NVIDIA-L40S&quot; \
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>                --node-group count=2,name=gpu-workers,plan=GPU-8xCPU-64GB-1xL40S,storage-size=1024,storage-tier=maxiops,label="gpu=NVIDIA-L40S" \
 </span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>                --node-group count=3,name=cloud-native-workers,plan=CLOUDNATIVE-4xCPU-8GB,storage-size=100,storage-tier=standard \
 </span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>                --zone fi-hel2
 </span></code></pre></div>

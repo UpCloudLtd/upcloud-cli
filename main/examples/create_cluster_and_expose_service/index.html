@@ -1086,6 +1086,34 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../commands_reference/upctl_database/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    database 
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
     
@@ -1095,10 +1123,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4_2" >
         
           
-          <label class="md-nav__link" for="__nav_2_4_1" id="__nav_2_4_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2_4_2" id="__nav_2_4_2_label" tabindex="0">
             
   
   
@@ -1116,8 +1144,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_4_1_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2_4_1">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4_2">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1214,34 +1242,6 @@
           </ul>
         </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_database/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    database 
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -8164,8 +8164,8 @@
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span>--network<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>net<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span>--plan<span class="w"> </span><span class="nv">$plan</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span>--zone<span class="w"> </span><span class="nv">$zone</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span>--kubernetes-api-allow-ip<span class="w"> </span><span class="s2">&quot;0.0.0.0/0&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span>--node-group<span class="w"> </span><span class="nv">count</span><span class="o">=</span><span class="nv">$ng_count</span>,name<span class="o">=</span><span class="nv">$ng_name</span>,plan<span class="o">=</span><span class="nv">$ng_plan</span>,label<span class="o">=</span><span class="s2">&quot;test=</span><span class="nv">$test_label</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span>--kubernetes-api-allow-ip<span class="w"> </span><span class="s2">"0.0.0.0/0"</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span>--node-group<span class="w"> </span><span class="nv">count</span><span class="o">=</span><span class="nv">$ng_count</span>,name<span class="o">=</span><span class="nv">$ng_name</span>,plan<span class="o">=</span><span class="nv">$ng_plan</span>,label<span class="o">=</span><span class="s2">"test=</span><span class="nv">$test_label</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span>--wait<span class="o">=</span>all<span class="p">;</span>
 </span></code></pre></div>
 <p>Once the cluster is created, we can get the kubeconfig file to interact with the cluster using <code>kubectl</code>.</p>
@@ -8178,9 +8178,9 @@
 </span></code></pre></div>
 <p>If using <code>NodePort</code> service type, we need to get the node IP and service port to access the service.</p>
 <div class="language-sh highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Get node IP</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nv">node_ip</span><span class="o">=</span><span class="k">$(</span>kubectl<span class="w"> </span>get<span class="w"> </span>node<span class="w"> </span>-o<span class="w"> </span>json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;.items[0].status.addresses.[] | select(.type == &quot;ExternalIP&quot;).address&#39;</span><span class="k">)</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nv">node_ip</span><span class="o">=</span><span class="k">$(</span>kubectl<span class="w"> </span>get<span class="w"> </span>node<span class="w"> </span>-o<span class="w"> </span>json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">'.items[0].status.addresses.[] | select(.type == "ExternalIP").address'</span><span class="k">)</span>
 </span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="c1"># Get service port</span>
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="nv">svc_port</span><span class="o">=</span><span class="k">$(</span>kubectl<span class="w"> </span>get<span class="w"> </span>service<span class="w"> </span>hello-uks<span class="w"> </span>-o<span class="w"> </span>json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;.spec.ports[0].nodePort&#39;</span><span class="k">)</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="nv">svc_port</span><span class="o">=</span><span class="k">$(</span>kubectl<span class="w"> </span>get<span class="w"> </span>service<span class="w"> </span>hello-uks<span class="w"> </span>-o<span class="w"> </span>json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">'.spec.ports[0].nodePort'</span><span class="k">)</span>
 </span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>
 </span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="c1"># Wait until the service is reachable</span>
 </span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="k">until</span><span class="w"> </span>curl<span class="w"> </span>-sSf<span class="w"> </span><span class="nv">$node_ip</span>:<span class="nv">$svc_port</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
@@ -8202,7 +8202,7 @@
 <p>Finally, we can clean up the created resources.</p>
 <div class="language-sh highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>kubectl<span class="w"> </span>delete<span class="w"> </span>service<span class="w"> </span>hello-uks
 </span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>upctl<span class="w"> </span>all<span class="w"> </span>purge<span class="w"> </span>--include<span class="w"> </span><span class="s2">&quot;*</span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span><span class="s2">*&quot;</span><span class="p">;</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>upctl<span class="w"> </span>all<span class="w"> </span>purge<span class="w"> </span>--include<span class="w"> </span><span class="s2">"*</span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span><span class="s2">*"</span><span class="p">;</span>
 </span></code></pre></div>
 
 
