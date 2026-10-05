@@ -36,12 +36,35 @@ const planCatalog = `{"service_types": [
 
 const createdDatabase = `{"uuid": "` + createdDatabaseUUID + `", "title": "db-test", "type": "pg", "state": "rebuilding", "plan": "rdb.standard.2x-2CPU-8GB-100GB-regular", "plan_components": {"compute": {"name": "rdb.standard.2CPU-8GB"}}}`
 
-// serviceType uses a list type for version, as the live API does.
-const serviceType = `{"name": "pg", "properties": {
-	"version": {"type": ["string", "null"], "title": "Version"},
-	"numeric_string": {"type": "string", "title": "Numeric string"},
-	"max_connections": {"type": "integer", "title": "Max connections"}
-}}`
+// serviceTypeResponse uses a list type for version, as the live API does.
+func serviceTypeResponse(dbType string) string {
+	legacyPlans := map[string][]string{
+		"mysql":      {"legacy-plan", "4x4xCPU-8GB-200GB"},
+		"pg":         {"legacy-plan", "4x4xCPU-8GB-200GB"},
+		"opensearch": {"legacy-plan", "1x2xCPU-4GB-80GB-1D"},
+		"valkey":     {"legacy-plan", "1x2xCPU-4GB-80GB-1D"},
+	}
+	plans := make([]map[string]any, 0, len(legacyPlans[dbType]))
+	for _, name := range legacyPlans[dbType] {
+		plans = append(plans, map[string]any{
+			"plan":  name,
+			"zones": map[string]any{"zone": []map[string]string{{"name": "fi-hel1"}}},
+		})
+	}
+	body, err := json.Marshal(map[string]any{
+		"name": dbType,
+		"properties": map[string]any{
+			"version":         map[string]any{"type": []string{"string", "null"}, "title": "Version"},
+			"numeric_string":  map[string]any{"type": "string", "title": "Numeric string"},
+			"max_connections": map[string]any{"type": "integer", "title": "Max connections"},
+		},
+		"service_plans": plans,
+	})
+	if err != nil {
+		panic(err)
+	}
+	return string(body)
+}
 
 func newCreateAPI(t *testing.T, create fakeResponse) *fakeAPI {
 	responses := map[string]fakeResponse{
@@ -53,7 +76,7 @@ func newCreateAPI(t *testing.T, create fakeResponse) *fakeAPI {
 		}},
 	}
 	for _, dbType := range []string{"mysql", "pg", "opensearch", "valkey"} {
-		responses["GET /1.3/database/service-types/"+dbType] = fakeResponse{status: http.StatusOK, body: serviceType}
+		responses["GET /1.3/database/service-types/"+dbType] = fakeResponse{status: http.StatusOK, body: serviceTypeResponse(dbType)}
 	}
 	return newFakeAPI(t, responses)
 }
@@ -88,6 +111,11 @@ func TestCreateCommand_Request(t *testing.T) {
 				"termination_protection": true, "properties": {"version": "13", "max_connections": 200}}`,
 		},
 		{
+			name:     "mysql legacy plan remains supported",
+			args:     []string{"--type", "mysql", "--plan", "4x4xCPU-8GB-200GB"},
+			expected: `{"hostname_prefix": "testdb", "plan": "4x4xCPU-8GB-200GB", "title": "db-test", "type": "mysql", "zone": "fi-hel1"}`,
+		},
+		{
 			name: "opensearch with typed properties",
 			args: []string{
 				"--type", "opensearch", "--plan", "1x2xCPU-4GB-80GB-1D",
@@ -99,6 +127,11 @@ func TestCreateCommand_Request(t *testing.T) {
 			},
 			expected: `{"hostname_prefix": "testdb", "plan": "1x2xCPU-4GB-80GB-1D", "title": "db-test", "type": "opensearch", "zone": "fi-hel1",
 				"properties": {"saml": {"enabled": true}, "openid": {"client_id": "test_client_id"}, "ism_enabled": true, "custom_domain": "custom.upcloud.com", "numeric_string": "123"}}`,
+		},
+		{
+			name:     "valkey uses its legacy plan catalog",
+			args:     []string{"--type", "valkey", "--plan", "1x2xCPU-4GB-80GB-1D"},
+			expected: `{"hostname_prefix": "testdb", "plan": "1x2xCPU-4GB-80GB-1D", "title": "db-test", "type": "valkey", "zone": "fi-hel1"}`,
 		},
 		{
 			name: "maintenance and networks",
@@ -149,9 +182,22 @@ func TestCreateCommand_Request(t *testing.T) {
 				require.NoError(t, json.Unmarshal(creates[0].Body, &body))
 				assert.NotContains(t, body, "plan", "component selection must not send an implicit plan")
 				assert.NotContains(t, body, "additional_disk_space_gib", "plan_storage_gib is exclusive with additional_disk_space_gib")
+				require.Len(t, api.requestsTo(http.MethodGet, "/1.3/database/plans"), 1)
+			} else {
+				assert.Empty(t, api.requestsTo(http.MethodGet, "/1.3/database/plans"), "legacy plan validation must not depend on the component plan catalog")
 			}
+			assert.Len(t, api.requestsTo(http.MethodGet, "/1.3/database/service-types/"+databaseTypeFromArgs(test.args)), 1)
 		})
 	}
+}
+
+func databaseTypeFromArgs(args []string) string {
+	for i, arg := range args {
+		if arg == "--type" && i+1 < len(args) {
+			return args[i+1]
+		}
+	}
+	return "mysql"
 }
 
 func TestCreateCommand_LegacyPlanDeprecationWarning(t *testing.T) {
@@ -294,16 +340,21 @@ func TestCreateCommand_Errors(t *testing.T) {
 
 func TestCreateCommand_RejectsUnavailableZoneBeforeCreate(t *testing.T) {
 	for _, test := range []struct {
-		name string
-		args []string
+		name          string
+		args          []string
+		error         string
+		componentPlan bool
 	}{
 		{
-			name: "component plan",
-			args: []string{"--type", "pg", "--plan-storage-gib", "100"},
+			name:          "component plan",
+			args:          []string{"--type", "pg", "--plan-storage-gib", "100"},
+			error:         `--zone "de-fra1" is not available for database type "pg", valid zones are fi-hel1`,
+			componentPlan: true,
 		},
 		{
-			name: "named plan",
-			args: []string{"--type", "opensearch", "--plan", "1x2xCPU-4GB-80GB-1D"},
+			name:  "named plan",
+			args:  []string{"--type", "opensearch", "--plan", "1x2xCPU-4GB-80GB-1D"},
+			error: `--zone "de-fra1" is not available for database plan "1x2xCPU-4GB-80GB-1D", valid zones are fi-hel1`,
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
@@ -311,9 +362,40 @@ func TestCreateCommand_RejectsUnavailableZoneBeforeCreate(t *testing.T) {
 			args := []string{"--title", "db-test", "--zone", "de-fra1", "--hostname-prefix", "testdb"}
 			_, err := runCreate(t, api, config.New(), append(args, test.args...)...)
 
-			require.EqualError(t, err, `--zone "de-fra1" is not available for database type "`+test.args[1]+`", valid zones are fi-hel1`)
+			require.EqualError(t, err, test.error)
 			assert.Empty(t, api.requestsTo(http.MethodPost, "/1.3/database"))
-			require.Len(t, api.requestsTo(http.MethodGet, "/1.3/database/plans"), 1)
+			if test.componentPlan {
+				require.Len(t, api.requestsTo(http.MethodGet, "/1.3/database/plans"), 1)
+			} else {
+				assert.Empty(t, api.requestsTo(http.MethodGet, "/1.3/database/plans"))
+			}
+		})
+	}
+}
+
+func TestCreateCommand_RejectsUnknownLegacyPlanBeforeCreate(t *testing.T) {
+	for _, test := range []struct {
+		name  string
+		args  []string
+		error string
+	}{
+		{
+			name:  "deprecated postgres plan",
+			args:  []string{"--type", "pg", "--plan", "unknown-plan"},
+			error: `--plan "unknown-plan" is not available for database type "pg", run "upctl database plans pg --show-legacy" to list legacy plans`,
+		},
+		{
+			name:  "legacy-only engine plan",
+			args:  []string{"--type", "opensearch", "--plan", "unknown-plan"},
+			error: `--plan "unknown-plan" is not available for database type "opensearch", run "upctl database plans opensearch" to list valid values`,
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			api := newCreateAPI(t, fakeResponse{status: http.StatusCreated, body: createdDatabase})
+			_, err := runCreate(t, api, config.New(), append(requiredCreateArgs, test.args...)...)
+			require.EqualError(t, err, test.error)
+			assert.Empty(t, api.requestsTo(http.MethodPost, "/1.3/database"))
+			assert.Empty(t, api.requestsTo(http.MethodGet, "/1.3/database/plans"))
 		})
 	}
 }

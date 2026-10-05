@@ -166,6 +166,34 @@ func (p *createParams) validateZone(catalog *upcloudv9.DatabasePlansResponse) er
 	return fmt.Errorf("database type %q is not available in the plan catalog", p.dbType)
 }
 
+func (p *createParams) validateLegacyPlan(plans []upcloudv9.DatabaseServicePlanResponse) error {
+	for _, plan := range plans {
+		if plan.Plan == nil || *plan.Plan != p.plan {
+			continue
+		}
+		if plan.Zones == nil || plan.Zones.Zone == nil {
+			return fmt.Errorf("availability zones are not available for database plan %q", p.plan)
+		}
+
+		zones := make([]string, 0, len(*plan.Zones.Zone))
+		for _, zone := range *plan.Zones.Zone {
+			if zone.Name != nil {
+				zones = append(zones, *zone.Name)
+			}
+		}
+		if !slices.Contains(zones, p.zone) {
+			return fmt.Errorf("--zone %q is not available for database plan %q, valid zones are %s", p.zone, p.plan, strings.Join(zones, ", "))
+		}
+		return nil
+	}
+
+	hint := fmt.Sprintf("run \"upctl database plans %s\" to list valid values", p.dbType)
+	if supportsPlanComponents(p.dbType) {
+		hint = fmt.Sprintf("run \"upctl database plans %s --show-legacy\" to list legacy plans", p.dbType)
+	}
+	return fmt.Errorf("--plan %q is not available for database type %q, %s", p.plan, p.dbType, hint)
+}
+
 // applyPlanComponents validates the plan components against the plan catalog and sets them on the request.
 func (p *createParams) applyPlanComponents(catalog *upcloudv9.DatabasePlansResponse, changed func(string) bool, req *upcloudv9.DatabaseServiceCreateOpenAPI) error {
 	hint := fmt.Sprintf("run \"upctl database plans %s\" to list valid values", p.dbType)
@@ -398,7 +426,7 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 	msg := fmt.Sprintf("Creating database %v", s.params.title)
 	exec.PushProgressStarted(msg)
 
-	properties, err := getServiceTypeProperties(exec.Context(), client, s.params.dbType)
+	properties, legacyPlans, err := getServiceTypeDetails(exec.Context(), client, s.params.dbType)
 	if err != nil {
 		return commands.HandleError(exec, msg, err)
 	}
@@ -408,22 +436,24 @@ func (s *createCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		return nil, err
 	}
 
-	plans, err := client.ListDatabasePlansWithResponse(exec.Context())
-	if err != nil {
-		return commands.HandleError(exec, msg, err)
-	}
-	if plans.JSON200 == nil {
-		return commands.HandleError(exec, msg, apierror.FromResponse(plans.StatusCode(), plans.Body))
-	}
-	if err := s.params.validateZone(plans.JSON200); err != nil {
-		return commands.HandleError(exec, msg, err)
-	}
-
 	if useComponents {
+		plans, err := client.ListDatabasePlansWithResponse(exec.Context())
+		if err != nil {
+			return commands.HandleError(exec, msg, err)
+		}
+		if plans.JSON200 == nil {
+			return commands.HandleError(exec, msg, apierror.FromResponse(plans.StatusCode(), plans.Body))
+		}
+		if err := s.params.validateZone(plans.JSON200); err != nil {
+			return commands.HandleError(exec, msg, err)
+		}
 		if err := s.params.applyPlanComponents(plans.JSON200, s.Cobra().Flags().Changed, &req); err != nil {
 			return commands.HandleError(exec, msg, err)
 		}
 	} else {
+		if err := s.params.validateLegacyPlan(legacyPlans); err != nil {
+			return commands.HandleError(exec, msg, err)
+		}
 		req.Plan = &s.params.plan
 	}
 

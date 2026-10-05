@@ -128,29 +128,30 @@ func (p propertySchema) allowsString() bool {
 	return false
 }
 
-// getServiceTypeProperties decodes the response itself, as the generated v9 model cannot decode list-valued property types.
-func getServiceTypeProperties(ctx context.Context, client *upcloudv9.ClientWithResponses, dbType string) (map[string]propertySchema, error) {
+// getServiceTypeDetails decodes the response itself because generated property schemas cannot decode list-valued types.
+func getServiceTypeDetails(ctx context.Context, client *upcloudv9.ClientWithResponses, dbType string) (map[string]propertySchema, []upcloudv9.DatabaseServicePlanResponse, error) {
 	res, err := client.GetDatabaseType(ctx, upcloudv9.GetDatabaseTypeServiceTypeName(dbType))
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	defer res.Body.Close()
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	if res.StatusCode != http.StatusOK {
-		return nil, apierror.FromResponse(res.StatusCode, body)
+		return nil, nil, apierror.FromResponse(res.StatusCode, body)
 	}
 
 	var serviceType struct {
-		Properties map[string]propertySchema `json:"properties"`
+		Properties   map[string]propertySchema               `json:"properties"`
+		ServicePlans []upcloudv9.DatabaseServicePlanResponse `json:"service_plans"`
 	}
 	if err := json.Unmarshal(body, &serviceType); err != nil {
-		return nil, fmt.Errorf("cannot parse database type %s: %w", dbType, err)
+		return nil, nil, fmt.Errorf("cannot parse database type %s: %w", dbType, err)
 	}
-	return serviceType.Properties, nil
+	return serviceType.Properties, serviceType.ServicePlans, nil
 }
 
 // waitForDatabaseState polls like the v8 SDK, retrying up to three consecutive server errors.
