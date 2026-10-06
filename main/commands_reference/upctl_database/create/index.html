@@ -8226,6 +8226,17 @@
 
 <h1 id="upctl-database-create">upctl database create</h1>
 <p>Create a new database</p>
+<p>For pg and mysql, select the plan by its components with --plan-compute,
+--plan-node-count, --plan-storage-gib, and --plan-backups. When any of these
+flags is given, the omitted ones use their defaults. Run "upctl database plans
+<type>" to list the valid compute shapes, node counts, storage ranges, and
+backup tiers. --plan-storage-gib is the total storage per node, not additional
+storage.</p>
+<p>--plan is deprecated for pg and mysql, but still supported. Run "upctl database
+plans <type> --show-legacy" to list their legacy plan names. --plan is required
+for other database types; run "upctl database plans <type>" to list their plans.
+--plan cannot be combined with the --plan-<em> flags. Without any plan flag, pg and
+mysql use the default of every --plan-</em> flag.</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>upctl database create [flags]
 </span></code></pre></div>
 <h2 id="examples">Examples</h2>
@@ -8238,9 +8249,19 @@
 </span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>                --zone fi-hel1 \
 </span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>                --type pg \
 </span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>                --hostname-prefix mydb \
-</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>                --termination-protection \
-</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>                --label env=dev \
-</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>                --property max_connections=200
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>                --plan-compute rdb.standard.2CPU-8GB \
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>                --plan-node-count 2 \
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>                --plan-storage-gib 120 \
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>                --plan-backups regular
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>upctl database create \
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>                --title mydb \
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>                --zone fi-hel1 \
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>                --type pg \
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>                --hostname-prefix mydb \
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>                --plan 2x2xCPU-4GB-100GB \
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>                --enable-termination-protection \
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>                --label env=dev \
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>                --property max_connections=200
 </span></code></pre></div>
 <h2 id="options">Options</h2>
 <table>
@@ -8261,7 +8282,23 @@
 </tr>
 <tr>
 <td><code>--plan</code></td>
-<td>Plan to use for the database. Run <code>upctl database plans [database type]</code> to list all available plans.<br/>Default: <code>2x2xCPU-4GB-100GB</code></td>
+<td>Deprecated for pg and mysql, use the --plan-* flags instead. Plan name, required for database types other than pg and mysql.</td>
+</tr>
+<tr>
+<td><code>--plan-compute</code></td>
+<td>Compute shape for pg and mysql, see the Compute shape column of "upctl database plans <type>".<br/>Default: <code>rdb.standard.2CPU-8GB</code></td>
+</tr>
+<tr>
+<td><code>--plan-node-count</code></td>
+<td>Number of nodes for pg and mysql.<br/>Default: <code>2</code></td>
+</tr>
+<tr>
+<td><code>--plan-storage-gib</code></td>
+<td>Total storage per node in GiB for pg and mysql.<br/>Default: <code>100</code></td>
+</tr>
+<tr>
+<td><code>--plan-backups</code></td>
+<td>Backup tier for pg and mysql.<br/>Default: <code>regular</code></td>
 </tr>
 <tr>
 <td><code>--zone</code></td>
@@ -8273,11 +8310,11 @@
 </tr>
 <tr>
 <td><code>--maintenance-dow</code></td>
-<td>Full name of weekday in English, lower case(sunday) for automatic maintenance day of the week. Set randomly if not provided.</td>
+<td>Full name of weekday in English, lower case(sunday) for automatic maintenance day of the week. Set randomly if not provided. Requires --maintenance-time.</td>
 </tr>
 <tr>
 <td><code>--maintenance-time</code></td>
-<td>Database time in UTC of automatic maintenance HH:MM:SS. Set randomly if not provided.</td>
+<td>Database time in UTC of automatic maintenance HH:MM:SS. Set randomly if not provided. Requires --maintenance-dow.</td>
 </tr>
 <tr>
 <td><code>--label</code></td>
