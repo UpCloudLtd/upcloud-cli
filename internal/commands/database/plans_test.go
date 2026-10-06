@@ -44,11 +44,11 @@ func TestDatabasePlans_SortedHumanOutput(t *testing.T) {
 	//nolint:staticcheck // using ManagedDatabaseBackupConfig for legacy plans
 	legacyPg := upcloud.ManagedDatabaseType{
 		ServicePlans: []upcloud.ManagedDatabaseServicePlan{
-			{Plan: "test-plan-5", NodeCount: 3, CoreNumber: 16, MemoryAmount: 128, StorageSize: 2048, BackupConfig: upcloud.ManagedDatabaseBackupConfig{MaxCount: 30}},
-			{Plan: "test-plan-3", NodeCount: 1, CoreNumber: 2, MemoryAmount: 16, StorageSize: 256, BackupConfig: upcloud.ManagedDatabaseBackupConfig{MaxCount: 15}},
-			{Plan: "test-plan-1", NodeCount: 1, CoreNumber: 1, MemoryAmount: 8, StorageSize: 2048, BackupConfig: upcloud.ManagedDatabaseBackupConfig{MaxCount: 3}},
-			{Plan: "test-plan-2", NodeCount: 1, CoreNumber: 2, MemoryAmount: 4, StorageSize: 2048, BackupConfig: upcloud.ManagedDatabaseBackupConfig{MaxCount: 7}},
-			{Plan: "test-plan-4", NodeCount: 3, CoreNumber: 16, MemoryAmount: 128, StorageSize: 1024, BackupConfig: upcloud.ManagedDatabaseBackupConfig{MaxCount: 20}},
+			{Plan: "test-plan-5", NodeCount: 3, CoreNumber: 16, MemoryAmount: 131072, StorageSize: 2097152, BackupConfig: upcloud.ManagedDatabaseBackupConfig{MaxCount: 30}},
+			{Plan: "test-plan-3", NodeCount: 1, CoreNumber: 2, MemoryAmount: 16384, StorageSize: 262144, BackupConfig: upcloud.ManagedDatabaseBackupConfig{MaxCount: 15}},
+			{Plan: "test-plan-1", NodeCount: 1, CoreNumber: 1, MemoryAmount: 8192, StorageSize: 2097152, BackupConfig: upcloud.ManagedDatabaseBackupConfig{MaxCount: 3}},
+			{Plan: "test-plan-2", NodeCount: 1, CoreNumber: 2, MemoryAmount: 4096, StorageSize: 102400, BackupConfig: upcloud.ManagedDatabaseBackupConfig{MaxCount: 7}},
+			{Plan: "test-plan-4", NodeCount: 3, CoreNumber: 16, MemoryAmount: 131072, StorageSize: 1048576, BackupConfig: upcloud.ManagedDatabaseBackupConfig{MaxCount: 20}},
 		},
 	}
 
@@ -74,8 +74,36 @@ func TestDatabasePlans_SortedHumanOutput(t *testing.T) {
 	assert.NotContains(t, output, ", 50, 100-200")
 	assert.Contains(t, output, "3 PITR days")
 	assert.Contains(t, output, "legacy")
+	assert.Regexp(t, `test-plan-2\s+legacy\s+2\s+4\s+1\s+100\s+7 PITR days`, output)
+	assert.NotContains(t, output, "4096")
+	assert.NotContains(t, output, "102400")
 	assert.Less(t, strings.Index(output, "test-plan-1"), strings.Index(output, "test-plan-2"))
 	assert.Less(t, strings.Index(output, "test-plan-2"), strings.Index(output, "test-plan-3"))
 	assert.Less(t, strings.Index(output, "test-plan-3"), strings.Index(output, "test-plan-4"))
 	assert.Less(t, strings.Index(output, "test-plan-4"), strings.Index(output, "test-plan-5"))
+}
+
+func TestDatabasePlans_LegacyOnlyTypeShowsPlansByDefault(t *testing.T) {
+	text.DisableColors()
+	plans := []upcloud.ManagedDatabasePlanServiceType{
+		{Type: "pg", Componentised: true},
+		{Type: "mysql", Componentised: true},
+	}
+	//nolint:staticcheck // using ManagedDatabaseBackupConfig for legacy plans
+	legacyOpenSearch := upcloud.ManagedDatabaseType{ServicePlans: []upcloud.ManagedDatabaseServicePlan{
+		{Plan: "1x2xCPU-4GB-80GB-1D", NodeCount: 1, CoreNumber: 2, MemoryAmount: 4096, StorageSize: 81920, BackupConfig: upcloud.ManagedDatabaseBackupConfig{MaxCount: 1}},
+	}}
+
+	mService := smock.Service{}
+	mService.On("GetManagedDatabasePlans", mock.Anything).Return(plans, nil)
+	mService.On("GetManagedDatabaseServiceType", mock.Anything).Return(&legacyOpenSearch, nil)
+	conf := config.New()
+	command := commands.BuildCommand(PlansCommand(), nil, conf)
+	command.Cobra().SetArgs([]string{"opensearch"})
+
+	out, err := mockexecute.MockExecute(command, &mService, conf)
+
+	assert.NoError(t, err)
+	assert.Contains(t, out, "1x2xCPU-4GB-80GB-1D")
+	mService.AssertNumberOfCalls(t, "GetManagedDatabaseServiceType", 1)
 }

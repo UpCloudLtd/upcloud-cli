@@ -9,9 +9,15 @@ import (
 
 // GetLabelsSectionWithResourceType returns labels table as output.CombinedSection with resource type in the empty message.
 func GetLabelsSectionWithResourceType(labels []upcloud.Label, resourceType string) output.CombinedSection {
+	return LabelsSection(labels, func(l upcloud.Label) (string, string) { return l.Key, l.Value }, resourceType)
+}
+
+// LabelsSection returns labels of any SDK type as output.CombinedSection, using keyValue to read each label.
+func LabelsSection[T any](labels []T, keyValue func(T) (key, value string), resourceType string) output.CombinedSection {
 	var rows []output.TableRow
-	for _, i := range labels {
-		rows = append(rows, output.TableRow{i.Key, i.Value})
+	for _, label := range labels {
+		key, value := keyValue(label)
+		rows = append(rows, output.TableRow{key, value})
 	}
 
 	return output.CombinedSection{

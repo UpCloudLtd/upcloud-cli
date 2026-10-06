@@ -22,14 +22,19 @@ func StringsToUpCloudLabelSlice(in []string) (*upcloud.LabelSlice, error) {
 }
 
 func StringsToSliceOfLabels(in []string) ([]upcloud.Label, error) {
-	labelSlice := make([]upcloud.Label, 0)
+	return StringsToLabels(in, func(key, value string) upcloud.Label { return upcloud.Label{Key: key, Value: value} })
+}
+
+// StringsToLabels parses key=value strings into labels of any SDK type built by newLabel.
+func StringsToLabels[T any](in []string, newLabel func(key, value string) T) ([]T, error) {
+	labelSlice := make([]T, 0, len(in))
 
 	for _, l := range in {
 		label, err := stringToLabel(l)
 		if err != nil {
 			return nil, err
 		}
-		labelSlice = append(labelSlice, label)
+		labelSlice = append(labelSlice, newLabel(label.Key, label.Value))
 	}
 
 	return labelSlice, nil

@@ -156,7 +156,7 @@ func (s *deployStarterKitCommand) deploy(exec commands.Executor) (string, error)
 	msg = fmt.Sprintf("Waiting for database with UUID: %s to be ready ", db.UUID)
 	exec.PushProgressStarted(msg)
 
-	database.WaitForManagedDatabaseState(db.UUID, upcloud.ManagedDatabaseStateRunning, exec, msg)
+	database.WaitForManagedDatabaseState(db.UUID, string(upcloud.ManagedDatabaseStateRunning), exec, msg)
 	db, err = exec.All().GetManagedDatabase(exec.Context(), &request.GetManagedDatabaseRequest{
 		UUID: db.UUID,
 	})
