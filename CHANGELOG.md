@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.37.0] - 2026-10-13
+
 ### Added
 
 - Add `--plan-compute`, `--plan-node-count`, `--plan-storage-gib`, and `--plan-backups` flags to `database create` for selecting PostgreSQL and MySQL plans by their components. Run `upctl database plans <type>` to list valid values.
@@ -752,7 +754,8 @@ Initial public beta release :tada:
 ### Added
 - Current feature set added! First internal release
 
-[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.36.0...HEAD
+[Unreleased]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.37.0...HEAD
+[3.37.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.36.0...v3.37.0
 [3.36.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.35.0...v3.36.0
 [3.35.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.34.0...v3.35.0
 [3.34.0]: https://github.com/UpCloudLtd/upcloud-cli/compare/v3.33.0...v3.34.0
