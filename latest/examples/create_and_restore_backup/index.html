@@ -1086,6 +1086,34 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../commands_reference/upctl_database/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    database 
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
     
@@ -1095,10 +1123,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4_2" >
         
           
-          <label class="md-nav__link" for="__nav_2_4_1" id="__nav_2_4_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2_4_2" id="__nav_2_4_2_label" tabindex="0">
             
   
   
@@ -1116,8 +1144,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_4_1_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2_4_1">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4_2">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1214,34 +1242,6 @@
           </ul>
         </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_database/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    database 
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -8136,7 +8136,7 @@
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>zone=pl-waw1
 </span></code></pre></div>
 <p>We will first create a ssh-key into the current working directory for configuring an nginx server via SSH connection.</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ssh-keygen<span class="w"> </span>-t<span class="w"> </span>ed25519<span class="w"> </span>-q<span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;./id_ed25519&quot;</span><span class="w"> </span>-N<span class="w"> </span><span class="s2">&quot;&quot;</span><span class="w"> </span>-C<span class="w"> </span><span class="s2">&quot;upctl example&quot;</span>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ssh-keygen<span class="w"> </span>-t<span class="w"> </span>ed25519<span class="w"> </span>-q<span class="w"> </span>-f<span class="w"> </span><span class="s2">"./id_ed25519"</span><span class="w"> </span>-N<span class="w"> </span><span class="s2">""</span><span class="w"> </span>-C<span class="w"> </span><span class="s2">"upctl example"</span>
 </span></code></pre></div>
 <p>We will then create a server with a single network interface and default template settings.</p>
 <div class="language-sh highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>upctl<span class="w"> </span>server<span class="w"> </span>create<span class="w"> </span><span class="se">\</span>
@@ -8151,20 +8151,20 @@
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>apt-get<span class="w"> </span>update
 </span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>apt-get<span class="w"> </span>install<span class="w"> </span>nginx<span class="w"> </span>-y
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Hello from </span><span class="k">$(</span>hostname<span class="k">)</span><span class="s2">&quot;</span><span class="s1">&#39;!&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>/var/www/html/index.html
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">"Hello from </span><span class="k">$(</span>hostname<span class="k">)</span><span class="s2">"</span><span class="s1">'!'</span><span class="w"> </span>&gt;<span class="w"> </span>/var/www/html/index.html
 </span></code></pre></div>
 <p>To configure the server, we will parse the public IP of the server and run the above script using SSH connection. We can then use <code>curl</code> to ensure that the HTTP server serves the content we defined.</p>
 <div class="language-sh highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Parse public IP of the server with jq</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nv">ip</span><span class="o">=</span><span class="k">$(</span>upctl<span class="w"> </span>server<span class="w"> </span>show<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>source-server<span class="w"> </span>-o<span class="w"> </span>json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;.networking.interfaces[] | select(.type == &quot;public&quot;) | .ip_addresses[0].address&#39;</span><span class="k">)</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nv">ip</span><span class="o">=</span><span class="k">$(</span>upctl<span class="w"> </span>server<span class="w"> </span>show<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>source-server<span class="w"> </span>-o<span class="w"> </span>json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">'.networking.interfaces[] | select(.type == "public") | .ip_addresses[0].address'</span><span class="k">)</span>
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
 </span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># Wait for a moment for the ssh server to become available</span>
 </span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>sleep<span class="w"> </span><span class="m">30</span>
 </span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
 </span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="c1"># Run the script defined above</span>
-</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>ssh<span class="w"> </span>-i<span class="w"> </span>id_ed25519<span class="w"> </span>-o<span class="w"> </span><span class="nv">StrictHostKeyChecking</span><span class="o">=</span>accept-new<span class="w"> </span>root@<span class="nv">$ip</span><span class="w"> </span><span class="s2">&quot;sh&quot;</span><span class="w"> </span>&lt;<span class="w"> </span>configure-nginx.sh
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>ssh<span class="w"> </span>-i<span class="w"> </span>id_ed25519<span class="w"> </span>-o<span class="w"> </span><span class="nv">StrictHostKeyChecking</span><span class="o">=</span>accept-new<span class="w"> </span>root@<span class="nv">$ip</span><span class="w"> </span><span class="s2">"sh"</span><span class="w"> </span>&lt;<span class="w"> </span>configure-nginx.sh
 </span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>
 </span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="c1"># Validate HTTP server response</span>
-</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="nb">test</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>curl<span class="w"> </span>-s<span class="w"> </span><span class="nv">$ip</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;Hello from example-upctl-backup-source-server!&#39;</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="nb">test</span><span class="w"> </span><span class="s2">"</span><span class="k">$(</span>curl<span class="w"> </span>-s<span class="w"> </span><span class="nv">$ip</span><span class="k">)</span><span class="s2">"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'Hello from example-upctl-backup-source-server!'</span>
 </span></code></pre></div>
 <p>We will then backup the OS disk of the created server.</p>
 <div class="language-sh highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>upctl<span class="w"> </span>storage<span class="w"> </span>backup<span class="w"> </span>create<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>source-server-OS<span class="w"> </span>--title<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>source-server-backup
@@ -8184,11 +8184,11 @@
 </span></code></pre></div>
 <p>To validate that the server was re-created successfully, we will parse the public IP of the server and use curl to see that the HTTP server is running.</p>
 <div class="language-sh highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Parse public IP of the server with jq</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nv">ip</span><span class="o">=</span><span class="k">$(</span>upctl<span class="w"> </span>server<span class="w"> </span>show<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>restored-server<span class="w"> </span>-o<span class="w"> </span>json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;.networking.interfaces[] | select(.type == &quot;public&quot;) | .ip_addresses[0].address&#39;</span><span class="k">)</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nv">ip</span><span class="o">=</span><span class="k">$(</span>upctl<span class="w"> </span>server<span class="w"> </span>show<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>restored-server<span class="w"> </span>-o<span class="w"> </span>json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">'.networking.interfaces[] | select(.type == "public") | .ip_addresses[0].address'</span><span class="k">)</span>
 </span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
 </span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="c1"># Wait until server returns expected response</span>
 </span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="k">for</span><span class="w"> </span>i<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">$(</span>seq<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="m">9</span><span class="k">)</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
-</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">    </span><span class="nb">test</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>curl<span class="w"> </span>-s<span class="w"> </span><span class="nv">$ip</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;Hello from example-upctl-backup-source-server!&#39;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="k">break</span><span class="w"> </span><span class="o">||</span><span class="w"> </span>true<span class="p">;</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">    </span><span class="nb">test</span><span class="w"> </span><span class="s2">"</span><span class="k">$(</span>curl<span class="w"> </span>-s<span class="w"> </span><span class="nv">$ip</span><span class="k">)</span><span class="s2">"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'Hello from example-upctl-backup-source-server!'</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="k">break</span><span class="w"> </span><span class="o">||</span><span class="w"> </span>true<span class="p">;</span>
 </span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">    </span>sleep<span class="w"> </span><span class="m">15</span><span class="p">;</span>
 </span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="k">done</span><span class="p">;</span>
 </span></code></pre></div>

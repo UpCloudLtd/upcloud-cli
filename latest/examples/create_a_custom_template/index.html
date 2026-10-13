@@ -1086,6 +1086,34 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../commands_reference/upctl_database/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    database 
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
     
@@ -1095,10 +1123,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4_2" >
         
           
-          <label class="md-nav__link" for="__nav_2_4_1" id="__nav_2_4_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2_4_2" id="__nav_2_4_2_label" tabindex="0">
             
   
   
@@ -1116,8 +1144,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_4_1_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2_4_1">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4_2">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1214,34 +1242,6 @@
           </ul>
         </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../commands_reference/upctl_database/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    database 
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -8137,7 +8137,7 @@
 </span></code></pre></div>
 <p>First, we will create server which disk will be used as a source for the custom template.</p>
 <div class="language-sh highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Create ssh-key into current working directory</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>ssh-keygen<span class="w"> </span>-t<span class="w"> </span>ed25519<span class="w"> </span>-q<span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;./id_ed25519&quot;</span><span class="w"> </span>-N<span class="w"> </span><span class="s2">&quot;&quot;</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>ssh-keygen<span class="w"> </span>-t<span class="w"> </span>ed25519<span class="w"> </span>-q<span class="w"> </span>-f<span class="w"> </span><span class="s2">"./id_ed25519"</span><span class="w"> </span>-N<span class="w"> </span><span class="s2">""</span>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
 </span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>upctl<span class="w"> </span>server<span class="w"> </span>create<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span>--hostname<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>source-server<span class="w"> </span><span class="se">\</span>
@@ -8152,7 +8152,7 @@
 </span></code></pre></div>
 <p>The default name for the OS storage of servers created with <code>upctl</code> is <code>${server-title}-OS</code>, in this case <code>${prefix}source-server-OS</code>. We can use either that or the UUID of the storage, when creating the template. UUID of the storage can be printed, for example, by processing <code>json</code> output with jq.</p>
 <div class="language-sh highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>upctl<span class="w"> </span>server<span class="w"> </span>show<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>source-server<span class="w"> </span>-o<span class="w"> </span>json<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;.storage[0].uuid&quot;</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s2">".storage[0].uuid"</span>
 </span></code></pre></div>
 <p>Now we are ready for creating the template.</p>
 <div class="language-sh highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>upctl<span class="w"> </span>storage<span class="w"> </span>templatise<span class="w"> </span><span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>source-server-OS<span class="w"> </span><span class="se">\</span>
