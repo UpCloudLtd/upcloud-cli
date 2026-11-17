@@ -197,7 +197,7 @@ func TestServerHumanOutput(t *testing.T) {
     Type:     vnc                     
     Host:     fi-hel1.vnc.upcloud.com 
     Port:     3000                    
-    Password: aabbccdd                
+    Password: hidden (--show-secrets) 
 
 `
 
@@ -221,4 +221,28 @@ func TestServerHumanOutput(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, expected, output)
+
+	for _, test := range []struct {
+		name   string
+		args   []string
+		output string
+	}{
+		{name: "human with flag", args: []string{"--show-secrets", uuid}},
+		{name: "json without flag", args: []string{uuid}, output: config.ValueOutputJSON},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			conf := config.New()
+			if test.output != "" {
+				conf.Viper().Set(config.KeyOutput, test.output)
+			}
+			command := commands.BuildCommand(ShowCommand(), nil, conf)
+			_, err := command.(*showCommand).Get(context.TODO(), &mService)
+			assert.NoError(t, err)
+
+			command.Cobra().SetArgs(test.args)
+			output, err := mockexecute.MockExecute(command, &mService, conf)
+			assert.NoError(t, err)
+			assert.Contains(t, output, "aabbccdd")
+		})
+	}
 }

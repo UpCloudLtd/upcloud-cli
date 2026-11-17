@@ -7,12 +7,14 @@ import (
 
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/format"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/labels"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
 	"github.com/jedib0t/go-pretty/v6/text"
+	"github.com/spf13/pflag"
 
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud"
 	"github.com/UpCloudLtd/upcloud-go-api/v8/upcloud/request"
@@ -36,9 +38,14 @@ type showCommand struct {
 	*commands.BaseCommand
 	resolver.CachingServer
 	completion.Server
+	showSecrets config.OptionalBoolean
 }
 
+// InitCommand implements Command.InitCommand
 func (s *showCommand) InitCommand() {
+	flags := &pflag.FlagSet{}
+	config.AddToggleFlag(flags, &s.showSecrets, "show-secrets", false, "Show the remote access password in human-readable output. JSON and YAML output always include it.")
+	s.AddFlags(flags)
 }
 
 // Execute implements commands.MultipleArgumentCommand
@@ -260,7 +267,7 @@ func (s *showCommand) Execute(exec commands.Executor, uuid string) (output.Outpu
 							{Title: "Type:", Key: "type", Value: server.RemoteAccessType},
 							{Title: "Host:", Key: "host", Value: server.RemoteAccessHost},
 							{Title: "Port:", Key: "port", Value: server.RemoteAccessPort},
-							{Title: "Password:", Key: "password", Value: server.RemoteAccessPassword},
+							{Title: "Password:", Key: "password", Value: format.Secret(server.RemoteAccessPassword, s.showSecrets.Value())},
 						},
 					},
 				},
