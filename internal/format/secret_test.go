@@ -19,4 +19,8 @@ func TestSecretURI(t *testing.T) {
 	assert.Equal(t, "rediss://my-cache.example.com:11550", SecretURI("rediss://my-cache.example.com:11550", false))
 	assert.Equal(t, HiddenPlaceholder, SecretURI("postgres://user:pa ss@%zz", false))
 	assert.Equal(t, "", SecretURI("", false))
+	assert.Equal(t, HiddenPlaceholder, SecretURI("postgres://upadmin@host/db?password=s3cret", false, "s3cret"))
+	assert.Equal(t, HiddenPlaceholder, SecretURI("postgres:upadmin:s3cret@host:5432", false, "s3cret"))
+	assert.Equal(t, HiddenPlaceholder, SecretURI("postgres://upadmin@host/db?password=p%40ss", false, "p@ss"))
+	assert.Equal(t, "postgres://upadmin:xxxxx@host/db", SecretURI("postgres://upadmin:s3cret@host/db", false, "s3cret"))
 }

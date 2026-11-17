@@ -1,6 +1,9 @@
 package format
 
-import "net/url"
+import (
+	"net/url"
+	"strings"
+)
 
 // HiddenPlaceholder replaces a secret value in human-readable output.
 const HiddenPlaceholder = "hidden (--show-secrets)"
@@ -15,9 +18,10 @@ func Secret(value string, show bool) string {
 }
 
 // SecretURI returns raw with the password of its user info replaced by
-// "xxxxx", unless show is true. A value that does not parse as a URL is
-// hidden completely, because it can still contain a password.
-func SecretURI(raw string, show bool) string {
+// "xxxxx", unless show is true. The whole value is hidden when it does not
+// parse as a URL, or when a known secret is still in the redacted value (for
+// example a password in the query string or in an opaque URI).
+func SecretURI(raw string, show bool, knownSecrets ...string) string {
 	if show || raw == "" {
 		return raw
 	}
@@ -25,5 +29,16 @@ func SecretURI(raw string, show bool) string {
 	if err != nil {
 		return HiddenPlaceholder
 	}
-	return u.Redacted()
+	redacted := u.Redacted()
+	for _, secret := range knownSecrets {
+		if secret == "" {
+			continue
+		}
+		if strings.Contains(redacted, secret) ||
+			strings.Contains(redacted, url.QueryEscape(secret)) ||
+			strings.Contains(redacted, url.PathEscape(secret)) {
+			return HiddenPlaceholder
+		}
+	}
+	return redacted
 }

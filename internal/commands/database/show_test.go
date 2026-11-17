@@ -140,6 +140,9 @@ func TestShowCommand_ShowSecrets(t *testing.T) {
 			require.NoError(t, err)
 			assert.Contains(t, out, "postgres://upadmin:s3cret-pw@my-pg.example.com:11550/defaultdb")
 			assert.NotContains(t, out, format.HiddenPlaceholder)
+			if test.output == "" {
+				assert.Regexp(t, `Password:\s+s3cret-pw`, out)
+			}
 		})
 	}
 }

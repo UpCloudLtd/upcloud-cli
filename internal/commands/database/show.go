@@ -65,6 +65,8 @@ func (s *showCommand) Execute(exec commands.Executor, uuidStr string) (output.Ou
 		return nil, err
 	}
 	dbType := deref(db.Type)
+	password := mapString(db.ServiceUriParams, "password")
+	showSecrets := s.showSecrets.Value()
 
 	nodeRows := []output.TableRow{}
 	for _, node := range deref(db.NodeStates) {
@@ -119,10 +121,10 @@ func (s *showCommand) Execute(exec commands.Executor, uuidStr string) (output.Ou
 		output.DetailSection{
 			Title: "Authentication:",
 			Rows: []output.DetailRow{
-				{Title: "Service URI:", Value: format.SecretURI(deref(db.ServiceUri), s.showSecrets.Value())},
+				{Title: "Service URI:", Value: format.SecretURI(deref(db.ServiceUri), showSecrets, password)},
 				{Title: "Database name:", Value: mapString(db.ServiceUriParams, "dbname")},
 				{Title: "Host:", Value: mapString(db.ServiceUriParams, "host")},
-				{Title: "Password:", Value: format.Secret(mapString(db.ServiceUriParams, "password"), s.showSecrets.Value())},
+				{Title: "Password:", Value: format.Secret(password, showSecrets)},
 				{Title: "Port:", Value: mapString(db.ServiceUriParams, "port")},
 				{Title: "SSL mode:", Value: mapString(db.ServiceUriParams, "ssl_mode")},
 				{Title: "User:", Value: mapString(db.ServiceUriParams, "user")},
