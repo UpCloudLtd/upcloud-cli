@@ -27,6 +27,14 @@ func PlanListCommand() commands.Command {
 	}
 }
 
+// planWithCost adds the cost shown in the human output to the machine readable output
+type planWithCost struct {
+	upcloud.Plan
+
+	// Cost is nil when the price of the plan is not known
+	Cost *float64 `json:"cost"`
+}
+
 type planListCommand struct {
 	*commands.BaseCommand
 	pricesZone     string
@@ -104,6 +112,7 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 	}
 
 	rows := make(map[string][]output.TableRow)
+	plansWithCost := make([]planWithCost, 0, len(plans))
 	for _, p := range plans {
 		key := planType(p)
 		row := output.TableRow{
@@ -124,13 +133,24 @@ func (s *planListCommand) ExecuteWithoutArguments(exec commands.Executor) (outpu
 		if showPrices && prices != nil {
 			cost := getPlanCost(p, prices, duration)
 			row = append(row, cost)
+
+			planCost := planWithCost{Plan: p}
+			if !math.IsNaN(cost) {
+				planCost.Cost = &cost
+			}
+			plansWithCost = append(plansWithCost, planCost)
 		}
 
 		rows[key] = append(rows[key], row)
 	}
 
+	var value any = plans
+	if showPrices && prices != nil {
+		value = plansWithCost
+	}
+
 	return output.MarshaledWithHumanOutput{
-		Value: plans,
+		Value: value,
 		Output: output.Combined{
 			planSection("premium", "Premium", rows["premium"], showPrices, s.pricesDuration),
 			planSection("starter", "Starter", rows["starter"], showPrices, s.pricesDuration),
