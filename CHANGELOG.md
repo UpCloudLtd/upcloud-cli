@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Include the plan cost in the machine readable output of `server plans --prices`.
+
 ## [3.37.0] - 2026-10-13
 
 ### Added
