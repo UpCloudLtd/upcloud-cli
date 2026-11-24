@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `database show` and `server show` hide passwords and the password in the database service URI in human-readable output. Use `--show-secrets` to show them. JSON and YAML output are unchanged.
+
 ## [3.37.0] - 2026-10-13
 
 ### Added

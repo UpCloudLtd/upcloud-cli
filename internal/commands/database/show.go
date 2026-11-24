@@ -4,12 +4,14 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/apierror"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/completion"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/format"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/labels"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/output"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/resolver"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/ui"
 	upcloudv9 "github.com/UpCloudLtd/upcloud-go-api/v9/pkg/upcloud"
+	"github.com/spf13/pflag"
 )
 
 // ShowCommand creates the "database show" command
@@ -29,6 +31,14 @@ type showCommand struct {
 	*commands.BaseCommand
 	resolver.CachingDatabase
 	completion.Database
+	showSecrets config.OptionalBoolean
+}
+
+// InitCommand implements Command.InitCommand
+func (s *showCommand) InitCommand() {
+	flags := &pflag.FlagSet{}
+	config.AddToggleFlag(flags, &s.showSecrets, "show-secrets", false, "Show the password and service URI in human-readable output. JSON and YAML output always include them.")
+	s.AddFlags(flags)
 }
 
 // Execute implements commands.MultipleArgumentCommand
@@ -55,6 +65,8 @@ func (s *showCommand) Execute(exec commands.Executor, uuidStr string) (output.Ou
 		return nil, err
 	}
 	dbType := deref(db.Type)
+	password := mapString(db.ServiceUriParams, "password")
+	showSecrets := s.showSecrets.Value()
 
 	nodeRows := []output.TableRow{}
 	for _, node := range deref(db.NodeStates) {
@@ -109,10 +121,10 @@ func (s *showCommand) Execute(exec commands.Executor, uuidStr string) (output.Ou
 		output.DetailSection{
 			Title: "Authentication:",
 			Rows: []output.DetailRow{
-				{Title: "Service URI:", Value: deref(db.ServiceUri)},
+				{Title: "Service URI:", Value: format.SecretURI(deref(db.ServiceUri), showSecrets, password)},
 				{Title: "Database name:", Value: mapString(db.ServiceUriParams, "dbname")},
 				{Title: "Host:", Value: mapString(db.ServiceUriParams, "host")},
-				{Title: "Password:", Value: mapString(db.ServiceUriParams, "password")},
+				{Title: "Password:", Value: format.Secret(password, showSecrets)},
 				{Title: "Port:", Value: mapString(db.ServiceUriParams, "port")},
 				{Title: "SSL mode:", Value: mapString(db.ServiceUriParams, "ssl_mode")},
 				{Title: "User:", Value: mapString(db.ServiceUriParams, "user")},

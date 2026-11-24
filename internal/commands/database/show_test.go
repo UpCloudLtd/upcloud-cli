@@ -8,6 +8,7 @@ import (
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/apierror"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/commands"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/config"
+	"github.com/UpCloudLtd/upcloud-cli/v3/internal/format"
 	smock "github.com/UpCloudLtd/upcloud-cli/v3/internal/mock"
 	"github.com/UpCloudLtd/upcloud-cli/v3/internal/mockexecute"
 	upcloudv9 "github.com/UpCloudLtd/upcloud-go-api/v9/pkg/upcloud"
@@ -70,7 +71,8 @@ func TestShowCommand(t *testing.T) {
 			"time": "05:00:00",
 			"pending_updates": [{"deadline": "", "description": "platform update", "start_after": "2026-09-30T10:00:00Z", "start_at": ""}]
 		},
-		"service_uri_params": {"dbname": "defaultdb", "host": "my-pg.example.com", "port": 11550, "user": "upadmin"},
+		"service_uri": "postgres://upadmin:s3cret-pw@my-pg.example.com:11550/defaultdb?sslmode=require",
+		"service_uri_params": {"dbname": "defaultdb", "host": "my-pg.example.com", "password": "s3cret-pw", "port": 11550, "user": "upadmin"},
 		"labels": [{"key": "env", "value": "dev"}],
 		"node_states": [{"name": "my-pg-1", "role": "master", "state": "running"}],
 		"components": [{"component": "pg", "host": "my-pg.example.com", "port": 11550, "route": "dynamic", "usage": "primary"}]
@@ -101,8 +103,47 @@ func TestShowCommand(t *testing.T) {
 		`Port:\s+11550`,
 		`env\s+dev`,
 		`my-pg-1\s+master\s+running`,
+		`Service URI:\s+postgres://upadmin:xxxxx@my-pg.example.com:11550/defaultdb\?sslmode=require`,
+		`Password:\s+hidden \(--show-secrets\)`,
 	} {
 		assert.Regexp(t, pattern, out)
+	}
+	assert.NotContains(t, out, "s3cret-pw")
+}
+
+func TestShowCommand_ShowSecrets(t *testing.T) {
+	text.DisableColors()
+	id := shownDatabaseUUID
+	database := `{"uuid":"` + id + `","type":"pg","state":"running",` +
+		`"service_uri":"postgres://upadmin:s3cret-pw@my-pg.example.com:11550/defaultdb",` +
+		`"service_uri_params":{"password":"s3cret-pw","user":"upadmin"}}`
+
+	for _, test := range []struct {
+		name   string
+		args   []string
+		output string
+	}{
+		{name: "human with flag", args: []string{"--show-secrets", id}},
+		{name: "json without flag", args: []string{id}, output: config.ValueOutputJSON},
+		{name: "yaml without flag", args: []string{id}, output: config.ValueOutputYAML},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			api := newFakeAPI(t, map[string]fakeResponse{"GET /1.3/database/" + id: {status: http.StatusOK, body: database}})
+			conf := config.New()
+			if test.output != "" {
+				conf.Viper().Set(config.KeyOutput, test.output)
+			}
+			c := commands.BuildCommand(ShowCommand(), nil, conf)
+			c.Cobra().SetArgs(test.args)
+
+			out, err := mockexecute.MockExecuteWithV9(c, &smock.Service{}, api.client, conf)
+			require.NoError(t, err)
+			assert.Contains(t, out, "postgres://upadmin:s3cret-pw@my-pg.example.com:11550/defaultdb")
+			assert.NotContains(t, out, format.HiddenPlaceholder)
+			if test.output == "" {
+				assert.Regexp(t, `Password:\s+s3cret-pw`, out)
+			}
+		})
 	}
 }
 
