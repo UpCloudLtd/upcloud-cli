@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync/atomic"
 	"time"
 
@@ -24,6 +25,73 @@ import (
 
 	"github.com/spf13/pflag"
 )
+
+// supportedContentTypes maps file extensions to IANA-registered content types
+// based on UpCloud Storage Import API documentation
+var supportedContentTypes = map[string]string{
+	".gz":    "application/gzip",
+	".xz":    "application/x-xz",
+	".iso":   "application/octet-stream",
+	".img":   "application/octet-stream",
+	".raw":   "application/octet-stream",
+	".qcow2": "application/octet-stream",
+	".tar":   "application/x-tar",
+	".bz2":   "application/x-bzip2",
+	".7z":    "application/x-7z-compressed",
+	".zip":   "application/zip",
+}
+
+// getSupportedExtensionsText returns a formatted string of supported file extensions
+func getSupportedExtensionsText() string {
+	var extensions []string
+	for ext := range supportedContentTypes {
+		extensions = append(extensions, ext)
+	}
+	// Sort for consistent output
+	for i := 0; i < len(extensions); i++ {
+		for j := i + 1; j < len(extensions); j++ {
+			if extensions[i] > extensions[j] {
+				extensions[i], extensions[j] = extensions[j], extensions[i]
+			}
+		}
+	}
+	var result strings.Builder
+	for i, ext := range extensions {
+		if i > 0 {
+			result.WriteString(", ")
+		}
+		result.WriteString(ext)
+	}
+	return result.String()
+}
+
+// getSupportedContentTypesText returns a formatted string of supported content types
+func getSupportedContentTypesText() string {
+	seen := make(map[string]bool)
+	var types []string
+	for _, ct := range supportedContentTypes {
+		if !seen[ct] {
+			types = append(types, ct)
+			seen[ct] = true
+		}
+	}
+	// Sort for consistent output
+	for i := 0; i < len(types); i++ {
+		for j := i + 1; j < len(types); j++ {
+			if types[i] > types[j] {
+				types[i], types[j] = types[j], types[i]
+			}
+		}
+	}
+	var result strings.Builder
+	for i, ct := range types {
+		if i > 0 {
+			result.WriteString(", ")
+		}
+		result.WriteString(ct)
+	}
+	return result.String()
+}
 
 // ImportCommand creates the "storage import" command
 func ImportCommand() commands.Command {
@@ -60,6 +128,7 @@ type importCommand struct {
 	existingStorageUUIDOrName string
 	noWait                    config.OptionalBoolean
 	wait                      config.OptionalBoolean
+	contentType               string
 
 	createParams createParams
 
@@ -69,8 +138,9 @@ type importCommand struct {
 // InitCommand implements Command.InitCommand
 func (s *importCommand) InitCommand() {
 	flagSet := &pflag.FlagSet{}
-	flagSet.StringVar(&s.sourceLocation, "source-location", "", "Location of the source of the import. Can be a file or a URL.")
+	flagSet.StringVar(&s.sourceLocation, "source-location", "", fmt.Sprintf("Location of the source of the import. Can be a file or a URL. Supported file extensions: %s", getSupportedExtensionsText()))
 	flagSet.StringVar(&s.existingStorageUUIDOrName, "storage", "", "Import to an existing storage. Storage must be large enough and must be undetached or the server where the storage is attached must be in shutdown state.")
+	flagSet.StringVar(&s.contentType, "content-type", "", fmt.Sprintf("Content type of the file being imported. If not specified, it will be automatically detected based on file extension. Supported types: %s", getSupportedContentTypesText()))
 	config.AddToggleFlag(flagSet, &s.noWait, "no-wait", false, "When importing from remote url, do not wait until the import finishes or storage is in online state. If set, command will exit after import process has been initialized.")
 	config.AddToggleFlag(flagSet, &s.wait, "wait", false, "Wait for storage to be in online state before returning.")
 	applyCreateFlags(flagSet, &s.createParams, defaultCreateParams)
@@ -206,7 +276,7 @@ func (s *importCommand) ExecuteWithoutArguments(exec commands.Executor) (output.
 		if err != nil {
 			return commands.HandleError(exec, msg, fmt.Errorf("cannot open local file: %w", err))
 		}
-		go importLocalFile(exec, storageToImportTo.UUID, sourceFile, statusChan)
+		go importLocalFile(exec, storageToImportTo.UUID, sourceFile, s.contentType, statusChan)
 	}
 
 	// import has been triggered, read updates from the process
@@ -351,19 +421,27 @@ func pollStorageImportStatus(exec commands.Executor, uuid string, statusChan cha
 	}
 }
 
-func importLocalFile(exec commands.Executor, uuid string, file *os.File, statusChan chan<- storageImportStatus) {
+func getContentType(filename string) string {
+	ext := filepath.Ext(filename)
+	if contentType, exists := supportedContentTypes[ext]; exists {
+		return contentType
+	}
+
+	// Default to octet-stream for unknown types
+	return "application/octet-stream"
+}
+
+func importLocalFile(exec commands.Executor, uuid string, file *os.File, userContentType string, statusChan chan<- storageImportStatus) {
 	// make sure we close the channel when exiting import
 	defer close(statusChan)
 	chDone := make(chan storageImportStatus)
 	reader := &readerCounter{source: file}
 
 	// figure out content type
-	contentType := "application/octet-stream"
-	switch filepath.Ext(file.Name()) {
-	case ".gz":
-		contentType = "application/gzip"
-	case ".xz":
-		contentType = "application/x-xz"
+	// use user-provided content type if specified, otherwise auto-detect
+	contentType := userContentType
+	if contentType == "" {
+		contentType = getContentType(file.Name())
 	}
 
 	go func() {
